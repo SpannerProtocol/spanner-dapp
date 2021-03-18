@@ -34,12 +34,11 @@ export const CardText = styled.div`
 export const CardTextLeft = styled.div`
   width: 50%;
   text-align: left;
-  color: #fff
+  color: #fff;
 `
 
 export const CardTextRight = styled.div`
   width: 50%;
   text-align: right;
-  color: #fff
+  color: #fff;
 `
-
