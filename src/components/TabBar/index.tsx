@@ -47,7 +47,7 @@ export interface TabMetaData {
 // TabBar component takes an array of TabMetaData. If passed a click handler as a callback,
 // it will return the index of the tab clicked.
 export default function TabBar(props: TabBarProps): JSX.Element {
-  const { id, className, tabs, onClick, margin} = props
+  const { id, className, tabs, onClick, margin } = props
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const theme = useContext(ThemeContext)
 
