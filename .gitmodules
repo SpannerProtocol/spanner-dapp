@@ -1,0 +1,6 @@
+[submodule "src/packages"]
+	path = src/packages
+	url = git@github.com:SpannerProtocol/spanner-interfaces.git
+[submodule "src/spanner-interfaces"]
+	path = src/spanner-interfaces
+	url = git@github.com:SpannerProtocol/spanner-interfaces.git

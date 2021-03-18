@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "interfaces/*": ["./spanner-interfaces/*"],
+      "@polkadot/api/augment": ["./spanner-interfaces/augment-api.ts"],
+      "@polkadot/types/augment": ["./spanner-interfaces/augment-types.ts"]
+    }
+  }
+}
