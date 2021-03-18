@@ -1,0 +1,50 @@
+import { useApi } from 'hooks/useApi'
+import React, { createContext, useEffect, useMemo, useState } from 'react'
+
+const DEFAULT_STATE = {
+  chain: '-',
+  chainDecimals: 15,
+  existentialDeposit: 1 / 1000,
+}
+
+export interface SubstrateState {
+  chain?: string
+  chainDecimals: number
+  existentialDeposit: number
+  genesis?: string
+  genesisHash?: string
+  chainTokens?: string
+}
+
+export const SubstrateContext = createContext<SubstrateState>({} as SubstrateState)
+
+export function SubstrateProvider({ children }: any): JSX.Element {
+  const { api, connected } = useApi()
+  const [constants, setConstants] = useState<SubstrateState>(DEFAULT_STATE)
+  const [networkName, setNetworkName] = useState<string>()
+  // api.runtimeChain.registry.chainToken
+  // api.runtimeMetadata.registry.chainDecimals
+
+  useEffect(() => {
+    if (!connected) return
+    api.rpc.system.chain((result) => setNetworkName(result.toString()))
+  }, [api, connected])
+
+  useEffect(() => {
+    if (!connected) return
+    console.log('DEBUG NEW TOKENS:', api.registry.chainTokens)
+    console.log('DEBUG NEW CHAINDECIMALS:', api.registry.chainDecimals)
+    setConstants({
+      chain: networkName,
+      genesis: api.genesisHash.toString(),
+      chainDecimals: api.registry.chainDecimals[0],
+      existentialDeposit: api?.consts?.balances?.existentialDeposit.toNumber(),
+      genesisHash: api?.genesisHash.toHex(),
+      chainTokens: api.registry.chainTokens[0],
+    })
+  }, [api, connected, networkName])
+
+  const value = useMemo<SubstrateState>(() => constants, [constants])
+
+  return <SubstrateContext.Provider value={value}>{children}</SubstrateContext.Provider>
+}

@@ -1,0 +1,509 @@
+import { BN_HUNDRED } from '@polkadot/util'
+import { ButtonPrimary, ButtonSecondary } from 'components/Button'
+import { FlatCard, FlatCardPlate } from 'components/Card'
+import { BorderedInput } from 'components/Input'
+import StandardModal from 'components/Modal/StandardModal'
+import TxModal from 'components/Modal/TxModal'
+import QuestionHelper from 'components/QuestionHelper'
+import { RowBetween, RowFixed } from 'components/Row'
+import { SectionHeading, SmallText, StandardText } from 'components/Text'
+import TxFee from 'components/TxFee'
+import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
+import { useBlockManager } from 'hooks/useBlocks'
+import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
+import { useSubstrate } from 'hooks/useSubstrate'
+import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
+import React, { useCallback, useEffect, useState } from 'react'
+import { TravelCabinInfo } from 'spanner-interfaces'
+import { useProjectManager } from 'state/project/hooks'
+import { useReferrerManager } from 'state/referrer/hooks'
+import { blockToDays } from 'utils/formatBlocks'
+import { formatToUnit } from 'utils/formatUnit'
+import getApy from 'utils/getApy'
+import getCabinClass from 'utils/getCabinClass'
+import truncateAddress from 'utils/truncateAddress'
+
+interface TravelCabinItemProps {
+  travelCabinIndex: string
+}
+
+interface TravelCabinCrowdFormProps {
+  travelCabinInfo: TravelCabinInfo
+  token: string
+  chainDecimals: number
+  onSubmit: (data: any) => void
+}
+
+interface TravelCabinJoinTxConfirmProps {
+  deposit: string
+  token: string
+  estimatedFee?: string
+  errorMsg?: string
+}
+
+function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
+  const [managerSeats, setManagerSeats] = useState<string | null>('')
+  const [dpoName, setDpoName] = useState<string | null>('')
+  const [end, setEnd] = useState<number>(0)
+  const [referralCode, setReferralCode] = useState<string | null>('')
+  const { referrerState } = useReferrerManager()
+  const { projectState } = useProjectManager()
+
+  const referrer = referrerState.referrer
+  const project = projectState.selectedProject
+
+  const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    if (value.length === 0) {
+      setReferralCode(null)
+    } else {
+      setReferralCode(value)
+    }
+  }
+
+  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value
+    setEnd(parseInt(value))
+  }
+
+  const handleSubmit = () => onSubmit({ managerSeats, end, dpoName, referrer: referralCode })
+
+  useEffect(() => {
+    if (!referralCode && referrer && project && referrer[project.token.toLowerCase()]) {
+      setReferralCode(referrer[project.token.toLowerCase()].referrer)
+    }
+  }, [project, referralCode, referrer])
+
+  return (
+    <>
+      <Section>
+        <StandardText>{`Create a DPO to Crowdfund for this TravelCabin's Join Requirement.`}</StandardText>
+      </Section>
+      <SpacedSection>
+        <Section>
+          <RowBetween>
+            <RowFixed>
+              <StandardText>Seat Price</StandardText>
+              <QuestionHelper
+                text={`The cost of Ticket Fare is split equally by DPO seats. 
+              Your purchase price is equal to the number of seats you want to buy.`}
+                size={12}
+                backgroundColor={'#fff'}
+              ></QuestionHelper>
+            </RowFixed>
+            <StandardText>
+              {formatToUnit(travelCabinInfo.deposit_amount.toBn().div(BN_HUNDRED), chainDecimals, 2)} {token}
+            </StandardText>
+          </RowBetween>
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>Name your DPO</StandardText>
+            <QuestionHelper
+              text={`Name your DPO community to make it easier for others to search for you.`}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-name"
+            type="string"
+            placeholder="Name"
+            onChange={(e) => setDpoName(e.target.value)}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>Manager Seats in DPO</StandardText>
+            <QuestionHelper
+              text={`The # of Seats to buy for yourself as Manager from YOUR new DPO. 
+            More seats, more commission rate off your Member's yields.`}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-manager-seats"
+            type="string"
+            placeholder="0"
+            onChange={(e) => setManagerSeats(e.target.value)}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>End Block</StandardText>
+            <QuestionHelper
+              text={`The Block Number for this Crowdfund to target. 
+            Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-end-block"
+            type="string"
+            placeholder="0"
+            onChange={(e) => handleEnd(e)}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>Referral Code</StandardText>
+            <QuestionHelper
+              text={`Referral Codes are permanent and unique for each project on Spanner. 
+            If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          {referralCode && referrer && project && referrer[project.token.toLowerCase()] ? (
+            <BorderedInput
+              required
+              id="dpo-referrer"
+              type="string"
+              placeholder="e.g. 5F3A9CA..."
+              defaultValue={referralCode}
+              onChange={(e) => handleReferralCode(e)}
+              style={{ alignItems: 'flex-end', width: '100%' }}
+              disabled
+            />
+          ) : (
+            <BorderedInput
+              required
+              id="dpo-referrer"
+              type="string"
+              placeholder="A3FDHC..."
+              onChange={(e) => handleReferralCode(e)}
+              style={{ alignItems: 'flex-end', width: '100%' }}
+            />
+          )}
+        </Section>
+      </SpacedSection>
+      <SpacedSection style={{ marginTop: '1rem' }}>
+        <ButtonPrimary onClick={handleSubmit}>Create DPO</ButtonPrimary>
+      </SpacedSection>
+    </>
+  )
+}
+
+interface TravelCabinCrowdfundTxConfirmProps {
+  deposit: string
+  dpoName: string
+  managerSeats: string
+  end: number
+  referrer: string | null
+  token: string
+  errorMsg?: string
+  estimatedFee?: string
+}
+
+function TravelCabinCrowdfundTxConfirm({
+  deposit,
+  dpoName,
+  managerSeats,
+  end,
+  referrer,
+  token,
+  errorMsg,
+  estimatedFee,
+}: TravelCabinCrowdfundTxConfirmProps) {
+  return (
+    <>
+      <Section>
+        <StandardText>{'Create a DPO to Crowdfund for this TravelCabin.'}</StandardText>
+      </Section>
+      {errorMsg ? <Section>{errorMsg}</Section> : <Section>Confirm the details below.</Section>}
+      <Section>
+        <RowBetween>
+          <StandardText>{'DPO Name'}</StandardText>
+          <StandardText>{dpoName}</StandardText>
+        </RowBetween>
+        <RowBetween>
+          <StandardText>{'Ticket Fare'}</StandardText>
+          <StandardText>
+            {deposit} {token}
+          </StandardText>
+        </RowBetween>
+        <RowBetween>
+          <StandardText>{'Manager Seats'}</StandardText>
+          <StandardText>{managerSeats}</StandardText>
+        </RowBetween>
+        <RowBetween>
+          <StandardText>{'End Block'}</StandardText>
+          <StandardText>{end}</StandardText>
+        </RowBetween>
+        <RowBetween>
+          <StandardText>{'Referral Code'}</StandardText>
+          {referrer ? <StandardText>{truncateAddress(referrer)}</StandardText> : <StandardText>{'None'}</StandardText>}
+        </RowBetween>
+      </Section>
+      <TxFee fee={estimatedFee} />
+    </>
+  )
+}
+
+function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: TravelCabinJoinTxConfirmProps) {
+  return (
+    <>
+      <Section>
+        <StandardText>{`Buy this TravelCabin to start earning Rewards`}</StandardText>
+      </Section>
+      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{`Confirm the details below.`}</Section>}
+      <SpacedSection>
+        <RowBetween>
+          <StandardText>{`Deposit Required`}</StandardText>
+          <StandardText>
+            {deposit} {token}
+          </StandardText>
+        </RowBetween>
+      </SpacedSection>
+      <TxFee fee={estimatedFee} />
+    </>
+  )
+}
+
+function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
+  const { travelCabinIndex } = props
+  const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
+  const inventoryCount = useSubTravelCabinInventory(travelCabinIndex)
+  const { chainDecimals } = useSubstrate()
+  const [crowdfundFormModalOpen, setCrowdfundFormModalOpen] = useState<boolean>(false)
+  const [joinTxModalOpen, setJoinTxModalOpen] = useState<boolean>(false)
+  const [crowdfundTxModalOpen, setCrowdfundTxModalOpen] = useState<boolean>(false)
+  const [txHash, setTxHash] = useState<string | undefined>()
+  const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
+  const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
+  const [userDpoName, setUserDpoName] = useState<string>('')
+  const [userManagerSeats, setUserManagerSeats] = useState<string>('')
+  const [userEnd, setUserEnd] = useState<number>(0)
+  const [userReferrer, setUserReferrer] = useState<string>('')
+  const { expectedBlockTime } = useBlockManager()
+  // const { queueTransaction } = useTransactionMsg()
+  const { createTx, submitTx } = useTxHelpers()
+  const [txInfo, setTxInfo] = useState<TxInfo>()
+
+  const openJoinTxModal = () => {
+    setCrowdfundFormModalOpen(false)
+    setJoinTxModalOpen(true)
+  }
+
+  const openCrowdfundTxModal = () => {
+    setCrowdfundFormModalOpen(false)
+    setCrowdfundTxModalOpen(true)
+  }
+
+  const openCrowdfundFormModal = () => {
+    setCrowdfundTxModalOpen(false)
+    setCrowdfundFormModalOpen(true)
+  }
+
+  const dismissModal = () => {
+    ;[setCrowdfundFormModalOpen, setJoinTxModalOpen, setCrowdfundTxModalOpen].forEach((fn) => fn(false))
+    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
+    setCrowdfundFormModalOpen(false)
+    setJoinTxModalOpen(false)
+    setCrowdfundTxModalOpen(false)
+    setTxPendingMsg(undefined)
+    setTxHash(undefined)
+    setTxErrorMsg(undefined)
+  }
+
+  const handleCrowdfundFormCallback = ({
+    dpoName,
+    managerSeats,
+    end,
+    referrer,
+  }: {
+    dpoName: string
+    managerSeats: string
+    end: number
+    referrer: string
+  }) => {
+    setUserDpoName(dpoName)
+    setUserManagerSeats(managerSeats)
+    setUserEnd(end)
+    setUserReferrer(referrer)
+    if (!travelCabinIndex) {
+      setTxErrorMsg('Information provided was not sufficient.')
+    }
+    const txData = createTx({
+      section: 'bulletTrain',
+      method: 'createDpo',
+      params: { name: dpoName, target: { TravelCabin: travelCabinIndex }, managerSeats, end, referrer },
+    })
+    if (!txData) return
+    txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
+    openCrowdfundTxModal()
+  }
+
+  const handleJoin = useCallback(() => {
+    if (!travelCabinIndex) {
+      setTxErrorMsg('Information provided was not sufficient.')
+    }
+    const txData = createTx({
+      section: 'bulletTrain',
+      method: 'passengerBuyTravelCabin',
+      params: { travelCabinIdx: travelCabinIndex },
+    })
+    if (!txData) return
+    txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
+    openJoinTxModal()
+  }, [createTx, travelCabinIndex])
+
+  if (!travelCabinInfo) return <></>
+  const token = travelCabinInfo.token_id.isToken
+    ? travelCabinInfo.token_id.asToken.toString()
+    : travelCabinInfo.token_id.asDexShare.toString()
+
+  return (
+    <>
+      <StandardModal title={'Create DPO'} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
+        <TravelCabinCrowdfundForm
+          travelCabinInfo={travelCabinInfo}
+          token={token}
+          chainDecimals={chainDecimals}
+          onSubmit={handleCrowdfundFormCallback}
+        />
+      </StandardModal>
+      <TxModal
+        isOpen={joinTxModalOpen}
+        onDismiss={dismissModal}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        title={'Buy TravelCabin'}
+        buttonText={'Confirm'}
+        txError={txErrorMsg}
+        txHash={txHash}
+        txPending={txPendingMsg}
+      >
+        <TravelCabinJoinTxConfirm
+          deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
+          token={token}
+          estimatedFee={txInfo?.estimatedFee}
+        />
+      </TxModal>
+      <TxModal
+        isOpen={crowdfundTxModalOpen}
+        onDismiss={dismissModal}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        title={'Create DPO'}
+        buttonText={'Confirm'}
+        txError={txErrorMsg}
+        txHash={txHash}
+        txPending={txPendingMsg}
+      >
+        <TravelCabinCrowdfundTxConfirm
+          deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
+          dpoName={userDpoName}
+          managerSeats={userManagerSeats}
+          end={userEnd}
+          referrer={userReferrer}
+          token={token}
+          estimatedFee={txInfo?.estimatedFee}
+        />
+      </TxModal>
+      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+        <Section>
+          <RowBetween>
+            <SectionHeading>TravelCabin: {getCabinClass(travelCabinInfo.index.toString())}</SectionHeading>
+            <CollapseWrapper>
+              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
+                  Buy
+                </ButtonPrimary>
+              </ButtonWrapper>
+              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                  Crowdfund
+                </ButtonSecondary>
+              </ButtonWrapper>
+            </CollapseWrapper>
+          </RowBetween>
+          <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+            <SmallText>General Information</SmallText>
+            <BorderedWrapper style={{ marginTop: '0' }}>
+              <Section>
+                <RowBetween>
+                  <StandardText>TravelCabin Id</StandardText>
+                  <StandardText>{travelCabinIndex}</StandardText>
+                </RowBetween>
+                <RowBetween>
+                  <StandardText>Travel Class</StandardText>
+                  <StandardText>{getCabinClass(travelCabinInfo.index.toString())}</StandardText>
+                </RowBetween>
+                <RowBetween>
+                  <StandardText>Ticket Fare</StandardText>
+                  <StandardText>
+                    {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </RowBetween>
+                {expectedBlockTime && (
+                  <RowBetween>
+                    <StandardText>Ride Duration</StandardText>
+                    <StandardText>
+                      {travelCabinInfo.maturity.toString()} Blocks (~
+                      {blockToDays(expectedBlockTime, travelCabinInfo.maturity)} days)
+                    </StandardText>
+                  </RowBetween>
+                )}
+              </Section>
+            </BorderedWrapper>
+            {inventoryCount && (
+              <>
+                <SmallText>Status</SmallText>
+                <BorderedWrapper style={{ marginTop: '0' }}>
+                  <Section>
+                    <RowBetween>
+                      <StandardText>Stock</StandardText>
+                      <StandardText>
+                        {inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/{inventoryCount[1].toNumber()}
+                      </StandardText>
+                    </RowBetween>
+                  </Section>
+                </BorderedWrapper>
+              </>
+            )}
+            <SmallText>Rewards</SmallText>
+            <BorderedWrapper style={{ marginTop: '0' }}>
+              <Section>
+                <RowBetween>
+                  <StandardText>Total Bonus</StandardText>
+                  <StandardText>
+                    {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </RowBetween>
+                {expectedBlockTime && (
+                  <RowBetween>
+                    <StandardText>Total Yield</StandardText>
+                    <StandardText>
+                      {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)} ${token} (${`${getApy(
+                        {
+                          totalYield: travelCabinInfo.yield_total.toBn(),
+                          totalDeposit: travelCabinInfo.deposit_amount.toBn(),
+                          chainDecimals: chainDecimals,
+                          blocksInPeriod: expectedBlockTime,
+                          period: travelCabinInfo.maturity,
+                        }
+                      ).toString()}% APY`})`}
+                    </StandardText>
+                  </RowBetween>
+                )}
+              </Section>
+            </BorderedWrapper>
+          </FlatCard>
+        </Section>
+      </FlatCardPlate>
+    </>
+  )
+}
+
+export default function TravelCabinItem(props: TravelCabinItemProps): JSX.Element {
+  const { travelCabinIndex } = props
+
+  return <>{travelCabinIndex && <SelectedTravelCabin travelCabinIndex={travelCabinIndex} />}</>
+}
