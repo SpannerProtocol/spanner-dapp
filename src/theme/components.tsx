@@ -1,9 +1,8 @@
-import React, { HTMLProps, useCallback } from 'react'
-import ReactGA from 'react-ga'
+import { darken } from 'polished'
+import React, { HTMLProps } from 'react'
+import { ArrowLeft, X } from 'react-feather'
 import { Link } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'
-import { darken } from 'polished'
-import { ArrowLeft, X } from 'react-feather'
 
 export const Button = styled.button.attrs<{ warning: boolean }, { backgroundColor: string }>(({ warning, theme }) => ({
   backgroundColor: warning ? theme.red1 : theme.primary1,
@@ -129,24 +128,7 @@ export function ExternalLink({
   rel = 'noopener noreferrer',
   ...rest
 }: Omit<HTMLProps<HTMLAnchorElement>, 'as' | 'ref' | 'onClick'> & { href: string }) {
-  const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement>) => {
-      // don't prevent default, don't redirect if it's a new tab
-      if (target === '_blank' || event.ctrlKey || event.metaKey) {
-        ReactGA.outboundLink({ label: href }, () => {
-          console.debug('Fired outbound link event', href)
-        })
-      } else {
-        event.preventDefault()
-        // send a ReactGA event and then trigger a location change
-        ReactGA.outboundLink({ label: href }, () => {
-          window.location.href = href
-        })
-      }
-    },
-    [href, target]
-  )
-  return <StyledLink target={target} rel={rel} href={href} onClick={handleClick} {...rest} />
+  return <StyledLink target={target} rel={rel} href={href} {...rest} />
 }
 
 const rotate = keyframes`
