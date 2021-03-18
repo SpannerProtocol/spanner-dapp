@@ -3,14 +3,7 @@ export default {
     Amount: 'i128',
     AmountOf: 'Amount',
     TokenSymbol: {
-      _enum: ['BOLT',
-        'WUSD',
-        'WBTC',
-        'BBOT',
-        'DOGE',
-        'NCAT',
-        'PLKT',
-        'ZERO'],
+      _enum: ['BOLT', 'WUSD', 'WBTC', 'BBOT', 'DOGE', 'NCAT', 'PLKT', 'ZERO'],
     },
     CurrencyId: {
       _enum: {
@@ -19,5 +12,5 @@ export default {
       },
     },
     CurrencyIdOf: 'CurrencyId',
-  }
+  },
 }
