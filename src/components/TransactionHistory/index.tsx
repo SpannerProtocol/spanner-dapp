@@ -44,7 +44,10 @@ function TransactionRow({ hash, module, method }: TransactionRowProps) {
     <TxRow>
       <TxCell>
         <StandardText>{truncateString(hash)}</StandardText>
-        <SmallText></SmallText>
+        <SmallText>
+          {module}
+          {method}
+        </SmallText>
       </TxCell>
       <TxCell></TxCell>
     </TxRow>

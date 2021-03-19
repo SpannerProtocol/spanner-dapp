@@ -105,7 +105,7 @@ export default function Catalogue() {
                     style={{ maxWidth: '100%', display: 'block', height: 'auto', maxHeight: '240px' }}
                     src={BulletTrainImage}
                   />
-                  <BulletTrainStats />
+                  {projectState.selectedProject && <BulletTrainStats token={projectState.selectedProject.token} />}
                 </BannerGrid>
               </Section>
             </FlatCardPlate>
