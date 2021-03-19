@@ -47,7 +47,7 @@ const StatDisplay = styled.div`
   `};
 `
 
-export default function BulletTrainStats() {
+export default function BulletTrainStats({ token }: { token: string }) {
   const stats = useStats()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
@@ -55,36 +55,28 @@ export default function BulletTrainStats() {
   return (
     <StatDisplayContainer>
       <StatDisplay>
-        {stats.totalCabinsBought && (
-          <ThinShadowCard background={background}>
-            <StatValue>{stats.totalCabinsBought}</StatValue>
-            <StatText>{t(`Cabins Purchased`)}</StatText>
-          </ThinShadowCard>
-        )}
-        {stats.totalPassengers && (
-          <ThinShadowCard background={background}>
-            <StatValue>{stats.totalPassengers}</StatValue>
-            <StatText>{t(`Passengers Aboard`)}</StatText>
-          </ThinShadowCard>
-        )}
-        {stats.totalYieldWithdrawn && (
-          <ThinShadowCard background={background}>
-            <StatValue>
-              {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals, 0)}{' '}
-              <DataTokenName color="white">BOLT</DataTokenName>
-            </StatValue>
-            <StatText>{t(`Yield Distributed`)}</StatText>
-          </ThinShadowCard>
-        )}
-        {stats.totalValueLocked && (
-          <ThinShadowCard background={background}>
-            <StatValue>
-              {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals, 0)}{' '}
-              <DataTokenName color="white">BOLT</DataTokenName>
-            </StatValue>
-            <StatText>{t(`Ticket Fares Stored`)}</StatText>
-          </ThinShadowCard>
-        )}
+        <ThinShadowCard background={background}>
+          <StatValue>{stats.totalCabinsBought}</StatValue>
+          <StatText>{t(`Cabins Purchased`)}</StatText>
+        </ThinShadowCard>
+        <ThinShadowCard background={background}>
+          <StatValue>{stats.totalPassengers}</StatValue>
+          <StatText>{t(`Passengers Aboard`)}</StatText>
+        </ThinShadowCard>
+        <ThinShadowCard background={background}>
+          <StatValue>
+            {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals, 0)}{' '}
+            <DataTokenName color="white">{token}</DataTokenName>
+          </StatValue>
+          <StatText>{t(`Yield Distributed`)}</StatText>
+        </ThinShadowCard>
+        <ThinShadowCard background={background}>
+          <StatValue>
+            {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals, 0)}{' '}
+            <DataTokenName color="white">{token}</DataTokenName>
+          </StatValue>
+          <StatText>{t(`Ticket Fares Stored`)}</StatText>
+        </ThinShadowCard>
       </StatDisplay>
     </StatDisplayContainer>
   )

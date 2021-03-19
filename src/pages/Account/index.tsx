@@ -9,7 +9,7 @@ import { FlatCardPlate } from 'components/Card'
 import { Heading, StandardText } from 'components/Text'
 import useWallet from 'hooks/useWallet'
 import { RowBetween } from 'components/Row'
-import truncateString from 'utils/truncateString'
+import truncateString from '../../utils/truncateString'
 import { useTranslation } from 'react-i18next'
 
 const tabData: Array<TabMetaData> = [
