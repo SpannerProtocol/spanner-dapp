@@ -4,7 +4,7 @@ import { SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import BulletTrainDiagram from '../../assets/images/bullettrain-rules.png'
-import Text, { Heading, SectionTitle } from '../../components/Text'
+import Text, { SectionHeading, SectionTitle } from '../../components/Text'
 
 export default function BulletTrainInstructions() {
   const { t } = useTranslation()
@@ -18,7 +18,7 @@ export default function BulletTrainInstructions() {
       }}
     >
       <FlatCardPlate style={{ textAlign: 'left' }}>
-        <Heading>{t(`BulletTrain`)}</Heading>
+        <SectionHeading>{t(`BulletTrain`)}</SectionHeading>
         <SpacedSection>
           <Text>
             {t(`BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects on Spanner can use to

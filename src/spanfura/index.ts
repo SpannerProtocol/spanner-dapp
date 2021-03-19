@@ -16,12 +16,12 @@ if (process.env.NODE_ENV === 'development') {
   })
 }
 
-interface SpanfuraParams {
+export interface SpanfuraParams {
   row: number
   page: number
-  module: string
-  call: string
-  success: string
+  module?: string
+  call?: string
+  success?: 'true' | false
   params?: string
   address?: string
 }
@@ -39,7 +39,7 @@ interface SpanfuraEventsDataEventsParamsJson {
   value: any
 }
 
-interface SpanfuraEventsDataEvents {
+export interface SpanfuraEventsDataEvents {
   block_num: number
   block_timestamp: number
   event_id: string

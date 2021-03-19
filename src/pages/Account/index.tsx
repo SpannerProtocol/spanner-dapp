@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import TabBar, { TabMetaData } from '../../components/TabBar'
-import { GridWrapper, PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
-import Balances from './Balances'
-import Portfolio from './Portfolio'
-import Bridge from './Bridge'
-import Faucet from './Faucet'
 import { FlatCardPlate } from 'components/Card'
+import { RowBetween } from 'components/Row'
 import { Heading, StandardText } from 'components/Text'
 import useWallet from 'hooks/useWallet'
-import { RowBetween } from 'components/Row'
-import truncateString from '../../utils/truncateString'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import TabBar, { TabMetaData } from '../../components/TabBar'
+import { GridWrapper, PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
+import truncateString from '../../utils/truncateString'
+import Balances from './Balances'
+import Bridge from './Bridge'
+import Faucet from './Faucet'
+import Portfolio from './Portfolio'
 
 const tabData: Array<TabMetaData> = [
   {
@@ -98,7 +98,7 @@ export default function Account() {
           />
         </FlatCardPlate>
       </Wrapper>
-      <SectionContainer>
+      <SectionContainer style={{ marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'bridge' && <Bridge />}
