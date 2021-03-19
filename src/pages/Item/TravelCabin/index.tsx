@@ -22,7 +22,7 @@ import { blockToDays } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
 import getCabinClass from 'utils/getCabinClass'
-import truncateAddress from 'utils/truncateAddress'
+import truncateString from 'utils/truncateString'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -248,7 +248,7 @@ function TravelCabinCrowdfundTxConfirm({
         <RowBetween>
           <StandardText>{t(`Referral Code`)}</StandardText>
           {referrer ? (
-            <StandardText>{truncateAddress(referrer)}</StandardText>
+            <StandardText>{truncateString(referrer)}</StandardText>
           ) : (
             <StandardText>{t(`None`)}</StandardText>
           )}

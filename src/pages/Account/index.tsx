@@ -9,7 +9,7 @@ import { FlatCardPlate } from 'components/Card'
 import { Heading, StandardText } from 'components/Text'
 import useWallet from 'hooks/useWallet'
 import { RowBetween } from 'components/Row'
-import truncateAddress from 'utils/truncateAddress'
+import truncateString from 'utils/truncateString'
 import { useTranslation } from 'react-i18next'
 
 const tabData: Array<TabMetaData> = [
@@ -77,12 +77,12 @@ export default function Account() {
                   {wallet.type === 'custodial' && wallet.ethereumAddress && (
                     <RowBetween>
                       <StandardText>{t(`Ethereum Address`)}:</StandardText>
-                      <StandardText>{truncateAddress(wallet.ethereumAddress)}</StandardText>
+                      <StandardText>{truncateString(wallet.ethereumAddress)}</StandardText>
                     </RowBetween>
                   )}
                   <RowBetween>
                     <StandardText>{t(`Address`)}:</StandardText>
-                    <StandardText>{truncateAddress(wallet.address)}</StandardText>
+                    <StandardText>{truncateString(wallet.address)}</StandardText>
                   </RowBetween>
                   <Section></Section>
                 </Section>

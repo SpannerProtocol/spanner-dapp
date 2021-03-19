@@ -39,7 +39,7 @@ import styled, { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
 import getCabinClass from 'utils/getCabinClass'
-import truncateAddress from 'utils/truncateAddress'
+import truncateString from 'utils/truncateString'
 import DpoActions from './actions'
 import TxFee from 'components/TxFee'
 import { useTranslation } from 'react-i18next'
@@ -380,7 +380,7 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
         <RowBetween>
           <StandardText>{t(`Referral Code`)}</StandardText>
           {props.referrer ? (
-            <StandardText>{truncateAddress(props.referrer)}</StandardText>
+            <StandardText>{truncateString(props.referrer)}</StandardText>
           ) : (
             <StandardText>{t(`None`)}</StandardText>
           )}
@@ -412,7 +412,7 @@ function DpoJoinTxConfirm(props: DpoJoinTxConfirmProps) {
         {props.referrer && props.referrer !== null && (
           <RowBetween>
             <StandardText>{t(`Referral Code`)}</StandardText>
-            <StandardText>{truncateAddress(props.referrer)}</StandardText>
+            <StandardText>{truncateString(props.referrer)}</StandardText>
           </RowBetween>
         )}
       </SpacedSection>

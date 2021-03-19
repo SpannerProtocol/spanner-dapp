@@ -67,14 +67,17 @@ export default function useTxHelpers() {
     }
     signAndSendTx({
       tx: txMeta.unsignedTx,
-      address: wallet.address,
+      wallet: wallet,
       signer: wallet.injector?.signer,
       setErrorMsg: setTxErrorMsg,
       setHash: setTxHash,
       setPendingMsg: setTxPendingMsg,
       walletType: wallet.type,
       custodialProvider: wallet.custodialProvider,
-      transaction: txMeta,
+      txInfo: {
+        section: txMeta.section,
+        method: txMeta.method,
+      },
     })
   }
 

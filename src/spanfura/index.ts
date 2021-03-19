@@ -8,13 +8,11 @@ let httpAgent: https.Agent
 if (process.env.NODE_ENV === 'development') {
   httpAgent = new https.Agent({
     cert: require(process.env.REACT_APP_SPANFURA_SSL_CERT as string),
-    key: require(process.env.REACT_APP_SPANFURA_SSL_KEY as string),
     rejectUnauthorized: false,
   })
 } else {
   httpAgent = new https.Agent({
     cert: process.env.REACT_APP_SPANFURA_SSL_CERT,
-    key: process.env.REACT_APP_SPANFURA_SSL_KEY,
   })
 }
 
@@ -30,7 +28,7 @@ interface SpanfuraParams {
 
 // Get the deposit address
 export function postScanExtrinsics(params: SpanfuraParams) {
-  return axios.post<string>(`${spanfuraHost}/api/scan/extrinsics`, params, {
+  return axios.post<string>(`${spanfuraHost}/scan/extrinsics`, params, {
     httpAgent,
   })
 }
@@ -68,7 +66,7 @@ export interface SpanfuraEventsSchema {
 
 // Ethereum to Spanner deposit check
 export function postScanEvents(params: SpanfuraParams) {
-  return axios.post(`${spanfuraHost}/api/scan/events`, params, {
+  return axios.post(`${spanfuraHost}/scan/events`, params, {
     httpAgent,
   })
 }
