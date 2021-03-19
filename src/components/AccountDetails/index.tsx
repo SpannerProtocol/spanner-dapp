@@ -1,5 +1,7 @@
+import QuestionHelper from 'components/QuestionHelper'
 import React from 'react'
 import { ExternalLink as LinkIcon } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import PortisIcon from '../../assets/images/portisIcon.png'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
@@ -179,7 +181,7 @@ interface AccountDetailsProps {
 
 export default function AccountDetails({ toggleWalletModal, ENSName, openOptions }: AccountDetailsProps) {
   const { chainId, account, connector } = useActiveWeb3React()
-
+  const { t } = useTranslation()
   function formatConnectorName() {
     const { ethereum } = window
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
@@ -189,7 +191,18 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
           SUPPORTED_WALLETS[k].connector === connector && (connector !== injected || isMetaMask === (k === 'METAMASK'))
       )
       .map((k) => SUPPORTED_WALLETS[k].name)[0]
-    return <WalletName>Connected with {name}</WalletName>
+    return (
+      <>
+        <div style={{ display: 'flex' }}>
+          <WalletName>
+            {t(`Connected with`)} {name}
+          </WalletName>
+          {connector !== injected && (
+            <QuestionHelper text={t(`Go to your Browser Extension Wallet to disconnect with this Wallet.`)} />
+          )}
+        </div>
+      </>
+    )
   }
 
   function getStatusIcon() {
@@ -230,7 +243,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
         <CloseIcon onClick={toggleWalletModal}>
           <CloseColor />
         </CloseIcon>
-        <HeaderRow>Account</HeaderRow>
+        <HeaderRow>{t(`Account`)}</HeaderRow>
         <AccountSection>
           <YourAccount>
             <InfoCard>
@@ -244,7 +257,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                         ;(connector as any).close()
                       }}
                     >
-                      Disconnect
+                      {t(`Disconnect`)}
                     </WalletAction>
                   )}
                   <WalletAction
@@ -253,7 +266,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                       openOptions()
                     }}
                   >
-                    Change
+                    {t(`Change`)}
                   </WalletAction>
                 </div>
               </AccountGroupingRow>
@@ -283,7 +296,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                       <div>
                         {account && (
                           <Copy toCopy={account}>
-                            <span style={{ marginLeft: '4px' }}>Copy Address</span>
+                            <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
                           </Copy>
                         )}
                         {chainId && account && (
@@ -300,7 +313,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                       <div>
                         {account && (
                           <Copy toCopy={account}>
-                            <span style={{ marginLeft: '4px' }}>Copy Address</span>
+                            <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
                           </Copy>
                         )}
                         {chainId && account && (
