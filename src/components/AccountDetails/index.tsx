@@ -197,8 +197,12 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
           <WalletName>
             {t(`Connected with`)} {name}
           </WalletName>
-          {connector !== injected && (
-            <QuestionHelper text={t(`Go to your Browser Extension Wallet to disconnect with this Wallet.`)} />
+          {connector === injected && (
+            <QuestionHelper
+              size={12}
+              backgroundColor={'transparent'}
+              text={t(`Go to your Browser Extension Wallet to disconnect with this Wallet.`)}
+            />
           )}
         </div>
       </>

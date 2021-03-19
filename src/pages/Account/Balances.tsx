@@ -1,6 +1,7 @@
 import { FlatCardPlate, TableCard } from 'components/Card'
 import { CenteredRow } from 'components/Row'
 import { StandardText } from 'components/Text'
+import TransactionHistory from 'components/TransactionHistory'
 import { Section } from 'components/Wrapper'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -102,6 +103,7 @@ export default function Balances(): JSX.Element {
           </CenteredRow>
         </Section>
       </TableCard>
+      <TransactionHistory />
     </>
   )
 }

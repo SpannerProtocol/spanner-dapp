@@ -1,25 +1,30 @@
 import { FlatCardPlate } from 'components/Card'
-import { Heading, SmallText, StandardText } from 'components/Text'
-import { Section, SpacedSection, Wrapper } from 'components/Wrapper'
-import React from 'react'
+import { SectionHeading, SmallText, StandardText } from 'components/Text'
+import { Section, SpacedSection } from 'components/Wrapper'
+import useWallet from 'hooks/useWallet'
+import { postTxHistory } from 'queries'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { SpanfuraEventsDataEvents } from 'spanfura'
 import styled from 'styled-components'
+import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import truncateString from 'utils/truncateString'
 
 const TxRow = styled.div`
   display: grid;
   grid-template-columns: auto auto;
-  // grid-template-areas: 'hash info';
   grid-column-gap: 8px;
+  border-bottom: 1px solid ${({ theme }) => theme.text5};
+  transition: background-color 0.3s ease-in;
+  &:hover {
+    background: ${({ theme }) => theme.text5};
+  }
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     grid-template-columns: none;
     grid-template-rows: auto auto;
     grid-row-gap: 8px;
     grid-column-gap: 0px;
-    // grid-template-areas:
-    //   'hash'
-    //   'info';
 `};
 `
 
@@ -33,48 +38,50 @@ const TxCell = styled.div`
 `
 
 interface TransactionRowProps {
-  hash: string
-  module: string
-  method: string
+  event: SpanfuraEventsDataEvents
+  index?: number
 }
 
 // Tx Hash | Extrinsic Info
-function TransactionRow({ hash, module, method }: TransactionRowProps) {
+function TransactionRow({ event }: TransactionRowProps) {
   return (
     <TxRow>
       <TxCell>
-        <StandardText>{truncateString(hash)}</StandardText>
+        <StandardText>{truncateString(event.extrinsic_hash)}</StandardText>
         <SmallText>
-          {module}
-          {method}
+          {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
         </SmallText>
       </TxCell>
-      <TxCell></TxCell>
+      <TxCell>
+        <StandardText>Module: {event.module_id}</StandardText>
+        <StandardText>Method: {event.event_id}</StandardText>
+      </TxCell>
     </TxRow>
   )
 }
 
 export default function TransactionHistory() {
   const { t } = useTranslation()
+  const wallet = useWallet()
+  const [transactions, setTransactions] = useState<SpanfuraEventsDataEvents[]>([])
+
+  useEffect(() => {
+    if (!wallet || !wallet.address) return
+    postTxHistory({ row: 10, page: 0, address: wallet.address, setData: setTransactions })
+  }, [wallet])
+  console.log('debug transaction:', transactions)
+
   return (
     <>
-      <Wrapper
-        style={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-      >
-        <FlatCardPlate>
-          <Section style={{ marginBottom: '1rem', padding: '1rem' }}>
-            <Heading>{t(`Transaction History`)}</Heading>
-          </Section>
-          <SpacedSection>
-            <TransactionRow hash={''} module={''} method={''}></TransactionRow>
-          </SpacedSection>
-        </FlatCardPlate>
-      </Wrapper>
+      <FlatCardPlate>
+        <Section style={{ marginBottom: '1rem', padding: '0' }}>
+          <SectionHeading>{t(`Latest Transactions`)}</SectionHeading>
+        </Section>
+        <SpacedSection>
+          {transactions.length > 0 &&
+            transactions.map((transaction, index) => <TransactionRow key={index} event={transaction}></TransactionRow>)}
+        </SpacedSection>
+      </FlatCardPlate>
     </>
   )
 }

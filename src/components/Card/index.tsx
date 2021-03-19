@@ -78,6 +78,7 @@ export default Card
 export const TableCard = styled(Card)`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
   padding: 0;
+  margin-bottom: 1rem;
 `
 
 export const LightCard = styled(Card)`
