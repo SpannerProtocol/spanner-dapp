@@ -11,15 +11,13 @@ import { BorderedWrapper, ButtonWrapper, Section } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
-import { useWeb3Accounts } from 'hooks/useWeb3Accounts'
-import { CurrencyId } from 'spanner-interfaces'
+import useWallet from 'hooks/useWallet'
 import React, { useCallback, useEffect, useState } from 'react'
-import { useWalletManager } from 'state/wallet/hooks'
+import { Trans, useTranslation } from 'react-i18next'
+import { CurrencyId } from 'spanner-interfaces'
 import { formatToUnit } from 'utils/formatUnit'
-import getCustodialAccount from 'utils/getCustodialAccount'
 import signAndSendTx from 'utils/signAndSendTx'
 import { getBurnAddr, getEthDepositAddr, postE2sCheck } from '../../bridge'
-import { useTranslation, Trans } from 'react-i18next'
 
 function BridgeTxConfirm({
   withdrawAmount,
@@ -62,27 +60,25 @@ function BridgeTxConfirm({
 export default function Bridge(): JSX.Element {
   const { api } = useApi()
   const { account, library } = useWeb3React<Web3Provider>()
-  const { activeAccount, injector } = useWeb3Accounts()
   const [verifiedEthDepositTx, setVerifiedEthDepositTx] = useState<Array<string | undefined> | undefined>()
   const [ethDepositAddr, setEthDepositAddr] = useState<string>()
   const [ethWithdrawAddr, setEthWithdrawAddr] = useState<string>(account as string)
   const [ethWithdrawAmount, setEthWithdrawAmount] = useState<number>(0)
-  const spannerAddress = account ? getCustodialAccount(account).address : activeAccount?.address
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txError, setTxErrorMsg] = useState<string | undefined>()
-  const { walletState } = useWalletManager()
   const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
+  const wallet = useWallet()
 
   useEffect(() => {
-    if (!spannerAddress) return
-    getEthDepositAddr(spannerAddress)
+    if (!wallet || !wallet.address) return
+    getEthDepositAddr(wallet.address)
       .then((response) => setEthDepositAddr(response.data))
       .catch((err) => console.log(err))
-  }, [spannerAddress])
+  }, [wallet])
 
   const handleE2sCheck = (spannerAddress: string) => {
     postE2sCheck(spannerAddress).then((response) => {
@@ -92,7 +88,7 @@ export default function Bridge(): JSX.Element {
 
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
-      if (!walletState) {
+      if (!wallet) {
         setTxErrorMsg(t(`Please connect to a wallet.`))
         return
       }
@@ -107,18 +103,16 @@ export default function Bridge(): JSX.Element {
         const tx = api.tx.currencies.transfer(burnAddress, currencyId, withdrawAmount)
         signAndSendTx({
           tx,
-          address: activeAccount ? activeAccount.address : account,
-          signer: injector?.signer,
+          wallet: wallet,
           setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
-          walletType: walletState.walletType,
           custodialProvider: library,
-          transaction: { section: 'currencies', method: 'transfer' },
+          txInfo: { section: 'currencies', method: 'transfer' },
         })
       })
     },
-    [walletState, t, api, chainDecimals, activeAccount, account, injector, library]
+    [wallet, t, api, chainDecimals, library]
   )
 
   const dismissModal = () => {
@@ -140,7 +134,7 @@ export default function Bridge(): JSX.Element {
       >
         <BridgeTxConfirm withdrawAmount={ethWithdrawAmount} withdrawAddress={ethWithdrawAddr} errorMsg={txError} />
       </TxModal>
-      {!spannerAddress ? (
+      {!wallet ? (
         <>
           <FlatCardPlate
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
@@ -174,7 +168,7 @@ export default function Bridge(): JSX.Element {
             </FlatCard>
           </FlatCardPlate>
 
-          {ethDepositAddr && (
+          {ethDepositAddr && wallet && (
             <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
               <Section>
                 <RowBetween>
@@ -200,9 +194,15 @@ export default function Bridge(): JSX.Element {
                     <RowBetween>
                       <StandardText>{t(`Deposit Address`)}</StandardText>
                       <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                        <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={() => handleE2sCheck(spannerAddress)}>
-                          {t(`Verify Deposit`)}
-                        </ButtonPrimary>
+                        {wallet.address && (
+                          <ButtonPrimary
+                            padding="0.45rem"
+                            fontSize="12px"
+                            onClick={() => handleE2sCheck(wallet.address as string)}
+                          >
+                            {t(`Verify Deposit`)}
+                          </ButtonPrimary>
+                        )}
                       </ButtonWrapper>
                     </RowBetween>
                     <BorderedWrapper style={{ marginTop: '0.5rem' }}>{ethDepositAddr}</BorderedWrapper>

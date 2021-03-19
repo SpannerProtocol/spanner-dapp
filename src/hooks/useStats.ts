@@ -18,18 +18,16 @@ export function useCabinKeys() {
 
 export function useTotalCabinsBought() {
   const { api, connected } = useApi()
-  const [cabinCount, setCabinCount] = useState<number>()
+  const [cabinCount, setCabinCount] = useState<number>(0)
 
   useEffect(() => {
     if (!connected) return
     api.query.bulletTrain.travelCabinInventory.entries().then((entries) => {
-      let count = 0
       entries.forEach((inventory) => {
         if (inventory[1].isSome) {
-          count = count + inventory[1].unwrapOrDefault()[0].toNumber()
+          setCabinCount((prev) => prev + inventory[1].unwrapOrDefault()[0].toNumber())
         }
       })
-      setCabinCount(count)
     })
   }, [connected, api])
 
