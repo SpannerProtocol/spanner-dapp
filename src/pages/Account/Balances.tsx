@@ -5,6 +5,7 @@ import { Section } from 'components/Wrapper'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { formatToUnit } from 'utils/formatUnit'
 import MainTable from '../../components/Table'
 import getTokenImagePaths from '../../utils/getTokenImage'
@@ -34,6 +35,7 @@ function structureBalanceData(data: BalanceDataProps) {
 export default function Balances(): JSX.Element {
   const { chainDecimals } = useSubstrate()
   const balances = useAllBalances()
+  const { t } = useTranslation()
 
   const columns = React.useMemo(
     () => [
@@ -86,7 +88,7 @@ export default function Balances(): JSX.Element {
         <FlatCardPlate
           style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
         >
-          <StandardText>Connect to your wallet to view your balances</StandardText>
+          <StandardText>{t(`Connect to your wallet to view your Balances`)}</StandardText>
         </FlatCardPlate>
       </>
     )

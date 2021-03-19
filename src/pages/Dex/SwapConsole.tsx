@@ -9,6 +9,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPrice'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
 import { BorderedInput } from '../../components/Input'
@@ -44,6 +45,7 @@ interface SwapData {
 }
 
 function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
+  const { t } = useTranslation()
   const { amountA, amountB, tokenA, tokenB, price, slippage, estimatedFee } = data
   const minReceived = amountB - slippage * amountB
   return (
@@ -65,19 +67,19 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
       </Section>
       <Section>
         <CenteredRow>
-          <DisclaimerText>{`Swap amount is estimated.`}</DisclaimerText>
+          <DisclaimerText>{t(`Swap amount is estimated.`)}</DisclaimerText>
         </CenteredRow>
       </Section>
       <Section>
         <BorderedWrapper>
           <RowBetween>
-            <HeavyHeader>{`Price`}</HeavyHeader>
+            <HeavyHeader>{t(`Price`)}</HeavyHeader>
             <ConsoleStat>
               {price} {tokenA} / {tokenB}
             </ConsoleStat>
           </RowBetween>
           <RowBetween>
-            <HeavyHeader>{`Minimum received`}</HeavyHeader>
+            <HeavyHeader>{t(`Minimum received`)}</HeavyHeader>
             <ConsoleStat>
               {minReceived.toFixed(4)} {tokenB}
             </ConsoleStat>
@@ -105,6 +107,7 @@ export default function SwapConsole(): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
+  const { t } = useTranslation()
 
   const balanceA = useSubscribeBalance({ Token: tokenA })
   const balanceB = useSubscribeBalance({ Token: tokenB })
@@ -124,7 +127,7 @@ export default function SwapConsole(): JSX.Element {
   const handleAmountA = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(event.target.value)
     if (unitToBn(value, chainDecimals) > balanceA) {
-      setErrors({ ...errors, amountA: 'Amount cannot exceed balance' })
+      setErrors({ ...errors, amountA: t(`Amount cannot exceed balance`) })
       return
     }
     setErrors({ ...errors, amountA: undefined })
@@ -146,7 +149,7 @@ export default function SwapConsole(): JSX.Element {
       setErrors({ ...errors, slippage: undefined })
       setSlippage(tolerance)
     } else {
-      setErrors({ ...errors, slippage: 'Should be a decimal between 0 - 1' })
+      setErrors({ ...errors, slippage: t(`Should be a decimal between 0 - 1`) })
     }
   }
 
@@ -194,9 +197,7 @@ export default function SwapConsole(): JSX.Element {
 
   const dismissModal = () => {
     setModalOpen(false)
-    setTxPendingMsg(undefined)
-    setTxHash(undefined)
-    setTxErrorMsg(undefined)
+    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }
 
   return (
@@ -220,9 +221,9 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{`From`}</LightHeader>
+                <LightHeader>{t(`From`)}</LightHeader>
                 <ConsoleStat>
-                  {`Balance:`} {formatToUnit(balanceA, chainDecimals)}
+                  {t(`Balance:`)} {formatToUnit(balanceA, chainDecimals)}
                 </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
@@ -245,9 +246,9 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{`To (estimated)`}</LightHeader>
+                <LightHeader>{t(`To (estimated)`)}</LightHeader>
                 <ConsoleStat>
-                  {`Balance:`} {formatToUnit(balanceB, chainDecimals)}
+                  {t(`Balance`)}: {formatToUnit(balanceB, chainDecimals)}
                 </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
@@ -271,7 +272,7 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{`Slippage`}</LightHeader>
+                <LightHeader>{t(`Slippage`)}</LightHeader>
               </InputHeader>
               <BorderedInput
                 required
@@ -287,7 +288,7 @@ export default function SwapConsole(): JSX.Element {
         </Section>
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <InputHeader>
-            <LightHeader>Price</LightHeader>
+            <LightHeader>{t(`Price`)}</LightHeader>
             {!priceQueryError ? (
               <ConsoleStat>
                 {price?.toFixed(4)} {tokenA} / {tokenB}
@@ -300,9 +301,9 @@ export default function SwapConsole(): JSX.Element {
         </Section>
         <Section>
           {errors.amountA || errors.amountB || errors.slippage || priceQueryError ? (
-            <ButtonPrimary disabled>{`Enter an amount`}</ButtonPrimary>
+            <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
           ) : (
-            <ButtonPrimary onClick={openModal}>{`Swap`}</ButtonPrimary>
+            <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>
           )}
         </Section>
       </Card>

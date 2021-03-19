@@ -16,6 +16,7 @@ import { DpoAction, getDpoAlerts } from 'utils/getDpoActions'
 import { TravelCabinData } from 'utils/getDpoTargets'
 import Copy from '../../components/Copy/Copy'
 import { useUserAddress } from '../../hooks/useUser'
+import { useTranslation, Trans } from 'react-i18next'
 
 export default function Portfolio(): JSX.Element {
   const walletInfo = useWallet()
@@ -26,6 +27,7 @@ export default function Portfolio(): JSX.Element {
   const userAddress = useUserAddress()
   const { lastBlock } = useBlockManager()
   const dposData = useUserDposData(walletInfo?.address)
+  const { t } = useTranslation()
 
   const handleDpoClick = (selectedDpo: [DpoIndex, DpoInfo]) => {
     setItem({ item: 'dpo', itemKey: selectedDpo[0].toString() })
@@ -50,7 +52,7 @@ export default function Portfolio(): JSX.Element {
               textAlign: 'center',
             }}
           >
-            <StandardText>Connect to your wallet to view your Portfolio.</StandardText>
+            <StandardText>{t(`Connect to your wallet to view your Portfolio.`)}</StandardText>
           </FlatCardPlate>
         </>
       ) : (
@@ -70,7 +72,9 @@ export default function Portfolio(): JSX.Element {
                   }}
                 >
                   <StandardText>
-                    Could not find any Portfolio Items. Check out our <Link to="/catalogue">Growth</Link> section.
+                    <Trans>
+                      Could not find any Portfolio Items. Check out our <Link to="/catalogue">Growth</Link> section.
+                    </Trans>
                   </StandardText>
                 </FlatCardPlate>
               </>
@@ -78,7 +82,7 @@ export default function Portfolio(): JSX.Element {
               <>
                 {userItems.userTravelCabins.length > 0 && (
                   <GridWrapper columns="1">
-                    <SectionHeading>TravelCabins</SectionHeading>
+                    <SectionHeading>{t(`TravelCabins`)}</SectionHeading>
                     {userItems?.userTravelCabins &&
                       userItems.userTravelCabins.map((item, index) => {
                         const travelCabinInfo = item[1]
@@ -100,10 +104,10 @@ export default function Portfolio(): JSX.Element {
                 {userItems.userDpos.length > 0 && (
                   <div style={{ padding: '0.5rem' }}>
                     <div style={{ display: 'flex' }}>
-                      <SectionHeading>DPOs</SectionHeading>
+                      <SectionHeading>{t(`DPO`)}</SectionHeading>
                       {userAddress && (
                         <Copy toCopy={userAddress}>
-                          <span style={{ marginLeft: '4px' }}>Copy Address</span>
+                          <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
                         </Copy>
                       )}
                     </div>

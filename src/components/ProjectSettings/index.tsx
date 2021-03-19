@@ -8,6 +8,7 @@ import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
 import { Project } from '../../state/project/actions'
 import { useProjectState } from 'state/project/hooks'
+import { useTranslation } from 'react-i18next'
 
 export interface ProjectSettingsProps {
   setSelectedProject: (project: Project) => void
@@ -18,6 +19,7 @@ export default function ProjectSettings({ setSelectedProject }: ProjectSettingsP
   const projects = useProjectInfos()
   const [projectOptions, setProjectOptions] = useState<Array<SelectorOption>>()
   const projectState = useProjectState()
+  const { t } = useTranslation()
   const selectedProject = projectState.selectedProject
 
   useEffect(() => {
@@ -39,14 +41,14 @@ export default function ProjectSettings({ setSelectedProject }: ProjectSettingsP
       <AutoColumn gap="sm">
         <RowFixed>
           <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-            Selected Project
+            {t(`Selected Project`)}
           </TYPE.black>
-          <QuestionHelper text="You can switch projects to view data specific to that project (in most views)." />
+          <QuestionHelper text={t(`You can switch projects to view data specific to that project (in most views).`)} />
         </RowFixed>
         <RowBetween>
           {projectOptions && selectedProject && (
             <Selector
-              title={'Select Project'}
+              title={t(`Select a Project`)}
               options={projectOptions}
               defaultOption={{
                 label: selectedProject.project,

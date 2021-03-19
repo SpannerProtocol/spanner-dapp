@@ -1,11 +1,11 @@
 import ProjectSettings from 'components/ProjectSettings'
 import React, { useContext, useRef, useState } from 'react'
 import { Settings, X } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
 import { Project } from 'state/project/actions'
 import { useSelectProject } from 'state/project/hooks'
 import styled, { ThemeContext } from 'styled-components'
-// import { useOnClickOutside } from '../../hooks/useOnClickOutside'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useToggleSettingsMenu } from '../../state/application/hooks'
 import {
@@ -130,6 +130,7 @@ export default function SettingsTab() {
   const open = useModalOpen(ApplicationModal.SETTINGS)
   const toggle = useToggleSettingsMenu()
   const selectProject = useSelectProject()
+  const { t } = useTranslation()
 
   const theme = useContext(ThemeContext)
   const [userSlippageTolerance, setUserslippageTolerance] = useUserSlippageTolerance()
@@ -189,11 +190,11 @@ export default function SettingsTab() {
         <MenuFlyout>
           <AutoColumn gap="md" style={{ padding: '1rem' }}>
             <Text fontWeight={600} fontSize={14}>
-              Project Settings
+              {t(`Project Settings`)}
             </Text>
             <ProjectSettings setSelectedProject={handleSelectProject} />
             <Text fontWeight={600} fontSize={14}>
-              Transaction Settings
+              {t(`Transaction Settings`)}
             </Text>
             <TransactionSettings
               rawSlippage={userSlippageTolerance}
@@ -202,7 +203,7 @@ export default function SettingsTab() {
               setDeadline={setTtl}
             />
             <Text fontWeight={600} fontSize={14}>
-              Interface Settings
+              {t(`Interface Settings`)}
             </Text>
             <RowBetween>
               <RowFixed>
@@ -230,7 +231,7 @@ export default function SettingsTab() {
             <RowBetween>
               <RowFixed>
                 <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-                  Toggle Dark Mode
+                  {t(`Toggle Dark Mode`)}
                 </TYPE.black>
               </RowFixed>
               <Toggle isActive={darkMode} toggle={toggleDarkMode} />

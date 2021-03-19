@@ -3,6 +3,7 @@ import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import StandardText, { Heading } from '../../components/Text'
 
@@ -22,6 +23,7 @@ const HomePageTitle = styled.h1`
 export default function Home() {
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const { chain, genesis } = useSubstrate()
+  const { t } = useTranslation()
   return (
     <PageWrapper
       style={{ width: '100%', padding: '0.5rem', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}
@@ -34,20 +36,30 @@ export default function Home() {
         }}
       >
         <SpacedSection style={{ marginBottom: '2rem' }}>
-          <HomePageTitle>Spanner</HomePageTitle>
-          <Heading>The Blockchain Component Marketplace</Heading>
+          <HomePageTitle>{t(`Spanner`)}</HomePageTitle>
+          <Heading>{t(`The Blockchain Component Marketplace`)}</Heading>
         </SpacedSection>
         <SpacedSection style={{ marginBottom: '2rem' }}>
-          {lastBlock && <Heading>Last Block: #{lastBlock.toString()}</Heading>}
+          {lastBlock && (
+            <Heading>
+              {t(`Last Block`)}: #{lastBlock.toString()}
+            </Heading>
+          )}
         </SpacedSection>
         <SpacedSection style={{ marginBottom: '2rem' }}>
           <FlatCardPlate style={{ textAlign: 'left' }}>
             <SpacedSection style={{ wordBreak: 'break-word' }}>
-              <SectionTitle>Blockchain Info</SectionTitle>
-              <StandardText>Connected to: {chain}</StandardText>
-              <StandardText>Genesis Hash: {genesis}</StandardText>
+              <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
+              <StandardText>
+                {t(`Connected to`)}: {chain}
+              </StandardText>
+              <StandardText>
+                {t(`Genesis Hash`)}: {genesis}
+              </StandardText>
               {expectedBlockTime && (
-                <StandardText>Estimated Time per Block: {expectedBlockTime.toNumber() / 1000}s</StandardText>
+                <StandardText>
+                  {t(`Estimated Time per Block`)}: {expectedBlockTime.toNumber() / 1000}s
+                </StandardText>
               )}
             </SpacedSection>
           </FlatCardPlate>
@@ -55,11 +67,11 @@ export default function Home() {
         <SpacedSection style={{ marginBottom: '2rem' }}>
           <FlatCardPlate style={{ textAlign: 'left' }}>
             <SpacedSection>
-              <SectionTitle>Get Started</SectionTitle>
-              <StandardText>{`1) Connect to a Wallet`}</StandardText>
-              <StandardText>{`2) Go to Account > Bridge and transfer tokens over to Spanner`}</StandardText>
-              <StandardText>{`3) Go to DEX and swap for BOLT`}</StandardText>
-              <StandardText>{`4) Participate in a BulletTrain Campaign`}</StandardText>
+              <SectionTitle>{t(`Get Started`)}</SectionTitle>
+              <StandardText>{t(`1) Connect to a Wallet`)}</StandardText>
+              <StandardText>{t(`2) Go to Account > Bridge and transfer tokens over to Spanner`)}</StandardText>
+              <StandardText>{t(`3) Go to DEX and swap for BOLT`)}</StandardText>
+              <StandardText>{t(`4) Participate in a BulletTrain Campaign`)}</StandardText>
             </SpacedSection>
           </FlatCardPlate>
         </SpacedSection>

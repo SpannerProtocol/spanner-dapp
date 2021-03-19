@@ -9,6 +9,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { TradingPair } from 'interfaces/dex'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { formatToUnit, unitToBn } from 'utils/formatUnit'
 import { getPairName } from 'utils/getPairName'
@@ -34,6 +35,8 @@ interface LpRemoveModalProps extends LpPoolContentProps {
 }
 
 function LpRemoveModalContent({ data }: { data: LpRemoveModalProps }): JSX.Element {
+  const { t } = useTranslation()
+
   const { pair, removeAmount, estimatedFee } = data
   return (
     <>
@@ -46,7 +49,7 @@ function LpRemoveModalContent({ data }: { data: LpRemoveModalProps }): JSX.Eleme
       </Section>
       <SpacedSection>
         <RowBetween>
-          <StandardText>{`Remove LP Tokens`}</StandardText>
+          <StandardText>{t(`Remove LP Tokens`)}</StandardText>
           <StandardText>{removeAmount}</StandardText>
         </RowBetween>
       </SpacedSection>
@@ -69,6 +72,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!dexShare) return
@@ -102,10 +106,8 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
   }
 
   const dismissModal = () => {
+    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
     setModalOpen(false)
-    setTxPendingMsg(undefined)
-    setTxHash(undefined)
-    setTxErrorMsg(undefined)
   }
 
   return (
@@ -114,8 +116,8 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
         isOpen={modalOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
-        title={'Remove Liquidity'}
-        buttonText={'Remove'}
+        title={t(`Remove Liquidity`)}
+        buttonText={t(`Remove`)}
         txError={txErrorMsg}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -130,16 +132,16 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       </Section>
       <Section>
         <BorderedWrapper>
-          <StandardText style={{ marginBottom: '1rem' }}>Pool Info</StandardText>
+          <StandardText style={{ marginBottom: '1rem' }}>{t(`Pool Info`)}</StandardText>
           <RowBetween>
             <HeavyHeader>
-              {`Pooled`} {pair[0].asToken.toString()}
+              {t(`Pooled`)} {pair[0].asToken.toString()}
             </HeavyHeader>
             <ConsoleStat>{formatToUnit(amountA, chainDecimals)}</ConsoleStat>
           </RowBetween>
           <RowBetween>
             <HeavyHeader>
-              {`Pooled`} {pair[1].asToken.toString()}
+              {t(`Pooled`)} {pair[1].asToken.toString()}
             </HeavyHeader>
             <ConsoleStat>{formatToUnit(amountB, chainDecimals)}</ConsoleStat>
           </RowBetween>
@@ -148,7 +150,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       <Section>
         <InputGroup>
           <InputHeader>
-            <LightHeader>{`Remove LP Amount`}</LightHeader>
+            <LightHeader>{t(`Remove LP Amount`)}</LightHeader>
           </InputHeader>
           <BorderedInput
             required
@@ -164,7 +166,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       <Section style={{ marginTop: '12px' }}>
         <RowBetween>
           <ButtonPrimary onClick={openModal} style={{ width: '100%', padding: '8px', borderRadius: '8px' }}>
-            {`Remove`}
+            {t(`Remove`)}
           </ButtonPrimary>
         </RowBetween>
       </Section>
@@ -174,10 +176,11 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
 
 export default function LpRemoveConsole(): JSX.Element {
   const balances = useAllLpBalances()
+  const { t } = useTranslation()
   return (
     <Card>
       <Section>
-        <RowBetween>{`Liquidity Pools`}</RowBetween>
+        <RowBetween>{t(`Liquidity Pools`)}</RowBetween>
       </Section>
       <Section>
         {balances.length > 0 ? (
@@ -187,7 +190,7 @@ export default function LpRemoveConsole(): JSX.Element {
             </ExpandCard>
           ))
         ) : (
-          <div>{`You have no pools.`}</div>
+          <div>{t(`You have not added liquidity to any pools.`)}</div>
         )}
       </Section>
     </Card>

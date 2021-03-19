@@ -14,6 +14,7 @@ import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTra
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { TravelCabinInfo } from 'spanner-interfaces'
 import { useProjectManager } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
@@ -48,6 +49,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   const [referralCode, setReferralCode] = useState<string | null>('')
   const { referrerState } = useReferrerManager()
   const { projectState } = useProjectManager()
+  const { t } = useTranslation()
 
   const referrer = referrerState.referrer
   const project = projectState.selectedProject
@@ -77,16 +79,17 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   return (
     <>
       <Section>
-        <StandardText>{`Create a DPO to Crowdfund for this TravelCabin's Join Requirement.`}</StandardText>
+        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin's Join Requirement.`)}</StandardText>
       </Section>
       <SpacedSection>
         <Section>
           <RowBetween>
             <RowFixed>
-              <StandardText>Seat Price</StandardText>
+              <StandardText>{t(`Seat Price`)}</StandardText>
               <QuestionHelper
-                text={`The cost of Ticket Fare is split equally by DPO seats. 
-              Your purchase price is equal to the number of seats you want to buy.`}
+                text={t(
+                  `The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.`
+                )}
                 size={12}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
@@ -98,9 +101,9 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>Name your DPO</StandardText>
+            <StandardText>{t(`Name your DPO`)}</StandardText>
             <QuestionHelper
-              text={`Name your DPO community to make it easier for others to search for you.`}
+              text={t(`Name your DPO community to make it easier for others to search for you.`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -116,10 +119,11 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>Manager Seats in DPO</StandardText>
+            <StandardText>{t(`Manager Seats in DPO`)}</StandardText>
             <QuestionHelper
-              text={`The # of Seats to buy for yourself as Manager from YOUR new DPO. 
-            More seats, more commission rate off your Member's yields.`}
+              text={t(
+                `The # of Seats to buy for yourself as Manager from YOUR new DPO. More seats, more commission rate off your Member's yields.`
+              )}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -135,10 +139,11 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>End Block</StandardText>
+            <StandardText>{t(`End Block`)}</StandardText>
             <QuestionHelper
-              text={`The Block Number for this Crowdfund to target. 
-            Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`}
+              text={t(
+                `The Block Number for this Crowdfund to target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
+              )}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -154,10 +159,11 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>Referral Code</StandardText>
+            <StandardText>{t(`Referral Code`)}</StandardText>
             <QuestionHelper
-              text={`Referral Codes are permanent and unique for each project on Spanner. 
-            If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`}
+              text={t(
+                `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
+              )}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -186,7 +192,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
       </SpacedSection>
       <SpacedSection style={{ marginTop: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit}>Create DPO</ButtonPrimary>
+        <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
       </SpacedSection>
     </>
   )
@@ -213,34 +219,39 @@ function TravelCabinCrowdfundTxConfirm({
   errorMsg,
   estimatedFee,
 }: TravelCabinCrowdfundTxConfirmProps) {
+  const { t } = useTranslation()
   return (
     <>
       <Section>
-        <StandardText>{'Create a DPO to Crowdfund for this TravelCabin.'}</StandardText>
+        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
       </Section>
-      {errorMsg ? <Section>{errorMsg}</Section> : <Section>Confirm the details below.</Section>}
+      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
       <Section>
         <RowBetween>
-          <StandardText>{'DPO Name'}</StandardText>
+          <StandardText>{t(`DPO Name`)}</StandardText>
           <StandardText>{dpoName}</StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{'Ticket Fare'}</StandardText>
+          <StandardText>{t(`Ticket Fare`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{'Manager Seats'}</StandardText>
+          <StandardText>{t(`Manager Seats`)}</StandardText>
           <StandardText>{managerSeats}</StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{'End Block'}</StandardText>
+          <StandardText>{t(`End Block`)}</StandardText>
           <StandardText>{end}</StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{'Referral Code'}</StandardText>
-          {referrer ? <StandardText>{truncateAddress(referrer)}</StandardText> : <StandardText>{'None'}</StandardText>}
+          <StandardText>{t(`Referral Code`)}</StandardText>
+          {referrer ? (
+            <StandardText>{truncateAddress(referrer)}</StandardText>
+          ) : (
+            <StandardText>{t(`None`)}</StandardText>
+          )}
         </RowBetween>
       </Section>
       <TxFee fee={estimatedFee} />
@@ -249,15 +260,16 @@ function TravelCabinCrowdfundTxConfirm({
 }
 
 function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: TravelCabinJoinTxConfirmProps) {
+  const { t } = useTranslation()
   return (
     <>
       <Section>
-        <StandardText>{`Buy this TravelCabin to start earning Rewards`}</StandardText>
+        <StandardText>{t(`Buy this TravelCabin to start earning Rewards`)}</StandardText>
       </Section>
-      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{`Confirm the details below.`}</Section>}
+      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
       <SpacedSection>
         <RowBetween>
-          <StandardText>{`Deposit Required`}</StandardText>
+          <StandardText>{t(`Deposit Required`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
@@ -287,6 +299,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   // const { queueTransaction } = useTransactionMsg()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
+  const { t } = useTranslation()
 
   const openJoinTxModal = () => {
     setCrowdfundFormModalOpen(false)
@@ -306,12 +319,6 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const dismissModal = () => {
     ;[setCrowdfundFormModalOpen, setJoinTxModalOpen, setCrowdfundTxModalOpen].forEach((fn) => fn(false))
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
-    setCrowdfundFormModalOpen(false)
-    setJoinTxModalOpen(false)
-    setCrowdfundTxModalOpen(false)
-    setTxPendingMsg(undefined)
-    setTxHash(undefined)
-    setTxErrorMsg(undefined)
   }
 
   const handleCrowdfundFormCallback = ({
@@ -330,7 +337,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     setUserEnd(end)
     setUserReferrer(referrer)
     if (!travelCabinIndex) {
-      setTxErrorMsg('Information provided was not sufficient.')
+      setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
     const txData = createTx({
       section: 'bulletTrain',
@@ -344,7 +351,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
 
   const handleJoin = useCallback(() => {
     if (!travelCabinIndex) {
-      setTxErrorMsg('Information provided was not sufficient.')
+      setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
     const txData = createTx({
       section: 'bulletTrain',
@@ -354,7 +361,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
     openJoinTxModal()
-  }, [createTx, travelCabinIndex])
+  }, [createTx, t, travelCabinIndex])
 
   if (!travelCabinInfo) return <></>
   const token = travelCabinInfo.token_id.isToken
@@ -363,7 +370,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
 
   return (
     <>
-      <StandardModal title={'Create DPO'} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
+      <StandardModal title={t(`Create DPO`)} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
         <TravelCabinCrowdfundForm
           travelCabinInfo={travelCabinInfo}
           token={token}
@@ -375,8 +382,8 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
-        title={'Buy TravelCabin'}
-        buttonText={'Confirm'}
+        title={t(`Buy TravelCabin`)}
+        buttonText={t(`Confirm`)}
         txError={txErrorMsg}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -391,8 +398,8 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         isOpen={crowdfundTxModalOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
-        title={'Create DPO'}
-        buttonText={'Confirm'}
+        title={t(`Create DPO`)}
+        buttonText={t(`Confirm`)}
         txError={txErrorMsg}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -410,44 +417,47 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <RowBetween>
-            <SectionHeading>TravelCabin: {getCabinClass(travelCabinInfo.index.toString())}</SectionHeading>
+            <SectionHeading>
+              {t(`TravelCabin:`)}
+              {getCabinClass(travelCabinInfo.index.toString())}
+            </SectionHeading>
             <CollapseWrapper>
               <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                 <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
-                  Buy
+                  {t(`Buy`)}
                 </ButtonPrimary>
               </ButtonWrapper>
               <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                 <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                  Crowdfund
+                  {t(`Crowdfund`)}
                 </ButtonSecondary>
               </ButtonWrapper>
             </CollapseWrapper>
           </RowBetween>
           <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
-            <SmallText>General Information</SmallText>
+            <SmallText>{t(`General Information`)}</SmallText>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
                 <RowBetween>
-                  <StandardText>TravelCabin Id</StandardText>
+                  <StandardText>{t(`TravelCabin Id`)}</StandardText>
                   <StandardText>{travelCabinIndex}</StandardText>
                 </RowBetween>
                 <RowBetween>
-                  <StandardText>Travel Class</StandardText>
+                  <StandardText>{t(`Travel Class`)}</StandardText>
                   <StandardText>{getCabinClass(travelCabinInfo.index.toString())}</StandardText>
                 </RowBetween>
                 <RowBetween>
-                  <StandardText>Ticket Fare</StandardText>
+                  <StandardText>{t(`Ticket Fare`)}</StandardText>
                   <StandardText>
                     {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
                   </StandardText>
                 </RowBetween>
                 {expectedBlockTime && (
                   <RowBetween>
-                    <StandardText>Ride Duration</StandardText>
+                    <StandardText>{t(`Ride Duration`)}</StandardText>
                     <StandardText>
-                      {travelCabinInfo.maturity.toString()} Blocks (~
-                      {blockToDays(expectedBlockTime, travelCabinInfo.maturity)} days)
+                      {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
+                      {blockToDays(expectedBlockTime, travelCabinInfo.maturity)} {t(`days`)})
                     </StandardText>
                   </RowBetween>
                 )}
@@ -455,11 +465,11 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
             </BorderedWrapper>
             {inventoryCount && (
               <>
-                <SmallText>Status</SmallText>
+                <SmallText>{t(`Status`)}</SmallText>
                 <BorderedWrapper style={{ marginTop: '0' }}>
                   <Section>
                     <RowBetween>
-                      <StandardText>Stock</StandardText>
+                      <StandardText>{t(`Stock`)}</StandardText>
                       <StandardText>
                         {inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/{inventoryCount[1].toNumber()}
                       </StandardText>
@@ -468,18 +478,18 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 </BorderedWrapper>
               </>
             )}
-            <SmallText>Rewards</SmallText>
+            <SmallText>{t(`Rewards`)}</SmallText>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
                 <RowBetween>
-                  <StandardText>Total Bonus</StandardText>
+                  <StandardText>{t(`Total Bonus`)}</StandardText>
                   <StandardText>
                     {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals, 2)} {token}
                   </StandardText>
                 </RowBetween>
                 {expectedBlockTime && (
                   <RowBetween>
-                    <StandardText>Total Yield</StandardText>
+                    <StandardText>{t(`Total Yield`)}</StandardText>
                     <StandardText>
                       {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)} ${token} (${`${getApy(
                         {

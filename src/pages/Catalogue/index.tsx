@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { useProjectManager } from 'state/project/hooks'
 import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
 import BulletTrainInstructions from './BulletTrainInstructions'
+import { useTranslation } from 'react-i18next'
 
 const BannerGrid = styled.div`
   display: grid;
@@ -52,6 +53,7 @@ export default function Catalogue() {
   // Using this to check if a project has a bullettrain campaign started
   const travelCabins = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token)
   const [hasBulletTrain, setHasBulletTrain] = useState<boolean>(false)
+  const { t } = useTranslation()
 
   const handleClick = (indexClicked: number) => {
     setActiveTabIndex(indexClicked)
@@ -61,15 +63,15 @@ export default function Catalogue() {
     const tabName = tabOptions[activeTabIndex]
     setActiveTab(tabName)
     if (tabName === 'instructions') {
-      setHeading('Instructions')
+      setHeading(t(`Instructions`))
     }
     if (tabName === 'travelcabins') {
-      setHeading('TravelCabins')
+      setHeading(t(`TravelCabins`))
     }
     if (tabName === 'dpo') {
-      setHeading('DPO Passenger Groups')
+      setHeading(t(`DPO Passenger Groups`))
     }
-  }, [activeTabIndex])
+  }, [activeTabIndex, t])
 
   useEffect(() => {
     if (travelCabins.length === 0) {
@@ -128,7 +130,11 @@ export default function Catalogue() {
         >
           <FlatCardPlate>
             <Section style={{ marginBottom: '1rem', padding: '1rem' }}>
-              <Heading>Looks like {projectState.selectedProject?.project} does not have a BulletTrain yet.</Heading>
+              <Heading>
+                {t(`projectMissing`, {
+                  project: projectState.selectedProject?.project,
+                })}
+              </Heading>
             </Section>
           </FlatCardPlate>
         </Wrapper>

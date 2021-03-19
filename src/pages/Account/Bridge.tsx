@@ -19,6 +19,7 @@ import { formatToUnit } from 'utils/formatUnit'
 import getCustodialAccount from 'utils/getCustodialAccount'
 import signAndSendTx from 'utils/signAndSendTx'
 import { getBurnAddr, getEthDepositAddr, postE2sCheck } from '../../bridge'
+import { useTranslation, Trans } from 'react-i18next'
 
 function BridgeTxConfirm({
   withdrawAmount,
@@ -29,25 +30,26 @@ function BridgeTxConfirm({
   withdrawAddress: string | undefined
   errorMsg: string | undefined
 }) {
+  const { t } = useTranslation()
   return (
     <>
       <Section>
-        <StandardText>Bridge Spanner WUSD to Ethereum USDT</StandardText>
+        <StandardText>{t(`Bridge Spanner WUSD to Ethereum USDT`)}</StandardText>
       </Section>
       {errorMsg ? (
         <Section>{errorMsg}</Section>
       ) : (
         <>
           <Section>
-            <StandardText>Confirm the details below.</StandardText>
+            <StandardText>{t(`Confirm the details below.`)}</StandardText>
           </Section>
           <Section style={{ marginTop: '1rem' }}>
             <RowBetween>
-              <StandardText>Withdraw Amount</StandardText>
+              <StandardText>{t(`Withdraw Amount`)}</StandardText>
               <StandardText>{withdrawAmount} WUSD</StandardText>
             </RowBetween>
             <RowBetween>
-              <StandardText>Transfer to</StandardText>
+              <StandardText>{t(`Transfer to`)}</StandardText>
               <StandardText>{withdrawAddress}</StandardText>
             </RowBetween>
           </Section>
@@ -69,10 +71,11 @@ export default function Bridge(): JSX.Element {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
-  const [txError, setTxError] = useState<string | undefined>()
+  const [txError, setTxErrorMsg] = useState<string | undefined>()
   const { walletState } = useWalletManager()
   const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
   const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (!spannerAddress) return
@@ -90,11 +93,11 @@ export default function Bridge(): JSX.Element {
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
       if (!walletState) {
-        setTxError('Please connect to a wallet.')
+        setTxErrorMsg(t(`Please connect to a wallet.`))
         return
       }
       if (!ethWithdrawAddress || !ethWithdrawAmount) {
-        setTxError('Please review your withdrawal inputs.')
+        setTxErrorMsg(t(`Please review your withdrawal inputs.`))
         return
       }
       getBurnAddr(ethWithdrawAddress).then((response) => {
@@ -106,7 +109,7 @@ export default function Bridge(): JSX.Element {
           tx,
           address: activeAccount ? activeAccount.address : account,
           signer: injector?.signer,
-          setErrorMsg: setTxError,
+          setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
           walletType: walletState.walletType,
@@ -115,14 +118,12 @@ export default function Bridge(): JSX.Element {
         })
       })
     },
-    [account, activeAccount, api, injector, library, walletState, chainDecimals]
+    [walletState, t, api, chainDecimals, activeAccount, account, injector, library]
   )
 
   const dismissModal = () => {
     setModalOpen(false)
-    setTxPendingMsg(undefined)
-    setTxHash(undefined)
-    setTxError(undefined)
+    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }
 
   return (
@@ -131,8 +132,8 @@ export default function Bridge(): JSX.Element {
         isOpen={modalOpen}
         onDismiss={dismissModal}
         onConfirm={() => withdrawToEthereum(ethWithdrawAddr, ethWithdrawAmount)}
-        title={'Bridge to Ethereum (USDT)'}
-        buttonText={'Confirm'}
+        title={t(`Bridge to Ethereum (USDT)`)}
+        buttonText={t(`Confirm`)}
         txError={txError}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -144,7 +145,7 @@ export default function Bridge(): JSX.Element {
           <FlatCardPlate
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
           >
-            <StandardText>Connect to your wallet to use the Bridge</StandardText>
+            <StandardText>{t(`Connect to your wallet to use the Bridge`)}</StandardText>
           </FlatCardPlate>
         </>
       ) : (
@@ -152,20 +153,20 @@ export default function Bridge(): JSX.Element {
           <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
-                <SectionHeading>{'Spanner <-> Ethereum Bridge'}</SectionHeading>
+                <SectionHeading>{t(`Spanner <-> Ethereum Bridge`)}</SectionHeading>
               </RowBetween>
             </Section>
             <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
               <Section>
                 <StandardText>
-                  {'Transfer tokens between Spanner and Ethereum. Currently only supporting WUSD <-> USDT.'}
+                  {t(`Transfer tokens between Spanner and Ethereum. Currently only supporting WUSD <-> USDT.`)}
                 </StandardText>
               </Section>
               <Section>
-                <StandardText>Balances</StandardText>
+                <StandardText>{t(`Balances`)}</StandardText>
                 <BorderedWrapper style={{ marginTop: '0.5rem' }}>
                   <RowBetween>
-                    <StandardText>WUSD</StandardText>
+                    <StandardText>{`WUSD`}</StandardText>
                     <StandardText>{formatToUnit(wusdBalance, chainDecimals, 2)}</StandardText>
                   </RowBetween>
                 </BorderedWrapper>
@@ -177,26 +178,30 @@ export default function Bridge(): JSX.Element {
             <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
               <Section>
                 <RowBetween>
-                  <SectionHeading>Ethereum to Spanner</SectionHeading>
+                  <SectionHeading>{t(`Ethereum to Spanner`)}</SectionHeading>
                 </RowBetween>
               </Section>
               <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
                 <Section>
-                  <SectionHeading>Instructions</SectionHeading>
+                  <SectionHeading>{t(`Instructions`)}</SectionHeading>
                   <StandardText>
-                    The deposit address is a dedicated ethereum address generated for you. Transfer <b>USDT</b> to the
-                    address and an equivalent in <b>WUSD</b> will be transferred to your custodial wallet within 5
-                    minutes.
+                    <Trans>
+                      The deposit address is a dedicated ethereum address generated for you. Transfer <b>USDT</b> to the
+                      address and an equivalent in <b>WUSD</b> will be transferred to your custodial wallet within 5
+                      minutes.
+                    </Trans>
                   </StandardText>
                   <StandardText style={{ marginTop: '1rem' }}>
-                    Click <b>Verify Deposit</b> to manually request a deposit verification.
+                    <Trans>
+                      Click <b>Verify Deposit</b> to manually request a deposit verification.
+                    </Trans>
                   </StandardText>
                   <Section style={{ marginTop: '2rem' }}>
                     <RowBetween>
-                      <StandardText>Deposit Address</StandardText>
+                      <StandardText>{t(`Deposit Address`)}</StandardText>
                       <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                         <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={() => handleE2sCheck(spannerAddress)}>
-                          Verify Deposit
+                          {t(`Verify Deposit`)}
                         </ButtonPrimary>
                       </ButtonWrapper>
                     </RowBetween>
@@ -204,7 +209,7 @@ export default function Bridge(): JSX.Element {
                     {verifiedEthDepositTx &&
                       (verifiedEthDepositTx.length > 0 ? (
                         <>
-                          <StandardText>Verification Result</StandardText>
+                          <StandardText>{t(`Verification Result`)}</StandardText>
                           {verifiedEthDepositTx.map((ethDepositTx, index) => (
                             <BorderedWrapper key={index} style={{ marginTop: '0.5rem' }}>
                               {ethDepositTx}
@@ -213,10 +218,10 @@ export default function Bridge(): JSX.Element {
                         </>
                       ) : (
                         <>
-                          <StandardText>Verification Result</StandardText>
+                          <StandardText>{t(`Verification Result`)}</StandardText>
                           <BorderedWrapper style={{ marginTop: '0.5rem' }}>
                             <StandardText>
-                              Unable to find any deposit transactions. Please try again later.
+                              {t(`Unable to find any deposit transactions. Please try again later.`)}
                             </StandardText>
                           </BorderedWrapper>
                         </>
@@ -229,15 +234,17 @@ export default function Bridge(): JSX.Element {
           <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
-                <SectionHeading>Spanner to Ethereum</SectionHeading>
+                <SectionHeading>{t(`Spanner to Ethereum`)}</SectionHeading>
               </RowBetween>
             </Section>
             <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
               <Section>
-                <SectionHeading>Instructions</SectionHeading>
-                <StandardText>Enter an address to convert and bridge your WUSD back into ethereum USDT.</StandardText>
+                <SectionHeading>{t(`Instructions`)}</SectionHeading>
+                <StandardText>
+                  {t(`Enter an address to convert and bridge your WUSD back into Ethereum USDT.`)}
+                </StandardText>
                 <Section style={{ marginTop: '2rem' }}>
-                  <StandardText>Withdraw Amount (WUSD to USDT)</StandardText>
+                  <StandardText>{t(`Withdraw Amount (WUSD to USDT)`)}</StandardText>
                   <BorderedInput
                     required
                     id="eth-withdraw-amount-input"
@@ -249,7 +256,7 @@ export default function Bridge(): JSX.Element {
                   />
                 </Section>
                 <Section>
-                  <StandardText>Ethereum Withdrawal Address</StandardText>
+                  <StandardText>{t(`Ethereum Withdrawal Address`)}</StandardText>
                   <BorderedInput
                     required
                     id="eth-withdraw-addr-input"
@@ -262,7 +269,7 @@ export default function Bridge(): JSX.Element {
                 </Section>
                 <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                   <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={() => setModalOpen(true)}>
-                    Withdraw
+                    {t(`Withdraw`)}
                   </ButtonPrimary>
                 </ButtonWrapper>
               </Section>
