@@ -3,6 +3,7 @@ import { DataTokenName } from 'components/Text'
 import useStats from 'hooks/useStats'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { formatToHumanFromUnit } from 'utils/formatUnit'
 
@@ -49,6 +50,7 @@ const StatDisplay = styled.div`
 export default function BulletTrainStats() {
   const stats = useStats()
   const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
   const background = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
   return (
     <StatDisplayContainer>
@@ -56,13 +58,13 @@ export default function BulletTrainStats() {
         {stats.totalCabinsBought && (
           <ThinShadowCard background={background}>
             <StatValue>{stats.totalCabinsBought}</StatValue>
-            <StatText>Cabins Purchased</StatText>
+            <StatText>{t(`Cabins Purchased`)}</StatText>
           </ThinShadowCard>
         )}
         {stats.totalPassengers && (
           <ThinShadowCard background={background}>
             <StatValue>{stats.totalPassengers}</StatValue>
-            <StatText>Passengers Aboard</StatText>
+            <StatText>{t(`Passengers Aboard`)}</StatText>
           </ThinShadowCard>
         )}
         {stats.totalYieldWithdrawn && (
@@ -71,7 +73,7 @@ export default function BulletTrainStats() {
               {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals, 0)}{' '}
               <DataTokenName color="white">BOLT</DataTokenName>
             </StatValue>
-            <StatText>Yield Distributed</StatText>
+            <StatText>{t(`Yield Distributed`)}</StatText>
           </ThinShadowCard>
         )}
         {stats.totalValueLocked && (
@@ -80,7 +82,7 @@ export default function BulletTrainStats() {
               {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals, 0)}{' '}
               <DataTokenName color="white">BOLT</DataTokenName>
             </StatValue>
-            <StatText>Ticket Fare Stored</StatText>
+            <StatText>{t(`Ticket Fares Stored`)}</StatText>
           </ThinShadowCard>
         )}
       </StatDisplay>

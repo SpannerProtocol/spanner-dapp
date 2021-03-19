@@ -329,9 +329,9 @@ export default function Header(props: HeaderProps) {
           <SpannerIcon>
             <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
           </SpannerIcon>
-          <LogoText>Spanner Protocol</LogoText>
+          <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
-        {subNavNetworkSelector && <NetworkSelector background={'#fff'} collaspedTextPrefix={'Network: '} />}
+        {subNavNetworkSelector && <NetworkSelector background={'#fff'} collaspedTextPrefix={`${t(`Network`)}: `} />}
         <HeaderLinks>
           {/* <StyledNavLink id={`account-nav-link`} to={'/account'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
@@ -339,19 +339,19 @@ export default function Header(props: HeaderProps) {
           </StyledNavLink> */}
           <StyledNavLink id={`launchpad-nav-link`} to={'/discover'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
-            {t('Launchpad')}
+            {t(`Launchpad`)}
           </StyledNavLink>
           <StyledNavLink id={`catalogue-nav-link`} to={'/catalogue'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={GrowthIcon} alt="catalogue" />}
-            {t('BulletTrain')}
+            {t(`BulletTrain`)}
           </StyledNavLink>
           <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
-            {t('DEX')}
+            {t(`DEX`)}
           </StyledNavLink>
           <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
-            Explorer <span style={{ fontSize: '11px' }}>↗</span>
+            {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
           </StyledExternalLink>
         </HeaderLinks>
       </HeaderRow>
@@ -361,6 +361,7 @@ export default function Header(props: HeaderProps) {
 
 export function Controls() {
   const { account } = useActiveWeb3React()
+  const { t } = useTranslation()
   // const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
 
   return (
@@ -385,7 +386,7 @@ export function Controls() {
                       ></TYPE.white>
                     </HideSmall>
                   )}
-                  Account
+                  {t(`Account`)}
                 </BOLTAmount>
               </BalanceWrapper>
             </Link>

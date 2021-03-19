@@ -1,5 +1,6 @@
 import { useBlockManager } from 'hooks/useBlocks'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 const BlockWrapper = styled.div`
@@ -35,12 +36,15 @@ const BlockText = styled.div`
 
 export default function BlockBar() {
   const { lastBlock } = useBlockManager()
+  const { t } = useTranslation()
   return (
     <>
       {lastBlock && (
         <>
           <BlockWrapper>
-            <BlockText>Block # {lastBlock.toString()}</BlockText>
+            <BlockText>
+              {t(`Block`)} # {lastBlock.toString()}
+            </BlockText>
           </BlockWrapper>
         </>
       )}

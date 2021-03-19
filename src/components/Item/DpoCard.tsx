@@ -7,6 +7,7 @@ import { SectionHeading, StandardText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import React, { Dispatch, SetStateAction } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import getApy from 'utils/getApy'
@@ -30,6 +31,7 @@ function CardContent(props: DpoCard) {
   const { item, chainDecimals, token, onClick } = props
   const [storageKey, dpoInfo] = item
   const { expectedBlockTime } = useBlockManager()
+  const { t } = useTranslation()
 
   return (
     <>
@@ -39,7 +41,7 @@ function CardContent(props: DpoCard) {
         </Section>
         <Section>
           <RowBetween>
-            <StandardText>Crowdfund Target</StandardText>
+            <StandardText>{t(`Crowdfund Target`)}</StandardText>
             <StandardText>
               {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
             </StandardText>
@@ -48,7 +50,7 @@ function CardContent(props: DpoCard) {
         <Section>
           {expectedBlockTime && (
             <RowBetween>
-              <StandardText>Yield (APY)</StandardText>
+              <StandardText>{t(`Yield (APY)`)}</StandardText>
               <StandardText>
                 {`${getApy({
                   totalYield: dpoInfo.target_yield_estimate.toBn(),
@@ -61,17 +63,17 @@ function CardContent(props: DpoCard) {
             </RowBetween>
           )}
           <RowBetween>
-            <StandardText>Commission Fee</StandardText>
+            <StandardText>{t(`Commission Fee`)}</StandardText>
             <StandardText>{dpoInfo.commission_rate.toNumber() / 10}%</StandardText>
           </RowBetween>
           <RowBetween>
-            <StandardText>Slot Value</StandardText>
+            <StandardText>{t(`Seat Value`)}</StandardText>
             <StandardText>
               {formatToUnit(dpoInfo.amount_per_seat.toBn(), chainDecimals, 2)} {token}
             </StandardText>
           </RowBetween>
           <RowBetween>
-            <StandardText>Available Seats</StandardText>
+            <StandardText>{t(`Available Seats`)}</StandardText>
             <StandardText>{dpoInfo.empty_seats.toString()} Seats</StandardText>
           </RowBetween>
         </Section>
@@ -81,7 +83,7 @@ function CardContent(props: DpoCard) {
               onClick={() => onClick([storageKey, dpoInfo])}
               style={{ width: '100%', padding: '8px', borderRadius: '8px', marginTop: '1rem' }}
             >
-              Learn More
+              {t(`Learn More`)}
             </ButtonPrimary>
           </Link>
         </Section>
@@ -121,7 +123,7 @@ const actionIcons: { [index: string]: string } = {
 function ProfileCardContent(props: ProfileCard) {
   const { item, chainDecimals, token, alerts, onClick } = props
   const [storageKey, dpoInfo] = item
-  console.log('alerts', alerts)
+  const { t } = useTranslation()
   return (
     <>
       <Section>
@@ -132,7 +134,6 @@ function ProfileCardContent(props: ProfileCard) {
               alerts.length > 0 &&
               alerts.map((alert, index) => {
                 if (!alert || !alert.action) return <></>
-                console.log('debug alert', alert)
                 return (
                   <div key={index}>
                     <Link to={{ pathname: `/item/dpo/${dpoInfo.index.toString()}` }} style={{ textDecoration: 'none' }}>
@@ -148,7 +149,7 @@ function ProfileCardContent(props: ProfileCard) {
       </Section>
       <Section>
         <RowBetween>
-          <StandardText>Crowdfund Target</StandardText>
+          <StandardText>{t(`Crowdfund Target`)}</StandardText>
           <StandardText>
             {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
           </StandardText>
@@ -156,17 +157,17 @@ function ProfileCardContent(props: ProfileCard) {
       </Section>
       <Section>
         <RowBetween>
-          <StandardText>Commission Fee</StandardText>
+          <StandardText>{t(`Commission Fee`)}</StandardText>
           <StandardText>{dpoInfo.commission_rate.toNumber() / 10}%</StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>Slot Value</StandardText>
+          <StandardText>{t(`Seat Value`)}</StandardText>
           <StandardText>
             {formatToUnit(dpoInfo.amount_per_seat.toBn(), chainDecimals, 2)} {token}
           </StandardText>
         </RowBetween>
         <RowBetween>
-          <StandardText>Available Seats</StandardText>
+          <StandardText>{t(`Available Seats`)}</StandardText>
           <StandardText>{dpoInfo.empty_seats.toString()} Seats</StandardText>
         </RowBetween>
       </Section>
@@ -176,7 +177,7 @@ function ProfileCardContent(props: ProfileCard) {
             onClick={() => onClick([storageKey, dpoInfo])}
             style={{ width: '100%', padding: '8px', borderRadius: '8px', marginTop: '1rem' }}
           >
-            Learn More
+            {t(`Learn More`)}
           </ButtonPrimary>
         </Link>
       </Section>

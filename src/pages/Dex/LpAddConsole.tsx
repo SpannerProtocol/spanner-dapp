@@ -5,6 +5,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
 import { CenteredRow, RowBetween } from '../../components/Row'
@@ -31,33 +32,38 @@ interface LpAddData {
 }
 
 function LpAddModalContent({ amountA, amountB, tokenA, tokenB, estimatedFee }: LpAddData): JSX.Element {
+  const { t } = useTranslation()
   return (
     <>
       <Section>
-        <CenteredRow style={{ margin: '0.85rem', fontWeight: 'bolder' }}>You will receive:</CenteredRow>
+        <CenteredRow style={{ margin: '0.85rem', fontWeight: 'bolder' }}>{t(`You will receive:`)}</CenteredRow>
         <CenteredRow>
           <ModalText>
-            {Math.max(amountA, amountB)} {tokenA}/{tokenB} Pool Tokens
+            {Math.max(amountA, amountB)} {tokenA}/{tokenB} {t(`Pool Tokens`)}
           </ModalText>
         </CenteredRow>
       </Section>
       <Section>
         <CenteredRow>
-          <DisclaimerText>Output amount is estimated.</DisclaimerText>
+          <DisclaimerText>{t(`Output amount is estimated.`)}</DisclaimerText>
         </CenteredRow>
       </Section>
       <Section>
         <BorderedWrapper>
           <RowBetween>
-            <HeavyHeader>{tokenA} to deposit</HeavyHeader>
+            <HeavyHeader>
+              {tokenA} {t(`to deposit`)}
+            </HeavyHeader>
             <ConsoleStat>{amountA}</ConsoleStat>
           </RowBetween>
           <RowBetween>
-            <HeavyHeader>{tokenB} to deposit</HeavyHeader>
+            <HeavyHeader>
+              {tokenB} {t(`to deposit`)}
+            </HeavyHeader>
             <ConsoleStat>{amountB}</ConsoleStat>
           </RowBetween>
           <RowBetween>
-            <HeavyHeader>Rates</HeavyHeader>
+            <HeavyHeader>{t(`Rates`)}</HeavyHeader>
             <ConsoleStat>
               1 {tokenB} = {amountB / amountA} {tokenA}
             </ConsoleStat>
@@ -81,6 +87,7 @@ export default function LpAddConsole(): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
+  const { t } = useTranslation()
 
   const balanceA = useSubscribeBalance({ Token: tokenA })
   const balanceB = useSubscribeBalance({ Token: tokenB })
@@ -112,10 +119,8 @@ export default function LpAddConsole(): JSX.Element {
   }
 
   const dismissModal = () => {
+    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
     setModalOpen(false)
-    setTxPendingMsg(undefined)
-    setTxHash(undefined)
-    setTxErrorMsg(undefined)
   }
 
   return (
@@ -124,8 +129,8 @@ export default function LpAddConsole(): JSX.Element {
         isOpen={modalOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
-        title={'Confirm Swap'}
-        buttonText={'Confirm'}
+        title={t(`Confirm`)}
+        buttonText={t(`Confirm`)}
         txError={txErrorMsg}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -143,8 +148,11 @@ export default function LpAddConsole(): JSX.Element {
           <CenteredRow style={{ justifyContent: 'center' }}>
             <InputGroup>
               <InputHeader>
-                <LightHeader>Max Input</LightHeader>
-                <ConsoleStat>Balance: {formatToUnit(balanceA, chainDecimals)}</ConsoleStat>
+                <LightHeader>{t(`Max Input`)}</LightHeader>
+                <ConsoleStat>
+                  {t(`Balance: `)}
+                  {formatToUnit(balanceA, chainDecimals)}
+                </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
                 <TokenInputAmount
@@ -166,8 +174,10 @@ export default function LpAddConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>Max Input</LightHeader>
-                <ConsoleStat>Balance: {formatToUnit(balanceB, chainDecimals)}</ConsoleStat>
+                <LightHeader>{t(`Max Input`)}</LightHeader>
+                <ConsoleStat>
+                  {t(`Balance: `)} {formatToUnit(balanceB, chainDecimals)}
+                </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
                 <TokenInputAmount
@@ -186,7 +196,7 @@ export default function LpAddConsole(): JSX.Element {
         </Section>
         <Section>
           <FlexWrapper style={{ marginTop: '4vh' }}>
-            <ButtonPrimary onClick={openModal}>Add Liquidity</ButtonPrimary>
+            <ButtonPrimary onClick={openModal}>{t(`Add Liquidity`)}</ButtonPrimary>
           </FlexWrapper>
         </Section>
       </Card>

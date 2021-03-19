@@ -10,6 +10,7 @@ import { Heading, StandardText } from 'components/Text'
 import useWallet from 'hooks/useWallet'
 import { RowBetween } from 'components/Row'
 import truncateAddress from 'utils/truncateAddress'
+import { useTranslation } from 'react-i18next'
 
 const tabData: Array<TabMetaData> = [
   {
@@ -40,6 +41,7 @@ export default function Account() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<string>('balances')
   const wallet = useWallet()
+  const { t } = useTranslation()
 
   const handleClick = (indexClicked: number) => {
     setActiveTabIndex(indexClicked)
@@ -62,24 +64,24 @@ export default function Account() {
       >
         <FlatCardPlate>
           <Section style={{ marginBottom: '1rem' }}>
-            <Heading>Account</Heading>
+            <Heading>{t(`Account`)}</Heading>
           </Section>
           {wallet && wallet.address && (
             <SpacedSection>
               <GridWrapper columns="2">
                 <Section>
                   <RowBetween>
-                    <StandardText>Wallet Type:</StandardText>
+                    <StandardText>{t(`Wallet Type`)}:</StandardText>
                     <StandardText>{wallet.type}</StandardText>
                   </RowBetween>
                   {wallet.type === 'custodial' && wallet.ethereumAddress && (
                     <RowBetween>
-                      <StandardText>Ethereum Address:</StandardText>
+                      <StandardText>{t(`Ethereum Address`)}:</StandardText>
                       <StandardText>{truncateAddress(wallet.ethereumAddress)}</StandardText>
                     </RowBetween>
                   )}
                   <RowBetween>
-                    <StandardText>Address:</StandardText>
+                    <StandardText>{t(`Address`)}:</StandardText>
                     <StandardText>{truncateAddress(wallet.address)}</StandardText>
                   </RowBetween>
                   <Section></Section>

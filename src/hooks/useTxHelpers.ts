@@ -5,6 +5,7 @@ import useWallet from './useWallet'
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
 import { formatToUnit } from 'utils/formatUnit'
 import { useSubstrate } from './useSubstrate'
+import { useTranslation } from 'react-i18next'
 
 export interface CreateTxParams {
   section: string
@@ -39,6 +40,7 @@ export default function useTxHelpers() {
   const wallet = useWallet()
   const [txMeta, setTxMeta] = useState<TxMeta>()
   const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
 
   // Create both the transaction and get the estimated payment info
   const createTx = ({
@@ -60,7 +62,7 @@ export default function useTxHelpers() {
   // Use signAndSend and output any errors
   const submitTx = ({ setTxErrorMsg, setTxHash, setTxPendingMsg }: SubmitTxParams) => {
     if (!connected || !wallet || !wallet.address || !txMeta) {
-      setTxErrorMsg('There was an error creating the transaction. Please try again.')
+      setTxErrorMsg(t(`There was an error creating the transaction. Please try again.`))
       return
     }
     signAndSendTx({

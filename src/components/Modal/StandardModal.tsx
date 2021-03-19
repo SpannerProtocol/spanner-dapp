@@ -3,6 +3,7 @@ import { RowBetween } from 'components/Row'
 import { ModalTitle } from 'components/Text'
 import { ModalWrapper, Section, SpacedSection } from 'components/Wrapper'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import { CloseIcon } from 'theme/components'
 import Modal from '.'
 
@@ -25,6 +26,7 @@ export default function StandardModal({
   onSubmit,
   buttonText,
 }: StandardModalProps) {
+  const { t } = useTranslation()
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90} desktopScroll={desktopScroll}>
       <ModalWrapper>
@@ -38,7 +40,7 @@ export default function StandardModal({
         {onSubmit && (
           <SpacedSection>
             <ButtonPrimary onClick={onSubmit} fontSize="12px">
-              {buttonText ? buttonText : 'Submit'}
+              {buttonText ? buttonText : t(`Submit`)}
             </ButtonPrimary>
           </SpacedSection>
         )}
