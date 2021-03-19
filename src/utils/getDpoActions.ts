@@ -267,6 +267,25 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
       })
     }
   }
+
+  if (dpoInfo.state.toString() === 'FAILED') {
+    if (dpoInfo.target.isTravelCabin) {
+      actions.push({
+        role: 'any',
+        hasGracePeriod: false,
+        action: 'withdrawFareFromTravelCabin',
+        dpoIndex: dpoInfo.index,
+      })
+    }
+    if (dpoInfo.target.isDpo) {
+      actions.push({
+        role: 'any',
+        hasGracePeriod: false,
+        action: 'releaseFareFromDpo',
+        dpoIndex: dpoInfo.index,
+      })
+    }
+  }
   return actions
 }
 
