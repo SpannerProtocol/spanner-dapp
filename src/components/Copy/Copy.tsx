@@ -11,6 +11,7 @@ const CopyIcon = styled(LinkStyledButton)`
   display: flex;
   text-decoration: none;
   font-size: 0.825rem;
+  padding: 0;
   :hover,
   :active,
   :focus {
@@ -43,9 +44,11 @@ export default function CopyHelper(props: CopyHelperProps) {
           <TransactionStatusText>{props.copiedText ? props.copiedText : 'Copied'}</TransactionStatusText>
         </TransactionStatusText>
       ) : (
-        <TransactionStatusText>{props.childrenIsIcon ? <div /> : <Copy size={'16'} />}</TransactionStatusText>
+        <>
+          {props.children}
+          <TransactionStatusText>{props.childrenIsIcon ? <div /> : <Copy size={'16'} />}</TransactionStatusText>
+        </>
       )}
-      {isCopied ? '' : props.children}
     </CopyIcon>
   )
 }
