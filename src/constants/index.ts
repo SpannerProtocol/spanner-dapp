@@ -30,11 +30,11 @@ export const SPANNER_PROVIDER_SOCKET = process.env.REACT_APP_SPANNER_PROVIDER_SO
 export const HAMMER_PROVIDER_SOCKET = process.env.REACT_APP_HAMMER_PROVIDER_SOCKET
 export const SPANNER_SUPPORTED_CHAINS = [
   {
-    chain: 'Spanner',
+    chain: 'Spanner Mainnet',
     providerSocket: SPANNER_PROVIDER_SOCKET,
   },
   {
-    chain: 'Hammer',
+    chain: 'Hammer Testnet',
     providerSocket: HAMMER_PROVIDER_SOCKET,
   },
 ]
