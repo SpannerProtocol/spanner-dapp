@@ -1,6 +1,5 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Divider from '@material-ui/core/Divider'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DisclaimerText, ModalText } from 'components/Text'
@@ -12,7 +11,6 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
-import { BorderedInput } from '../../components/Input'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit, unitToBn } from '../../utils/formatUnit'
@@ -31,29 +29,29 @@ import { Balance } from '@polkadot/types/interfaces'
 import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
 import { u32 } from '@polkadot/types'
 import BN from 'bn.js'
+import { BorderedInput } from '../../components/Input'
 
-interface SwapErrors {
-  slippage?: string
-  amountA?: string
-  amountB?: string
-}
+// interface SwapErrors {
+//   slippage?: string
+//   amountA?: string
+//   amountB?: string
+// }
 
 interface SwapData {
   amountA: number
   amountB: number
+  slippage: number
   displayHeader: string
   displayAmount: number
   tokenA: string
   tokenB: string
-  slippage: number
   averagePrice?: number
   estimatedFee?: string
-  isOnA: boolean
 }
 
 function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
   const { t } = useTranslation()
-  const { amountA, amountB, tokenA, tokenB, averagePrice, displayHeader, displayAmount, estimatedFee, isOnA } = data
+  const { amountA, amountB, tokenA, tokenB, slippage, averagePrice, displayHeader, displayAmount, estimatedFee } = data
   return (
     <>
       <Section>
@@ -79,17 +77,20 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
       <Section>
         <BorderedWrapper>
           <RowBetween>
-            <HeavyHeader>{t(`Price`)}</HeavyHeader>
+            <HeavyHeader>{t(`Average Swap Price`)}</HeavyHeader>
             <ConsoleStat>
               {averagePrice?.toFixed(3)} {tokenA} / {tokenB}
             </ConsoleStat>
+          </RowBetween>
+          <RowBetween>
+            <HeavyHeader>{t(`Slippage`)}</HeavyHeader>
+            <ConsoleStat>{slippage.toFixed(2)}%</ConsoleStat>
           </RowBetween>
           <RowBetween>
             <HeavyHeader>{t(displayHeader)}</HeavyHeader>
             <ConsoleStat>
               {displayAmount.toFixed(5)} {tokenB}
             </ConsoleStat>
-            {isOnA}
           </RowBetween>
         </BorderedWrapper>
       </Section>
@@ -107,13 +108,14 @@ export default function SwapConsole(): JSX.Element {
   const [isOnA, setOnA] = useState<boolean>(false)
   const [fromHeader, setFromHeader] = useState<string>()
   const [toHeader, setToHeader] = useState<string>()
-  const [slippage, setSlippage] = useState<number>(0)
-  const [errors, setErrors] = useState<SwapErrors>({})
+  const [slippage, setSlippage] = useState<number>(0.5)
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [price, setPrice] = useState<number>(0)
   const [supplyAmount, setSupplyAmount] = useState<BN>(new BN(0))
   const [targetAmount, setTargetAmount] = useState<BN>(new BN(0))
+  const [supplyAmountWithSlippage, setSupplyAmountWithSlippage] = useState<BN>(new BN(0))
+  const [targetAmountWithSlippage, setTargetAmountWithSlippage] = useState<BN>(new BN(0))
   const [fee, setFee] = useState<[u32, u32]>()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
@@ -155,19 +157,6 @@ export default function SwapConsole(): JSX.Element {
     setAmountB(value)
   }
 
-  const handleSlippage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    const re = /^(?:0*(?:\.\d+)?|1(\.0*)?)$/
-    if (value === '' || re.test(value)) {
-      let tolerance = parseFloat(value)
-      tolerance = Number.isNaN(tolerance) ? 0 : tolerance
-      setErrors({ ...errors, slippage: undefined })
-      setSlippage(tolerance)
-    } else {
-      setErrors({ ...errors, slippage: t(`Should be a decimal between 0 - 1`) })
-    }
-  }
-
   const openModal = () => {
     let txData
     if (isOnA) {
@@ -177,7 +166,7 @@ export default function SwapConsole(): JSX.Element {
         params: {
           path: [{ Token: tokenA }, { Token: tokenB }],
           supplyAmount: supplyAmount,
-          minTargetAmount: targetAmount,
+          minTargetAmount: targetAmountWithSlippage,
         },
       })
     } else {
@@ -187,7 +176,7 @@ export default function SwapConsole(): JSX.Element {
         params: {
           path: [{ Token: tokenA }, { Token: tokenB }],
           target: targetAmount,
-          maxSupplyAmount: supplyAmount,
+          maxSupplyAmount: supplyAmountWithSlippage,
         },
       })
     }
@@ -224,6 +213,9 @@ export default function SwapConsole(): JSX.Element {
     if (targetAmount.isZero()) {
       setAmountB(0)
     } else {
+      //2 decimal place
+      const amountWithSlippage = targetAmount.sub(targetAmount.div(new BN(10000)).mul(new BN(slippage * 100)))
+      setTargetAmountWithSlippage(amountWithSlippage)
       const targetStr = targetAmount.toString()
       if (targetStr.length > chainDecimals) {
         const number = targetStr.slice(0, targetStr.length - chainDecimals)
@@ -235,12 +227,15 @@ export default function SwapConsole(): JSX.Element {
         setAmountB(parseFloat('0.' + zeros + targetStr))
       }
     }
-  }, [targetAmount, chainDecimals])
+  }, [targetAmount, chainDecimals, slippage])
 
   useEffect(() => {
     if (supplyAmount.isZero()) {
       setAmountA(0)
     } else {
+      //2 decimal place
+      const amountWithSlippage = supplyAmount.add(supplyAmount.div(new BN(10000)).mul(new BN(slippage * 100)))
+      setSupplyAmountWithSlippage(amountWithSlippage)
       const supplyStr = supplyAmount.toString()
       if (supplyStr.length > chainDecimals) {
         const number = supplyStr.slice(0, supplyStr.length - chainDecimals)
@@ -252,7 +247,7 @@ export default function SwapConsole(): JSX.Element {
         setAmountA(parseFloat('0.' + zeros + supplyStr))
       }
     }
-  }, [supplyAmount, chainDecimals])
+  }, [supplyAmount, chainDecimals, slippage])
 
   useEffect(() => {
     if (isOnA) {
@@ -326,9 +321,10 @@ export default function SwapConsole(): JSX.Element {
             slippage,
             averagePrice: !amountA ? 0 : amountB / amountA,
             displayHeader: isOnA ? 'Minimum Received' : 'Maximum Used',
-            displayAmount: isOnA ? amountB : amountA,
+            displayAmount: isOnA
+              ? amountB * (1 - parseFloat(slippage.toFixed(2)) / 100)
+              : amountA * (1 + parseFloat(slippage.toFixed(2)) / 100),
             estimatedFee: txInfo?.estimatedFee,
-            isOnA,
           }}
         />
       </TxModal>
@@ -389,23 +385,48 @@ export default function SwapConsole(): JSX.Element {
             </InputGroup>
           </CenteredRow>
         </Section>
-        <Divider variant="middle" style={{ margin: '1rem 0 1rem 0' }} />
         <Section>
           <CenteredRow>
-            <InputGroup>
-              <InputHeader>
-                <LightHeader>{t(`Slippage`)}</LightHeader>
-              </InputHeader>
-              <BorderedInput
-                required
-                id="tokenb-amount-textfield"
-                type="string"
-                placeholder="0.0"
-                onChange={(e) => handleSlippage(e)}
-                style={{ alignItems: 'flex-end', width: '100%' }}
-              />
-              {errors.slippage && <ErrorMsg>{errors.slippage}</ErrorMsg>}
-            </InputGroup>
+            <ButtonPrimary
+              onClick={() => {
+                setSlippage(0.1)
+              }}
+              margin="3px"
+              padding="0.45rem"
+              fontSize="12px"
+            >
+              {t(`0.1%`)}
+            </ButtonPrimary>
+            <ButtonPrimary
+              onClick={() => {
+                setSlippage(0.5)
+              }}
+              margin="3px"
+              padding="0.45rem"
+              fontSize="12px"
+            >
+              {t(`0.5%`)}
+            </ButtonPrimary>
+            <ButtonPrimary
+              onClick={() => {
+                setSlippage(1)
+              }}
+              margin="3px"
+              padding="0.45rem"
+              fontSize="12px"
+            >
+              {t(`1%`)}
+            </ButtonPrimary>
+            <BorderedInput
+              required
+              id="tokenb-amount-textfield"
+              type="number"
+              onChange={(e) => {
+                setSlippage(parseFloat(e.target.value))
+              }}
+              value={slippage}
+              style={{ margin: '3px', alignItems: 'flex-end', padding: '0.35rem', fontSize: '12px' }}
+            />
           </CenteredRow>
         </Section>
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
@@ -428,7 +449,7 @@ export default function SwapConsole(): JSX.Element {
           </InputHeader>
         </Section>
         <Section>
-          {supplyAmount.gt(balanceA) || errors.slippage || poolQueryError ? (
+          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError ? (
             <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
           ) : (
             <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>
