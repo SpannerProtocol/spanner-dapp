@@ -13,7 +13,7 @@ import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
-import { formatToUnit, unitToBn } from '../../utils/formatUnit'
+import { formatToUnit } from '../../utils/formatUnit'
 import {
   ConsoleStat,
   ErrorMsg,
@@ -219,7 +219,7 @@ export default function SwapConsole(): JSX.Element {
       const targetStr = targetAmount.toString()
       if (targetStr.length > chainDecimals) {
         const number = targetStr.slice(0, targetStr.length - chainDecimals)
-        const decimal = targetStr.slice(targetStr.length - chainDecimals)
+        const decimal = targetStr.slice(targetStr.length - chainDecimals, targetStr.length)
         setAmountB(parseFloat(number + '.' + decimal))
       } else {
         const numberOfZeros = chainDecimals - targetStr.length
@@ -239,7 +239,7 @@ export default function SwapConsole(): JSX.Element {
       const supplyStr = supplyAmount.toString()
       if (supplyStr.length > chainDecimals) {
         const number = supplyStr.slice(0, supplyStr.length - chainDecimals)
-        const decimal = supplyStr.slice(supplyStr.length - chainDecimals)
+        const decimal = supplyStr.slice(supplyStr.length - chainDecimals, supplyStr.length)
         setAmountA(parseFloat(number + '.' + decimal))
       } else {
         const numberOfZeros = chainDecimals - supplyStr.length
@@ -260,13 +260,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        let supply
-        if (amountA >= 1) {
-          supply = unitToBn(amountA, chainDecimals)
-        } else {
-          //less than 0
-          supply = new BN(amountA * 10 ** chainDecimals)
-        }
+        const supply = new BN(amountA * 10 ** chainDecimals)
         setSupplyAmount(supply)
         if (supply.lte(balanceA)) {
           setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
@@ -282,13 +276,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        let target
-        if (amountB >= 1) {
-          target = unitToBn(amountB, chainDecimals)
-        } else {
-          //less than 0
-          target = new BN(amountB * 10 ** chainDecimals)
-        }
+        const target = new BN(amountB * 10 ** chainDecimals)
         setTargetAmount(target)
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
