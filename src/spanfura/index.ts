@@ -22,24 +22,58 @@ export interface SpanfuraParams {
   module?: string
   call?: string
   success?: 'true' | false
-  params?: string
+  param_match?: string
+}
+
+export interface SpanfuraExtrinsicsParams extends SpanfuraParams {
   address?: string
 }
 
 // Get the deposit address
-export function postScanExtrinsics(params: SpanfuraParams) {
-  return axios.post<string>(`${spanfuraHost}/scan/extrinsics`, params, {
+export function postScanExtrinsics(params: SpanfuraExtrinsicsParams) {
+  return axios.post(`${spanfuraHost}/scan/extrinsics`, params, {
     httpAgent,
   })
 }
 
-// Interfaces for Events response
-interface SpanfuraEventsDataEventsParamsJson {
-  type: string
-  value: any
+// All Spanfura responses will contain these three fields
+interface SpanfuraResponseCore {
+  code: number
+  message: string
+  ttl: number
 }
 
-export interface SpanfuraEventsDataEvents {
+export interface SpanfuraDataExtrinsic {
+  block_timestamp: number
+  block_num: number
+  extrinsic_index: string
+  call_module_function: string
+  call_module: string
+  params: string
+  account_id: string
+  account_index: string
+  signature: string
+  nonce: number
+  extrinsic_hash: string
+  success: boolean
+  fee: string
+  params_json: Array<{
+    name: string
+    type: string
+    value: any
+    valueRaw: string
+  }>
+}
+
+export interface SpanfuraExtrinsicsResponse {
+  data: {
+    count: number
+    extrinsics: Array<SpanfuraDataExtrinsic>
+  }
+}
+
+// Interfaces for Events response
+export interface SpanfuraDataEvents {
   block_num: number
   block_timestamp: number
   event_id: string
@@ -49,19 +83,17 @@ export interface SpanfuraEventsDataEvents {
   extrinsic_idx: number
   module_id: string
   params: string
-  params_json: Array<SpanfuraEventsDataEventsParamsJson>
+  params_json: Array<{
+    type: string
+    value: any
+  }>
 }
 
-interface SpanfuraEventsData {
-  count: number
-  events: Array<SpanfuraEventsDataEvents>
-}
-
-export interface SpanfuraEventsSchema {
-  code: number
-  data: SpanfuraEventsData
-  message: string
-  ttl: number
+export interface SpanfuraEventsResponse extends SpanfuraResponseCore {
+  data: {
+    count: number
+    events: Array<SpanfuraDataEvents>
+  }
 }
 
 // Ethereum to Spanner deposit check

@@ -8,11 +8,11 @@ export const ModalTitle = styled.span`
   margin: 0;
 `
 
-export const HeavyText = styled.div<{ fontSize?: string; color?: string }>`
+export const HeavyText = styled.div<{ fontSize?: string; fontWeight?: string; color?: string }>`
   width: 100%;
-  color: ${({ color, theme }) => (color ? color : theme.text2)};
+  color: ${({ color, theme }) => (color ? color : theme.text3)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
-  font-weight: 700;
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   margin: 0;
 `
 
