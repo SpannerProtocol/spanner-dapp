@@ -22,8 +22,6 @@ export function SubstrateProvider({ children }: any): JSX.Element {
   const { api, connected } = useApi()
   const [constants, setConstants] = useState<SubstrateState>(DEFAULT_STATE)
   const [networkName, setNetworkName] = useState<string>()
-  // api.runtimeChain.registry.chainToken
-  // api.runtimeMetadata.registry.chainDecimals
 
   useEffect(() => {
     if (!connected) return
@@ -32,8 +30,6 @@ export function SubstrateProvider({ children }: any): JSX.Element {
 
   useEffect(() => {
     if (!connected) return
-    console.log('DEBUG NEW TOKENS:', api.registry.chainTokens)
-    console.log('DEBUG NEW CHAINDECIMALS:', api.registry.chainDecimals)
     setConstants({
       chain: networkName,
       genesis: api.genesisHash.toString(),
