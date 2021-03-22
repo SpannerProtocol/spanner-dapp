@@ -29,7 +29,8 @@ import { Balance } from '@polkadot/types/interfaces'
 import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
 import { u32 } from '@polkadot/types'
 import BN from 'bn.js'
-import { BorderedInput } from '../../components/Input'
+import SlippageTabs from '../../components/TransactionSettings'
+import { useUserSlippageTolerance } from '../../state/user/hooks'
 
 // interface SwapErrors {
 //   slippage?: string
@@ -84,7 +85,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
           </RowBetween>
           <RowBetween>
             <HeavyHeader>{t(`Slippage`)}</HeavyHeader>
-            <ConsoleStat>{slippage.toFixed(2)}%</ConsoleStat>
+            <ConsoleStat>{slippage / 100}%</ConsoleStat>
           </RowBetween>
           <RowBetween>
             <HeavyHeader>{t(displayHeader)}</HeavyHeader>
@@ -100,6 +101,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
 }
 
 export default function SwapConsole(): JSX.Element {
+  const [slippage, setSlippage] = useUserSlippageTolerance()
   const { chainDecimals } = useSubstrate()
   const [tokenA, setTokenA] = useState<string>('BOLT')
   const [tokenB, setTokenB] = useState<string>('WUSD')
@@ -108,7 +110,6 @@ export default function SwapConsole(): JSX.Element {
   const [isOnA, setOnA] = useState<boolean>(false)
   const [fromHeader, setFromHeader] = useState<string>()
   const [toHeader, setToHeader] = useState<string>()
-  const [slippage, setSlippage] = useState<number>(0.5)
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [price, setPrice] = useState<number>(0)
@@ -187,6 +188,10 @@ export default function SwapConsole(): JSX.Element {
   }
 
   useEffect(() => {
+    setSlippage(50)
+  }, [setSlippage])
+
+  useEffect(() => {
     if (poolError) {
       setPoolQueryError(poolError)
       return
@@ -213,13 +218,12 @@ export default function SwapConsole(): JSX.Element {
     if (targetAmount.isZero()) {
       setAmountB(0)
     } else {
-      //2 decimal place
-      const amountWithSlippage = targetAmount.sub(targetAmount.div(new BN(10000)).mul(new BN(slippage * 100)))
+      const amountWithSlippage = targetAmount.sub(targetAmount.div(new BN(10000)).mul(new BN(slippage)))
       setTargetAmountWithSlippage(amountWithSlippage)
       const targetStr = targetAmount.toString()
       if (targetStr.length > chainDecimals) {
         const number = targetStr.slice(0, targetStr.length - chainDecimals)
-        const decimal = targetStr.slice(targetStr.length - chainDecimals, targetStr.length)
+        const decimal = targetStr.slice(targetStr.length - chainDecimals)
         setAmountB(parseFloat(number + '.' + decimal))
       } else {
         const numberOfZeros = chainDecimals - targetStr.length
@@ -233,13 +237,12 @@ export default function SwapConsole(): JSX.Element {
     if (supplyAmount.isZero()) {
       setAmountA(0)
     } else {
-      //2 decimal place
-      const amountWithSlippage = supplyAmount.add(supplyAmount.div(new BN(10000)).mul(new BN(slippage * 100)))
+      const amountWithSlippage = supplyAmount.add(supplyAmount.div(new BN(10000)).mul(new BN(slippage)))
       setSupplyAmountWithSlippage(amountWithSlippage)
       const supplyStr = supplyAmount.toString()
       if (supplyStr.length > chainDecimals) {
         const number = supplyStr.slice(0, supplyStr.length - chainDecimals)
-        const decimal = supplyStr.slice(supplyStr.length - chainDecimals, supplyStr.length)
+        const decimal = supplyStr.slice(supplyStr.length - chainDecimals)
         setAmountA(parseFloat(number + '.' + decimal))
       } else {
         const numberOfZeros = chainDecimals - supplyStr.length
@@ -309,9 +312,7 @@ export default function SwapConsole(): JSX.Element {
             slippage,
             averagePrice: !amountA ? 0 : amountB / amountA,
             displayHeader: isOnA ? 'Minimum Received' : 'Maximum Used',
-            displayAmount: isOnA
-              ? amountB * (1 - parseFloat(slippage.toFixed(2)) / 100)
-              : amountA * (1 + parseFloat(slippage.toFixed(2)) / 100),
+            displayAmount: isOnA ? amountB * (1 - slippage / 10000) : amountA * (1 + slippage / 10000),
             estimatedFee: txInfo?.estimatedFee,
           }}
         />
@@ -374,48 +375,7 @@ export default function SwapConsole(): JSX.Element {
           </CenteredRow>
         </Section>
         <Section>
-          <CenteredRow>
-            <ButtonPrimary
-              onClick={() => {
-                setSlippage(0.1)
-              }}
-              margin="3px"
-              padding="0.45rem"
-              fontSize="12px"
-            >
-              {t(`0.1%`)}
-            </ButtonPrimary>
-            <ButtonPrimary
-              onClick={() => {
-                setSlippage(0.5)
-              }}
-              margin="3px"
-              padding="0.45rem"
-              fontSize="12px"
-            >
-              {t(`0.5%`)}
-            </ButtonPrimary>
-            <ButtonPrimary
-              onClick={() => {
-                setSlippage(1)
-              }}
-              margin="3px"
-              padding="0.45rem"
-              fontSize="12px"
-            >
-              {t(`1%`)}
-            </ButtonPrimary>
-            <BorderedInput
-              required
-              id="tokenb-amount-textfield"
-              type="number"
-              onChange={(e) => {
-                setSlippage(parseFloat(e.target.value))
-              }}
-              value={slippage}
-              style={{ margin: '3px', alignItems: 'flex-end', padding: '0.35rem', fontSize: '12px' }}
-            />
-          </CenteredRow>
+          <SlippageTabs rawSlippage={slippage} setRawSlippage={setSlippage} />
         </Section>
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <InputHeader>
