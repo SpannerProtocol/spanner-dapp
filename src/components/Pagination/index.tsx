@@ -13,7 +13,7 @@ const PageButtons = styled.button`
   max-width: 1.5rem;
   color: ${({ theme }) => theme.primary1};
   :disabled {
-    color: ${({ theme }) => theme.text3};
+    color: ${({ theme }) => theme.text5};
   }
 `
 
