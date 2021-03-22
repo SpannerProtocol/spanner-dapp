@@ -11,7 +11,7 @@ import { Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useDpoActions } from 'hooks/useDpoActions'
 import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
-import { useGetTravelCabinInventoryIndex } from 'hooks/useQueryTravelCabins'
+import { useDPOTravelCabinInventoryIndex } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { CreateTxParams } from 'hooks/useTxHelpers'
 import React, { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from 'react'
@@ -104,7 +104,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
   const { api, connected } = useApi()
   const { dpoActions, targetTravelCabin, targetTravelCabinInventory, targetDpo } = useDpoActions(dpoInfo)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
-  const targetInventoryIndex = useGetTravelCabinInventoryIndex(dpoInfo.index.toString(), targetTravelCabin?.index)
+  const targetInventoryIndex = useDPOTravelCabinInventoryIndex(dpoInfo.index.toString(), targetTravelCabin?.index)
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { chainDecimals } = useSubstrate()
 

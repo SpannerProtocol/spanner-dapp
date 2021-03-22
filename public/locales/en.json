@@ -220,5 +220,6 @@
   "Your latest transactions. Each transaction shows the transaction hash, details and fee.": "Your latest transactions. Each transaction shows the transaction hash, details and fee.",
   "Transfers": "Transfers",
   "To": "To",
-  "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.": "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred."
+  "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.": "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.",
+  "Buyer Information": "Buyer Information"
 }

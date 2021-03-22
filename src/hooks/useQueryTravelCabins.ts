@@ -71,29 +71,8 @@ export function useSubTravelCabinCount(): TravelCabinIndex | undefined {
 
   return travelCabinCount
 }
-/**
- * Get the travel cabin buyer
- * @param travelCabinIndex
- * @param travelCabinInventoryIndex
- */
-export function useSubTravelCabinBuyer(
-  travelCabinIndex: TravelCabinIndex | number | string,
-  travelCabinInventoryIndex: TravelCabinInventoryIndex | number | string | null
-): TravelCabinBuyerInfo | undefined {
-  const { api, connected } = useApi()
-  const [inventory, setInventory] = useState<TravelCabinBuyerInfo>()
 
-  useEffect(() => {
-    if (!connected || !travelCabinInventoryIndex) return
-    api.query.bulletTrain.travelCabinBuyer(travelCabinIndex, travelCabinInventoryIndex, (result) => {
-      setInventory(result.unwrapOrDefault())
-    })
-  }, [api, connected, travelCabinIndex, travelCabinInventoryIndex])
-
-  return inventory
-}
-
-export function useGetTravelCabinInventoryIndex(
+export function useDPOTravelCabinInventoryIndex(
   dpoIndex: string,
   travelCabinIndex?: TravelCabinIndex | number | string
 ) {
@@ -116,6 +95,28 @@ export function useGetTravelCabinInventoryIndex(
   }, [api, connected, travelCabinIndex, dpoIndex])
 
   return inventoryIndex
+}
+
+/**
+ * Get an array of all TravelCabin
+ * @param travelCabinIndex Index of TravelCabin
+ */
+export function useTravelCabinBuyers(travelCabinIndex: number | string | TravelCabinIndex) {
+  const { api, connected } = useApi()
+  const [buyers, setBuyers] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo][]>([])
+
+  useEffect(() => {
+    if (!connected || !travelCabinIndex) return
+    api.query.bulletTrain.travelCabinBuyer.entries(travelCabinIndex).then((entries) => {
+      entries.forEach((entry) => {
+        if (entry[1].isSome) {
+          setBuyers((prev) => [...prev, [entry[0].args, entry[1].unwrapOrDefault()]])
+        }
+      })
+    })
+  }, [api, connected, travelCabinIndex])
+
+  return buyers
 }
 
 export function useSubTravelCabinInventory(
