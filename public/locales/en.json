@@ -208,5 +208,16 @@
   "Passengers Aboard": "Passengers Aboard",
   "Yield Distributed": "Yield Distributed",
   "Ticket Fares Stored": "Ticket Fares Stored",
-  "Transaction History": "Transaction History"
+  "Transaction History": "Transaction History",
+  "Go to your Browser Extension Wallet to disconnect with this Wallet.": "Go to your Browser Extension Wallet to disconnect with this Wallet.",
+  "Connected with": "Connected with",
+  "Disconnect": "Disconnect", 
+  "Change": "Change",
+  "Module": "Module",
+  "Method": "Method",
+  "bullettrain": "bullettrain",
+  "Your latest transactions. Each transaction shows the transaction hash, details and fee.": "Your latest transactions. Each transaction shows the transaction hash, details and fee.",
+  "Transfers": "Transfers",
+  "To": "To",
+  "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.": "Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred."
 }
