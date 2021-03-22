@@ -3,7 +3,7 @@ import type { InjectedExtension } from '@polkadot/extension-inject/types'
 import { Web3Provider } from '@ethersproject/providers'
 import getUserAddress from 'utils/getUserAddress'
 import Keyring from '@polkadot/keyring'
-
+import { u8aToHex } from '@polkadot/util'
 export interface WalletInfo {
   type?: string
   custodialProvider?: Web3Provider
@@ -41,5 +41,5 @@ export default function getWalletInfo(
 export function getUserPublicKey(address: string) {
   const keyring = new Keyring()
   const account = keyring.addFromAddress(address)
-  return account.publicKey
+  return u8aToHex(account.publicKey)
 }

@@ -22,7 +22,7 @@ export interface SpanfuraParams {
   module?: string
   call?: string
   success?: 'true' | false
-  params?: string
+  param_match?: string
 }
 
 export interface SpanfuraExtrinsicsParams extends SpanfuraParams {
