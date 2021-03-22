@@ -19,7 +19,7 @@ export function formatToUnit(
   return balanceStr
 }
 
-export function formatToHumanFromUnit(balance: number | BN | BigNumber | string, decimals: number, precision?: number) {
+export function formatToHumanFromUnit(balance: number | BN | BigNumber | string, decimals: number) {
   const strippedBalance = formatToUnit(balance, decimals, 0, true)
   return toHumanNumber(parseInt(strippedBalance), 0)
 }
