@@ -40,20 +40,47 @@ export function useCurrentTime(): Moment | undefined {
   return currentTime
 }
 
+/**
+ * Returns genesis ts in milliseconds
+ */
+export function useGenesisTime(): number | undefined {
+  const { api, connected } = useApi()
+  const expectedBlockTime = useExpectedBlockTime()
+  const [genesisTs, setGenesisTs] = useState<number>()
+
+  useEffect(() => {
+    if (!connected || !expectedBlockTime) return
+    // Get Genesis timestamp
+    api.rpc.chain.getBlockHash(1).then((blockHash) =>
+      api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
+        const methodSetTs = signedBlock.block.extrinsics.find(
+          (info) => info.method.method === 'set' && info.method.section === 'timestamp'
+        )
+        if (methodSetTs) setGenesisTs(parseInt(methodSetTs.method.args.toString()) - expectedBlockTime.toNumber())
+      })
+    )
+  }, [api, connected, expectedBlockTime])
+
+  return genesisTs
+}
+
 interface BlockState {
   lastBlock?: BlockNumber
   expectedBlockTime?: Moment
   currentTime?: Moment
+  genesisTs?: number
 }
 
 export function useBlockManager(): BlockState {
   const expectedBlockTime = useExpectedBlockTime()
   const lastBlock = useSubLastBlock()
   const currentTime = useCurrentTime()
+  const genesisTs = useGenesisTime()
 
   return {
     lastBlock,
     expectedBlockTime,
     currentTime,
+    genesisTs,
   }
 }
