@@ -1,6 +1,6 @@
 import { ApiPromise } from '@polkadot/api'
+import { postScanExtrinsics, SpanfuraExtrinsicsResponse } from 'spanfura'
 import { DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces/types'
-import { postScanEvents, SpanfuraEventsSchema } from 'spanfura'
 import { WalletInfo } from './getWalletInfo'
 
 export interface TravelCabinData {
@@ -18,23 +18,20 @@ export function getTargetTravelCabin(api: ApiPromise, wallet: WalletInfo, dpoInf
     .travelCabins(dpoInfo.target.asTravelCabin.toString())
     .then((result) => result.unwrapOrDefault())
   // Get the TravelCabinInventoryIndex
-  const travelCabinInventoryPromise = postScanEvents({
+  const travelCabinInventoryPromise = postScanExtrinsics({
     row: 100,
     page: 0,
-    module: 'bulletTrain',
-    call: 'DpoBuyTravelCabin',
-    address: wallet.address,
+    module: 'bullettrain',
+    call: 'dpo_buy_travelcabin',
     success: 'true',
-  }).then((response) => {
-    const eventsData: SpanfuraEventsSchema = response.data
-    if (!eventsData.data.events) {
+  }).then((response: SpanfuraExtrinsicsResponse) => {
+    if (!response.data.extrinsics) {
       // Add global error
       return
     }
-    const paramsJson = eventsData.data.events.map((events) => events.params_json)
     const targetTravelCabinData: TravelCabinData = {}
-    paramsJson.forEach((paramSet) => {
-      paramSet.forEach((param) => {
+    response.data.extrinsics.forEach((extrinsic) => {
+      extrinsic.params_json.forEach((param) => {
         if (param.type === 'TravelCabinIndex' && param.value === dpoInfo.target.asTravelCabin.toNumber()) {
           targetTravelCabinData.index = param.value
         }

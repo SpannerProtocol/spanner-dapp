@@ -19,17 +19,17 @@ const tabData: Array<TabMetaData> = [
     label: 'Balances',
   },
   {
-    id: 'tab-lp-portfolio',
+    id: 'tab-portfolio',
     className: 'tab portfolio-container',
     label: 'Portfolio',
   },
   {
-    id: 'tab-lp-bridge',
+    id: 'tab-bridge',
     className: 'tab bridge-container',
     label: 'Bridge',
   },
   {
-    id: 'tab-lp-faucet',
+    id: 'tab-faucet',
     className: 'tab faucet-container',
     label: 'Faucet',
   },

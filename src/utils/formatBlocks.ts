@@ -19,5 +19,5 @@ export function tsToDateTimeHuman(timestamp: number) {
   return moment.unix(timestamp).format('MMMM Do YYYY, h:mm:ss a')
 }
 export function tsToRelative(timestamp: number) {
-  return moment.unix(timestamp).startOf('hour').fromNow()
+  return moment.unix(timestamp).startOf('second').fromNow()
 }

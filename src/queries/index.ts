@@ -1,29 +1,74 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Dispatch, SetStateAction } from 'react'
-import { postScanEvents, SpanfuraEventsSchema, SpanfuraEventsDataEvents, SpanfuraParams } from 'spanfura'
+import {
+  SpanfuraExtrinsicsParams,
+  postScanExtrinsics,
+  postScanEvents,
+  SpanfuraExtrinsicsResponse,
+  SpanfuraDataExtrinsic,
+  SpanfuraEventsResponse,
+  SpanfuraDataEvents,
+} from 'spanfura'
+import { AxiosResponse } from 'axios'
+// import { encodeAddress } from '@polkadot/keyring'
+import { getUserPublicKey } from 'utils/getWalletInfo'
 
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
 
-interface QueryParams extends SpanfuraParams {
-  setData: Dispatcher<SpanfuraEventsDataEvents[]>
+interface TxQueryParams extends SpanfuraExtrinsicsParams {
+  setData: Dispatcher<SpanfuraDataExtrinsic[]>
 }
 
-export function postTxHistory({ row, page, module, call, params, address, success = 'true', setData }: QueryParams) {
+interface EventQueryParams extends SpanfuraExtrinsicsParams {
+  setData: Dispatcher<SpanfuraDataEvents[]>
+  setMeta: Dispatcher<{ count: number }>
+}
+
+/**
+ * Get Transactions for the provided address.
+ */
+export function postTxHistory({ row, page, address, success = 'true', setData }: TxQueryParams) {
+  postScanExtrinsics({
+    row,
+    page,
+    address,
+    success,
+  }).then((response: AxiosResponse<SpanfuraExtrinsicsResponse>) => {
+    if (!response.data.data.extrinsics) {
+      setData([])
+      return
+    }
+    response.data.data.extrinsics.forEach((tx) => {
+      setData((prev) => [...prev, tx])
+    })
+  })
+}
+
+/**
+ * Get balance.transfers from events api.
+ * Addresses returned will be formatted in SS58.
+ */
+export function postTransfers({ row, page, address, success = 'true', setData, setMeta }: EventQueryParams) {
+  if (!address) return
+  // Filter for the users address as a hex
+  let addressHex = getUserPublicKey(address)
+  addressHex = addressHex.slice(2, addressHex.length)
   postScanEvents({
     row,
     page,
-    module,
-    call,
-    params,
-    address,
+    module: 'balances',
+    call: 'transfer',
+    param_match: `%${addressHex}%`,
     success,
-  }).then((response) => {
-    const eventsData: SpanfuraEventsSchema = response.data
-    if (!eventsData.data.events) {
-      // Add global error
+  }).then((response: AxiosResponse<SpanfuraEventsResponse>) => {
+    if (!response.data.data.events) {
+      setData([])
       return
     }
-    eventsData.data.events.forEach((event) => {
-      console.log(event)
+    // Every call should return a fresh response because pagination is handled server side
+    setData([])
+    setMeta({ count: response.data.data.count })
+    response.data.data.events.forEach((event) => {
       setData((prev) => [...prev, event])
     })
   })

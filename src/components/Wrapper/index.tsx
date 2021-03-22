@@ -117,6 +117,19 @@ export const StateWrapper = styled(RoundWrapper)`
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
 `
 
+export const FeeWrapper = styled.div<{ borderColor?: string; background?: string }>`
+  display: block;
+  align-items: center;
+  font-size: 10px;
+  width: fit-content;
+  color: ${({ color, theme }) => (color ? color : theme.text3)}
+  background: ${({ background, theme }) => (background ? background : theme.text5)}
+  border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'none')} !important;
+  border-radius: 8px;
+  padding: 0.5rem;
+  overflow-wrap: anywhere;
+`
+
 export const BorderedSelection = styled(BorderedWrapper)`
   cursor: pointer;
   :hover {
