@@ -65,14 +65,14 @@ export default function BulletTrainStats({ token }: { token: string }) {
         </ThinShadowCard>
         <ThinShadowCard background={background}>
           <StatValue>
-            {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals, 0)}{' '}
+            {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals)}{' '}
             <DataTokenName color="white">{token}</DataTokenName>
           </StatValue>
           <StatText>{t(`Yield Distributed`)}</StatText>
         </ThinShadowCard>
         <ThinShadowCard background={background}>
           <StatValue>
-            {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals, 0)}{' '}
+            {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals)}{' '}
             <DataTokenName color="white">{token}</DataTokenName>
           </StatValue>
           <StatText>{t(`Ticket Fares Stored`)}</StatText>
