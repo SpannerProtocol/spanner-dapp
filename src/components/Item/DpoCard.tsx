@@ -57,7 +57,7 @@ function CardContent(props: DpoCard) {
                   totalDeposit: dpoInfo.target_amount.toBn(),
                   chainDecimals: chainDecimals,
                   blocksInPeriod: expectedBlockTime,
-                  days: 365 / 2,
+                  period: dpoInfo.target_maturity,
                 }).toString()} %`}
               </StandardText>
             </RowBetween>

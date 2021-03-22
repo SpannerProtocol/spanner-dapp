@@ -37,9 +37,9 @@ import { useProjectManager } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
-import getApy from 'utils/getApy'
-import getCabinClass from 'utils/getCabinClass'
-import truncateString from 'utils/truncateString'
+import getApy from '../../../utils/getApy'
+import getCabinClass from '../../../utils/getCabinClass'
+import truncateString from '../../../utils/truncateString'
 import DpoActions from './actions'
 import TxFee from 'components/TxFee'
 import { useTranslation } from 'react-i18next'
@@ -193,7 +193,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
       <Section>
         <RowBetween>
           <RowFixed>
-            <StandardText>Seat Price</StandardText>
+            <StandardText>{t(`Seat Price`)}</StandardText>
             <QuestionHelper
               text={t(
                 `The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.`
@@ -859,12 +859,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>{t(`DPO Name`)}</StandardText>
                 <StandardText>{dpoInfo.name}</StandardText>
               </RowBetween>
-              <RowBetween>
-                <StandardText>{t(`Ends`)}</StandardText>
-                <StandardText>
-                  {t(`Block`)} #{dpoInfo.expiry_blk.toString()}
-                </StandardText>
-              </RowBetween>
+              {dpoInfo.state.eq('CREATED') && (
+                <RowBetween>
+                  <StandardText>{t(`Ends`)}</StandardText>
+                  <StandardText>
+                    {t(`Block`)} #{dpoInfo.expiry_blk.toString()}
+                  </StandardText>
+                </RowBetween>
+              )}
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`Crowdfunding Information`)}</SmallText>
@@ -897,6 +899,12 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 </StandardText>
               </RowBetween>
               <RowBetween>
+                <StandardText>{t(`Target Maturity`)}</StandardText>
+                <StandardText>
+                  {t(`Block`)} #{dpoInfo.target_maturity.toString()}
+                </StandardText>
+              </RowBetween>
+              <RowBetween>
                 <StandardText>{t(`Bonus`)}</StandardText>
                 <StandardText>
                   {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
@@ -911,6 +919,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                       totalDeposit: dpoInfo.target_amount.toBn(),
                       chainDecimals: chainDecimals,
                       blocksInPeriod: expectedBlockTime,
+                      period: dpoInfo.target_maturity,
                     }).toString()}% APY)`}
                   </StandardText>
                 </RowBetween>
