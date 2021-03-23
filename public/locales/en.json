@@ -78,7 +78,6 @@
   "Select a Project": "Select a Project",
   "Instructions": "Instructions",
   "TravelCabins": "TravelCabins",
-  "DPO Passenger Groups": "DPO Passenger Groups",
   "projectMissing": "Looks like {{project}} does not have a BulletTrain yet.",
   "Bridge Spanner WUSD to Ethereum USDT": "Bridge Spanner WUSD to Ethereum USDT",
   "Withdraw Amount": "Withdraw Amount",
@@ -115,6 +114,7 @@
   "Max Input": "Max Input",
   "Balance: ": "Balance: ",
   "Add Liquidity": "Add Liquidity",
+  "Remove Liquidity": "Remove Liquidity",
   "Remove LP Tokens": "Remove LP Tokens",
   "Remove": "Remove",
   "Pool Info": "Pool Info",
@@ -243,5 +243,6 @@
   "Confirm Withdraw Yield from TravelCabin": "Confirm Withdraw Yield from TravelCabin",
   "Yield will generate as time passes until your ride ends. Withdraw Ticket Yield from TravelCabin.": "Yield will generate as time passes until your ride ends. Withdraw Ticket Yield from TravelCabin.",
   "Withdraw Yield from TravelCabin.": "Withdraw Yield from TravelCabin.",
-  "Yield Available": "Yield Available"
+  "Yield Available": "Yield Available",
+  "Latest Transactions": "Latest Transactions"
 }
