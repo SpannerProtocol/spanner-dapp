@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import BlockIcon from '../../assets/svg/icon-block-white.svg'
-import GrowthIcon from '../../assets/svg/icon-growth-white.svg'
+import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
@@ -331,7 +331,7 @@ export default function Header(props: HeaderProps) {
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
-        {subNavNetworkSelector && <NetworkSelector background={'#fff'} collaspedTextPrefix={`${t(`Network`)}: `} />}
+        {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
         <HeaderLinks>
           {/* <StyledNavLink id={`account-nav-link`} to={'/account'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
@@ -342,7 +342,7 @@ export default function Header(props: HeaderProps) {
             {t(`Launchpad`)}
           </StyledNavLink>
           <StyledNavLink id={`catalogue-nav-link`} to={'/catalogue'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={GrowthIcon} alt="catalogue" />}
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="catalogue" />}
             {t(`BulletTrain`)}
           </StyledNavLink>
           <StyledNavLink id={`dex-nav-link`} to={'/dex'}>

@@ -137,7 +137,7 @@ export function useAllBalances(): Array<BalanceData> | undefined {
 export interface LpBalance {
   currencyId: Array<string>
   balance: AccountData
-  poolPair: TradingPair
+  dexSharePair: TradingPair
 }
 
 export function useAllLpBalances(): Array<LpBalance> {
@@ -156,7 +156,7 @@ export function useAllLpBalances(): Array<LpBalance> {
       const validPair = [pair[0].asToken.toString(), pair[1].asToken.toString()]
       api.query.tokens.accounts(address, { DEXShare: validPair }, (result: AccountData) => {
         if (result.free.isZero()) return
-        setBalances((prevBalances) => [...prevBalances, { currencyId: validPair, balance: result, poolPair: pair }])
+        setBalances((prevBalances) => [...prevBalances, { currencyId: validPair, balance: result, dexSharePair: pair }])
       })
     })
   }, [api, activeAccount, connected, enabledTradingPairs, walletState, account])

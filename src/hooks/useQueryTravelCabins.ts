@@ -40,7 +40,7 @@ export function useQueryTravelCabins(): Array<TravelCabinInfo> {
   return travelCabins
 }
 
-export function useSubTravelCabin(travelCabinIndex?: number | string): TravelCabinInfo | undefined {
+export function useSubTravelCabin(travelCabinIndex?: number | string | TravelCabinIndex): TravelCabinInfo | undefined {
   const { api } = useApi()
   const [travelCabinInfo, setTravelCabinInfo] = useState<TravelCabinInfo | undefined>()
 
@@ -72,6 +72,50 @@ export function useSubTravelCabinCount(): TravelCabinIndex | undefined {
   return travelCabinCount
 }
 
+export function useSubTravelCabinBuyer(
+  travelCabinIndex?: number | string | TravelCabinIndex,
+  travelCabinInventoryIndex?: number | string | TravelCabinInventoryIndex
+) {
+  const { api, connected } = useApi()
+  const [buyerInfo, setBuyerInfo] = useState<TravelCabinBuyerInfo>()
+
+  useEffect(() => {
+    if (!connected || !travelCabinIndex || !travelCabinInventoryIndex) return
+    api.query.bulletTrain.travelCabinBuyer(travelCabinIndex, travelCabinInventoryIndex, (result) => {
+      if (result.isSome) {
+        setBuyerInfo(result.unwrapOrDefault())
+      }
+    })
+  }, [api, connected, travelCabinIndex, travelCabinInventoryIndex])
+
+  return buyerInfo
+}
+
+export function useSubTravelCabinBuyerVerbose(
+  travelCabinIndex?: number | string | TravelCabinIndex,
+  travelCabinInventoryIndex?: number | string | TravelCabinInventoryIndex
+) {
+  const { api, connected } = useApi()
+  const [buyerInfo, setBuyerInfo] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+
+  useEffect(() => {
+    if (!connected || !travelCabinIndex || !travelCabinInventoryIndex) return
+    api.query.bulletTrain.travelCabinBuyer(travelCabinIndex, travelCabinInventoryIndex, (result) => {
+      if (result.isSome) {
+        setBuyerInfo([
+          [
+            api.createType('TravelCabinIndex', travelCabinIndex),
+            api.createType('TravelCabinInventoryIndex', travelCabinInventoryIndex),
+          ],
+          result.unwrapOrDefault(),
+        ])
+      }
+    })
+  }, [api, connected, travelCabinIndex, travelCabinInventoryIndex])
+
+  return buyerInfo
+}
+
 export function useDPOTravelCabinInventoryIndex(
   dpoIndex: string,
   travelCabinIndex?: TravelCabinIndex | number | string
@@ -93,6 +137,31 @@ export function useDPOTravelCabinInventoryIndex(
       }
     })
   }, [api, connected, travelCabinIndex, dpoIndex])
+
+  return inventoryIndex
+}
+
+export function useUserTravelCabinInventoryIndex(
+  address?: string,
+  travelCabinIndex?: TravelCabinIndex | number | string
+) {
+  const { api, connected } = useApi()
+  const [inventoryIndex, setInventoryIndex] = useState<TravelCabinInventoryIndex>()
+
+  useEffect(() => {
+    if (!connected || !travelCabinIndex || !address) return
+    api.query.bulletTrain.travelCabinBuyer.entries(travelCabinIndex).then((result) => {
+      const found = result.find(
+        (buyerInfo) =>
+          buyerInfo[1].isSome &&
+          buyerInfo[1].unwrapOrDefault().buyer.isPassenger &&
+          buyerInfo[1].unwrapOrDefault().buyer.asPassenger.eq(address)
+      )
+      if (found) {
+        setInventoryIndex(found[0].args[1])
+      }
+    })
+  }, [address, api, connected, travelCabinIndex])
 
   return inventoryIndex
 }
