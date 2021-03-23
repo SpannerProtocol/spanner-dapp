@@ -24,7 +24,7 @@ export const Wrapper = styled.div`
 export const ContentWrapper = styled.div`
   position: relative;
   width: 100%;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0.5rem;
 `};
 `

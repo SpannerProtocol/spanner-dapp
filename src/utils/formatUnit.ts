@@ -41,3 +41,12 @@ export function unitToBigNumber(balance: number | BigNumber | string, decimals: 
   }
   return balance.multipliedBy(new BigNumber(10 ** decimals))
 }
+
+export function trimZeros(num: string) {
+  let newNum = num
+  newNum = newNum.replace(/^0+|(\.0*\d+[^0]+)0+$/g, '$1')
+  if (num[0] === '.') {
+    newNum = '0' + newNum
+  }
+  return newNum
+}
