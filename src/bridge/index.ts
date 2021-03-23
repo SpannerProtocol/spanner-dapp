@@ -11,9 +11,7 @@ if (process.env.NODE_ENV === 'development') {
     rejectUnauthorized: false,
   })
 } else {
-  httpAgent = new https.Agent({
-    cert: process.env.REACT_APP_BRIDGE_SSL_CERT,
-  })
+  httpAgent = new https.Agent()
 }
 
 // All requests to bridge returns promises
