@@ -19,6 +19,7 @@ import Discover from './Discover'
 import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
+import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
 import { MEDIA_WIDTHS } from '../theme'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 
@@ -106,6 +107,7 @@ export default function App() {
               <Route exact strict path="/" component={Home} />
               <Route exact strict path="/dex" component={Dex} />
               <Route exact strict path="/item/:name/:index" component={Item} />
+              <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/catalogue" component={Catalogue} />
               <Route exact strict path="/discover" component={Discover} />

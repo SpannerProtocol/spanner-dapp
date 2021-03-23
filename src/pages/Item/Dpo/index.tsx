@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import Card, { FlatCardPlate } from 'components/Card'
+import { FlatCardPlate } from 'components/Card'
 import ExpandCard from 'components/Card/ExpandCard'
 import CopyHelper from 'components/Copy/Copy'
 import { BorderedInput } from 'components/Input'
@@ -9,7 +9,9 @@ import TxModal from 'components/Modal/TxModal'
 import { ProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
+import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
 import { DataTokenName, Heading, HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
+import TxFee from 'components/TxFee'
 import {
   BorderedWrapper,
   ButtonWrapper,
@@ -21,7 +23,6 @@ import {
   SpacedSection,
   StateWrapper,
 } from 'components/Wrapper'
-import { DPO_STATE_TOOLTIPS } from '../../../constants'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
@@ -31,79 +32,18 @@ import { useUserInDpo } from 'hooks/useUser'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
 import React, { useContext, useEffect, useState } from 'react'
 import { Share2 } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
-import styled, { ThemeContext } from 'styled-components'
+import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
+import { DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
 import truncateString from '../../../utils/truncateString'
 import DpoActions from './actions'
-import TxFee from 'components/TxFee'
-import { useTranslation } from 'react-i18next'
-
-const StatValue = styled.div`
-  font-size: 30px;
-  font-weight: 700;
-  color: #fff;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    font-size: 28px;
-`};
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 13px;
-`};
-`
-
-const StatText = styled.div`
-  color: #000;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 10px;
-    font-weight: 400;
-`};
-`
-
-const StatContainer = styled(Card)<{ background?: string; maxWidth?: string; margin?: string }>`
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  padding: 1rem;
-  width: 100%;
-  text-align: center;
-  background: ${({ background }) => (background ? background : '#fff')};
-  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '360px')};
-  margin: ${({ margin }) => (margin ? margin : '0')};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    font-size: 10px;
-    font-weight: 400;
-    padding: 0.75rem;
-`};
-`
-
-const StatDisplayContainer = styled.div`
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.35rem;
-  margin-bottom: 0.35rem;
-`
-
-const StatDisplay = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 4fr));
-  grid-column-gap: 10px;
-  grid-row-gap: 10px;
-  width: 100%;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  display:grid;
-  grid-template-columns: repeat(3, minmax(0, 4fr));
-  grid-column-gap: 10px;
-  grid-row-gap: 5px;
-  `};
-`
 
 const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
 const membershipBg = 'linear-gradient(90deg, #EC3D3D -11.67%, #AD074F 100%)'
@@ -791,7 +731,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         <Section style={{ marginTop: '1rem' }}>
           <HeavyText color={theme.primary1}>{t(`Rewards Received`)}</HeavyText>
           <StatDisplayContainer>
-            <StatDisplay>
+            <StatDisplayGrid>
               <StatContainer maxWidth="none" background={statsBg}>
                 <StatValue>
                   {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
@@ -813,7 +753,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 </StatValue>
                 <StatText>{t(`Milestone`)}</StatText>
               </StatContainer>
-            </StatDisplay>
+            </StatDisplayGrid>
           </StatDisplayContainer>
         </Section>
       </FlatCardPlate>
