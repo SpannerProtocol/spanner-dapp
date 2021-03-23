@@ -16,10 +16,11 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { Link } from 'react-router-dom'
+import { TravelCabinInfo } from 'spanner-interfaces'
 import { useProjectManager } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
-import { blockToDays, blockToTs, tsToDateTimeHuman, tsToRelative } from '../../../utils/formatBlocks'
+import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
@@ -513,104 +514,13 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   )
 }
 
-function TravelCabinBuyersInfo({
-  buyer,
-}: {
-  buyer: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-}) {
-  const { expectedBlockTime, genesisTs } = useBlockManager()
-  const { chainDecimals } = useSubstrate()
-  const { t } = useTranslation()
-  return (
-    <>
-      <Section>
-        <RowBetween>
-          <StandardText>{t(`TravelCabin Id`)}</StandardText>
-          <StandardText>{buyer[0][0].toString()}</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Inventory Id`)}</StandardText>
-          <StandardText>{buyer[0][1].toString()}</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Purchased at`)}</StandardText>
-          <StandardText>
-            {t(`Block`)} #{buyer[1].purchase_blk.toString()}
-          </StandardText>
-        </RowBetween>
-
-        {buyer[1].buyer.isPassenger && (
-          <>
-            <RowBetween>
-              <StandardText>{t(`Buyer`)}</StandardText>
-              <StandardText>{truncateString(buyer[1].buyer.asPassenger.toString(), 14)}</StandardText>
-            </RowBetween>
-            <RowBetween>
-              <StandardText>{t(`User Type`)}</StandardText>
-              <StandardText>{t(`Passenger`)}</StandardText>
-            </RowBetween>
-          </>
-        )}
-        {buyer[1].buyer.isDpo && (
-          <>
-            <RowBetween>
-              <StandardText>{t(`Buyer`)}</StandardText>
-              <StandardText>{truncateString(buyer[1].buyer.asDpo.toString(), 14)} (DPO)</StandardText>
-            </RowBetween>
-            <RowBetween>
-              <StandardText>{t(`User Type`)}</StandardText>
-              <StandardText>{t(`DPO`)}</StandardText>
-            </RowBetween>
-          </>
-        )}
-        <RowBetween>
-          <StandardText>{t(`Yield Withdrawn`)}</StandardText>
-          <StandardText>{formatToUnit(buyer[1].yield_withdrawn.toString(), chainDecimals, 2)}</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
-          <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Last Withdrawal (Block)`)}</StandardText>
-          <StandardText>
-            {t(`Block`)} #{buyer[1].blk_of_last_withdraw.toString()}
-          </StandardText>
-        </RowBetween>
-        {genesisTs && expectedBlockTime && (
-          <RowBetween>
-            <StandardText>{t(`Last Withdrawal (Date & Time)`)}</StandardText>
-            <StandardText>
-              {tsToDateTimeHuman(
-                blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
-              )}
-            </StandardText>
-          </RowBetween>
-        )}
-      </Section>
-    </>
-  )
-}
-
 function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
   const buyers = useTravelCabinBuyers(travelCabinIndex)
   const { expectedBlockTime, genesisTs } = useBlockManager()
-  const [isOpen, setIsOpen] = useState<boolean>(false)
-  const [selectedBuyer, setSelectedBuyer] = useState<
-    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  >()
   const { t } = useTranslation()
-
-  const handleClick = (buyer: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]) => {
-    setSelectedBuyer(buyer)
-    setIsOpen(true)
-  }
 
   return (
     <>
-      <StandardModal title={t(`Buyer Information`)} isOpen={isOpen} onDismiss={() => setIsOpen(false)}>
-        {selectedBuyer ? <TravelCabinBuyersInfo buyer={selectedBuyer} /> : <></>}
-      </StandardModal>
       <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <div style={{ display: 'flex' }}>
@@ -627,30 +537,36 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
             expectedBlockTime &&
             buyers.map((buyer, index) => {
               return (
-                <GridRow key={index} onClick={() => handleClick(buyer)}>
-                  <GridCell>
-                    <StandardText>
-                      {t(`Inventory`)} #{buyer[0][1].toString()}
-                    </StandardText>
-                    <StandardText>
-                      {tsToRelative(
-                        blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
+                <Link
+                  key={index}
+                  to={{ pathname: `/item/travelCabin/${travelCabinIndex}/inventory/${buyer[0][1]}` }}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <GridRow>
+                    <GridCell>
+                      <StandardText>
+                        {t(`Inventory`)} #{buyer[0][1].toString()}
+                      </StandardText>
+                      <StandardText>
+                        {tsToRelative(
+                          blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
+                        )}
+                      </StandardText>
+                    </GridCell>
+                    <GridCell>
+                      {buyer[1].buyer.isPassenger && (
+                        <StandardText>
+                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asPassenger.toString())} ({t(`Passenger`)})
+                        </StandardText>
                       )}
-                    </StandardText>
-                  </GridCell>
-                  <GridCell>
-                    {buyer[1].buyer.isPassenger && (
-                      <StandardText>
-                        {t(`Buyer`)}: {truncateString(buyer[1].buyer.asPassenger.toString())} ({t(`Passenger`)})
-                      </StandardText>
-                    )}
-                    {buyer[1].buyer.isDpo && (
-                      <StandardText>
-                        {t(`Buyer`)}: {truncateString(buyer[1].buyer.asDpo.toString())} ({t(`DPO`)})
-                      </StandardText>
-                    )}
-                  </GridCell>
-                </GridRow>
+                      {buyer[1].buyer.isDpo && (
+                        <StandardText>
+                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asDpo.toString())} ({t(`DPO`)})
+                        </StandardText>
+                      )}
+                    </GridCell>
+                  </GridRow>
+                </Link>
               )
             })}
         </SpacedSection>
