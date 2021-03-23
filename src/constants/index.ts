@@ -30,11 +30,11 @@ export const SPANNER_PROVIDER_SOCKET = process.env.REACT_APP_SPANNER_PROVIDER_SO
 export const HAMMER_PROVIDER_SOCKET = process.env.REACT_APP_HAMMER_PROVIDER_SOCKET
 export const SPANNER_SUPPORTED_CHAINS = [
   {
-    chain: 'Spanner',
+    chain: 'Spanner Mainnet',
     providerSocket: SPANNER_PROVIDER_SOCKET,
   },
   {
-    chain: 'Hammer',
+    chain: 'Hammer Testnet',
     providerSocket: HAMMER_PROVIDER_SOCKET,
   },
 ]
@@ -50,7 +50,7 @@ export const TRAVELCABIN_CLASSES: { [index: string]: any } = {
 export const DPO_COMMIT_GRACE_BLOCKS = 86_400
 export const DPO_RELEASE_DROP_GRACE_BLOCKS = 201_600
 
-export const DPO_ACTION_ICONS: { [index: string]: any } = {
+export const ACTION_ICONS: { [index: string]: any } = {
   withdrawFareFromTravelCabin: WithdrawIcon,
   releaseFareFromDpo: ReleaseIcon,
   releaseBonusFromDpo: ReleaseIcon,
