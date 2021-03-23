@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
+import { useTranslation } from 'react-i18next'
 
 const TabBarWrapper = styled.div<{ margin?: string }>`
   display: flex;
@@ -50,6 +51,7 @@ export default function TabBar(props: TabBarProps): JSX.Element {
   const { id, className, tabs, onClick, margin } = props
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
 
   const handleClick = (event: React.MouseEvent, indexClicked: number) => {
     setActiveIndex(indexClicked)
@@ -78,7 +80,7 @@ export default function TabBar(props: TabBarProps): JSX.Element {
                     fontWeight: active ? 700 : 500,
                   }}
                 >
-                  {tab.label}
+                  {t(tab.label)}
                 </TabText>
               </Tab>
             </TabWrapper>
