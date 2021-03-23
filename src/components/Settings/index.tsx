@@ -8,19 +8,13 @@ import { useSelectProject } from 'state/project/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useToggleSettingsMenu } from '../../state/application/hooks'
-import {
-  useDarkModeManager,
-  useExpertModeManager,
-  useUserSlippageTolerance,
-  useUserTransactionTTL,
-} from '../../state/user/hooks'
+import { useDarkModeManager, useExpertModeManager } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
 import Modal from '../Modal'
 import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
 import Toggle from '../Toggle'
-import TransactionSettings from '../TransactionSettings'
 
 const StyledMenuIcon = styled(Settings)`
   height: 20px;
@@ -106,7 +100,7 @@ const MenuFlyout = styled.span`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     min-width: 18.125rem;
-    top: -22rem;
+    top: -17rem;
   `};
 `
 
@@ -133,9 +127,6 @@ export default function SettingsTab() {
   const { t } = useTranslation()
 
   const theme = useContext(ThemeContext)
-  const [userSlippageTolerance, setUserslippageTolerance] = useUserSlippageTolerance()
-
-  const [ttl, setTtl] = useUserTransactionTTL()
 
   const [expertMode, toggleExpertMode] = useExpertModeManager()
 
@@ -193,15 +184,6 @@ export default function SettingsTab() {
               {t(`Project Settings`)}
             </Text>
             <ProjectSettings setSelectedProject={handleSelectProject} />
-            <Text fontWeight={600} fontSize={14}>
-              {t(`Transaction Settings`)}
-            </Text>
-            <TransactionSettings
-              rawSlippage={userSlippageTolerance}
-              setRawSlippage={setUserslippageTolerance}
-              deadline={ttl}
-              setDeadline={setTtl}
-            />
             <Text fontWeight={600} fontSize={14}>
               {t(`Interface Settings`)}
             </Text>

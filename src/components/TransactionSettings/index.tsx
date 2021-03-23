@@ -84,8 +84,8 @@ const SlippageEmojiContainer = styled.span`
 export interface SlippageTabsProps {
   rawSlippage: number
   setRawSlippage: (rawSlippage: number) => void
-  deadline: number
-  setDeadline: (deadline: number) => void
+  deadline?: number
+  setDeadline?: (deadline: number) => void
 }
 
 export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTabsProps) {
@@ -146,7 +146,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
             }}
             active={rawSlippage === 50}
           >
-            0.5%
+            0.5% (suggested)
           </Option>
           <Option
             onClick={() => {
