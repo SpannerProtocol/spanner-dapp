@@ -1,21 +1,19 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Divider from '@material-ui/core/Divider'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DisclaimerText, ModalText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import useSubscribeBalance from 'hooks/useQueryBalance'
-import useSubscribePool from 'hooks/useQueryDexPrice'
+import useSubscribePool from 'hooks/useQueryDexPool'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
-import { BorderedInput } from '../../components/Input'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
-import { formatToUnit, unitToBn } from '../../utils/formatUnit'
+import { formatToUnit } from '../../utils/formatUnit'
 import {
   ConsoleStat,
   ErrorMsg,
@@ -27,33 +25,40 @@ import {
   TokenInputWrapper,
 } from './components'
 import MenuSelect from './components/MenuSelect'
+import { Balance } from '@polkadot/types/interfaces'
+import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
+import { u32 } from '@polkadot/types'
+import BN from 'bn.js'
+import SlippageTabs from '../../components/TransactionSettings'
+import { useUserSlippageTolerance } from '../../state/user/hooks'
 
-interface SwapErrors {
-  slippage?: string
-  amountA?: string
-  amountB?: string
-}
+// interface SwapErrors {
+//   slippage?: string
+//   amountA?: string
+//   amountB?: string
+// }
 
 interface SwapData {
   amountA: number
   amountB: number
+  slippage: number
+  displayHeader: string
+  displayAmount: number
   tokenA: string
   tokenB: string
-  slippage: number
-  price?: number
+  averagePrice?: number
   estimatedFee?: string
 }
 
 function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
   const { t } = useTranslation()
-  const { amountA, amountB, tokenA, tokenB, price, slippage, estimatedFee } = data
-  const minReceived = amountB - slippage * amountB
+  const { amountA, amountB, tokenA, tokenB, slippage, averagePrice, displayHeader, displayAmount, estimatedFee } = data
   return (
     <>
       <Section>
         <CenteredRow>
           <ModalText>
-            {amountA} {tokenA}
+            {amountA.toFixed(5)} {tokenA}
           </ModalText>
         </CenteredRow>
         <CenteredRow>
@@ -61,7 +66,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
         </CenteredRow>
         <CenteredRow>
           <ModalText>
-            {amountB} {tokenB}
+            {amountB.toFixed(5)} {tokenB}
           </ModalText>
         </CenteredRow>
       </Section>
@@ -73,15 +78,19 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
       <Section>
         <BorderedWrapper>
           <RowBetween>
-            <HeavyHeader>{t(`Price`)}</HeavyHeader>
+            <HeavyHeader>{t(`Average Swap Price`)}</HeavyHeader>
             <ConsoleStat>
-              {price} {tokenA} / {tokenB}
+              {averagePrice?.toFixed(3)} {tokenA} / {tokenB}
             </ConsoleStat>
           </RowBetween>
           <RowBetween>
-            <HeavyHeader>{t(`Minimum received`)}</HeavyHeader>
+            <HeavyHeader>{t(`Slippage`)}</HeavyHeader>
+            <ConsoleStat>{slippage / 100}%</ConsoleStat>
+          </RowBetween>
+          <RowBetween>
+            <HeavyHeader>{t(displayHeader)}</HeavyHeader>
             <ConsoleStat>
-              {minReceived.toFixed(4)} {tokenB}
+              {displayAmount.toFixed(5)} {tokenB}
             </ConsoleStat>
           </RowBetween>
         </BorderedWrapper>
@@ -92,15 +101,23 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
 }
 
 export default function SwapConsole(): JSX.Element {
+  const [slippage, setSlippage] = useUserSlippageTolerance()
   const { chainDecimals } = useSubstrate()
   const [tokenA, setTokenA] = useState<string>('BOLT')
   const [tokenB, setTokenB] = useState<string>('WUSD')
   const [amountA, setAmountA] = useState<number>(0)
   const [amountB, setAmountB] = useState<number>(0)
-  const [slippage, setSlippage] = useState<number>(0)
-  const [errors, setErrors] = useState<SwapErrors>({})
-  const [priceQueryError, setPriceQueryError] = useState<string>()
-  const [price, setPrice] = useState<number>()
+  const [isOnA, setOnA] = useState<boolean>(false)
+  const [fromHeader, setFromHeader] = useState<string>()
+  const [toHeader, setToHeader] = useState<string>()
+  const [poolQueryError, setPoolQueryError] = useState<string>()
+  const [pool, setPool] = useState<[Balance, Balance]>()
+  const [price, setPrice] = useState<number>(0)
+  const [supplyAmount, setSupplyAmount] = useState<BN>(new BN(0))
+  const [targetAmount, setTargetAmount] = useState<BN>(new BN(0))
+  const [supplyAmountWithSlippage, setSupplyAmountWithSlippage] = useState<BN>(new BN(0))
+  const [targetAmountWithSlippage, setTargetAmountWithSlippage] = useState<BN>(new BN(0))
+  const [fee, setFee] = useState<[u32, u32]>()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
@@ -112,7 +129,10 @@ export default function SwapConsole(): JSX.Element {
   const balanceA = useSubscribeBalance({ Token: tokenA })
   const balanceB = useSubscribeBalance({ Token: tokenB })
 
-  const { price: subscribedPrice, error: priceError } = useSubscribePool([{ Token: tokenA }, { Token: tokenB }], 4500)
+  const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
+    [{ Token: tokenA }, { Token: tokenB }],
+    4500
+  )
 
   const handleTokenA = (event: React.MouseEvent<HTMLElement>) => {
     const tokenName = event.currentTarget.innerText.toUpperCase()
@@ -124,76 +144,147 @@ export default function SwapConsole(): JSX.Element {
     setTokenB(tokenName)
   }
 
-  const handleAmountA = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
-    if (unitToBn(value, chainDecimals) > balanceA) {
-      setErrors({ ...errors, amountA: t(`Amount cannot exceed balance`) })
+  const handleAmountA = (value: number) => {
+    if (!isOnA) {
       return
     }
-    setErrors({ ...errors, amountA: undefined })
     setAmountA(value)
   }
 
-  const handleAmountB = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
-    setErrors({ ...errors, amountB: undefined })
+  const handleAmountB = (value: number) => {
+    if (isOnA) {
+      return
+    }
     setAmountB(value)
   }
 
-  const handleSlippage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    const re = /^(?:0*(?:\.\d+)?|1(\.0*)?)$/
-    if (value === '' || re.test(value)) {
-      let tolerance = parseFloat(value)
-      tolerance = Number.isNaN(tolerance) ? 0 : tolerance
-      setErrors({ ...errors, slippage: undefined })
-      setSlippage(tolerance)
-    } else {
-      setErrors({ ...errors, slippage: t(`Should be a decimal between 0 - 1`) })
-    }
-  }
-
   const openModal = () => {
-    const txData = createTx({
-      section: 'dex',
-      method: 'swapWithExactSupply',
-      params: {
-        path: [{ Token: tokenA }, { Token: tokenB }],
-        supplyAmount: unitToBn(amountA, chainDecimals).toString(),
-        minTargetAmount: unitToBn(amountB, chainDecimals)
-          .sub(unitToBn(slippage * amountB, chainDecimals))
-          .toString(),
-      },
-    })
+    let txData
+    if (isOnA) {
+      txData = createTx({
+        section: 'dex',
+        method: 'swapWithExactSupply',
+        params: {
+          path: [{ Token: tokenA }, { Token: tokenB }],
+          supplyAmount: supplyAmount,
+          minTargetAmount: targetAmountWithSlippage,
+        },
+      })
+    } else {
+      txData = createTx({
+        section: 'dex',
+        method: 'swapWithExactTarget',
+        params: {
+          path: [{ Token: tokenA }, { Token: tokenB }],
+          target: targetAmount,
+          maxSupplyAmount: supplyAmountWithSlippage,
+        },
+      })
+    }
+
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
     setModalOpen(true)
   }
 
   useEffect(() => {
-    if (priceError) {
-      setPriceQueryError(priceError)
-      return
-    } else {
-      setPriceQueryError(undefined)
-    }
-    if (!subscribedPrice) {
-      setPrice(undefined)
-      return
-    } else {
-      setPrice(subscribedPrice)
-    }
-  }, [subscribedPrice, priceError])
+    setSlippage(50)
+  }, [setSlippage])
 
   useEffect(() => {
-    if (!price || Number.isNaN(price)) return
-    if (Number.isNaN(amountA)) {
-      setAmountB(0)
+    if (poolError) {
+      setPoolQueryError(poolError)
       return
+    } else {
+      setPoolQueryError(undefined)
     }
-    const estimatedBPrice = price * amountA
-    setAmountB(estimatedBPrice)
-  }, [price, amountA])
+    if (!subscribedPool) {
+      setPool(undefined)
+      return
+    } else {
+      setPool(subscribedPool)
+      setAmountA(0)
+      setAmountB(0)
+      if (subscribedFee) {
+        setFee(subscribedFee)
+      }
+      if (subscribedPrice) {
+        setPrice(subscribedPrice)
+      }
+    }
+  }, [subscribedPool, subscribedFee, subscribedPrice, poolError])
+
+  useEffect(() => {
+    if (targetAmount.isZero()) {
+      setAmountB(0)
+    } else {
+      const amountWithSlippage = targetAmount.sub(targetAmount.div(new BN(10000)).mul(new BN(slippage)))
+      setTargetAmountWithSlippage(amountWithSlippage)
+      const targetStr = targetAmount.toString()
+      if (targetStr.length > chainDecimals) {
+        const number = targetStr.slice(0, targetStr.length - chainDecimals)
+        const decimal = targetStr.slice(targetStr.length - chainDecimals)
+        setAmountB(parseFloat(number + '.' + decimal))
+      } else {
+        const numberOfZeros = chainDecimals - targetStr.length
+        const zeros = numberOfZeros > 0 ? '0'.repeat(numberOfZeros) : ''
+        setAmountB(parseFloat('0.' + zeros + targetStr))
+      }
+    }
+  }, [targetAmount, chainDecimals, slippage])
+
+  useEffect(() => {
+    if (supplyAmount.isZero()) {
+      setAmountA(0)
+    } else {
+      const amountWithSlippage = supplyAmount.add(supplyAmount.div(new BN(10000)).mul(new BN(slippage)))
+      setSupplyAmountWithSlippage(amountWithSlippage)
+      const supplyStr = supplyAmount.toString()
+      if (supplyStr.length > chainDecimals) {
+        const number = supplyStr.slice(0, supplyStr.length - chainDecimals)
+        const decimal = supplyStr.slice(supplyStr.length - chainDecimals)
+        setAmountA(parseFloat(number + '.' + decimal))
+      } else {
+        const numberOfZeros = chainDecimals - supplyStr.length
+        const zeros = numberOfZeros > 0 ? '0'.repeat(numberOfZeros) : ''
+        setAmountA(parseFloat('0.' + zeros + supplyStr))
+      }
+    }
+  }, [supplyAmount, chainDecimals, slippage])
+
+  useEffect(() => {
+    if (isOnA) {
+      // user provided supply
+      setFromHeader('From')
+      setToHeader('To (estimated)')
+      if (Number.isNaN(amountA) || !pool || !fee) {
+        return
+      } else if (!amountA) {
+        setSupplyAmount(new BN(0))
+        setTargetAmount(new BN(0))
+      } else {
+        const supply = new BN(amountA * 10 ** chainDecimals)
+        setSupplyAmount(supply)
+        if (supply.lte(balanceA)) {
+          setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
+        }
+      }
+    } else {
+      // user provided target
+      setFromHeader('From (estimated)')
+      setToHeader('To')
+      if (Number.isNaN(amountB) || !pool || !fee) {
+        return
+      } else if (!amountB) {
+        setSupplyAmount(new BN(0))
+        setTargetAmount(new BN(0))
+      } else {
+        const target = new BN(amountB * 10 ** chainDecimals)
+        setTargetAmount(target)
+        setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
+      }
+    }
+  }, [isOnA, amountA, balanceA, amountB, pool, fee, chainDecimals])
 
   const dismissModal = () => {
     setModalOpen(false)
@@ -213,7 +304,17 @@ export default function SwapConsole(): JSX.Element {
         txPending={txPendingMsg}
       >
         <SwapModalContent
-          data={{ amountA, amountB, tokenA, tokenB, price, slippage, estimatedFee: txInfo?.estimatedFee }}
+          data={{
+            amountA,
+            amountB,
+            tokenA,
+            tokenB,
+            slippage,
+            averagePrice: !amountA ? 0 : amountB / amountA,
+            displayHeader: isOnA ? 'Minimum Received' : 'Maximum Used',
+            displayAmount: isOnA ? amountB * (1 - slippage / 10000) : amountA * (1 + slippage / 10000),
+            estimatedFee: txInfo?.estimatedFee,
+          }}
         />
       </TxModal>
       <Card>
@@ -221,9 +322,9 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{t(`From`)}</LightHeader>
+                <LightHeader>{t(fromHeader)}</LightHeader>
                 <ConsoleStat>
-                  {t(`Balance:`)} {formatToUnit(balanceA, chainDecimals)}
+                  {t(`Balance`)}: {formatToUnit(balanceA, chainDecimals)}
                 </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
@@ -232,12 +333,16 @@ export default function SwapConsole(): JSX.Element {
                   id="tokena-amount-textfield"
                   type="number"
                   placeholder="0.0"
-                  onChange={(e) => handleAmountA(e)}
+                  onChange={(e) => handleAmountA(parseFloat(e.target.value))}
+                  onClick={() => {
+                    setOnA(true)
+                  }}
+                  value={Number.isNaN(amountA) ? '' : amountA}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
                 <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'BOLT'} onClick={handleTokenA} />
               </TokenInputWrapper>
-              {errors.amountA && <ErrorMsg>{errors.amountA}</ErrorMsg>}
+              {supplyAmount.gt(balanceA) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
             </InputGroup>
           </CenteredRow>
           <CenteredRow>
@@ -246,7 +351,7 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{t(`To (estimated)`)}</LightHeader>
+                <LightHeader>{t(toHeader)}</LightHeader>
                 <ConsoleStat>
                   {t(`Balance`)}: {formatToUnit(balanceB, chainDecimals)}
                 </ConsoleStat>
@@ -257,50 +362,42 @@ export default function SwapConsole(): JSX.Element {
                   id="tokenb-amount-textfield"
                   type="number"
                   placeholder="0.0"
-                  onChange={(e) => handleAmountB(e)}
-                  value={amountB}
+                  onChange={(e) => handleAmountB(parseFloat(e.target.value))}
+                  onClick={() => {
+                    setOnA(false)
+                  }}
+                  value={Number.isNaN(amountB) ? '' : amountB}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
                 <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'WUSD'} onClick={handleTokenB} />
               </TokenInputWrapper>
-              {errors.amountB && <ErrorMsg>{errors.amountB}</ErrorMsg>}
             </InputGroup>
           </CenteredRow>
         </Section>
-        <Divider variant="middle" style={{ margin: '1rem 0 1rem 0' }} />
         <Section>
-          <CenteredRow>
-            <InputGroup>
-              <InputHeader>
-                <LightHeader>{t(`Slippage`)}</LightHeader>
-              </InputHeader>
-              <BorderedInput
-                required
-                id="tokenb-amount-textfield"
-                type="string"
-                placeholder="0.0"
-                onChange={(e) => handleSlippage(e)}
-                style={{ alignItems: 'flex-end', width: '100%' }}
-              />
-              {errors.slippage && <ErrorMsg>{errors.slippage}</ErrorMsg>}
-            </InputGroup>
-          </CenteredRow>
+          <SlippageTabs rawSlippage={slippage} setRawSlippage={setSlippage} />
         </Section>
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <InputHeader>
-            <LightHeader>{t(`Price`)}</LightHeader>
-            {!priceQueryError ? (
+            <LightHeader>{t(`Current Price`)}</LightHeader>
+            {!poolQueryError && price ? (
               <ConsoleStat>
-                {price?.toFixed(4)} {tokenA} / {tokenB}
+                {price.toFixed(3)} {tokenA} / {tokenB}
               </ConsoleStat>
             ) : (
               <ConsoleStat> ------ </ConsoleStat>
             )}
           </InputHeader>
-          {priceQueryError && <ErrorMsg>{priceQueryError}</ErrorMsg>}
+          {poolQueryError && <ErrorMsg>{poolQueryError}</ErrorMsg>}
+          <InputHeader>
+            <LightHeader>{t(`Average Swap Price`)}</LightHeader>
+            <ConsoleStat>
+              {!amountA ? 0 : (amountB / amountA).toFixed(3)} {tokenA} / {tokenB}
+            </ConsoleStat>
+          </InputHeader>
         </Section>
         <Section>
-          {errors.amountA || errors.amountB || errors.slippage || priceQueryError ? (
+          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError ? (
             <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
           ) : (
             <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>

@@ -4,7 +4,7 @@ import TxModal from 'components/Modal/TxModal'
 import { ModalText, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { LpBalance, useAllLpBalances } from 'hooks/useQueryBalance'
-import useSubscribePool from 'hooks/useQueryDexPrice'
+import useSubscribePool from 'hooks/useQueryDexPool'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { TradingPair } from 'interfaces/dex'
@@ -25,7 +25,7 @@ export const CardText = styled.div`
   color: #000;
 `
 interface LpPoolContentProps {
-  pool: LpBalance
+  dexShare: LpBalance
   pair: TradingPair
 }
 
@@ -59,8 +59,8 @@ function LpRemoveModalContent({ data }: { data: LpRemoveModalProps }): JSX.Eleme
 }
 
 function LpPoolContent(props: LpPoolContentProps): JSX.Element {
-  const { pool, pair } = props
-  const { dexShare } = useSubscribePool([pair[0], pair[1]], 250)
+  const { dexShare, pair } = props
+  const { pool } = useSubscribePool([pair[0], pair[1]], 250)
   const { chainDecimals } = useSubstrate()
   const [amountA, setAmountA] = useState<BigNumber>(new BigNumber(0))
   const [amountB, setAmountB] = useState<BigNumber>(new BigNumber(0))
@@ -75,15 +75,15 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
   const { t } = useTranslation()
 
   useEffect(() => {
-    if (!dexShare) return
+    if (!pool) return
     // const decimalScale = new BigNumber(10 ** chainDecimals)
-    const lpUnit = new BigNumber(pool.balance.free.toString())
-    const amountAUnit = new BigNumber(dexShare[0].toString())
-    const amountBUnit = new BigNumber(dexShare[1].toString())
+    const lpUnit = new BigNumber(dexShare.balance.free.toString())
+    const amountAUnit = new BigNumber(pool[0].toString())
+    const amountBUnit = new BigNumber(pool[1].toString())
     setAmountLp(lpUnit)
     setAmountA(amountAUnit)
     setAmountB(amountBUnit)
-  }, [dexShare, pool.balance.free, chainDecimals])
+  }, [pool, dexShare.balance.free, chainDecimals])
 
   const handleRemove = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(event.target.value)
@@ -184,13 +184,13 @@ export default function LpRemoveConsole(): JSX.Element {
       </Section>
       <Section>
         {balances.length > 0 ? (
-          balances.map((poolBalance, index) => (
-            <ExpandCard key={index} defaultExpanded={false} title={getPairName(poolBalance.poolPair)}>
-              <LpPoolContent pool={poolBalance} pair={poolBalance.poolPair} />
+          balances.map((dexShareBalance, index) => (
+            <ExpandCard key={index} defaultExpanded={false} title={getPairName(dexShareBalance.dexSharePair)}>
+              <LpPoolContent dexShare={dexShareBalance} pair={dexShareBalance.dexSharePair} />
             </ExpandCard>
           ))
         ) : (
-          <div>{t(`You have not added liquidity to any pools.`)}</div>
+          <div>{t(`You have not added liquidity to any dexShares.`)}</div>
         )}
       </Section>
     </Card>
