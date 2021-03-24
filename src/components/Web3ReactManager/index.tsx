@@ -36,7 +36,6 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
       activateNetwork(network)
     }
     if (account) {
-      console.log('eager connect:', account)
       getCustodialAddr(account).then((response) => {
         setWalletType({
           type: 'custodial',

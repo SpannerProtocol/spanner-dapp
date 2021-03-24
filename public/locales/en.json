@@ -264,6 +264,11 @@
   "Unexpected Error with Custodial Signing operation.": "Unexpected Error with Custodial Signing operation.",
   "Could not identify transaction info.": "Could not identify transaction info.",
   "Waiting for confirmation on your mobile wallet.": "Waiting for confirmation on your mobile wallet.",
-  "Message signature does not match custodial wallet address.": "Message signature does not match custodial wallet address."
-  "Latest Transactions": "Latest Transactions"
+  "Message signature does not match custodial wallet address.": "Message signature does not match custodial wallet address.",
+  "Latest Transactions": "Latest Transactions",
+  "EXPIRED": "EXPIRED",
+  "CREATED": "CREATED",
+  "FAILED": "FAILED",
+  "RUNNING": "RUNNING",
+  "ACTIVE": "ACTIVE"
 }
