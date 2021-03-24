@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
-import { TravelCabinIndex } from 'spanner-interfaces'
+import { TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
 import getUserActions, { UserAction } from 'utils/getUserActions'
 import { useBlockManager } from './useBlocks'
-import { useSubTravelCabin, useSubTravelCabinBuyer, useUserTravelCabinInventoryIndex } from './useQueryTravelCabins'
+import { useSubTravelCabin, useSubTravelCabinBuyer } from './useQueryTravelCabins'
 import useWallet from './useWallet'
 
-export default function useUserActions(travelCabinIndex: number | string | TravelCabinIndex) {
+export default function useUserActions(
+  travelCabinIndex: number | string | TravelCabinIndex,
+  travelCabinInventoryIndex: number | string | TravelCabinInventoryIndex
+) {
   const wallet = useWallet()
-  const travelCabinInventoryIndex = useUserTravelCabinInventoryIndex(wallet?.address, travelCabinIndex)
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
   const { lastBlock } = useBlockManager()
   const travelCabinBuyerInfo = useSubTravelCabinBuyer(travelCabinIndex, travelCabinInventoryIndex)

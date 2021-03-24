@@ -32,6 +32,10 @@ export default function getUserActions({
 }: GetUserActionsParams): Array<UserAction> | undefined {
   const actions: Array<UserAction> = []
 
+  // console.log(walletInfo.address)
+  // console.log(travelCabinBuyerInfo.buyer.isPassenger)
+  // console.log(travelCabinBuyerInfo.buyer.asPassenger.toString())
+
   // User must be logged in
   if (!walletInfo || !walletInfo.address) return
   // User must be passenger type
@@ -49,7 +53,10 @@ export default function getUserActions({
   }
 
   // On maturity, user can withdraw their deposit
-  if (travelCabinInfo.maturity.eq(lastBlock) && !travelCabinBuyerInfo.fare_withdrawn) {
+  if (
+    travelCabinInfo.maturity.add(travelCabinBuyerInfo.purchase_blk).lte(lastBlock) &&
+    travelCabinBuyerInfo.fare_withdrawn.isFalse
+  ) {
     actions.push({
       action: 'withdrawFareFromTravelCabin',
       travelCabinIndex,

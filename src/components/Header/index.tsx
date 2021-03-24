@@ -181,7 +181,7 @@ const HideSmall = styled.span`
 //   `};
 // `
 
-const Title = styled.a`
+const Title = styled(Link)`
   display: flex;
   align-items: center;
   pointer-events: auto;
@@ -325,7 +325,7 @@ export default function Header(props: HeaderProps) {
   return (
     <HeaderFrame>
       <HeaderRow>
-        <Title href="/">
+        <Title to={{ pathname: '/' }}>
           <SpannerIcon>
             <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
           </SpannerIcon>
