@@ -29,15 +29,25 @@ export function formatZeros(num: string) {
     let indexOfFirstNum = 0
     const numSplit = num.split('.')
     const reversedDecimals = numSplit[1].split('').reverse()
-    for (let i = 0; i < reversedDecimals.length; i++) {
-      if (reversedDecimals[i] !== '0') {
-        indexOfFirstNum = i
-        break
+    console.log(reversedDecimals[0] === '0')
+    console.log(reversedDecimals[reversedDecimals.length - 1] === '0')
+    if (reversedDecimals.every((e) => e === '0')) {
+      indexOfFirstNum = reversedDecimals.length
+    } else {
+      for (let i = 0; i < reversedDecimals.length; i++) {
+        if (reversedDecimals[i] !== '0') {
+          indexOfFirstNum = i
+          break
+        }
       }
     }
     const decimals = reversedDecimals.slice(indexOfFirstNum, reversedDecimals.length).reverse().join('')
-    const newNum = numSplit[0] + '.' + decimals
-    return newNum
+    console.log('decimals', decimals, decimals.length)
+    if (decimals.length > 0) {
+      return numSplit[0] + '.' + decimals
+    } else {
+      return numSplit[0]
+    }
   }
   return num
 }

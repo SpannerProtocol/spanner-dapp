@@ -1,5 +1,3 @@
-import { Web3Provider } from '@ethersproject/providers'
-import { useWeb3React } from '@web3-react/core'
 import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import { FlatCard, FlatCardPlate } from 'components/Card'
@@ -58,11 +56,11 @@ function BridgeTxConfirm({
 }
 
 export default function Bridge(): JSX.Element {
+  const wallet = useWallet()
   const { api } = useApi()
-  const { account, library } = useWeb3React<Web3Provider>()
   const [verifiedEthDepositTx, setVerifiedEthDepositTx] = useState<Array<string | undefined> | undefined>()
   const [ethDepositAddr, setEthDepositAddr] = useState<string>()
-  const [ethWithdrawAddr, setEthWithdrawAddr] = useState<string>(account as string)
+  const [ethWithdrawAddr, setEthWithdrawAddr] = useState<string>(wallet?.ethereumAddress as string)
   const [ethWithdrawAmount, setEthWithdrawAmount] = useState<number>(0)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
@@ -71,7 +69,6 @@ export default function Bridge(): JSX.Element {
   const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
-  const wallet = useWallet()
 
   useEffect(() => {
     if (!wallet || !wallet.address) return
@@ -107,12 +104,12 @@ export default function Bridge(): JSX.Element {
           setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
-          custodialProvider: library,
+          custodialProvider: wallet.custodialProvider,
           txInfo: { section: 'currencies', method: 'transfer' },
         })
       })
     },
-    [wallet, t, api, chainDecimals, library]
+    [wallet, t, api, chainDecimals]
   )
 
   const dismissModal = () => {

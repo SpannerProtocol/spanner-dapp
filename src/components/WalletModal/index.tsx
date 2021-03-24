@@ -34,7 +34,7 @@ import PendingView, {
   LoadingMessage,
   LoadingWrapper,
   PendingSection,
-  StyledLoader
+  StyledLoader,
 } from './PendingView'
 
 const CloseIcon = styled.div`
@@ -359,6 +359,26 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
               link={option.href}
               header={option.name}
               subheader={null}
+              icon={require('../../assets/images/' + option.iconName)}
+            />
+          )
+        }
+
+        if (window.web3 && window.ethereum && option.mobile) {
+          return (
+            <Option
+              id={`connect-${key}`}
+              onClick={() => {
+                option.connector === connector
+                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                  : !option.href && tryActivation(option.connector)
+              }}
+              key={key}
+              active={option.connector === connector}
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null} //use option.descriptio to bring back multi-line
               icon={require('../../assets/images/' + option.iconName)}
             />
           )

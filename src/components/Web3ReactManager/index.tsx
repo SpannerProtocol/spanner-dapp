@@ -7,6 +7,8 @@ import { network } from '../../connectors'
 import { useEagerConnect, useInactiveListener } from '../../hooks'
 import { NetworkContextName } from '../../constants'
 import Loader from '../Loader'
+import { useWalletManager } from 'state/wallet/hooks'
+import { getCustodialAddr } from 'bridge'
 
 const MessageWrapper = styled.div`
   display: flex;
@@ -21,8 +23,9 @@ const Message = styled.h2`
 
 export default function Web3ReactManager({ children }: { children: JSX.Element }) {
   const { t } = useTranslation()
-  const { active } = useWeb3React()
+  const { active, account } = useWeb3React()
   const { active: networkActive, error: networkError, activate: activateNetwork } = useWeb3React(NetworkContextName)
+  const { setWalletType } = useWalletManager()
 
   // try to eagerly connect to an injected provider, if it exists and has granted access already
   const triedEager = useEagerConnect()
@@ -32,7 +35,16 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
     if (triedEager && !networkActive && !networkError && !active) {
       activateNetwork(network)
     }
-  }, [triedEager, networkActive, networkError, activateNetwork, active])
+    if (account) {
+      getCustodialAddr(account).then((response) => {
+        setWalletType({
+          type: 'custodial',
+          address: account,
+          custodialAddress: response.data,
+        })
+      })
+    }
+  }, [triedEager, networkActive, networkError, activateNetwork, active, account, setWalletType])
 
   // when there's no account connected, react to logins (broadly speaking) on the injected provider, if it exists
   useInactiveListener(!triedEager)

@@ -51,10 +51,10 @@ export const DPO_COMMIT_GRACE_BLOCKS = 86_400
 export const DPO_RELEASE_DROP_GRACE_BLOCKS = 201_600
 
 export const ACTION_ICONS: { [index: string]: any } = {
-  withdrawFareFromTravelCabin: WithdrawIcon,
-  releaseFareFromDpo: ReleaseIcon,
   releaseBonusFromDpo: ReleaseIcon,
   releaseYieldFromDpo: ReleaseIcon,
+  releaseFareFromDpo: WithdrawIcon,
+  withdrawFareFromTravelCabin: WithdrawIcon,
   dpoBuyTravelCabin: TicketIcon,
   dpoBuyDpoSeats: TicketIcon,
   withdrawYieldFromTravelCabin: WithdrawIcon,
@@ -66,6 +66,14 @@ export const DPO_STATE_TOOLTIPS: { [index: string]: any } = {
   RUNNING: `Currently receiving yield. Members can Withdraw from Target and Release to Members.`,
   COMPLETED: `Crowdfunding completed and all Deposits and Rewards have been withdrawn.`,
   FAILED: `Failed to succesfully crowdfund for target before the End block. Withdraw your deposits if still in Vault.`,
+}
+
+export const DPO_STATE_COLORS: { [index: string]: any } = {
+  CREATED: `#FFBD14`,
+  ACTIVE: `#FFBD14`,
+  RUNNING: `#5BC85B`,
+  COMPLETED: `#5BC85B`,
+  FAILED: `#EC3D3D`,
 }
 
 export interface WalletInfo {
