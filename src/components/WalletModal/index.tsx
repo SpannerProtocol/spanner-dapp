@@ -34,7 +34,7 @@ import PendingView, {
   LoadingMessage,
   LoadingWrapper,
   PendingSection,
-  StyledLoader
+  StyledLoader,
 } from './PendingView'
 
 const CloseIcon = styled.div`
@@ -340,6 +340,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key]
       // check for mobile options
+      console.log('ismobile', isMobile, 'ethereum', window.ethereum)
       if (isMobile) {
         //disable portis on mobile for now
         if (option.connector === portis) {
@@ -347,6 +348,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
         }
 
         if (!window.web3 && !window.ethereum && option.mobile) {
+          console.log('no ethereum')
           return (
             <Option
               onClick={() => {
@@ -359,6 +361,27 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
               link={option.href}
               header={option.name}
               subheader={null}
+              icon={require('../../assets/images/' + option.iconName)}
+            />
+          )
+        }
+
+        if (window.web3 && window.ethereum && option.mobile) {
+          console.log('yes ethereum')
+          return (
+            <Option
+              id={`connect-${key}`}
+              onClick={() => {
+                option.connector === connector
+                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                  : !option.href && tryActivation(option.connector)
+              }}
+              key={key}
+              active={option.connector === connector}
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null} //use option.descriptio to bring back multi-line
               icon={require('../../assets/images/' + option.iconName)}
             />
           )
