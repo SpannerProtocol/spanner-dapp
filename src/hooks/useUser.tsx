@@ -1,4 +1,3 @@
-import { useWeb3React } from '@web3-react/core'
 import { useEffect, useState } from 'react'
 import {
   DpoIndex,
@@ -9,7 +8,6 @@ import {
   TravelCabinInfo,
   TravelCabinInventoryIndex,
 } from 'spanner-interfaces/bulletTrain'
-import { useWalletManager } from 'state/wallet/hooks'
 import { getTargetDpo, getTargetTravelCabin, TravelCabinData } from 'utils/getDpoTargets'
 import { getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
 import getTravelCabinInventory from 'utils/getTravelCabinInventory'
@@ -17,7 +15,6 @@ import { useApi } from './useApi'
 import { useRpcUserDpos } from './useQueryDpos'
 import { useRpcUserTravelCabins } from './useQueryTravelCabins'
 import useWallet from './useWallet'
-import { useWeb3Accounts } from './useWeb3Accounts'
 
 export function useUserDpos(address: string | null | undefined) {
   return useRpcUserDpos(address)
@@ -149,23 +146,4 @@ export function useUserInDpo(dpoIndex: number | string | DpoIndex, address: stri
   } else {
     return { inDpo: false, role: undefined }
   }
-}
-
-export function useUserAddress() {
-  const { walletState } = useWalletManager()
-  const { activeAccount } = useWeb3Accounts()
-  const { account } = useWeb3React()
-  const [userAccount, setUserAccount] = useState<string>()
-
-  useEffect(() => {
-    if (!walletState) return
-    if (!(account && activeAccount))
-      if (walletState.walletType === 'custodial' && account) {
-        setUserAccount(account)
-      } else if (walletState.walletType === 'non-custodial' && activeAccount) {
-        setUserAccount(activeAccount.address)
-      }
-  }, [activeAccount, account, walletState])
-
-  return userAccount
 }
