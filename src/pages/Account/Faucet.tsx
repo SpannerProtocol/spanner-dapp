@@ -23,7 +23,6 @@ export default function Faucet(): JSX.Element {
     // global error
     if (!wallet?.address) return
     try {
-      console.log('wallet address:', wallet.address)
       getFaucet(wallet.address, 'BOLT,WUSD')
     } catch (err) {
       console.log('Faucet Error: ', err)
