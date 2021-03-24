@@ -51,14 +51,14 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
             txContent={
               <>
                 <StandardText>
-                  {`Confirm Release Ticket Fare from DPO: `} {dpoInfo.target.asDpo[0].toString()}`
+                  {`Confirm Release Ticket Fare from DPO: `} {dpoInfo.index.toString()}`
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
             actionName={'Release Ticket Fare'}
-            tip={`Release Ticket Fare from Target DPO.`}
-            actionDesc={<StandardText>{`Release Ticket Fare from Target DPO.`}</StandardText>}
+            tip={`Release Ticket Fare from DPO Vault.`}
+            actionDesc={<StandardText>{`Release Ticket Fare DPO Vault.`}</StandardText>}
             icon={ACTION_ICONS[dpoAction.action]}
             buttonText={'Release'}
             transaction={{
@@ -425,9 +425,9 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
 
   return (
     <>
-      {userActions?.map((action, index) => (
-        <React.Fragment key={index}>{action}</React.Fragment>
-      ))}
+      {userActions &&
+        userActions.length > 0 &&
+        userActions.map((action, index) => <React.Fragment key={index}>{action}</React.Fragment>)}
     </>
   )
 }
@@ -443,7 +443,7 @@ export default function DpoActions(props: DpoActionsProps) {
   const { dpoActions } = useDpoActions(dpoInfo)
   return (
     <>
-      {dpoActions && (
+      {dpoActions && dpoActions.length > 0 && (
         <FlatCardPlate margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
           <SectionHeading>Actions</SectionHeading>
           {dpoInfo && dpoIndex && <ActionProvider dpoInfo={dpoInfo} dpoIndex={dpoIndex} dpoActions={dpoActions} />}

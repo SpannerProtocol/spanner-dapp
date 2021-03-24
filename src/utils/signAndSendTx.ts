@@ -113,7 +113,7 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     const msgHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message))
     let ethSig = ''
     try {
-      setPendingMsg('Waiting for confirmation on your mobile wallet.')
+      // setPendingMsg('Waiting for confirmation on your mobile wallet.')
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
       console.log(err)

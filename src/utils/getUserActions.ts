@@ -32,10 +32,6 @@ export default function getUserActions({
 }: GetUserActionsParams): Array<UserAction> | undefined {
   const actions: Array<UserAction> = []
 
-  // console.log(walletInfo.address)
-  // console.log(travelCabinBuyerInfo.buyer.isPassenger)
-  // console.log(travelCabinBuyerInfo.buyer.asPassenger.toString())
-
   // User must be logged in
   if (!walletInfo || !walletInfo.address) return
   // User must be passenger type

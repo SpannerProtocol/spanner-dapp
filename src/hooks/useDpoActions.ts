@@ -64,13 +64,11 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
     } else {
       getTargetTravelCabin(api, wallet, dpoInfo).then((result) => {
         if (result) {
-          console.log(result.toString())
           addActionReq({ targetTravelCabin: result[0] })
         }
       })
       getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
         if (result.isSome) {
-          console.log(result.toString())
           addActionReq({ targetTravelCabinInventory: result.unwrapOrDefault() })
         }
       })
@@ -78,7 +76,6 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         results.forEach((result) => {
           if (result[1].isSome) {
             const travelCabinBuyerInfo = result[1].unwrapOrDefault()
-            console.log(travelCabinBuyerInfo.toHuman())
             if (travelCabinBuyerInfo.buyer.isDpo) {
               const buyerIndex = travelCabinBuyerInfo.buyer.asDpo
               if (buyerIndex.eq(dpoInfo.index)) {
