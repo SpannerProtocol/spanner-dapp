@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectWalletType, Wallet } from 'state/wallet/actions'
+import { enableDevelopmentKeyring, selectWalletType, Wallet } from 'state/wallet/actions'
 import { AppDispatch, AppState } from '../index'
 import { WalletState } from './reducer'
 
@@ -11,6 +11,7 @@ export function useWalletState(): AppState['wallet'] {
 interface WalletManagerState {
   walletState: WalletState
   setWalletType: (wallet: Wallet) => void
+  setDevelopmentKeyring: () => void
 }
 
 export function useWalletManager(): WalletManagerState {
@@ -24,5 +25,9 @@ export function useWalletManager(): WalletManagerState {
     [dispatch]
   )
 
-  return { walletState, setWalletType }
+  const setDevelopmentKeyring = useCallback(() => {
+    dispatch(enableDevelopmentKeyring())
+  }, [dispatch])
+
+  return { walletState, setWalletType, setDevelopmentKeyring }
 }

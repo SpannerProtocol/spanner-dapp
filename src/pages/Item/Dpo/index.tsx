@@ -716,9 +716,11 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             </div>
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${process.env.REACT_APP_APP_HOST}/#/item/dpo/${dpoInfo.index.toString()}?ref=${
-                  wallet.address
-                }&project=${projectState.selectedProject.token}`}
+                toCopy={`${window.location.hostname}:${
+                  window.location.port
+                }/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
+                  projectState.selectedProject.token
+                }`}
                 childrenIsIcon={true}
               >
                 <IconWrapper>
