@@ -10,6 +10,7 @@ export interface WalletInfo {
   injector?: InjectedExtension
   address?: string
   ethereumAddress?: string
+  developmentKeyring?: boolean
 }
 
 // Convenience function for organizing wallet info data
@@ -26,6 +27,7 @@ export default function getWalletInfo(
       custodialProvider,
       address: getUserAddress(walletState),
       ethereumAddress: walletState.address,
+      developmentKeyring: walletState.developmentKeyring,
     }
   } else if (walletState.walletType === 'non-custodial') {
     return {
