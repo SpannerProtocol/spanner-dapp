@@ -14,7 +14,7 @@ import Action from 'pages/Item/actions'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
-import { blockToTs, tsToDateTimeHuman } from 'utils/formatBlocks'
+import { blockToTs, tsToDateTime } from 'utils/formatBlocks'
 import { bnToUnit, formatToUnit } from 'utils/formatUnit'
 import getCabinClass from 'utils/getCabinClass'
 import truncateString from 'utils/truncateString'
@@ -36,7 +36,6 @@ function TravelCabinBuyersInfo({
 
   useEffect(() => {
     if (lastBlock && travelCabinInfo && buyer) {
-      console.log('buyer', buyer[1].toHuman())
       // Precision for bn division
       const bn10000 = new BN(10000)
       let percentage = new BN(10000)
@@ -95,6 +94,17 @@ function TravelCabinBuyersInfo({
               {travelCabinInfo && travelCabinInfo.token_id.isToken && (
                 <>
                   <RowBetween>
+                    <StandardText>{t('Total Deposit')}</StandardText>
+                    <StandardText>
+                      {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}{' '}
+                      {travelCabinInfo.token_id.asToken.toString()}
+                    </StandardText>
+                  </RowBetween>
+                  <RowBetween>
+                    <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
+                    <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
+                  </RowBetween>
+                  <RowBetween>
                     <StandardText>{t('Total Yield')}</StandardText>
                     <StandardText>
                       {formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)}{' '}
@@ -110,11 +120,6 @@ function TravelCabinBuyersInfo({
                   </RowBetween>
                 </>
               )}
-
-              <RowBetween>
-                <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
-                <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
-              </RowBetween>
               <RowBetween>
                 <StandardText>{t(`Last Withdrawal (Block)`)}</StandardText>
                 <StandardText>
@@ -125,7 +130,7 @@ function TravelCabinBuyersInfo({
                 <RowBetween>
                   <StandardText>{t(`Last Withdrawal (Date & Time)`)}</StandardText>
                   <StandardText>
-                    {tsToDateTimeHuman(
+                    {tsToDateTime(
                       blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
                     )}
                   </StandardText>
