@@ -340,7 +340,6 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
     return Object.keys(SUPPORTED_WALLETS).map((key) => {
       const option = SUPPORTED_WALLETS[key]
       // check for mobile options
-      console.log('ismobile', isMobile, 'ethereum', window.ethereum)
       if (isMobile) {
         //disable portis on mobile for now
         if (option.connector === portis) {
@@ -348,7 +347,6 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
         }
 
         if (!window.web3 && !window.ethereum && option.mobile) {
-          console.log('no ethereum')
           return (
             <Option
               onClick={() => {
@@ -367,7 +365,6 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
         }
 
         if (window.web3 && window.ethereum && option.mobile) {
-          console.log('yes ethereum')
           return (
             <Option
               id={`connect-${key}`}

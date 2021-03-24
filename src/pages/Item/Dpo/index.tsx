@@ -39,7 +39,7 @@ import { useProjectManager } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
-import { DPO_STATE_TOOLTIPS } from '../../../constants'
+import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
 import truncateString from '../../../utils/truncateString'
@@ -518,6 +518,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const isConnected = useIsConnected()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
+  const { lastBlock } = useBlockManager()
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -709,9 +710,15 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             {/* Action Shortcuts */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
-                <StateWrapper color={'#fff'} background={theme.secondary1}>
-                  {dpoInfo.state.toString()}
-                </StateWrapper>
+                {lastBlock && dpoInfo.expiry_blk.lt(lastBlock) ? (
+                  <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                    {t(`EXPIRED`)}
+                  </StateWrapper>
+                ) : (
+                  <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                    {dpoInfo.state.toString()}
+                  </StateWrapper>
+                )}
               </AnyQuestionHelper>
             </div>
             {projectState.selectedProject && wallet && wallet.address && (
@@ -873,7 +880,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               <RowBetween>
                 <StandardText>{t(`State`)}</StandardText>
-                <StandardText>{dpoInfo.state.toString()}</StandardText>
+                <StandardText>
+                  {dpoInfo.state.toString()}
+                  {lastBlock && dpoInfo.expiry_blk.lt(lastBlock) && ` (${t(`EXPIRED`)})`}
+                </StandardText>
               </RowBetween>
             </Section>
             <Section>
