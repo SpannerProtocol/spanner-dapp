@@ -78,7 +78,6 @@
   "Select a Project": "Select a Project",
   "Instructions": "Instructions",
   "TravelCabins": "TravelCabins",
-  "DPO Passenger Groups": "DPO Passenger Groups",
   "projectMissing": "Looks like {{project}} does not have a BulletTrain yet.",
   "Bridge Spanner WUSD to Ethereum USDT": "Bridge Spanner WUSD to Ethereum USDT",
   "Withdraw Amount": "Withdraw Amount",
@@ -115,6 +114,7 @@
   "Max Input": "Max Input",
   "Balance: ": "Balance: ",
   "Add Liquidity": "Add Liquidity",
+  "Remove Liquidity": "Remove Liquidity",
   "Remove LP Tokens": "Remove LP Tokens",
   "Remove": "Remove",
   "Pool Info": "Pool Info",
@@ -265,4 +265,5 @@
   "Could not identify transaction info.": "Could not identify transaction info.",
   "Waiting for confirmation on your mobile wallet.": "Waiting for confirmation on your mobile wallet.",
   "Message signature does not match custodial wallet address.": "Message signature does not match custodial wallet address."
+  "Latest Transactions": "Latest Transactions"
 }
