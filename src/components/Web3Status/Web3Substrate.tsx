@@ -1,15 +1,18 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import Identicon from 'components/Identicon'
+import SpannerLogo from '../../assets/svg/logo-spanner-yellow.svg'
 import WalletModal from 'components/WalletModal'
 import { injected, walletconnect } from 'connectors'
+import useWallet from 'hooks/useWallet'
 import { darken, lighten } from 'polished'
 import React from 'react'
 import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useWalletModalToggle } from 'state/application/hooks'
 import styled, { css } from 'styled-components'
-import { shortenAddress } from 'utils'
+// import { shortenAddress } from 'utils'
+import { shortenAddr } from '../../utils/truncateString'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
 import { NetworkContextName } from '../../constants'
 import { ButtonPrimary } from '../Button'
@@ -110,15 +113,19 @@ const NetworkIcon = styled(Activity)`
 `
 
 // eslint-disable-next-line react/prop-types
-function StatusIcon({ connector }: { connector: AbstractConnector }) {
-  if (connector === injected) {
-    return <Identicon />
-  } else if (connector === walletconnect) {
-    return (
-      <IconWrapper size={16}>
-        <img src={WalletConnectIcon} alt={''} />
-      </IconWrapper>
-    )
+function StatusIcon({ connector }: { connector: AbstractConnector | string }) {
+  if (typeof connector === 'string' && connector === 'Spanner') {
+    return <img src={SpannerLogo} style={{ height: '1rem', width: '1rem' }} />
+  } else {
+    if (connector === injected) {
+      return <Identicon />
+    } else if (connector === walletconnect) {
+      return (
+        <IconWrapper size={16}>
+          <img src={WalletConnectIcon} alt={''} />
+        </IconWrapper>
+      )
+    }
   }
   return null
 }
@@ -137,14 +144,15 @@ function StatusIcon({ connector }: { connector: AbstractConnector }) {
 function Web3StatusEth() {
   const { t } = useTranslation()
   const { account, connector, error } = useWeb3React()
+  const wallet = useWallet()
 
   const toggleWalletModal = useWalletModalToggle()
 
-  if (account) {
+  if (wallet && wallet.address) {
     return (
       <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={false}>
-        <Text>{shortenAddress(account)}</Text>
-        {connector && <StatusIcon connector={connector} />}
+        <Text>{shortenAddr(wallet.address)}</Text>
+        {connector ? <StatusIcon connector={connector} /> : <StatusIcon connector={'Spanner'} />}
       </Web3StatusConnected>
     )
   } else if (error) {

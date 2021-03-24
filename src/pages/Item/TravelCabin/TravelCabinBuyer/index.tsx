@@ -14,8 +14,8 @@ import Action from 'pages/Item/actions'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
-import { blockToTs, tsToDateTimeHuman } from 'utils/formatBlocks'
-import { formatToUnit, trimZeros } from 'utils/formatUnit'
+import { blockToTs, tsToDateTime } from 'utils/formatBlocks'
+import { bnToUnit, formatToUnit } from 'utils/formatUnit'
 import getCabinClass from 'utils/getCabinClass'
 import truncateString from 'utils/truncateString'
 import { ACTION_ICONS } from '../../../../constants'
@@ -36,20 +36,19 @@ function TravelCabinBuyersInfo({
 
   useEffect(() => {
     if (lastBlock && travelCabinInfo && buyer) {
-      // Precision for bn
+      // Precision for bn division
       const bn10000 = new BN(10000)
-      let percentage = new BN(100)
+      let percentage = new BN(10000)
       if (!travelCabinInfo.maturity.isZero()) {
         const blockSincePurchase = lastBlock.sub(buyer[1].purchase_blk)
         percentage = blockSincePurchase.mul(bn10000).div(travelCabinInfo.maturity.toBn())
+        percentage = percentage.gte(bn10000) ? bn10000 : percentage
         const accumulatedYield = percentage.mul(travelCabinInfo.yield_total.toBn())
         const amount = accumulatedYield.sub(buyer[1].yield_withdrawn.toBn().mul(bn10000))
-        const amountStr = amount.toString()
         if (amount.gt(new BN(0))) {
-          const left = amountStr.substring(0, amountStr.length - chainDecimals - (bn10000.toString().length - 1)) + '.'
-          const right = amountStr.substring(amountStr.length - chainDecimals - (bn10000.toString().length - 1))
-          const amountInPrecision = left + right
-          setYieldAvailable(trimZeros(amountInPrecision))
+          // shift decimal places by 4 because of precision used with
+          const amountInPrecision = bnToUnit(amount, chainDecimals, -4, true)
+          setYieldAvailable(amountInPrecision)
         } else {
           setYieldAvailable('0')
         }
@@ -95,6 +94,17 @@ function TravelCabinBuyersInfo({
               {travelCabinInfo && travelCabinInfo.token_id.isToken && (
                 <>
                   <RowBetween>
+                    <StandardText>{t('Total Deposit')}</StandardText>
+                    <StandardText>
+                      {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}{' '}
+                      {travelCabinInfo.token_id.asToken.toString()}
+                    </StandardText>
+                  </RowBetween>
+                  <RowBetween>
+                    <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
+                    <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
+                  </RowBetween>
+                  <RowBetween>
                     <StandardText>{t('Total Yield')}</StandardText>
                     <StandardText>
                       {formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)}{' '}
@@ -110,11 +120,6 @@ function TravelCabinBuyersInfo({
                   </RowBetween>
                 </>
               )}
-
-              <RowBetween>
-                <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
-                <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
-              </RowBetween>
               <RowBetween>
                 <StandardText>{t(`Last Withdrawal (Block)`)}</StandardText>
                 <StandardText>
@@ -125,7 +130,7 @@ function TravelCabinBuyersInfo({
                 <RowBetween>
                   <StandardText>{t(`Last Withdrawal (Date & Time)`)}</StandardText>
                   <StandardText>
-                    {tsToDateTimeHuman(
+                    {tsToDateTime(
                       blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
                     )}
                   </StandardText>
@@ -190,8 +195,14 @@ function TravelCabinBuyersInfo({
   )
 }
 
-export function UserActionProvider({ travelCabinIndex }: { travelCabinIndex: string }) {
-  const { actions, travelCabinInfo, travelCabinInventoryIndex } = useUserActions(travelCabinIndex)
+export function UserActionProvider({
+  travelCabinIndex,
+  travelCabinInventoryIndex,
+}: {
+  travelCabinIndex: string
+  travelCabinInventoryIndex: string
+}) {
+  const { actions, travelCabinInfo } = useUserActions(travelCabinIndex, travelCabinInventoryIndex)
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
   const { t } = useTranslation()
@@ -232,7 +243,7 @@ export function UserActionProvider({ travelCabinIndex }: { travelCabinIndex: str
             txContent={
               <>
                 <StandardText>
-                  {`c`}: {getCabinClass(travelCabinIndex)}`
+                  {`Confirm Withdraw Yield from TravelCabin`}: {getCabinClass(travelCabinIndex)}`
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
@@ -276,7 +287,7 @@ export function UserActionProvider({ travelCabinIndex }: { travelCabinIndex: str
 
 export default function TravelCabinBuyer(): JSX.Element {
   const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
-  const userActions = useUserActions(travelCabinIndex)
+  const userActions = useUserActions(travelCabinIndex, travelCabinInventoryIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
   const [selectedBuyer, setSelectedBuyer] = useState<
     [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
@@ -294,7 +305,10 @@ export default function TravelCabinBuyer(): JSX.Element {
       {selectedBuyer && <TravelCabinBuyersInfo selectedBuyer={selectedBuyer} />}
       {userActions.actions && userActions.actions.length > 0 && (
         <ContentWrapper>
-          <UserActionProvider travelCabinIndex={travelCabinIndex} />
+          <UserActionProvider
+            travelCabinIndex={travelCabinIndex}
+            travelCabinInventoryIndex={travelCabinInventoryIndex}
+          />
         </ContentWrapper>
       )}
     </>

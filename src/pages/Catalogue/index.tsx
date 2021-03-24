@@ -3,7 +3,7 @@ import { FlatCardPlate } from 'components/Card'
 import { Heading } from 'components/Text'
 import React, { useEffect, useState } from 'react'
 import TabBar, { TabMetaData } from '../../components/TabBar'
-import { PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
+import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import DpoCatalogue from './Dpo'
 import TravelCabinCatalogue from './TravelCabin'
 import BulletTrainStats from './Stats'
@@ -48,7 +48,6 @@ const tabOptions = ['instructions', 'travelcabins', 'dpo']
 export default function Catalogue() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<string>('travelcabins')
-  const [heading, setHeading] = useState<string>('TravelCabins')
   const { projectState } = useProjectManager()
   // Using this to check if a project has a bullettrain campaign started
   const travelCabins = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token)
@@ -62,16 +61,7 @@ export default function Catalogue() {
   useEffect(() => {
     const tabName = tabOptions[activeTabIndex]
     setActiveTab(tabName)
-    if (tabName === 'instructions') {
-      setHeading(t(`Instructions`))
-    }
-    if (tabName === 'travelcabins') {
-      setHeading(t(`TravelCabins`))
-    }
-    if (tabName === 'dpo') {
-      setHeading(t(`DPO Passenger Groups`))
-    }
-  }, [activeTabIndex, t])
+  }, [activeTabIndex])
 
   useEffect(() => {
     if (travelCabins.length === 0) {
@@ -98,7 +88,6 @@ export default function Catalogue() {
                 <Heading>{projectState.selectedProject?.project}&apos;s BulletTrain</Heading>
               </Section>
               <Section style={{ width: '100%' }}>
-                <TabBar id={'tabbar-catalogue'} className={'tabbar-container'} tabs={tabData} onClick={handleClick} />
                 <BannerGrid style={{ maxWidth: '100%', marginBottom: '1rem' }}>
                   <img
                     alt="BulletTrain banner"
@@ -110,13 +99,20 @@ export default function Catalogue() {
               </Section>
             </FlatCardPlate>
           </Wrapper>
-          <SectionContainer>
-            <div style={{ textAlign: 'left' }}>
-              <Heading style={{ marginBottom: '1rem' }}>{heading}</Heading>
-            </div>
-            {activeTab === 'instructions' && <BulletTrainInstructions />}
-            {activeTab === 'travelcabins' && <TravelCabinCatalogue />}
-            {activeTab === 'dpo' && <DpoCatalogue />}
+
+          <SectionContainer style={{ minHeight: '750px', marginTop: '20px', marginBottom: '0px', width: '100%' }}>
+            <TabBar
+              margin="0px"
+              id={'tabbar-catalogue'}
+              className={'tabbar-container'}
+              tabs={tabData}
+              onClick={handleClick}
+            />
+            <SpacedSection>
+              {activeTab === 'instructions' && <BulletTrainInstructions />}
+              {activeTab === 'travelcabins' && <TravelCabinCatalogue />}
+              {activeTab === 'dpo' && <DpoCatalogue />}
+            </SpacedSection>
           </SectionContainer>
         </>
       ) : (

@@ -3,11 +3,13 @@ import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
-import { SectionHeading, StandardText } from 'components/Text'
+import { getCustodialAddr } from 'bridge'
+import { HeavyText, SectionHeading, StandardText } from 'components/Text'
 import { BorderedSelection, Section } from 'components/Wrapper'
 import { useWeb3Accounts } from 'hooks/useWeb3Accounts'
 import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
+import { useTranslation } from 'react-i18next'
 import { useIsDarkMode } from 'state/user/hooks'
 import { useWalletManager } from 'state/wallet/hooks'
 import styled from 'styled-components'
@@ -151,18 +153,17 @@ function SpannerAccountSelectModal({
   createConnection: () => void
 }) {
   const error = errorMsg ? true : false
+  const { t } = useTranslation()
 
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} minHeight={false} maxHeight={90}>
-      <UpperSection>
+      <UpperSection style={{ width: '100%' }}>
         <HeaderRow>
           <HoverText>{title}</HoverText>
         </HeaderRow>
         <ContentWrapper>
           <Section style={{ textAlign: 'center' }}>
-            <StandardText style={{ margin: '0' }}>
-              Allow access to Spanner from your wallet extensions. All your addresses should be displayed below.
-            </StandardText>
+            <StandardText style={{ margin: '0' }}>{t(`Select an address below to use in Spanner Dapp.`)}</StandardText>
           </Section>
           {pending && (
             <PendingSection>
@@ -171,12 +172,12 @@ function SpannerAccountSelectModal({
                   {error ? (
                     <ErrorGroup>
                       <div>{errorMsg}</div>
-                      <ErrorButton onClick={() => createConnection()}>Try Again</ErrorButton>
+                      <ErrorButton onClick={() => createConnection()}>{t(`Try Again`)}</ErrorButton>
                     </ErrorGroup>
                   ) : (
                     <>
                       <StyledLoader />
-                      Initializing...
+                      {t(`Initializing`)}...
                     </>
                   )}
                 </LoadingWrapper>
@@ -192,14 +193,14 @@ function SpannerAccountSelectModal({
                     onClick={() => selectAccount(account)}
                     style={{
                       textAlign: 'center',
-                      fontSize: '11px',
                       padding: '0.5rem',
                       marginTop: '0.35rem',
                       marginBottom: '0.35rem',
                       cursor: 'pointer',
+                      background: '#fff',
                     }}
                   >
-                    {account.address}
+                    <HeavyText fontSize={'11px'}>{account.address}</HeavyText>
                   </BorderedSelection>
                 )
               })}
@@ -229,9 +230,11 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
   const [openAccountSelectModal, setOpenAccountSelectModal] = useState(false)
   const [spannerWalletActive, setSpannerWalletActive] = useState(false)
   const isDarkMode = useIsDarkMode()
-  const { setWalletType } = useWalletManager()
+  const { setWalletType, setDevelopmentKeyring } = useWalletManager()
 
   const [isCustodial, setIsCustodial] = useState<boolean | undefined>()
+
+  const { t } = useTranslation()
 
   // close on connection, when logged out before
   useEffect(() => {
@@ -294,16 +297,27 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
     if (typeof isCustodial === 'undefined') return
     if (isCustodial) {
       if (!account) return
-      setWalletType({
-        type: 'custodial',
-        address: account,
-        custodialAddress: getCustodialAccount(account).address,
-      })
+      if (process.env.REACT_APP_DEVELOPMENT_KEYRING === 'true' && process.env.NODE_ENV === 'development') {
+        setWalletType({
+          type: 'custodial',
+          address: account,
+          custodialAddress: getCustodialAccount(account).address,
+        })
+        setDevelopmentKeyring()
+      } else {
+        getCustodialAddr(account).then((response) => {
+          setWalletType({
+            type: 'custodial',
+            address: account,
+            custodialAddress: response.data,
+          })
+        })
+      }
     } else {
       if (!activeAccount) return
       setWalletType({ type: 'non-custodial', address: activeAccount.address })
     }
-  }, [isCustodial, account, activeAccount, setWalletType])
+  }, [isCustodial, account, activeAccount, setWalletType, setDevelopmentKeyring])
 
   const handleAccountSelection = () => {
     toggleWalletModal()
@@ -345,6 +359,26 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
               link={option.href}
               header={option.name}
               subheader={null}
+              icon={require('../../assets/images/' + option.iconName)}
+            />
+          )
+        }
+
+        if (window.web3 && window.ethereum && option.mobile) {
+          return (
+            <Option
+              id={`connect-${key}`}
+              onClick={() => {
+                option.connector === connector
+                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                  : !option.href && tryActivation(option.connector)
+              }}
+              key={key}
+              active={option.connector === connector}
+              color={option.color}
+              link={option.href}
+              header={option.name}
+              subheader={null} //use option.descriptio to bring back multi-line
               icon={require('../../assets/images/' + option.iconName)}
             />
           )
@@ -481,12 +515,12 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
           <CloseIcon onClick={toggleWalletModal}>
             <CloseColor />
           </CloseIcon>
-          <HeaderRow>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error connecting'}</HeaderRow>
+          <HeaderRow>{error instanceof UnsupportedChainIdError ? t(`Wrong Network`) : t(`Error connecting`)}</HeaderRow>
           <ContentWrapper>
             {error instanceof UnsupportedChainIdError ? (
-              <h5>Please connect to the appropriate Ethereum network.</h5>
+              <h5>{t(`Please connect to the appropriate Ethereum network.`)}</h5>
             ) : (
-              'Error connecting. Try refreshing the page.'
+              t(`Error connecting. Try refreshing the page.`)
             )}
           </ContentWrapper>
         </UpperSection>
@@ -514,12 +548,12 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
                 setWalletView(WALLET_VIEWS.ACCOUNT)
               }}
             >
-              Back
+              {t(`Back`)}
             </HoverText>
           </HeaderRow>
         ) : (
           <HeaderRow>
-            <HoverText>Connect to wallets</HoverText>
+            <HoverText>{t(`Connect to wallets`)}</HoverText>
           </HeaderRow>
         )}
         <ContentWrapper>
@@ -532,16 +566,16 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
             />
           ) : (
             <>
-              <SectionHeading>Connect to Spanner wallet</SectionHeading>
+              <SectionHeading>{t(`Connect to Spanner wallet`)}</SectionHeading>
               <OptionGrid>{getSpannerOptions({ onClick: handleAccountSelection })}</OptionGrid>
-              <SectionHeading style={{ marginTop: '1rem' }}>Connect to Ethereum wallet</SectionHeading>
+              <SectionHeading style={{ marginTop: '1rem' }}>{t(`Connect to Ethereum wallet`)}</SectionHeading>
               <OptionGrid>{getEthOptions()}</OptionGrid>
             </>
           )}
           {walletView !== WALLET_VIEWS.PENDING && (
             <Blurb>
-              <span>New to Spanner?&nbsp;</span>{' '}
-              <ExternalLink href="#">Learn more about Spanner native and custodial wallets</ExternalLink>
+              <span>{t(`New to Spanner?`)}&nbsp;</span>{' '}
+              <ExternalLink href="#">{t(`Learn more about Spanner native and custodial wallets`)}</ExternalLink>
             </Blurb>
           )}
         </ContentWrapper>

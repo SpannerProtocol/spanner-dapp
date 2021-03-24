@@ -120,13 +120,13 @@ export default function TxModal({
         </ModalWrapper>
       </Modal>
     )
-  } else if (!txPending && txHash) {
+  } else if (txHash) {
     return (
       <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
         <ModalWrapper>
           <Section>
             <RowBetween>
-              <ModalTitle>Complete</ModalTitle>
+              <ModalTitle>In Block</ModalTitle>
               <CloseIcon onClick={onDismiss} />
             </RowBetween>
           </Section>
@@ -147,7 +147,7 @@ export default function TxModal({
                 overflowWrap: 'anywhere',
               }}
             >
-              Transaction finalized at {txHash}
+              Transaction submitted to block at {txHash}
             </CenteredRow>
             <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>View on Polkascan</CenteredRow>
           </Section>

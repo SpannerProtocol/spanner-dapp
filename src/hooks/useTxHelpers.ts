@@ -66,6 +66,7 @@ export default function useTxHelpers() {
       return
     }
     signAndSendTx({
+      api: api,
       tx: txMeta.unsignedTx,
       wallet: wallet,
       signer: wallet.injector?.signer,

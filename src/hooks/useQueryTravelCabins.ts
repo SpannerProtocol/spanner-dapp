@@ -141,31 +141,6 @@ export function useDPOTravelCabinInventoryIndex(
   return inventoryIndex
 }
 
-export function useUserTravelCabinInventoryIndex(
-  address?: string,
-  travelCabinIndex?: TravelCabinIndex | number | string
-) {
-  const { api, connected } = useApi()
-  const [inventoryIndex, setInventoryIndex] = useState<TravelCabinInventoryIndex>()
-
-  useEffect(() => {
-    if (!connected || !travelCabinIndex || !address) return
-    api.query.bulletTrain.travelCabinBuyer.entries(travelCabinIndex).then((result) => {
-      const found = result.find(
-        (buyerInfo) =>
-          buyerInfo[1].isSome &&
-          buyerInfo[1].unwrapOrDefault().buyer.isPassenger &&
-          buyerInfo[1].unwrapOrDefault().buyer.asPassenger.eq(address)
-      )
-      if (found) {
-        setInventoryIndex(found[0].args[1])
-      }
-    })
-  }, [address, api, connected, travelCabinIndex])
-
-  return inventoryIndex
-}
-
 /**
  * Get an array of all TravelCabin
  * @param travelCabinIndex Index of TravelCabin

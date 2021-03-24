@@ -1,6 +1,7 @@
 import { Web3Provider } from '@ethersproject/providers'
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
 import { Signer } from '@polkadot/api/types'
+import { ApiPromise } from '@polkadot/api'
 import { ExtrinsicStatus } from '@polkadot/types/interfaces'
 import { ethers } from 'ethers'
 import { Dispatch, SetStateAction } from 'react'
@@ -8,6 +9,7 @@ import getCustodialAccount from './getCustodialAccount'
 import { isJsonRpcSigner } from './typeguards/signer'
 import { Transaction } from 'components/TransactionMsgs'
 import { WalletInfo } from './getWalletInfo'
+import { postSignature } from 'bridge'
 
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
 
@@ -20,6 +22,7 @@ interface SignAndSendCoreParams {
   tx: SubmittableExtrinsic
   address?: string | null
   wallet?: WalletInfo
+  api?: ApiPromise
   queueTransaction?: (tx: Transaction) => void
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
@@ -53,32 +56,21 @@ function handleTxStatus(params: TxStatus) {
   const { status, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
   if (status.isInBlock) {
     setErrorMsg(undefined)
-    setHash(undefined)
+    setHash(status.asInBlock.toString())
     setPendingMsg('Transaction submitted to block')
     if (queueTransaction) {
       queueTransaction({ message: 'Transaction submitted to block', status: 'queued' })
     }
     console.log(`Completed at block hash #${status.asInBlock.toString()}`)
-  } else if (status.isFinalized) {
+  } else if (status.isReady || status.isBroadcast) {
     setErrorMsg(undefined)
-    setPendingMsg(undefined)
-    setHash(status.asFinalized.toString())
-    if (queueTransaction) {
-      queueTransaction({
-        message: 'Finalized at block hash #' + status.asFinalized.toString(),
-        status: 'queued',
-      })
-    }
-    console.log(`Finalized at block hash #${status.asFinalized.toString()}`)
+    setHash(undefined)
+    setPendingMsg(`Transaction pending`)
+    console.log(`Current status: ${status.type}`)
   } else if (status.isInvalid) {
     setErrorMsg(status.asBroadcast.toString())
     setHash(undefined)
     setPendingMsg(undefined)
-  } else {
-    setErrorMsg(undefined)
-    setHash(undefined)
-    setPendingMsg('Transaction pending')
-    console.log(`Current status: ${status.type}`)
   }
 }
 
@@ -100,16 +92,16 @@ function signAndSend(params: SignAndSendParams) {
 }
 
 function signAndSendCustodial(params: SignAndSendCustodialParams) {
-  const { tx, address, custodialProvider, txInfo, setErrorMsg, setHash, setPendingMsg } = params
+  const { api, tx, wallet, address, custodialProvider, txInfo, setErrorMsg, setHash, setPendingMsg } = params
 
   // Section and Method are used to reconstruct the @polkadot/api tx call server-side
-  if (!custodialProvider || !address || !txInfo) {
+  if (!custodialProvider || !address || !txInfo || !wallet) {
     setErrorMsg('Unexpected Error with Custodial Signing operation.')
     return
   }
 
   if (!(Object.keys(txInfo).includes('section') && Object.keys(txInfo).includes('method'))) {
-    setErrorMsg('Could not identify tx info. Please contact Spanner.')
+    setErrorMsg('Could not identify transaction info.')
     return
   }
 
@@ -121,7 +113,7 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     const msgHex = ethers.utils.hexlify(ethers.utils.toUtf8Bytes(message))
     let ethSig = ''
     try {
-      setPendingMsg('Waiting for confirmation on your mobile wallet.')
+      // setPendingMsg('Waiting for confirmation on your mobile wallet.')
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
       console.log(err)
@@ -130,56 +122,68 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     const recoveredAddress = ethers.utils.recoverAddress(ethers.utils.hashMessage(message), ethSig)
     const custodialPayload = {
       verified: address === recoveredAddress,
-      cryptoAlgo: 'secp256k1',
       message: JSON.parse(message),
+      signingAlgo: 'secp256k1',
       signature: ethSig,
       ethAddress: recoveredAddress,
     }
     return custodialPayload
   }
+
   const spannerAccount = getCustodialAccount(address)
   const paramKeys = tx.meta.args.map((arg) => arg.name.toString())
   const paramsMap: { [index: string]: any } = {}
   paramKeys.forEach((key, index) => (paramsMap[key] = tx.args[index].toHuman()))
-  const message = JSON.stringify(
-    {
-      declaration: 'I authorize Spanner Protocol to sign this transaction on my behalf.',
-      custodialAddress: spannerAccount.address.toString(),
-      transaction: {
-        section,
-        method,
-        params: paramsMap,
-      },
+  const message = JSON.stringify({
+    declaration: 'I authorize Spanner Protocol to sign this transaction on my behalf.',
+    custodialAddress: wallet.address,
+    transaction: {
+      section,
+      method,
+      params: paramsMap,
     },
-    null,
-    1
-  )
+  })
 
-  signAndVerify(custodialProvider, message)
-    .then((ethAccount) => {
-      if (!ethAccount.verified) {
-        setErrorMsg('Message signature does not match custodial wallet address.')
-        return
-      }
-    })
-    .then(() => {
-      tx.signAsync(spannerAccount)
-        .then(() => {
-          tx.send(({ status }) => {
-            handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
+  if (wallet && wallet.developmentKeyring === true) {
+    signAndVerify(custodialProvider, message)
+      .then((ethAccount) => {
+        if (!ethAccount.verified) {
+          setErrorMsg('Message signature does not match custodial wallet address.')
+          return
+        }
+      })
+      .then(() => {
+        tx.signAsync(spannerAccount)
+          .then(() => {
+            tx.send(({ status }) => {
+              handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
+            })
           })
-        })
-        .catch((err) => {
-          setPendingMsg(undefined)
-          setHash(undefined)
-          setErrorMsg(`Transaction failed: ${err}`)
-          console.log('Transaction failed ', err)
-        })
+          .catch((err) => {
+            setPendingMsg(undefined)
+            setHash(undefined)
+            setErrorMsg(`Transaction failed: ${err}`)
+            console.log('Transaction failed ', err)
+          })
+      })
+  } else {
+    // Use signing server. They use a different key derivation.
+    signAndVerify(custodialProvider, message).then((custodialPayload) => {
+      // console.log('custodial payload', JSON.stringify(custodialPayload))
+      postSignature(custodialPayload).then((txSignature) => {
+        if (!api) return
+        console.log(txSignature.data)
+        const submittableTx = api.createType('Extrinsic', txSignature.data)
+        api.rpc.author.submitAndWatchExtrinsic(submittableTx, (status) =>
+          handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
+        )
+      })
     })
+  }
 }
 
 export default function signAndSendTx(params: SignAndSendTxParams) {
-  const { tx, wallet, txInfo, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
+  const { api, tx, wallet, txInfo, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
   if (!wallet || !wallet.address) {
     setErrorMsg('No wallet detected. Please connect to a wallet and try again.')
     return
@@ -187,7 +191,9 @@ export default function signAndSendTx(params: SignAndSendTxParams) {
 
   if (wallet.type === 'custodial') {
     signAndSendCustodial({
+      api,
       tx,
+      wallet: wallet,
       address: wallet.ethereumAddress,
       custodialProvider: wallet.custodialProvider,
       txInfo,

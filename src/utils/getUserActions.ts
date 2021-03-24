@@ -49,7 +49,10 @@ export default function getUserActions({
   }
 
   // On maturity, user can withdraw their deposit
-  if (travelCabinInfo.maturity.eq(lastBlock) && !travelCabinBuyerInfo.fare_withdrawn) {
+  if (
+    travelCabinInfo.maturity.add(travelCabinBuyerInfo.purchase_blk).lte(lastBlock) &&
+    travelCabinBuyerInfo.fare_withdrawn.isFalse
+  ) {
     actions.push({
       action: 'withdrawFareFromTravelCabin',
       travelCabinIndex,

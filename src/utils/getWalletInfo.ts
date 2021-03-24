@@ -1,7 +1,6 @@
 import { WalletState } from 'state/wallet/reducer'
 import type { InjectedExtension } from '@polkadot/extension-inject/types'
 import { Web3Provider } from '@ethersproject/providers'
-import getUserAddress from 'utils/getUserAddress'
 import Keyring from '@polkadot/keyring'
 import { u8aToHex } from '@polkadot/util'
 export interface WalletInfo {
@@ -10,6 +9,11 @@ export interface WalletInfo {
   injector?: InjectedExtension
   address?: string
   ethereumAddress?: string
+  developmentKeyring?: boolean
+}
+
+function getUserAddress(walletState: WalletState) {
+  return walletState.walletType === 'custodial' ? walletState.custodialAddress : walletState.address
 }
 
 // Convenience function for organizing wallet info data
@@ -26,6 +30,7 @@ export default function getWalletInfo(
       custodialProvider,
       address: getUserAddress(walletState),
       ethereumAddress: walletState.address,
+      developmentKeyring: walletState.developmentKeyring,
     }
   } else if (walletState.walletType === 'non-custodial') {
     return {

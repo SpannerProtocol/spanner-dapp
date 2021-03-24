@@ -22,19 +22,19 @@ export function blockToHours(blockTime: Moment, block: BlockNumber | u32, precis
 }
 
 /**
- * Converts a unix ts into a datetime object
- * @param timestamp unix timestamp in seconds
- */
-export function tsToDateTime(timestamp: number) {
-  return moment.unix(timestamp).format()
-}
-
-/**
  * Converts a unix ts into human readable format, e.g. March 20th 2021, 4:00:48 pm
  * @param timestamp unix timestamp in seconds
  */
 export function tsToDateTimeHuman(timestamp: number) {
   return moment.unix(timestamp).format('MMMM Do YYYY, h:mm:ss a')
+}
+
+/**
+ *  Converts a unix ts into date time
+ * @param timestamp unix timestamp in seconds
+ */
+export function tsToDateTime(timestamp: number) {
+  return moment.unix(timestamp).format('MM/DD/YYYY, hh:mm:ss')
 }
 
 /**

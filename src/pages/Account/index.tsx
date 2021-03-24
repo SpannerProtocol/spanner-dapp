@@ -5,7 +5,7 @@ import useWallet from 'hooks/useWallet'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import TabBar, { TabMetaData } from '../../components/TabBar'
-import { GridWrapper, PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
+import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import truncateString from '../../utils/truncateString'
 import Balances from './Balances'
 import Bridge from './Bridge'
@@ -68,25 +68,23 @@ export default function Account() {
           </Section>
           {wallet && wallet.address && (
             <SpacedSection>
-              <GridWrapper columns="2">
-                <Section>
+              <Section>
+                <RowBetween>
+                  <StandardText>{t(`Wallet Type`)}:</StandardText>
+                  <StandardText>{wallet.type}</StandardText>
+                </RowBetween>
+                {wallet.type === 'custodial' && wallet.ethereumAddress && (
                   <RowBetween>
-                    <StandardText>{t(`Wallet Type`)}:</StandardText>
-                    <StandardText>{wallet.type}</StandardText>
+                    <StandardText>{t(`Ethereum Address`)}:</StandardText>
+                    <StandardText>{truncateString(wallet.ethereumAddress)}</StandardText>
                   </RowBetween>
-                  {wallet.type === 'custodial' && wallet.ethereumAddress && (
-                    <RowBetween>
-                      <StandardText>{t(`Ethereum Address`)}:</StandardText>
-                      <StandardText>{truncateString(wallet.ethereumAddress)}</StandardText>
-                    </RowBetween>
-                  )}
-                  <RowBetween>
-                    <StandardText>{t(`Address`)}:</StandardText>
-                    <StandardText>{truncateString(wallet.address)}</StandardText>
-                  </RowBetween>
-                  <Section></Section>
-                </Section>
-              </GridWrapper>
+                )}
+                <RowBetween>
+                  <StandardText>{t(`Address`)}:</StandardText>
+                  <StandardText>{truncateString(wallet.address)}</StandardText>
+                </RowBetween>
+                <Section></Section>
+              </Section>
             </SpacedSection>
           )}
           <TabBar
@@ -98,7 +96,7 @@ export default function Account() {
           />
         </FlatCardPlate>
       </Wrapper>
-      <SectionContainer style={{ marginTop: '0' }}>
+      <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'bridge' && <Bridge />}

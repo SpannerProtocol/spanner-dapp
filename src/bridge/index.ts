@@ -58,3 +58,37 @@ export function getFaucet(spannerAddress: string, tokens: string) {
     },
   })
 }
+
+/**
+ * Get Spanner SS58 custodial address from a custodial address
+ * @param ethereumAddress valid ethereum address (hex with 0x)
+ */
+export function getCustodialAddr(ethereumAddress: string) {
+  return axios.get<string>(`${bridgeHost}/custodial_addr`, {
+    httpAgent,
+    params: {
+      eth_addr: ethereumAddress,
+    },
+  })
+}
+
+interface CustodialSigningPayload {
+  message: {
+    declaration: string
+    custodialAddress: string
+    transaction: {
+      section: string
+      method: string
+      params: Record<string, unknown>
+    }
+  }
+  signingAlgo: string
+  signature: string
+  ethAddress: string
+}
+
+export function postSignature(payload: CustodialSigningPayload) {
+  return axios.post(`${bridgeHost}/sign`, payload, {
+    httpAgent,
+  })
+}
