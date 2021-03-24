@@ -34,16 +34,16 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
   useEffect(() => {
     if (triedEager && !networkActive && !networkError && !active) {
       activateNetwork(network)
-      if (account) {
-        console.log('eager connect:', account)
-        getCustodialAddr(account).then((response) => {
-          setWalletType({
-            type: 'custodial',
-            address: account,
-            custodialAddress: response.data,
-          })
+    }
+    if (account) {
+      console.log('eager connect:', account)
+      getCustodialAddr(account).then((response) => {
+        setWalletType({
+          type: 'custodial',
+          address: account,
+          custodialAddress: response.data,
         })
-      }
+      })
     }
   }, [triedEager, networkActive, networkError, activateNetwork, active, account, setWalletType])
 
