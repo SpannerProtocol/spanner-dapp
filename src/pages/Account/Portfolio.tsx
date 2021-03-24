@@ -11,22 +11,18 @@ import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInfo } from 'spanner-in
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { useItemManager } from 'state/item/hooks'
-import { useWalletManager } from 'state/wallet/hooks'
 import { DpoAction, getDpoAlerts } from 'utils/getDpoActions'
 import { TravelCabinData } from 'utils/getDpoTargets'
 import Copy from '../../components/Copy/Copy'
-import { useUserAddress } from '../../hooks/useUser'
 import { useTranslation, Trans } from 'react-i18next'
 
 export default function Portfolio(): JSX.Element {
-  const walletInfo = useWallet()
-  const userItems = useUserItems(walletInfo?.address)
+  const wallet = useWallet()
+  const userItems = useUserItems(wallet?.address)
   const { chainDecimals } = useSubstrate()
   const { setItem } = useItemManager()
-  const { walletState } = useWalletManager()
-  const userAddress = useUserAddress()
   const { lastBlock } = useBlockManager()
-  const dposData = useUserDposData(walletInfo?.address)
+  const dposData = useUserDposData(wallet?.address)
   const { t } = useTranslation()
 
   const handleDpoClick = (selectedDpo: [DpoIndex, DpoInfo]) => {
@@ -39,7 +35,7 @@ export default function Portfolio(): JSX.Element {
 
   return (
     <>
-      {!walletState.walletType ? (
+      {!(wallet && wallet.address) ? (
         <>
           <FlatCardPlate
             style={{
@@ -101,20 +97,18 @@ export default function Portfolio(): JSX.Element {
                       })}
                   </GridWrapper>
                 )}
-                {userItems.userDpos.length > 0 && (
+                {wallet && wallet.address && userItems.userDpos.length > 0 && (
                   <div style={{ padding: '0.5rem' }}>
                     <div style={{ display: 'flex' }}>
                       <SectionHeading>{t(`DPO`)}</SectionHeading>
-                      {userAddress && (
-                        <Copy toCopy={userAddress}>
-                          <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
-                        </Copy>
-                      )}
+                      <Copy toCopy={wallet.address}>
+                        <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
+                      </Copy>
                     </div>
                     <GridWrapper columns="1">
                       {userItems?.userDpos &&
                         lastBlock &&
-                        walletInfo &&
+                        wallet &&
                         Object.keys(dposData).length > 0 &&
                         userItems.userDpos.map((item, index) => {
                           const dpoInfo = item[1]
@@ -129,7 +123,7 @@ export default function Portfolio(): JSX.Element {
                               dpoInfo,
                               lastBlock,
                               targetDpo: dpoData.target as DpoInfo,
-                              walletInfo,
+                              walletInfo: wallet,
                             })
                           } else if (dpoInfo.target.isTravelCabin) {
                             actionAlerts = getDpoAlerts({
@@ -138,7 +132,7 @@ export default function Portfolio(): JSX.Element {
                               targetTravelCabin: (dpoData.target as [TravelCabinInfo, TravelCabinData])[0],
                               targetTravelCabinBuyer: dpoData.targetTravelCabinBuyer,
                               targetTravelCabinInventory: dpoData.targetTravelCabinInventory,
-                              walletInfo,
+                              walletInfo: wallet,
                             })
                           }
                           if (!actionAlerts || actionAlerts.length === 0) {
