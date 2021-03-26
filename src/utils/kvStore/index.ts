@@ -11,11 +11,12 @@ export interface ReadUserResponse {
   }
 }
 
-// Typeguard for response
+/** Typeguard for response */
 function responseIsReadUser(response: ReadUserResponse | object): response is ReadUserResponse {
   return Object.keys(response).length > 0
 }
 
+/** Get the full item for a UserId */
 export async function kvReadUser(client: DynamoDB.DocumentClient, address: string) {
   const params = {
     Key: {
@@ -37,6 +38,7 @@ export async function kvReadUser(client: DynamoDB.DocumentClient, address: strin
     })
 }
 
+/** Get the User's referrer from reading the user item */
 export async function readUserReferrer(client: DynamoDB.DocumentClient, address: string, projectName: string) {
   const data = await kvReadUser(client, address)
   if (
@@ -52,10 +54,10 @@ export async function readUserReferrer(client: DynamoDB.DocumentClient, address:
 
 /**
  * Add referrer to user table.
- * @param client
- * @param address
- * @param projectName
- * @param referrer
+ * @param client DynamoDB DocumentClient instance
+ * @param address user address
+ * @param projectName the token name
+ * @param referrer referrer address
  */
 export async function kvCreateUserReferrer(
   client: DynamoDB.DocumentClient,
