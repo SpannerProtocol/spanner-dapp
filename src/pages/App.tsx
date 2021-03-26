@@ -3,6 +3,9 @@ import { BlockNumber } from '@polkadot/types/interfaces'
 import BlockBar from 'components/BlockBar'
 import NetworkSelector from 'components/Network'
 import TransactionMsgProvider from 'components/TransactionMsgs'
+import { useBridgeHealthCheck } from 'hooks/useBridge'
+import { useCreateTableUser } from 'hooks/useKvStore'
+import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
 import React, { createContext, Suspense, useEffect, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
@@ -10,6 +13,7 @@ import styled from 'styled-components'
 import Header, { Controls } from '../components/Header'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
+import { MEDIA_WIDTHS } from '../theme'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Account from './Account'
 import AppBody from './AppBody'
@@ -20,9 +24,6 @@ import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
 import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
-import { MEDIA_WIDTHS } from '../theme'
-import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
-import { useCreateTableUser } from 'hooks/useKvStore'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -81,6 +82,7 @@ export default function App() {
   const [subNetworkSelector, setSubNetworkSelector] = useState<boolean>(false)
   useStoreAndVerifyReferrer()
   useCreateTableUser()
+  useBridgeHealthCheck()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {

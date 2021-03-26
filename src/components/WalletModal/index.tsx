@@ -36,8 +36,9 @@ import PendingView, {
   PendingSection,
   StyledLoader,
 } from './PendingView'
+import { AxiosError } from 'axios'
 
-const CloseIcon = styled.div`
+export const CloseIcon = styled.div`
   position: absolute;
   right: 1rem;
   top: 14px;
@@ -47,20 +48,20 @@ const CloseIcon = styled.div`
   }
 `
 
-const CloseColor = styled(Close)`
+export const CloseColor = styled(Close)`
   path {
     stroke: ${({ theme }) => theme.text4};
   }
 `
 
-const Wrapper = styled.div`
+export const Wrapper = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap}
   margin: 0;
   padding: 0;
   width: 100%;
 `
 
-const HeaderRow = styled.div`
+export const HeaderRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap};
   padding: 1rem 1rem;
   font-weight: 500;
@@ -70,7 +71,7 @@ const HeaderRow = styled.div`
   `};
 `
 
-const ContentWrapper = styled.div`
+export const ContentWrapper = styled.div`
   background-color: ${({ theme }) => theme.bg2};
   padding: 2rem;
   border-bottom-left-radius: 20px;
@@ -79,7 +80,7 @@ const ContentWrapper = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`padding: 1rem`};
 `
 
-const UpperSection = styled.div`
+export const UpperSection = styled.div`
   position: relative;
 
   h5 {
@@ -120,7 +121,7 @@ const OptionGrid = styled.div`
   `};
 `
 
-const HoverText = styled.div`
+export const HoverText = styled.div`
   :hover {
     cursor: pointer;
   }
@@ -305,13 +306,20 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
         })
         setDevelopmentKeyring()
       } else {
-        getCustodialAddr(account).then((response) => {
-          setWalletType({
-            type: 'custodial',
-            address: account,
-            custodialAddress: response.data,
+        // Get custodial address and set it in the wallet
+        getCustodialAddr(account)
+          .then((response) => {
+            setWalletType({
+              type: 'custodial',
+              address: account,
+              custodialAddress: response.data,
+            })
           })
-        })
+          .catch((e: AxiosError) => {
+            if (e.name === 'Error' && e.message === 'Network Error') {
+              console.log('Error occured when getting custodial address from server:', e.message)
+            }
+          })
       }
     } else {
       if (!activeAccount) return
