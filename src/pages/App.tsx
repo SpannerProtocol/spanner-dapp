@@ -22,6 +22,7 @@ import Item from './Item'
 import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
 import { MEDIA_WIDTHS } from '../theme'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
+import { useCreateTableUser } from 'hooks/useKvStore'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -79,6 +80,8 @@ export default function App() {
   const { width } = useWindowSize()
   const [subNetworkSelector, setSubNetworkSelector] = useState<boolean>(false)
   useStoreAndVerifyReferrer()
+  useCreateTableUser()
+
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
       setSubNetworkSelector(false)
