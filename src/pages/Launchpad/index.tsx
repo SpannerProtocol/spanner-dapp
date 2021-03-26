@@ -14,9 +14,14 @@ const ProjectsContainer = styled.div`
   align-items: center;
   justify-content: center;
 
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+    padding: 1rem;
+  `};
+
   ${({ theme }) => theme.mediaWidth.upToSmall`
+    padding: 1rem;
     grid-template-columns: auto auto;
-    grid-column-gap: 5px;
+    grid-column-gap: 40px;
   `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
@@ -53,7 +58,7 @@ const ProjectPage = styled(PageWrapper)`
   max-width: 960px;
   justify-content: center;
   align-items: center;
-  margin-top: 200px;
+  margin-top: 140px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-top: 0;
     padding-left: 3rem;
