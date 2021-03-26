@@ -3,10 +3,12 @@ import { kvReadUser } from 'utils/kvStore'
 import { kvClient, kvDocClient } from '../connectors'
 import useWallet from './useWallet'
 
+/** Get DynamoDB client instance */
 export function useKvClient() {
   return kvClient
 }
 
+/** Get DynamoDB DocClient instance */
 export function useKvDocClient() {
   return kvDocClient
 }
@@ -61,6 +63,10 @@ export function useCreateTableUser() {
   return tableExists
 }
 
+/**
+ * Check if the user item exists and has a Project map, otherwise create it.
+ * Without this, setting to the map will fail.
+ */
 export function useUserKvHasProject() {
   const wallet = useWallet()
   const client = useKvDocClient()

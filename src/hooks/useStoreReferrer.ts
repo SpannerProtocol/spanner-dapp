@@ -7,6 +7,7 @@ import { kvCreateUserReferrer, kvReadUser, readUserReferrer } from 'utils/kvStor
 import { useKvDocClient, useUserKvHasProject } from './useKvStore'
 import useWallet from './useWallet'
 
+/** Parse URL for referrer and project */
 export function useParseReferrer() {
   const location = useLocation()
   const search = useMemo(() => new URLSearchParams(location.search), [location])
