@@ -53,6 +53,7 @@
     "@web3-react/walletlink-connector": "^6.0.9",
     "ajv": "^6.12.3",
     "antd": "^4.9.4",
+    "aws-sdk": "^2.871.0",
     "bignumber.js": "^9.0.1",
     "cids": "^1.0.0",
     "copy-to-clipboard": "^3.2.0",

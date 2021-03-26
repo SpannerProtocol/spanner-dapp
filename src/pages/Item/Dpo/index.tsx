@@ -26,6 +26,7 @@ import {
 import { useBlockManager } from 'hooks/useBlocks'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
+import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { useUserInDpo } from 'hooks/useUser'
@@ -36,7 +37,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
-import { useReferrerManager } from 'state/referrer/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
@@ -96,12 +96,8 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   const [dpoName, setDpoName] = useState<string | null>('')
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
-  const { referrerState } = useReferrerManager()
-  const { projectState } = useProjectManager()
+  const referrer = useReferrer()
   const { t } = useTranslation()
-
-  const referrer = referrerState.referrer
-  const project = projectState.selectedProject
 
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -120,10 +116,11 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   const handleSubmit = () => onSubmit({ seats, managerSeats, end, dpoName, referrer: referralCode })
 
   useEffect(() => {
-    if (!referralCode && referrer && project && referrer[project.token.toUpperCase()]) {
-      setReferralCode(referrer[project.token.toUpperCase()].referrer)
+    if (!referralCode) {
+      if (!referrer) return
+      setReferralCode(referrer)
     }
-  }, [project, referralCode, referrer])
+  }, [referralCode, referrer])
 
   return (
     <>
@@ -258,7 +255,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
             backgroundColor={'#fff'}
           ></QuestionHelper>
         </RowFixed>
-        {referralCode && referrer && project && referrer[project.token.toUpperCase()] ? (
+        {referralCode ? (
           <BorderedInput
             required
             id="dpo-referrer"
@@ -364,12 +361,8 @@ function DpoJoinTxConfirm(props: DpoJoinTxConfirmProps) {
 function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormProps) {
   const [seats, setSeats] = useState<string>('')
   const [referralCode, setReferralCode] = useState<string | null>('')
-  const { referrerState } = useReferrerManager()
-  const { projectState } = useProjectManager()
+  const referrer = useReferrer()
   const { t } = useTranslation()
-
-  const referrer = referrerState.referrer
-  const project = projectState.selectedProject
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -387,10 +380,11 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   }
 
   useEffect(() => {
-    if (!referralCode && referrer && project && referrer[project.token.toUpperCase()]) {
-      setReferralCode(referrer[project.token.toUpperCase()].referrer)
+    if (!referralCode) {
+      if (!referrer) return
+      setReferralCode(referrer)
     }
-  }, [project, referralCode, referrer])
+  }, [referralCode, referrer])
 
   return (
     <>
@@ -467,7 +461,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
             backgroundColor={'#fff'}
           ></QuestionHelper>
         </RowFixed>
-        {referralCode && referrer && project && referrer[project.token.toUpperCase()] ? (
+        {referralCode ? (
           <BorderedInput
             required
             id="dpo-referrer"

@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from '../index'
 import { ReferrerState } from './reducer'
-import { Referrer, storeReferrer, storeReferee, Referee } from './actions'
+import { Referrer, storeReferrer, saveStoredRemotely } from './actions'
 
 export function useReferrerState(): AppState['referrer'] {
   return useSelector<AppState, AppState['referrer']>((state) => state.referrer)
@@ -18,11 +18,11 @@ export function useStoreReferrer() {
   )
 }
 
-export function useStoreReferee() {
+export function useSaveStoredRemotely() {
   const dispatch = useDispatch<AppDispatch>()
   return useCallback(
-    (referee: Referee) => {
-      dispatch(storeReferee({ referee }))
+    (referrer: Referrer) => {
+      dispatch(saveStoredRemotely({ referrer }))
     },
     [dispatch]
   )
@@ -31,12 +31,12 @@ export function useStoreReferee() {
 interface ReferrerManagerState {
   referrerState: ReferrerState
   storeReferrer: (referrer: Referrer) => void
-  storeReferee: (referee: Referee) => void
+  saveStoredRemotely: (referrer: Referrer) => void
 }
 
 export function useReferrerManager(): ReferrerManagerState {
   const referrerState = useReferrerState()
   const storeReferrer = useStoreReferrer()
-  const storeReferee = useStoreReferee()
-  return { referrerState, storeReferrer, storeReferee }
+  const saveStoredRemotely = useSaveStoredRemotely()
+  return { referrerState, storeReferrer, saveStoredRemotely }
 }

@@ -1,14 +1,12 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { storeReferrer, storeReferee, Referrer, Referee } from './actions'
+import { storeReferrer, saveStoredRemotely, Referrer } from './actions'
 
 export interface ReferrerState {
   readonly referrer: Referrer | undefined
-  readonly referee: Referee | undefined
 }
 
 export const initialState: ReferrerState = {
   referrer: undefined,
-  referee: undefined,
 }
 
 export default createReducer<ReferrerState>(initialState, (builder) =>
@@ -19,10 +17,10 @@ export default createReducer<ReferrerState>(initialState, (builder) =>
         referrer,
       }
     })
-    .addCase(storeReferee, (state, { payload: { referee } }) => {
+    .addCase(saveStoredRemotely, (state, { payload: { referrer } }) => {
       return {
         ...state,
-        referee,
+        referrer,
       }
     })
 )

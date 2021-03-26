@@ -72,7 +72,6 @@ export function useRpcUserDpos(address: string | null | undefined) {
     api?.rpc?.bulletTrain
       ?.getDposOfAccount(address)
       .then((result) => {
-        console.log('user dpos:', result.toHuman())
         setIndexes(result)
       })
       .catch((err) => console.log(err))
