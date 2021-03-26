@@ -29,8 +29,6 @@ export function formatZeros(num: string) {
     let indexOfFirstNum = 0
     const numSplit = num.split('.')
     const reversedDecimals = numSplit[1].split('').reverse()
-    console.log(reversedDecimals[0] === '0')
-    console.log(reversedDecimals[reversedDecimals.length - 1] === '0')
     if (reversedDecimals.every((e) => e === '0')) {
       indexOfFirstNum = reversedDecimals.length
     } else {
@@ -42,7 +40,6 @@ export function formatZeros(num: string) {
       }
     }
     const decimals = reversedDecimals.slice(indexOfFirstNum, reversedDecimals.length).reverse().join('')
-    console.log('decimals', decimals, decimals.length)
     if (decimals.length > 0) {
       return numSplit[0] + '.' + decimals
     } else {

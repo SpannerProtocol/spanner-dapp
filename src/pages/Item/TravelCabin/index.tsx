@@ -18,8 +18,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
-import { useProjectManager } from 'state/project/hooks'
-import { useReferrerManager } from 'state/referrer/hooks'
+import { useReferrer } from 'hooks/useReferrer'
 import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
@@ -49,12 +48,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   const [dpoName, setDpoName] = useState<string | null>('')
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
-  const { referrerState } = useReferrerManager()
-  const { projectState } = useProjectManager()
+  const referrer = useReferrer()
   const { t } = useTranslation()
-
-  const referrer = referrerState.referrer
-  const project = projectState.selectedProject
 
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -73,10 +68,10 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   const handleSubmit = () => onSubmit({ managerSeats, end, dpoName, referrer: referralCode })
 
   useEffect(() => {
-    if (!referralCode && referrer && project && referrer[project.token.toLowerCase()]) {
-      setReferralCode(referrer[project.token.toLowerCase()].referrer)
+    if (!referralCode && referrer) {
+      setReferralCode(referrer)
     }
-  }, [project, referralCode, referrer])
+  }, [referralCode, referrer])
 
   return (
     <>
@@ -170,7 +165,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          {referralCode && referrer && project && referrer[project.token.toLowerCase()] ? (
+          {referralCode && referrer ? (
             <BorderedInput
               required
               id="dpo-referrer"
