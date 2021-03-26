@@ -1,7 +1,8 @@
 import QuestionHelper from 'components/QuestionHelper'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { ExternalLink as LinkIcon } from 'react-feather'
 import { useTranslation } from 'react-i18next'
+import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import PortisIcon from '../../assets/images/portisIcon.png'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
@@ -182,6 +183,14 @@ interface AccountDetailsProps {
 export default function AccountDetails({ toggleWalletModal, ENSName, openOptions }: AccountDetailsProps) {
   const { chainId, account, connector } = useActiveWeb3React()
   const { t } = useTranslation()
+  const connectionState = useConnectionsState()
+
+  useEffect(() => {
+    if (connectionState && !connectionState.bridgeServerOn && connector) {
+      console.info('No connection to bridge, turning off connector')
+      ;(connector as any).close()
+    }
+  }, [connectionState, connector])
   function formatConnectorName() {
     const { ethereum } = window
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)

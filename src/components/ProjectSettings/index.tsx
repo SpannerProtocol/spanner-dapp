@@ -1,14 +1,14 @@
 import Selector, { SelectorOption } from 'components/Selector'
 import useProjectInfos from 'hooks/useProjectInfo'
 import React, { useContext, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useProjectState } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
+import { Project } from '../../state/project/actions'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
 import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
-import { Project } from '../../state/project/actions'
-import { useProjectState } from 'state/project/hooks'
-import { useTranslation } from 'react-i18next'
 
 export interface ProjectSettingsProps {
   setSelectedProject: (project: Project) => void
