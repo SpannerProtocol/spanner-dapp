@@ -19,7 +19,7 @@ import Account from './Account'
 import AppBody from './AppBody'
 import Catalogue from './Catalogue'
 import Dex from './Dex'
-import Discover from './Discover'
+import Launchpad from './Launchpad'
 import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
@@ -115,7 +115,7 @@ export default function App() {
               <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/catalogue" component={Catalogue} />
-              <Route exact strict path="/discover" component={Discover} />
+              <Route exact strict path="/discover" component={Launchpad} />
               <Route exact strict path="/faq" component={Faq} />
             </Switch>
           </Web3ReactManager>

@@ -6,8 +6,7 @@ export function useBridgeHealthCheck() {
   const addBridgeServer = useAddBridgeServer()
   getHealth()
     .then((response) => {
-      console.log('bridge:', response)
-      if (response.data) {
+      if (response.status === 200) {
         addBridgeServer(true)
       }
     })
