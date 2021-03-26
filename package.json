@@ -172,6 +172,8 @@
     "pure-react-carousel": "^1.27.6",
     "react-icons": "^4.1.0",
     "react-table": "^7.6.3",
+    "react-use": "^12.2.0",
+    "recharts": "^2.0.9",
     "webpack-cli": "^4.3.0"
   }
 }
