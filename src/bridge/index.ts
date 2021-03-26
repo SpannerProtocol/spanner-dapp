@@ -92,3 +92,7 @@ export function postSignature(payload: CustodialSigningPayload) {
     httpAgent,
   })
 }
+
+export function getHealth() {
+  return axios.get(`${bridgeHost}/health`)
+}

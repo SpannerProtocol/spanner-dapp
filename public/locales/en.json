@@ -270,5 +270,6 @@
   "CREATED": "CREATED",
   "FAILED": "FAILED",
   "RUNNING": "RUNNING",
-  "ACTIVE": "ACTIVE"
+  "ACTIVE": "ACTIVE",
+  "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet.": "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet."
 }

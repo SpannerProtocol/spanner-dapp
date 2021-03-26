@@ -11,11 +11,11 @@ import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useWalletModalToggle } from 'state/application/hooks'
 import styled, { css } from 'styled-components'
-// import { shortenAddress } from 'utils'
 import { shortenAddr } from '../../utils/truncateString'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
 import { NetworkContextName } from '../../constants'
 import { ButtonPrimary } from '../Button'
+import { useConnectionsState } from 'state/connections/hooks'
 
 const IconWrapper = styled.div<{ size?: number }>`
   ${({ theme }) => theme.flexColumnNoWrap};
@@ -130,25 +130,15 @@ function StatusIcon({ connector }: { connector: AbstractConnector | string }) {
   return null
 }
 
-// function WalletModal() {
-//   const walletModalOpen = useModalOpen(ApplicationModal.WALLET)
-//   const toggleWalletModal = useWalletModalToggle()
-
-//   return (
-//     <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90}>
-//       <Wrapper>{getModalContent()}</Wrapper>
-//     </Modal>
-//   )
-// }
-
-function Web3StatusEth() {
+function Web3StatusInner() {
   const { t } = useTranslation()
   const { account, connector, error } = useWeb3React()
   const wallet = useWallet()
+  const connections = useConnectionsState()
 
   const toggleWalletModal = useWalletModalToggle()
 
-  if (wallet && wallet.address) {
+  if (wallet && wallet.address && connections && connections.bridgeServerOn) {
     return (
       <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={false}>
         <Text>{shortenAddr(wallet.address)}</Text>
@@ -171,32 +161,6 @@ function Web3StatusEth() {
   }
 }
 
-// function Web3StatusSpanner() {
-//   const { t } = useTranslation()
-//   const { activeAccount, createConnection } = useWeb3Accounts()
-//   const error = undefined
-//   // const hasPendingTransactions = !!pending.length
-//   const toggleWalletModal = useWalletModalToggle()
-//   // const toggleWalletModal = useWalletSubstrateModalToggle()
-
-//   if (activeAccount) {
-//     return <></>
-//   } else if (error) {
-//     return (
-//       <Web3StatusError onClick={toggleWalletModal}>
-//         <NetworkIcon />
-//         <Text>Error</Text>
-//       </Web3StatusError>
-//     )
-//   } else {
-//     return (
-//       <Web3StatusConnect id="connect-wallet" onClick={createConnection} faded={!activeAccount}>
-//         <Text>{t('Connect to a wallet')}</Text>
-//       </Web3StatusConnect>
-//     )
-//   }
-// }
-
 export default function Web3Status() {
   const { active } = useWeb3React()
   const contextNetwork = useWeb3React(NetworkContextName)
@@ -207,8 +171,7 @@ export default function Web3Status() {
 
   return (
     <>
-      <Web3StatusEth />
-      {/* <Web3StatusSpanner /> */}
+      <Web3StatusInner />
       <WalletModal ENSName={undefined} />
     </>
   )
