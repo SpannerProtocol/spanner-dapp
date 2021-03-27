@@ -1,5 +1,6 @@
 import { FlatCardPlate } from 'components/Card'
 import React from 'react'
+import Chart from '../../components/Chart'
 
 // function ProjectGrid() {
 //   return (
@@ -33,6 +34,10 @@ export default function Discover() {
     <>
       <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         Launchpad Layout is under development.
+      </FlatCardPlate>
+
+      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+        <Chart token1={'BOLT'} token2={'WUSD'} from={0} interval={300} />
       </FlatCardPlate>
     </>
   )
