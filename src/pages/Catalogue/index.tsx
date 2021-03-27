@@ -1,29 +1,14 @@
-import BulletTrainImage from 'assets/images/bullettrain-vector.png'
 import { FlatCardPlate } from 'components/Card'
 import { Heading } from 'components/Text'
+import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useProjectManager } from 'state/project/hooks'
 import TabBar, { TabMetaData } from '../../components/TabBar'
 import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
+import BulletTrainInstructions from './BulletTrainInstructions'
 import DpoCatalogue from './Dpo'
 import TravelCabinCatalogue from './TravelCabin'
-import BulletTrainStats from './Stats'
-import styled from 'styled-components'
-import { useProjectManager } from 'state/project/hooks'
-import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
-import BulletTrainInstructions from './BulletTrainInstructions'
-import { useTranslation } from 'react-i18next'
-
-const BannerGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 4fr));
-  grid-column-gap: 1rem;
-  grid-row-gap: 1rem;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  display:grid;
-  grid-template-columns: repeat(1, minmax(0, 4fr));
-  `};
-`
 
 const tabData: Array<TabMetaData> = [
   {
@@ -85,30 +70,20 @@ export default function Catalogue() {
           >
             <FlatCardPlate>
               <Section style={{ marginBottom: '1rem' }}>
-                <Heading>{projectState.selectedProject?.project}&apos;s BulletTrain</Heading>
+                <Heading>BulletTrain</Heading>
               </Section>
-              <Section style={{ width: '100%' }}>
-                <BannerGrid style={{ maxWidth: '100%', marginBottom: '1rem' }}>
-                  <img
-                    alt="BulletTrain banner"
-                    style={{ maxWidth: '100%', display: 'block', height: 'auto', maxHeight: '240px' }}
-                    src={BulletTrainImage}
-                  />
-                  {projectState.selectedProject && <BulletTrainStats token={projectState.selectedProject.token} />}
-                </BannerGrid>
-              </Section>
+              <TabBar
+                margin="0px"
+                id={'tabbar-catalogue'}
+                className={'tabbar-container'}
+                tabs={tabData}
+                onClick={handleClick}
+              />
             </FlatCardPlate>
           </Wrapper>
 
-          <SectionContainer style={{ minHeight: '750px', marginTop: '20px', marginBottom: '0px', width: '100%' }}>
-            <TabBar
-              margin="0px"
-              id={'tabbar-catalogue'}
-              className={'tabbar-container'}
-              tabs={tabData}
-              onClick={handleClick}
-            />
-            <SpacedSection>
+          <SectionContainer style={{ minHeight: '750px', marginBottom: '0', width: '100%', marginTop: '0' }}>
+            <SpacedSection style={{ marginTop: '0' }}>
               {activeTab === 'instructions' && <BulletTrainInstructions />}
               {activeTab === 'travelcabins' && <TravelCabinCatalogue />}
               {activeTab === 'dpo' && <DpoCatalogue />}

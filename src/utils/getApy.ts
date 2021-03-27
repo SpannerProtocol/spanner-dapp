@@ -28,7 +28,7 @@ export default function getApy({
   const depositNum = totalDeposit.div(decimalsBn).toNumber()
   if (period) {
     const periodInDays = parseFloat(blockToDays(blocksInPeriod, period))
-    return ((yieldNum / depositNum) * (365 / periodInDays)).toFixed(precision ? precision : 2)
+    return ((yieldNum / depositNum) * (365 / periodInDays) * 100).toFixed(precision ? precision : 2)
   } else if (days) {
     return ((yieldNum / depositNum / days) * 365).toFixed(precision ? precision : 2)
   } else {

@@ -337,7 +337,7 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          <StyledNavLink id={`launchpad-nav-link`} to={'/discover'}>
+          <StyledNavLink id={`launchpad-nav-link`} to={'/launchpad'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
             {t(`Launchpad`)}
           </StyledNavLink>

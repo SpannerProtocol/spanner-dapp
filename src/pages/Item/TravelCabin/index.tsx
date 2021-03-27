@@ -415,8 +415,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         <Section>
           <RowBetween>
             <SectionHeading>
-              {t(`TravelCabin:`)}
-              {getCabinClass(travelCabinInfo.index.toString())}
+              {t(`TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}
             </SectionHeading>
             <CollapseWrapper>
               <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>

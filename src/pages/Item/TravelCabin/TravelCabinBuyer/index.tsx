@@ -211,7 +211,7 @@ export function UserActionProvider({
     if (!actions) return
     const filteredUserActions = actions.map((action) => {
       if (action.action === 'withdrawFareFromTravelCabin') {
-        if (!travelCabinInfo) return
+        if (!travelCabinInfo) return undefined
         return (
           <Action
             txContent={
@@ -237,7 +237,7 @@ export function UserActionProvider({
         )
       }
       if (action.action === 'withdrawYieldFromTravelCabin') {
-        if (!travelCabinInfo) return
+        if (!travelCabinInfo) return undefined
         return (
           <Action
             txContent={
@@ -262,6 +262,7 @@ export function UserActionProvider({
           />
         )
       }
+      return undefined
     })
     if (filteredUserActions) {
       const filteredActions: JSX.Element[] = filteredUserActions.filter(

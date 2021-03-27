@@ -52,12 +52,13 @@ export const FlatCardSection = styled(Card)<{ margin?: string }>`
 `
 
 // Normal Card with surrounding shadows
-export const FlatCardPlate = styled(FlatCardSection)<{ margin?: string; padding?: string }>`
+export const FlatCardPlate = styled(FlatCardSection)<{ marginBottom?: string; padding?: string }>`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  margin: ${({ margin }) => (margin ? margin : '0 0 1rem 0')};
+  margin-bottom: ${({ marginBottom }) => (marginBottom ? marginBottom : '1rem')};
   padding: ${({ padding }) => (padding ? padding : '1rem')};
   width: 100%;
-  ${({ padding, theme }) => theme.mediaWidth.upToMedium`
+  ${({ padding, marginBottom, theme }) => theme.mediaWidth.upToSmall`
+  margin-bottom: ${marginBottom ? marginBottom : '0.5rem'};
   padding: ${padding ? padding : '0.5rem'};
 `};
 `

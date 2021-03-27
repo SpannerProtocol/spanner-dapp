@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useMemo, useState } from 'react'
 
 const DEFAULT_STATE = {
   chain: '-',
-  chainDecimals: 15,
+  chainDecimals: 10,
   existentialDeposit: 1 / 1000,
 }
 
