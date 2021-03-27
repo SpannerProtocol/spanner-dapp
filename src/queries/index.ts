@@ -8,6 +8,9 @@ import {
   SpanfuraDataExtrinsic,
   SpanfuraEventsResponse,
   SpanfuraDataEvents,
+  postPriceData,
+  SpanfuraPriceResponse,
+  PriceData,
 } from 'spanfura'
 import { AxiosResponse } from 'axios'
 // import { encodeAddress } from '@polkadot/keyring'
@@ -72,4 +75,25 @@ export function postTransfers({ row, page, address, success = 'true', setData, s
       setData((prev) => [...prev, event])
     })
   })
+}
+
+export interface GetPriceParam {
+  token1: string
+  token2: string
+  from: number
+  interval: number
+  setData: Dispatcher<PriceData[]>
+}
+
+export function getPrice({ token1, token2, from, interval, setData }: GetPriceParam) {
+  postPriceData({ token_1: token1, token_2: token2, from, interval }).then(
+    (resp: AxiosResponse<SpanfuraPriceResponse>) => {
+      console.log(resp)
+      if (!resp.data.data) {
+        setData([])
+        return
+      }
+      setData(resp.data.data)
+    }
+  )
 }

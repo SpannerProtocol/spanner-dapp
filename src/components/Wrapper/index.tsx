@@ -75,7 +75,6 @@ export const BorderedWrapper = styled.div<{ borderColor?: string; background?: s
   display: block;
   align-items: center;
   font-size: 0.9rem;
-  margin-bottom: 0.25rem;
   width: 100%;
   margin-top: 0.7rem;
   margin-bottom: 0.7rem;
