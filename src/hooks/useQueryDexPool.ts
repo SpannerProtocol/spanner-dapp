@@ -80,3 +80,26 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
 
   return { pool, price, dexFee, input: inputTradingPair, error: poolQueryError }
 }
+
+export function usePoolsWithToken(token: string) {
+  const { api, connected } = useApi()
+  const [pools, setPools] = useState<[[TradingPair], [Balance, Balance]][]>([])
+
+  useEffect(() => {
+    if (!connected) return
+    api.query.dex.liquidityPool.entries().then((entries) => {
+      entries.forEach(([storageKey, balances]) => {
+        if (storageKey.args[0].isEmpty) return
+        if (!storageKey.args[0][0].isToken) return
+        if (
+          storageKey.args[0][0].asToken.eq(token.toUpperCase()) ||
+          storageKey.args[0][1].asToken.eq(token.toUpperCase())
+        ) {
+          setPools((prev) => [...prev, [storageKey.args, balances]])
+        }
+      })
+    })
+  }, [api, connected, token])
+
+  return pools
+}

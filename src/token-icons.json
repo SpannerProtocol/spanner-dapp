@@ -1,3 +1,7 @@
 {
-  "bolt": "spanner-bolt.svg"
+  "bolt": "spanner-bolt.svg",
+  "ncat": "nyancats-ncat.svg",
+  "bbot": "bbot-bbot.svg",
+  "plkt": "plankton-plkt.svg",
+  "zero": "zero-zero.svg"
 }

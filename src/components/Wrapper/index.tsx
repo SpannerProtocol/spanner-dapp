@@ -71,7 +71,7 @@ export const ModalWrapper = styled.div`
   width: 100%;
 `
 
-export const BorderedWrapper = styled.div<{ borderColor?: string; background?: string }>`
+export const BorderedWrapper = styled.div<{ borderColor?: string; background?: string; padding?: string }>`
   display: block;
   align-items: center;
   font-size: 0.9rem;
@@ -83,8 +83,12 @@ export const BorderedWrapper = styled.div<{ borderColor?: string; background?: s
   background: ${({ background }) => (background ? background : 'transparent')}
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#e6ebf2')} !important;
   border-radius: 8px;
-  padding: 1rem;
+  padding: ${({ padding }) => (padding ? padding : '1rem')};
   overflow-wrap: anywhere;
+  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+    padding: ${padding ? padding : '0.5rem'};
+
+`};
 `
 
 export const RoundWrapper = styled(BorderedWrapper)`
@@ -144,15 +148,15 @@ export const SmallResWrapper = styled.div`
 `};
 `
 
-export const GridWrapper = styled.div<{ columns?: string }>`
+export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string }>`
   display: grid;
   grid-template-columns: repeat(${({ columns }) => (columns ? columns : '1')}, minmax(0, 4fr));
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ mobileColumns, theme }) => theme.mediaWidth.upToMedium`
   display:grid;
-  grid-template-columns: repeat(1, minmax(0, 4fr));
+  grid-template-columns: repeat(${mobileColumns ? mobileColumns : '1'}, minmax(0, 4fr));
   grid-column-gap: 0.5rem;
   grid-row-gap: 0.5rem;
   `};

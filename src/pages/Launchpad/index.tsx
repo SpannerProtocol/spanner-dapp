@@ -3,8 +3,9 @@ import { HeavyText, StandardText } from 'components/Text'
 import { PageWrapper } from 'components/Wrapper'
 import useProjectInfos from 'hooks/useProjectInfo'
 import React from 'react'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import getTokenImagePaths from 'utils/getTokenImage'
+import getProjectRegistry from 'utils/getProjectRegistry'
 
 const ProjectsContainer = styled.div`
   display: grid;
@@ -61,12 +62,10 @@ const ProjectPage = styled(PageWrapper)`
   margin-top: 140px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-top: 0;
-    padding-left: 3rem;
-    padding-right: 3rem;
   `};
 `
 
-const ProjectIconWrapper = styled.div`
+export const ProjectIconWrapper = styled.div`
   max-width: 120px;
   justify-content: center;
   padding: 1rem;
@@ -87,36 +86,36 @@ const ProjectCardPlate = styled(FlatCardPlate)`
 
 function ProjectCatalogue() {
   const projects = useProjectInfos()
-
   return (
     <>
       <ProjectsContainer>
         {projects &&
           projects.map((project, index) => {
-            console.log(project)
+            const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
             // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const TokenImage = require(`assets/tokens/${getTokenImagePaths(project.token.toLowerCase())[0].path}`)
-
+            const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
             return (
               <>
-                <ProjectCardPlate
-                  style={{
-                    width: '100%',
-                    justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
-                    marginBottom: '0.5rem',
-                  }}
-                >
-                  <ProjectCard key={index}>
-                    <ProjectIconWrapper>
-                      <img src={TokenImage} style={{ width: '100%' }} />
-                    </ProjectIconWrapper>
-                    <div style={{ textAlign: 'center' }}>
-                      <HeavyText>{project.project}</HeavyText>
-                      <StandardText>{project.token}</StandardText>
-                    </div>
-                  </ProjectCard>
-                </ProjectCardPlate>
+                <Link to={{ pathname: `/launchpad/${project.token.toLowerCase()}` }} style={{ textDecoration: 'none' }}>
+                  <ProjectCardPlate
+                    style={{
+                      width: '100%',
+                      justifyContent: 'flex-start',
+                      alignItems: 'flex-start',
+                      marginBottom: '0.5rem',
+                    }}
+                  >
+                    <ProjectCard key={index}>
+                      <ProjectIconWrapper>
+                        <img src={TokenImage} style={{ width: '100%' }} alt="token icon" />
+                      </ProjectIconWrapper>
+                      <div style={{ textAlign: 'center' }}>
+                        <HeavyText>{projectRegistry.name}</HeavyText>
+                        <StandardText>{project.token}</StandardText>
+                      </div>
+                    </ProjectCard>
+                  </ProjectCardPlate>
+                </Link>
               </>
             )
           })}
