@@ -53,7 +53,7 @@ const StatDisplay = styled.div`
 `
 
 export default function BulletTrainStats({ token }: { token: string }) {
-  const stats = useStats()
+  const stats = useStats(token)
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const background = 'linear-gradient(90deg, #FFBE2E -11.67%, #EC3D3D 100%)'

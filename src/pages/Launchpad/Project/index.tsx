@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { StandardText, SectionHeading, Heading, ItalicText, HeavyText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
 import useProject from 'hooks/useProject'
@@ -11,10 +11,14 @@ import getProjectRegistry from 'utils/getProjectRegistry'
 import BulletTrainImage from 'assets/images/bullettrain-vector.png'
 import DexIcon from 'assets/svg/icon-exchange.svg'
 import BulletTrainIcon from 'assets/svg/icon-train-yellow.svg'
+import ChartIcon from 'assets/svg/icon-line-chart.svg'
 import BulletTrainStats from 'pages/Catalogue/Stats'
 import { useTranslation } from 'react-i18next'
 import { usePoolsWithToken } from 'hooks/useQueryDexPool'
 import { RowBetween } from 'components/Row'
+import PriceChart from 'components/Chart'
+import useStats from 'hooks/useStats'
+import BN from 'bn.js'
 
 const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string }>`
   display: grid;
@@ -45,7 +49,7 @@ const BannerGrid = styled.div`
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   display:grid;
   grid-template-columns: repeat(1, minmax(0, 4fr));
   `};
@@ -69,6 +73,13 @@ export default function Project(): JSX.Element {
   const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
   const { t } = useTranslation()
   const dexPools = usePoolsWithToken(projectPath.token)
+  const [priceUnavailable, setPriceUnavailable] = useState<boolean>(false)
+  const stats = useStats(projectPath.token.toUpperCase())
+  const noBulletTrain =
+    stats.totalCabinsBought === 0 &&
+    stats.totalPassengers === 0 &&
+    stats.totalValueLocked.eq(new BN(0)) &&
+    stats.totalYieldWithdrawn.eq(new BN(0))
 
   useEffect(() => {
     if (!projectInfos) return
@@ -81,15 +92,14 @@ export default function Project(): JSX.Element {
       <PageWrapper style={{ maxWidth: '680px' }}>
         {projectPath && (
           <>
-            <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-              <Heading>{t(`Project Info`)}</Heading>
+            <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Heading style={{ paddingTop: '0.5rem' }}>{t(`Project Info`)}</Heading>
               <GridWrapper columns={'2'} mobileColumns={'2'}>
-                <BorderedWrapper>
+                <BorderedWrapper style={{ display: 'flex' }}>
                   <ProjectIconWrapper>
                     <img src={TokenImage} style={{ width: '100%' }} alt="project logo" />
                   </ProjectIconWrapper>
                 </BorderedWrapper>
-
                 {projectInfo && (
                   <ContentWrapper>
                     <SpacedSection>
@@ -108,7 +118,63 @@ export default function Project(): JSX.Element {
                   </ContentWrapper>
                 )}
               </GridWrapper>
-            </FlatCardPlate>
+            </FlatCard>
+
+            {projectInfo && !priceUnavailable && (
+              <ContentWrapper>
+                <FlatCard>
+                  <SectionHeading style={{ display: 'inline-flex' }}>
+                    <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
+                      <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
+                    </div>
+                    {t(`Token Price`)}
+                  </SectionHeading>
+                  <PriceChart
+                    token1={projectInfo.token.toUpperCase()}
+                    token2={'WUSD'}
+                    from={0}
+                    interval={300}
+                    setUnavailable={setPriceUnavailable}
+                  />
+                </FlatCard>
+              </ContentWrapper>
+            )}
+
+            {!noBulletTrain && (
+              <ContentWrapper>
+                <Wrapper
+                  style={{
+                    display: 'flex',
+                    width: '100%',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                >
+                  <FlatCard>
+                    <Section style={{ marginBottom: '1rem' }}>
+                      <SectionHeading style={{ display: 'inline-flex' }}>
+                        <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
+                          <img
+                            alt="BulletTrain icon"
+                            style={{ display: 'block', width: '100%' }}
+                            src={BulletTrainIcon}
+                          />
+                        </div>
+                        {t(`BulletTrain Performance`)}
+                      </SectionHeading>
+                    </Section>
+                    <Section style={{ width: '100%' }}>
+                      <BannerGrid style={{ width: '100%', marginBottom: '1rem' }}>
+                        <div style={{ maxWidth: '250px', justifyContent: 'left' }}>
+                          <img alt="BulletTrain banner" style={{ width: '100%' }} src={BulletTrainImage} />
+                        </div>
+                        {projectInfo && <BulletTrainStats token={projectInfo.token} />}
+                      </BannerGrid>
+                    </Section>
+                  </FlatCard>
+                </Wrapper>
+              </ContentWrapper>
+            )}
 
             <ContentWrapper>
               <Wrapper
@@ -119,83 +185,56 @@ export default function Project(): JSX.Element {
                   alignItems: 'center',
                 }}
               >
-                <FlatCardPlate>
-                  <Section style={{ marginBottom: '1rem' }}>
-                    <SectionHeading style={{ display: 'inline-flex' }}>
-                      <div style={{ display: 'flex', maxWidth: '25px', marginRight: '1rem' }}>
-                        <img alt="BulletTrain icon" style={{ width: '100%' }} src={BulletTrainIcon} />
-                      </div>
-                      {t(`BulletTrain Performance`)}
-                    </SectionHeading>
-                  </Section>
-                  <Section style={{ width: '100%' }}>
-                    <BannerGrid style={{ width: '100%', marginBottom: '1rem' }}>
-                      <img
-                        alt="BulletTrain banner"
-                        style={{ width: '250px', display: 'block', height: 'auto', maxHeight: '240px' }}
-                        src={BulletTrainImage}
-                      />
-                      {projectInfo && <BulletTrainStats token={projectInfo.token} />}
-                    </BannerGrid>
-                  </Section>
-                </FlatCardPlate>
-              </Wrapper>
-            </ContentWrapper>
-
-            <ContentWrapper>
-              <Wrapper
-                style={{
-                  display: 'flex',
-                  width: '100%',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}
-              >
-                <FlatCardPlate>
-                  <Section style={{ marginBottom: '1rem' }}>
-                    <SectionHeading style={{ display: 'inline-flex' }}>
-                      <div style={{ display: 'flex', maxWidth: '25px', marginRight: '1rem' }}>
-                        <img alt="Decentralized Exchange" style={{ width: '100%' }} src={DexIcon} />
-                      </div>
-                      {t(`DEX Metrics`)}
-                    </SectionHeading>
-                  </Section>
-                  <Section>
-                    <HeavyText style={{ marginBottom: '1rem' }}>{t(`Liquidity Pools`)}</HeavyText>
-                    {dexPools.map((pool) => {
-                      const tokenA = pool[0][0][0].asToken.toString()
-                      const tokenB = pool[0][0][1].asToken.toString()
-                      const pair = `${tokenA} / ${tokenB}`
-                      return (
-                        <>
-                          {pool && (
-                            <BorderedWrapper padding="0.7rem" style={{ marginTop: '0.25rem', marginBottom: '0.25rem' }}>
-                              <RowBetween>
-                                <HeavyText>{pair}</HeavyText>
-                                <div style={{ display: 'grid' }}>
-                                  <TokenGrid>
-                                    <StandardText style={{ textAlign: 'right' }}>
-                                      {formatToUnit(pool[1][0], chainDecimals, 2)}
-                                    </StandardText>
-                                    <StandardText style={{ textAlign: 'right' }}>{tokenA}</StandardText>
-                                  </TokenGrid>
+                {dexPools.length > 0 && (
+                  <FlatCard>
+                    <Section style={{ marginBottom: '1rem' }}>
+                      <SectionHeading style={{ display: 'inline-flex' }}>
+                        <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
+                          <img alt="Decentralized Exchange" style={{ width: '100%' }} src={DexIcon} />
+                        </div>
+                        {t(`DEX Metrics`)}
+                      </SectionHeading>
+                    </Section>
+                    <Section>
+                      <HeavyText style={{ marginBottom: '1rem' }}>{t(`Liquidity Pools`)}</HeavyText>
+                      {dexPools.map((pool, index) => {
+                        const tokenA = pool[0][0][0].asToken.toString()
+                        const tokenB = pool[0][0][1].asToken.toString()
+                        const pair = `${tokenA} / ${tokenB}`
+                        return (
+                          <div key={index}>
+                            {pool && (
+                              <BorderedWrapper
+                                padding="0.7rem"
+                                style={{ marginTop: '0.25rem', marginBottom: '0.25rem' }}
+                              >
+                                <RowBetween>
+                                  <HeavyText>{pair}</HeavyText>
                                   <div style={{ display: 'grid' }}>
                                     <TokenGrid>
                                       <StandardText style={{ textAlign: 'right' }}>
-                                        {formatToUnit(pool[1][1], chainDecimals, 2)}
+                                        {formatToUnit(pool[1][0], chainDecimals, 2)}
                                       </StandardText>
-                                      <StandardText style={{ textAlign: 'right' }}>{tokenB}</StandardText>
+                                      <StandardText style={{ textAlign: 'right' }}>{tokenA}</StandardText>
                                     </TokenGrid>
+                                    <div style={{ display: 'grid' }}>
+                                      <TokenGrid>
+                                        <StandardText style={{ textAlign: 'right' }}>
+                                          {formatToUnit(pool[1][1], chainDecimals, 2)}
+                                        </StandardText>
+                                        <StandardText style={{ textAlign: 'right' }}>{tokenB}</StandardText>
+                                      </TokenGrid>
+                                    </div>
                                   </div>
-                                </div>
-                              </RowBetween>
-                            </BorderedWrapper>
-                          )}
-                        </>
-                      )
-                    })}
-                  </Section>
-                </FlatCardPlate>
+                                </RowBetween>
+                              </BorderedWrapper>
+                            )}
+                          </div>
+                        )
+                      })}
+                    </Section>
+                  </FlatCard>
+                )}
               </Wrapper>
             </ContentWrapper>
           </>
