@@ -1,11 +1,12 @@
+import { u32 } from '@polkadot/types'
+import { Balance } from '@polkadot/types/interfaces'
+import { TradingPair } from 'interfaces/dex'
 import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
-import { Balance } from '@polkadot/types/interfaces'
-import { useEnabledTradingPairs } from './useQueryTradingPairs'
 import { useQueryDexFee } from './useQueryDexFee'
-import { u32 } from '@polkadot/types'
-import { TradingPair } from 'interfaces/dex'
-
+import { useEnabledTradingPairs } from './useQueryTradingPairs'
+import { useSubstrate } from './useSubstrate'
+import BN from 'bn.js'
 interface PoolResponse {
   error?: string
   price?: number
@@ -46,6 +47,7 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
 
   const enabledTradingPairs = useEnabledTradingPairs()
   const dexFee = useQueryDexFee()
+  const { chainDecimals } = useSubstrate()
 
   useEffect(() => {
     if (!connected || enabledTradingPairs.length === 0) return
@@ -55,7 +57,7 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
       setPoolQueryError('This pair is not available.')
       return
     }
-
+    // needs to change this to use BN
     api.query.dex.liquidityPool(validQuery.validPair, (lpTradingPair: [Balance, Balance]) => {
       const lp = lpTradingPair.map((currencyId) => parseFloat(currencyId.toString()))
       if (lp[1] === 0 && lp[0] === 0) {
@@ -66,17 +68,18 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
       setTimeout(
         () => {
           setPool(lpTradingPair)
+          const cd = new BN(chainDecimals)
           if (validQuery.reversed) {
-            setPrice(lpTradingPair[0].toNumber() / lpTradingPair[1].toNumber())
+            setPrice(lpTradingPair[0].div(cd).toNumber() / lpTradingPair[1].div(cd).toNumber())
           } else {
-            setPrice(lpTradingPair[1].toNumber() / lpTradingPair[0].toNumber())
+            setPrice(lpTradingPair[1].div(cd).toNumber() / lpTradingPair[0].div(cd).toNumber())
           }
           setPoolQueryError(undefined)
         },
-        delay ? delay : 8000
+        delay ? delay : 2000
       )
     })
-  }, [api, connected, inputTradingPair, enabledTradingPairs, delay])
+  }, [api, connected, inputTradingPair, enabledTradingPairs, delay, chainDecimals])
 
   return { pool, price, dexFee, input: inputTradingPair, error: poolQueryError }
 }
