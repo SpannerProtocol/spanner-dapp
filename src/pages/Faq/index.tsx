@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,7 +16,7 @@ export default function Faq() {
           alignItems: 'center',
         }}
       >
-        <FlatCardPlate style={{ textAlign: 'left' }}>
+        <FlatCard style={{ textAlign: 'left' }}>
           <Heading>{t(`Frequently Asked Questions`)}</Heading>
           <SpacedSection>
             <SectionTitle>{t(`How do I login to Spanner's DApp?`)}</SectionTitle>
@@ -38,7 +38,7 @@ export default function Faq() {
             <SectionTitle>{t(`Starting a project on Spanner`)}</SectionTitle>
             <Text>{t(`Starting a project on Spanner (answer)`)}</Text>
           </SpacedSection>
-        </FlatCardPlate>
+        </FlatCard>
       </Wrapper>
     </PageWrapper>
   )

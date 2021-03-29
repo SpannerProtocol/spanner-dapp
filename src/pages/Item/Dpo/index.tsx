@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import ExpandCard from 'components/Card/ExpandCard'
 import CopyHelper from 'components/Copy/Copy'
 import { BorderedInput } from 'components/Input'
@@ -658,7 +658,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           estimatedFee={txInfo.estimatedFee}
         />
       </TxModal>
-      <FlatCardPlate
+      <FlatCard
         style={{ marginBottom: '0.5rem', width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}
       >
         <Section>
@@ -759,14 +759,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             </StatDisplayGrid>
           </StatDisplayContainer>
         </Section>
-      </FlatCardPlate>
+      </FlatCard>
       {isConnected && (
         <ContentWrapper>
           <DpoActions dpoIndex={dpoIndex} />
         </ContentWrapper>
       )}
       <ContentWrapper>
-        <FlatCardPlate>
+        <FlatCard>
           <SectionHeading>{t(`Details`)}</SectionHeading>
           <SmallText>{t(`DPO Account Vault`)}</SmallText>
           <BorderedWrapper borderColor="#EC3D3D" style={{ marginTop: '0' }}>
@@ -937,7 +937,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </RowBetween>
             </Section>
           </ExpandCard>
-        </FlatCardPlate>
+        </FlatCard>
       </ContentWrapper>
     </>
   )

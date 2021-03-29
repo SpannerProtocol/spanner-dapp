@@ -41,8 +41,8 @@ function SelectorOptions(props: SelectOptionsProps) {
     <>
       <div>
         {options.map((option, index) => (
-          <SelectorWrapper key={index} style={{ padding: '0' }} onClick={() => handleSelect(option)}>
-            <BorderedWrapper>
+          <SelectorWrapper key={index} onClick={() => handleSelect(option)}>
+            <BorderedWrapper style={{ margin: '0' }}>
               <div>{option.icon}</div>
               <StandardText>{option.label}</StandardText>
             </BorderedWrapper>

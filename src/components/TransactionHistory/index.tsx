@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
@@ -256,7 +256,7 @@ export default function TransactionHistory() {
 
   return (
     <>
-      <FlatCardPlate>
+      <FlatCard>
         <SectionContainer>
           <TabBar
             id={'tabbar-transaction-history'}
@@ -270,7 +270,7 @@ export default function TransactionHistory() {
           {activeTab === 'latest-transactions' && <LatestTransactions />}
           {activeTab === 'transfers' && <Transfers />}
         </SectionContainer>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }

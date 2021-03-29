@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { Heading } from 'components/Text'
 import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
@@ -68,9 +68,9 @@ export default function Catalogue() {
               alignItems: 'center',
             }}
           >
-            <FlatCardPlate>
+            <FlatCard>
               <Section style={{ marginBottom: '1rem' }}>
-                <Heading>BulletTrain</Heading>
+                <Heading>{t(`BulletTrain`)}</Heading>
               </Section>
               <TabBar
                 margin="0px"
@@ -79,7 +79,7 @@ export default function Catalogue() {
                 tabs={tabData}
                 onClick={handleClick}
               />
-            </FlatCardPlate>
+            </FlatCard>
           </Wrapper>
 
           <SectionContainer style={{ minHeight: '750px', marginBottom: '0', width: '100%', marginTop: '0' }}>
@@ -99,15 +99,15 @@ export default function Catalogue() {
             alignItems: 'center',
           }}
         >
-          <FlatCardPlate>
+          <FlatCard>
             <Section style={{ marginBottom: '1rem', padding: '1rem' }}>
               <Heading>
-                {t(`projectMissing`, {
+                {t(`Looks like {{project}} does not have a BulletTrain yet.`, {
                   project: projectState.selectedProject?.project,
                 })}
               </Heading>
             </Section>
-          </FlatCardPlate>
+          </FlatCard>
         </Wrapper>
       )}
     </PageWrapper>

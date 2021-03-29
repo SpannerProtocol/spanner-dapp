@@ -11,6 +11,7 @@ const NetworkWrapper = styled(BorderedWrapper)`
   max-width: 240px;
   margin-left: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
+    padding: 0;
     margin-top: 0.25;
     margin-bottom: 0.25;
     max-width: fit-content;
