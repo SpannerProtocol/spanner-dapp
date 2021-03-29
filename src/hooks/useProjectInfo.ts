@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
 import { Balance } from '@polkadot/types/interfaces'
 
-interface ProjectInfo {
+export interface ProjectInfo {
   project: string
   token: string
   totalIssuance: Balance

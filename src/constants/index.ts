@@ -3,6 +3,11 @@ import { injected, walletconnect } from '../connectors'
 import ReleaseIcon from '../assets/svg/icon-release.svg'
 import TicketIcon from '../assets/svg/icon-ticket.svg'
 import WithdrawIcon from '../assets/svg/icon-withdraw.svg'
+import BronzeIcon from '../assets/svg/icon-bronze.svg'
+import SilverIcon from '../assets/svg/icon-silver.svg'
+import GoldIcon from '../assets/svg/icon-gold.svg'
+import PlatinumIcon from '../assets/svg/icon-platinum.svg'
+import DiamondIcon from '../assets/svg/icon-diamond.svg'
 
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -41,12 +46,13 @@ export const SPANNER_SUPPORTED_CHAINS = [
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {
-  0: 'Bronze',
-  1: 'Silver',
-  2: 'Gold',
-  3: 'Platinum',
-  4: 'Diamond',
+  0: { name: 'Bronze', image: BronzeIcon },
+  1: { name: 'Silver', image: SilverIcon },
+  2: { name: 'Gold', image: GoldIcon },
+  3: { name: 'Platinum', image: PlatinumIcon },
+  4: { name: 'Diamond', image: DiamondIcon },
 }
+
 export const DPO_COMMIT_GRACE_BLOCKS = 86_400
 export const DPO_RELEASE_DROP_GRACE_BLOCKS = 201_600
 

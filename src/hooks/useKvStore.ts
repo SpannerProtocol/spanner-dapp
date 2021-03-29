@@ -110,7 +110,7 @@ export function useUserKvHasProject() {
           })
       }
     })
-  }, [wallet, wallet?.address, client])
+  }, [wallet, client])
 
   return hasProject
 }

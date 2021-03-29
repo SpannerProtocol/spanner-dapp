@@ -82,7 +82,7 @@ export interface GetPriceParam {
   token2: string
   from: number
   interval: number
-  setData: Dispatcher<PriceData[]>
+  setData: Dispatcher<PriceData[] | undefined>
 }
 
 export function getPrice({ token1, token2, from, interval, setData }: GetPriceParam) {

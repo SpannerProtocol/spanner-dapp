@@ -60,7 +60,7 @@ function LpRemoveModalContent({ data }: { data: LpRemoveModalProps }): JSX.Eleme
 
 function LpPoolContent(props: LpPoolContentProps): JSX.Element {
   const { dexShare, pair } = props
-  const { pool } = useSubscribePool([pair[0], pair[1]], 250)
+  const { pool } = useSubscribePool([pair[0], pair[1]], 50)
   const { chainDecimals } = useSubstrate()
   const [amountA, setAmountA] = useState<BigNumber>(new BigNumber(0))
   const [amountB, setAmountB] = useState<BigNumber>(new BigNumber(0))

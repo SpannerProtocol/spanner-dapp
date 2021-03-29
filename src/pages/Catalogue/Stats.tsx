@@ -8,23 +8,28 @@ import styled from 'styled-components'
 import { formatToHumanFromUnit } from 'utils/formatUnit'
 
 const StatValue = styled.div`
-  font-size: 30px;
+  font-size: 22px;
   font-weight: 700;
   color: #fff;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  font-size: 28px;
-  font-weight: 700;
-  color: #fff;
-`};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+  `};
 `
 
 const StatText = styled.div`
   color: #000;
+  font-size: 12px;
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 11px;
+    font-weight: 400;
+`};
 `
 
 const StatDisplayContainer = styled.div`
-  margin-bottom: 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,21 +42,21 @@ const StatDisplay = styled.div`
   grid-column-gap: 10px;
   grid-row-gap: 10px;
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  display:grid;
-  grid-template-columns: repeat(2, minmax(0, 4fr));
-  grid-template-rows: repeat(2, minmax(0, 4fr));
-  grid-column-gap: 10px;
-  grid-row-gap: 10px;
-  width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    display:grid;
+    grid-template-columns: repeat(2, minmax(0, 4fr));
+    grid-template-rows: repeat(2, minmax(0, 4fr));
+    grid-column-gap: 5px;
+    grid-row-gap: 5px;
+    width: 100%;
   `};
 `
 
 export default function BulletTrainStats({ token }: { token: string }) {
-  const stats = useStats()
+  const stats = useStats(token)
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
-  const background = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
+  const background = 'linear-gradient(90deg, #FFBE2E -11.67%, #EC3D3D 100%)'
   return (
     <StatDisplayContainer>
       <StatDisplay>

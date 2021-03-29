@@ -11,7 +11,9 @@ import { useProjectManager } from 'state/project/hooks'
 export default function TravelCabinCatalogue() {
   const { projectState } = useProjectManager()
   const { chainDecimals } = useSubstrate()
-  const travelCabinsWithIds = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token)
+  const travelCabinsWithIds = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token).sort(
+    (cabin1, cabin2) => cabin1[1].index.toNumber() - cabin2[1].index.toNumber()
+  )
   const { setItem } = useItemManager()
 
   const handleClick = (selectedTravelCabin: [StorageKey, TravelCabinInfo]) => {

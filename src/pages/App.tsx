@@ -19,11 +19,12 @@ import Account from './Account'
 import AppBody from './AppBody'
 import Catalogue from './Catalogue'
 import Dex from './Dex'
-import Discover from './Discover'
 import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
 import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
+import Launchpad from './Launchpad'
+import Project from './Launchpad/Project'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -115,7 +116,8 @@ export default function App() {
               <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/catalogue" component={Catalogue} />
-              <Route exact strict path="/discover" component={Discover} />
+              <Route exact strict path="/launchpad" component={Launchpad} />
+              <Route exact strict path="/launchpad/:token" component={Project} />
               <Route exact strict path="/faq" component={Faq} />
             </Switch>
           </Web3ReactManager>

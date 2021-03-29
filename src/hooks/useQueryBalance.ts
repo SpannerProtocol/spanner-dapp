@@ -83,7 +83,7 @@ export function useAllBalances(): Array<BalanceData> | undefined {
     const tokenBalanceData: Array<BalanceData> = tokenBalances.map(([key, accountData]) => {
       const keyCodecs = key.args.map((k) => k)
       const currencyId = (keyCodecs as [AccountId, CurrencyId])[1]
-      const type = currencyId.isToken ? 'token' : 'lp'
+      const type = currencyId.isToken ? 'Token' : 'Liq. Pool'
       const token = currencyId.isToken
         ? currencyId.asToken.toString()
         : currencyId.asDexShare[0].toString() + '/' + currencyId.asDexShare[1].toString()
@@ -97,7 +97,7 @@ export function useAllBalances(): Array<BalanceData> | undefined {
     })
     const boltBalanceData = {
       token: 'BOLT',
-      type: 'token',
+      type: 'Token',
       free: balance.data.free.toString(),
       miscFrozen: balance.data.miscFrozen.toString(),
       feeFrozen: balance.data.feeFrozen.toString(),

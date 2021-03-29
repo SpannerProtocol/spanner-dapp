@@ -1,48 +1,72 @@
-import { useEffect, useState } from 'react'
-import { useApi } from './useApi'
 import { StorageKey } from '@polkadot/types'
-import { DpoIndex, TravelCabinIndex } from 'spanner-interfaces'
 import BN from 'bn.js'
+import { useEffect, useMemo, useState } from 'react'
+import { DpoIndex, TravelCabinIndex } from 'spanner-interfaces'
+import { useApi } from './useApi'
 
-export function useCabinKeys() {
+export function useCabinKeys(token: string) {
   const { api, connected } = useApi()
-  const [cabinKeys, setCabinKeys] = useState<StorageKey<[TravelCabinIndex]>[]>()
+  const [cabinKeys, setCabinKeys] = useState<TravelCabinIndex[]>([])
 
   useEffect(() => {
     if (!connected) return
-    api.query.bulletTrain.travelCabins.keys().then((keys) => setCabinKeys(keys))
-  }, [connected, api])
+    api.query.bulletTrain.travelCabins.entries().then((entries) =>
+      entries.forEach(([storageKey, cabinInfoOption]) => {
+        if (cabinInfoOption.isSome) {
+          const cabinInfo = cabinInfoOption.unwrapOrDefault()
+          if (cabinInfo.token_id.isToken && cabinInfo.token_id.asToken.eq(token.toUpperCase())) {
+            setCabinKeys((prev) => [...prev, storageKey.args[0]])
+          }
+        }
+      })
+    )
+  }, [connected, api, token])
 
   return cabinKeys
 }
 
-export function useTotalCabinsBought() {
+export function useTotalCabinsBought(cabinKeys: TravelCabinIndex[]) {
   const { api, connected } = useApi()
   const [cabinCount, setCabinCount] = useState<number>(0)
+
+  const cabinKeysStr = useMemo(() => cabinKeys.map((key) => key.toString()), [cabinKeys])
 
   useEffect(() => {
     if (!connected) return
     api.query.bulletTrain.travelCabinInventory.entries().then((entries) => {
+      let count = 0
       entries.forEach((inventory) => {
-        if (inventory[1].isSome) {
-          setCabinCount((prev) => prev + inventory[1].unwrapOrDefault()[0].toNumber())
+        if (inventory[1].isSome && cabinKeysStr.includes(inventory[0].args[0].toString())) {
+          count = count + inventory[1].unwrapOrDefault()[0].toNumber()
         }
       })
+      setCabinCount(count)
     })
-  }, [connected, api])
+  }, [connected, api, cabinKeysStr])
 
   return cabinCount
 }
 
-export function useTotalPassengers() {
+export function useTotalPassengers(token: string) {
   const { api, connected } = useApi()
   const [passengerCount, setPassengerCount] = useState<number>(0)
-  const [dpoKeys, setDpoKeys] = useState<StorageKey<[DpoIndex]>[]>()
+  const [dpoKeys, setDpoKeys] = useState<StorageKey<[DpoIndex]>[]>([])
 
   useEffect(() => {
     if (!connected) return
-    api.query.bulletTrain.dpos.keys().then((keys) => setDpoKeys(keys))
-  }, [connected, api])
+    api.query.bulletTrain.dpos.entries().then((entries) => {
+      const keys: StorageKey<[DpoIndex]>[] = []
+      entries.forEach(([storageKey, dpoInfoOption]) => {
+        if (dpoInfoOption.isSome) {
+          const dpoInfo = dpoInfoOption.unwrapOrDefault()
+          if (dpoInfo.token_id.eq(token)) {
+            keys.push(storageKey)
+          }
+        }
+      })
+      setDpoKeys(keys)
+    })
+  }, [connected, api, token])
 
   useEffect(() => {
     if (!connected || !dpoKeys) return
@@ -57,35 +81,38 @@ export function useTotalPassengers() {
   return passengerCount
 }
 
-export function useTotalYieldWithdrawn() {
+export function useTotalYieldWithdrawn(cabinKeys: TravelCabinIndex[]) {
   const { api, connected } = useApi()
-  const cabinKeys = useCabinKeys()
   const [yieldWithdrawn, setYieldWithdrawn] = useState<BN>(new BN(0))
 
   useEffect(() => {
-    if (!connected || !cabinKeys) return
-    cabinKeys.forEach((key) => {
-      const cabinIndex = key.args[0]
-      api.query.bulletTrain.travelCabinBuyer.entries(cabinIndex).then((buyerInfoEntries) => {
-        buyerInfoEntries.forEach((buyer) => {
-          if (buyer[1].isSome) {
-            const y = buyer[1].unwrapOrDefault().yield_withdrawn
-            setYieldWithdrawn((prev) => prev.add(y.toBn()))
-          }
+    if (!connected || cabinKeys.length === 0) return
+    const buyerPromises = cabinKeys.map((key) =>
+      api.query.bulletTrain.travelCabinBuyer
+        .entries(key)
+        .then((entries) => entries.map((entry) => entry[1].unwrapOrDefault().yield_withdrawn.toBn()))
+    )
+
+    Promise.all(buyerPromises).then((result) => {
+      let totalYield = new BN(0)
+      result.forEach((yieldPerInventory) =>
+        yieldPerInventory.forEach((y) => {
+          totalYield = totalYield.add(y)
         })
-      })
+      )
+      setYieldWithdrawn(totalYield)
     })
   }, [api, connected, cabinKeys])
 
-  return yieldWithdrawn.toString()
+  return yieldWithdrawn
 }
 
 interface ValueObj {
   [index: string]: BN
 }
-export function useTotalValueLocked() {
+
+export function useTotalValueLocked(cabinKeys: TravelCabinIndex[]) {
   const { api, connected } = useApi()
-  const cabinKeys = useCabinKeys()
   const [totalValueLocked, setTotalValueLocked] = useState<BN>(new BN(0))
   const [valueObj, setValueObj] = useState<ValueObj>({})
 
@@ -102,33 +129,41 @@ export function useTotalValueLocked() {
         }
       })
     })
-  }, [api, connected, cabinKeys])
+  }, [api, connected])
 
   // Calculate the total value locked from all unwithdrawn bought travel cabins
   useEffect(() => {
-    if (!connected || !cabinKeys || !valueObj) return
+    if (!connected || cabinKeys.length === 0 || !valueObj) return
     if (!Object.keys(cabinKeys).every((k) => Object.keys(valueObj).includes(k))) return
-    cabinKeys.forEach((key) => {
-      const cabinIndex = key.args[0]
-      api.query.bulletTrain.travelCabinBuyer.entries(cabinIndex).then((buyerInfoEntries) => {
-        buyerInfoEntries.forEach((buyer) => {
-          if (buyer[1].isSome) {
-            if (!buyer[1].unwrapOrDefault().fare_withdrawn) return
-            setTotalValueLocked((prev) => prev.add(valueObj[cabinIndex.toString()]))
+    const tvlPromises = cabinKeys.map((key) =>
+      api.query.bulletTrain.travelCabinBuyer.entries(key).then((buyerInfoEntries) =>
+        buyerInfoEntries.map((buyer) => {
+          if (!buyer[1].unwrapOrDefault().fare_withdrawn) {
+            return new BN(0)
           }
+          return valueObj[key.toString()]
         })
-      })
+      )
+    )
+    Promise.all(tvlPromises).then((result) => {
+      let tvl = new BN(0)
+      result.forEach((buyerSet) => buyerSet.forEach((locked) => (tvl = tvl.add(locked))))
+      setTotalValueLocked(tvl)
     })
   }, [api, connected, cabinKeys, valueObj])
 
   return totalValueLocked
 }
 
-export default function useStats() {
-  const totalCabinsBought = useTotalCabinsBought()
-  const totalPassengers = useTotalPassengers()
-  const totalYieldWithdrawn = useTotalYieldWithdrawn()
-  const totalValueLocked = useTotalValueLocked()
-  // const totalMembers = useTotalDpoMembers()
+/**
+ *
+ * @param token token to filter stats for
+ */
+export default function useStats(token: string) {
+  const cabinKeys = useCabinKeys(token)
+  const totalPassengers = useTotalPassengers(token)
+  const totalCabinsBought = useTotalCabinsBought(cabinKeys)
+  const totalYieldWithdrawn = useTotalYieldWithdrawn(cabinKeys)
+  const totalValueLocked = useTotalValueLocked(cabinKeys)
   return { totalCabinsBought, totalPassengers, totalYieldWithdrawn, totalValueLocked }
 }

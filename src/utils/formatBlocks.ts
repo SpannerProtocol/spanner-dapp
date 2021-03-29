@@ -9,7 +9,7 @@ import moment from 'moment'
  * @param block block to convert
  */
 export function blockToDays(blockTime: Moment, block: BlockNumber | u32, precision?: number) {
-  return ((block.toNumber() * blockTime.toNumber()) / 1000 / 3600).toFixed(precision ? precision : 2)
+  return ((block.toNumber() * blockTime.toNumber()) / 1000 / 60 / 60 / 24).toFixed(precision ? precision : 2)
 }
 
 /**

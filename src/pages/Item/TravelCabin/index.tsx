@@ -1,6 +1,6 @@
 import { BN_HUNDRED } from '@polkadot/util'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import { FlatCard, FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { GridCell, GridRow } from 'components/Grid'
 import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
@@ -22,8 +22,8 @@ import { useReferrer } from 'hooks/useReferrer'
 import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
-import getCabinClass from '../../../utils/getCabinClass'
-import truncateString from '../../../utils/truncateString'
+import getCabinClass, { getCabinClassImage } from '../../../utils/getCabinClass'
+import truncateString, { shortenAddr } from '../../../utils/truncateString'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -411,12 +411,12 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
           estimatedFee={txInfo?.estimatedFee}
         />
       </TxModal>
-      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <RowBetween>
-            <SectionHeading>
-              {t(`TravelCabin:`)}
-              {getCabinClass(travelCabinInfo.index.toString())}
+            <SectionHeading style={{ display: 'flex' }}>
+              {t(`TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}
+              {getCabinClassImage(travelCabinInfo.index.toString())}
             </SectionHeading>
             <CollapseWrapper>
               <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
@@ -431,7 +431,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
               </ButtonWrapper>
             </CollapseWrapper>
           </RowBetween>
-          <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+          <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
             <SmallText>{t(`General Information`)}</SmallText>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
@@ -502,9 +502,9 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 )}
               </Section>
             </BorderedWrapper>
-          </FlatCard>
+          </SpacedSection>
         </Section>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }
@@ -516,7 +516,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
 
   return (
     <>
-      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <div style={{ display: 'flex' }}>
             <SectionHeading>{t(`Sold to`)}</SectionHeading>
@@ -551,12 +551,12 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
                     <GridCell>
                       {buyer[1].buyer.isPassenger && (
                         <StandardText>
-                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asPassenger.toString())} ({t(`Passenger`)})
+                          {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
                         </StandardText>
                       )}
                       {buyer[1].buyer.isDpo && (
                         <StandardText>
-                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asDpo.toString())} ({t(`DPO`)})
+                          {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
                         </StandardText>
                       )}
                     </GridCell>
@@ -565,7 +565,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
               )
             })}
         </SpacedSection>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }

@@ -65,8 +65,11 @@ export const DisclaimerText = styled(Text)`
 export const Heading = styled.h2`
   margin: 0;
   font-size: 24px;
-  font-weight: bold;
-  color: ${({ theme }) => theme.black};
+  font-weight: 500;
+  color: ${({ theme }) => theme.text2};
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    font-size: 20px;
+ `};
 `
 
 export const SectionHeading = styled.h3`

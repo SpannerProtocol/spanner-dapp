@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
@@ -101,7 +101,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
         // If not available, user needs to enter index of cabin that is
         return (
           <>
-            {targetTravelCabinInventory && !isTravelCabinAvailable(targetTravelCabinInventory) ? (
+            {targetTravelCabinInventory && isTravelCabinAvailable(targetTravelCabinInventory) ? (
               <Action
                 txContent={
                   <>
@@ -444,10 +444,10 @@ export default function DpoActions(props: DpoActionsProps) {
   return (
     <>
       {dpoActions && dpoActions.length > 0 && (
-        <FlatCardPlate margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+        <FlatCard margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
           <SectionHeading>Actions</SectionHeading>
           {dpoInfo && dpoIndex && <ActionProvider dpoInfo={dpoInfo} dpoIndex={dpoIndex} dpoActions={dpoActions} />}
-        </FlatCardPlate>
+        </FlatCard>
       )}
     </>
   )

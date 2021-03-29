@@ -1,11 +1,11 @@
 import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard, FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
 import TxModal from 'components/Modal/TxModal'
 import { RowBetween } from 'components/Row'
 import { SectionHeading, StandardText } from 'components/Text'
-import { BorderedWrapper, ButtonWrapper, Section } from 'components/Wrapper'
+import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -133,21 +133,21 @@ export default function Bridge(): JSX.Element {
       </TxModal>
       {!wallet ? (
         <>
-          <FlatCardPlate
+          <FlatCard
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
           >
             <StandardText>{t(`Connect to your wallet to use the Bridge`)}</StandardText>
-          </FlatCardPlate>
+          </FlatCard>
         </>
       ) : (
         <>
-          <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
                 <SectionHeading>{t(`Spanner <-> Ethereum Bridge`)}</SectionHeading>
               </RowBetween>
             </Section>
-            <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+            <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
               <Section>
                 <StandardText>
                   {t(`Transfer tokens between Spanner and Ethereum. Currently only supporting WUSD <-> USDT.`)}
@@ -162,17 +162,17 @@ export default function Bridge(): JSX.Element {
                   </RowBetween>
                 </BorderedWrapper>
               </Section>
-            </FlatCard>
-          </FlatCardPlate>
+            </SpacedSection>
+          </FlatCard>
 
           {ethDepositAddr && wallet && (
-            <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
               <Section>
                 <RowBetween>
                   <SectionHeading>{t(`Ethereum to Spanner`)}</SectionHeading>
                 </RowBetween>
               </Section>
-              <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+              <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
                 <Section>
                   <SectionHeading>{t(`Instructions`)}</SectionHeading>
                   <StandardText>
@@ -225,16 +225,16 @@ export default function Bridge(): JSX.Element {
                       ))}
                   </Section>
                 </Section>
-              </FlatCard>
-            </FlatCardPlate>
+              </SpacedSection>
+            </FlatCard>
           )}
-          <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
                 <SectionHeading>{t(`Spanner to Ethereum`)}</SectionHeading>
               </RowBetween>
             </Section>
-            <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+            <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
               <Section>
                 <SectionHeading>{t(`Instructions`)}</SectionHeading>
                 <StandardText>
@@ -270,8 +270,8 @@ export default function Bridge(): JSX.Element {
                   </ButtonPrimary>
                 </ButtonWrapper>
               </Section>
-            </FlatCard>
-          </FlatCardPlate>
+            </SpacedSection>
+          </FlatCard>
         </>
       )}
     </>

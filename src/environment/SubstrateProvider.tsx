@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useMemo, useState } from 'react'
 
 const DEFAULT_STATE = {
   chain: '-',
-  chainDecimals: 15,
+  chainDecimals: 10,
   existentialDeposit: 1 / 1000,
 }
 
@@ -30,6 +30,7 @@ export function SubstrateProvider({ children }: any): JSX.Element {
 
   useEffect(() => {
     if (!connected) return
+    console.info('ChainDecimals:', api.registry.chainDecimals[0])
     setConstants({
       chain: networkName,
       genesis: api.genesisHash.toString(),

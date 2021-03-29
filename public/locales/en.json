@@ -271,5 +271,10 @@
   "FAILED": "FAILED",
   "RUNNING": "RUNNING",
   "ACTIVE": "ACTIVE",
-  "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet.": "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet."
+  "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet.": "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet.",
+  "Project Info": "Project Info",
+  "Token": "Token",
+  "Total Supply": "Total Supply",
+  "BulletTrain Performance": "BulletTrain Performance",
+  "DEX Metrics": "DEX Metrics"
 }
