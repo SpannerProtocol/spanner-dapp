@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
 import { DataTokenName, Heading, SectionHeading, SmallText, StandardText } from 'components/Text'
@@ -59,7 +59,7 @@ function TravelCabinBuyersInfo({
   return (
     <>
       {buyer && (
-        <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+        <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
           <Heading>{t(`TravelCabin Inventory`)}</Heading>
           <SpacedSection>
             <StatDisplayContainer>
@@ -189,7 +189,7 @@ function TravelCabinBuyersInfo({
               )}
             </BorderedWrapper>
           </SpacedSection>
-        </FlatCardPlate>
+        </FlatCard>
       )}
     </>
   )
@@ -274,14 +274,14 @@ export function UserActionProvider({
 
   return (
     <>
-      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <SectionHeading>{t(`Actions`)}</SectionHeading>
         </Section>
         <SpacedSection>
           {userActions && userActions.map((action, index) => <React.Fragment key={index}>{action}</React.Fragment>)}
         </SpacedSection>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }

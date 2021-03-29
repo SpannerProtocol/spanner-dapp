@@ -7,14 +7,15 @@ import { Box } from 'rebass/styled-components'
 const Card = styled(Box)<{ padding?: string; border?: string; borderRadius?: string }>`
   box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
   -webkit-box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
-  border-radius: 8px;
   padding: 1.25rem;
   background: ${({ theme }) => theme.bg1};
   color: ${({ theme }) => theme.text2};
   padding: ${({ padding }) => padding};
   border: ${({ border }) => border};
-  border-radius: ${({ borderRadius }) => borderRadius};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
 `
+
+export default Card
 
 export const FlexCardBox = styled(Card)`
   display: inline-flex;
@@ -27,23 +28,6 @@ export const FlexCardBox = styled(Card)`
   `};
 `
 
-export const FlatCard = styled(Box)<{ padding?: string; border?: string; borderRadius?: string }>`
-  border-radius: 8px;
-  width: 100%;
-  color: ${({ theme }) => theme.primary1};
-  padding: ${({ padding }) => padding};
-  border: ${({ border }) => border};
-  border-radius: ${({ borderRadius }) => borderRadius};
-  margin-top: 0.8rem;
-  margin-bottom: 0.8rem;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    width: 100%;
-    max-width: 1600px;
-    padding-left: 0.35rem;
-    padding-right: 0.35rem;
-  `};
-`
-
 export const FlatCardSection = styled(Card)<{ margin?: string }>`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
   margin: ${({ margin }) => (margin ? margin : '0 0 1rem 0')};
@@ -52,7 +36,7 @@ export const FlatCardSection = styled(Card)<{ margin?: string }>`
 `
 
 // Normal Card with surrounding shadows
-export const FlatCardPlate = styled(FlatCardSection)<{ marginBottom?: string; padding?: string }>`
+export const FlatCard = styled(FlatCardSection)<{ marginBottom?: string; padding?: string }>`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
   margin-bottom: ${({ marginBottom }) => (marginBottom ? marginBottom : '1rem')};
   padding: ${({ padding }) => (padding ? padding : '1rem')};
@@ -73,8 +57,6 @@ export const ThinShadowCard = styled(Card)<{ background?: string; maxWidth?: str
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '360px')};
   margin: ${({ margin }) => (margin ? margin : '0')};
 `
-
-export default Card
 
 export const TableCard = styled(Card)`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);

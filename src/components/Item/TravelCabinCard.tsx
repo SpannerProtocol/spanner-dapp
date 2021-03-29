@@ -1,6 +1,6 @@
 import { StorageKey } from '@polkadot/types'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { SectionHeading, StandardText } from 'components/Text'
 import { Section } from 'components/Wrapper'
@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { TravelCabinIndex, TravelCabinInfo } from 'spanner-interfaces'
 import { blockToDays } from 'utils/formatBlocks'
 import getApy from 'utils/getApy'
-import getCabinClass from 'utils/getCabinClass'
+import getCabinClass, { getCabinClassImage } from 'utils/getCabinClass'
 import { formatToUnit } from '../../utils/formatUnit'
 
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
@@ -30,11 +30,12 @@ export default function TravelCabinCard(props: TravelCabinCard) {
   const { t } = useTranslation()
 
   return (
-    <FlatCardPlate>
+    <FlatCard>
       <Section>
-        <SectionHeading style={{ marginLeft: '0', marginTop: '0' }}>
+        <SectionHeading style={{ marginLeft: '0', marginTop: '0', display: 'inline-flex' }}>
           {t(`TravelCabin `)}
           {getCabinClass(travelCabinInfo.index.toString())}
+          {getCabinClassImage(travelCabinInfo.index.toString())}
         </SectionHeading>
       </Section>
       <Section>
@@ -83,6 +84,6 @@ export default function TravelCabinCard(props: TravelCabinCard) {
           </ButtonPrimary>
         </Link>
       </Section>
-    </FlatCardPlate>
+    </FlatCard>
   )
 }

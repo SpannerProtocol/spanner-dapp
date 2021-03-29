@@ -1,4 +1,4 @@
-import { FlatCardPlate, TableCard } from 'components/Card'
+import { FlatCard, TableCard } from 'components/Card'
 import { CenteredRow } from 'components/Row'
 import { StandardText } from 'components/Text'
 import TransactionHistory from 'components/TransactionHistory'
@@ -86,11 +86,11 @@ export default function Balances(): JSX.Element {
   if (!data) {
     return (
       <>
-        <FlatCardPlate
+        <FlatCard
           style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
         >
           <StandardText>{t(`Connect to your wallet to view your Balances`)}</StandardText>
-        </FlatCardPlate>
+        </FlatCard>
       </>
     )
   }

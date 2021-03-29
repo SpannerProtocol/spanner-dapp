@@ -172,6 +172,7 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
       // console.log('custodial payload', JSON.stringify(custodialPayload))
       postSignature(custodialPayload).then((txSignature) => {
         if (!api) return
+        console.log('txSignature:', txSignature)
         const submittableTx = api.createType('Extrinsic', txSignature.data)
         api.rpc.author.submitAndWatchExtrinsic(submittableTx, (status) =>
           handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
