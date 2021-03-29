@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { HeavyText, StandardText } from 'components/Text'
 import { PageWrapper } from 'components/Wrapper'
 import useProjectInfos from 'hooks/useProjectInfo'
@@ -75,7 +75,7 @@ export const ProjectIconWrapper = styled.div`
   `};
 `
 
-const ProjectCardPlate = styled(FlatCardPlate)`
+const ProjectCardPlate = styled(FlatCard)`
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
@@ -92,11 +92,16 @@ function ProjectCatalogue() {
         {projects &&
           projects.map((project, index) => {
             const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
+            if (projectRegistry.description === '') return <></>
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
             return (
               <>
-                <Link to={{ pathname: `/launchpad/${project.token.toLowerCase()}` }} style={{ textDecoration: 'none' }}>
+                <Link
+                  key={index}
+                  to={{ pathname: `/launchpad/${project.token.toLowerCase()}` }}
+                  style={{ textDecoration: 'none' }}
+                >
                   <ProjectCardPlate
                     style={{
                       width: '100%',
@@ -105,7 +110,7 @@ function ProjectCatalogue() {
                       marginBottom: '0.5rem',
                     }}
                   >
-                    <ProjectCard key={index}>
+                    <ProjectCard>
                       <ProjectIconWrapper>
                         <img src={TokenImage} style={{ width: '100%' }} alt="token icon" />
                       </ProjectIconWrapper>

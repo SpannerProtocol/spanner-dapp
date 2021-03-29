@@ -104,7 +104,7 @@ export function useTotalYieldWithdrawn(cabinKeys: TravelCabinIndex[]) {
     })
   }, [api, connected, cabinKeys])
 
-  return yieldWithdrawn.toString()
+  return yieldWithdrawn
 }
 
 interface ValueObj {
