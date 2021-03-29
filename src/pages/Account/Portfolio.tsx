@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { DpoProfileCard } from 'components/Item/DpoCard'
 import TravelCabinCard from 'components/Item/TravelCabinCard'
 import { SectionHeading, StandardText } from 'components/Text'
@@ -37,7 +37,7 @@ export default function Portfolio(): JSX.Element {
     <>
       {!(wallet && wallet.address) ? (
         <>
-          <FlatCardPlate
+          <FlatCard
             style={{
               width: '100%',
               backgroundColor: '#fff',
@@ -49,14 +49,14 @@ export default function Portfolio(): JSX.Element {
             }}
           >
             <StandardText>{t(`Connect to your wallet to view your Portfolio.`)}</StandardText>
-          </FlatCardPlate>
+          </FlatCard>
         </>
       ) : (
         <>
           <Wrapper style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
             {userItems?.userTravelCabins.length === 0 && userItems?.userDpos.length === 0 ? (
               <>
-                <FlatCardPlate
+                <FlatCard
                   style={{
                     width: '100%',
                     backgroundColor: '#fff',
@@ -72,7 +72,7 @@ export default function Portfolio(): JSX.Element {
                       Could not find any Portfolio Items. Check out our <Link to="/catalogue">Growth</Link> section.
                     </Trans>
                   </StandardText>
-                </FlatCardPlate>
+                </FlatCard>
               </>
             ) : (
               <>

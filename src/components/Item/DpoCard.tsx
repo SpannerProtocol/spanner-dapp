@@ -1,7 +1,7 @@
 import { StorageKey } from '@polkadot/types'
 import { AlertIcon, AlertWrapper } from 'components/Alert'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { SectionHeading, StandardText } from 'components/Text'
 import { Section } from 'components/Wrapper'
@@ -96,9 +96,9 @@ export default function DpoCard(props: DpoCard) {
   const { item, chainDecimals, token, onClick } = props
 
   return (
-    <FlatCardPlate>
+    <FlatCard>
       <CardContent item={item} chainDecimals={chainDecimals} token={token} onClick={onClick} />
-    </FlatCardPlate>
+    </FlatCard>
   )
 }
 
@@ -188,8 +188,8 @@ function ProfileCardContent(props: ProfileCard) {
 export function DpoProfileCard(props: ProfileCard) {
   const { item, chainDecimals, token, alerts, onClick } = props
   return (
-    <FlatCardPlate>
+    <FlatCard>
       <ProfileCardContent item={item} chainDecimals={chainDecimals} token={token} alerts={alerts} onClick={onClick} />
-    </FlatCardPlate>
+    </FlatCard>
   )
 }

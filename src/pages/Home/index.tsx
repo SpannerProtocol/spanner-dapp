@@ -1,12 +1,11 @@
-import { FlatCardPlate } from 'components/Card'
-import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
+import { FlatCard } from 'components/Card'
+import { PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import StandardText, { Heading } from '../../components/Text'
-
 const SectionTitle = styled.h3`
   font-weight: 700;
   margin-top: 0.45rem;
@@ -35,19 +34,21 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <SpacedSection style={{ marginBottom: '2rem' }}>
-          <HomePageTitle>{t(`Spanner`)}</HomePageTitle>
-          <Heading>{t(`The Blockchain Component Marketplace`)}</Heading>
-        </SpacedSection>
-        <SpacedSection style={{ marginBottom: '2rem' }}>
+        <FlatCard>
+          <Section style={{ marginBottom: '1rem' }}>
+            <HomePageTitle>{t(`Spanner`)}</HomePageTitle>
+            <Heading>{t(`The Blockchain Component Marketplace`)}</Heading>{' '}
+          </Section>
+        </FlatCard>
+        <SpacedSection>
           {lastBlock && (
             <Heading>
               {t(`Last Block`)}: #{lastBlock.toString()}
             </Heading>
           )}
         </SpacedSection>
-        <SpacedSection style={{ marginBottom: '2rem' }}>
-          <FlatCardPlate style={{ textAlign: 'left' }}>
+        <SpacedSection>
+          <FlatCard style={{ textAlign: 'left' }}>
             <SpacedSection style={{ wordBreak: 'break-word' }}>
               <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
               <StandardText>
@@ -62,10 +63,15 @@ export default function Home() {
                 </StandardText>
               )}
             </SpacedSection>
-          </FlatCardPlate>
+          </FlatCard>
         </SpacedSection>
         <SpacedSection style={{ marginBottom: '2rem' }}>
-          <FlatCardPlate style={{ textAlign: 'left' }}>
+          <FlatCard style={{ textAlign: 'left' }}>
+            {/* <SpacedSection>
+              <AnyQuestionHelper text={t(``)}>
+                <Step>{t(`Connect to a Wallet`)}</Step>
+              </AnyQuestionHelper>
+            </SpacedSection> */}
             <SpacedSection>
               <SectionTitle>{t(`Get Started`)}</SectionTitle>
               <StandardText>{t(`1) Connect to a Wallet`)}</StandardText>
@@ -73,7 +79,7 @@ export default function Home() {
               <StandardText>{t(`3) Go to DEX and swap for BOLT`)}</StandardText>
               <StandardText>{t(`4) Participate in a BulletTrain Campaign`)}</StandardText>
             </SpacedSection>
-          </FlatCardPlate>
+          </FlatCard>
         </SpacedSection>
       </Wrapper>
     </PageWrapper>

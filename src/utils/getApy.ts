@@ -22,13 +22,12 @@ export default function getApy({
   days,
   precision,
 }: GetApyParams) {
-  // BN doesn't handle decimals
-  const decimalsBn = new BN(chainDecimals)
-  const yieldNum = totalYield.div(decimalsBn).toNumber()
-  const depositNum = totalDeposit.div(decimalsBn).toNumber()
+  // Should be safe to convert into float after slicing off the chainDecimals
+  const yieldNum = parseFloat(totalYield.toString().slice(0, totalYield.toString.length - chainDecimals))
+  const depositNum = parseFloat(totalDeposit.toString().slice(0, totalDeposit.toString.length - chainDecimals))
   if (period) {
     const periodInDays = parseFloat(blockToDays(blocksInPeriod, period))
-    return ((yieldNum / depositNum) * (365 / periodInDays)).toFixed(precision ? precision : 2)
+    return ((yieldNum / depositNum) * (365 / periodInDays) * 100).toFixed(precision ? precision : 2)
   } else if (days) {
     return ((yieldNum / depositNum / days) * 365).toFixed(precision ? precision : 2)
   } else {

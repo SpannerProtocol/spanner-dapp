@@ -1,4 +1,4 @@
-import { FlatCardPlate, TableCard } from 'components/Card'
+import { FlatCard, TableCard } from 'components/Card'
 import { CenteredRow } from 'components/Row'
 import { StandardText } from 'components/Text'
 import TransactionHistory from 'components/TransactionHistory'
@@ -9,7 +9,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatToUnit } from 'utils/formatUnit'
 import MainTable from '../../components/Table'
-import getTokenImagePaths from '../../utils/getTokenImage'
+import getProjectRegistry from '../../utils/getProjectRegistry'
 
 interface BalanceDataProps {
   balances: Array<BalanceData> | undefined
@@ -20,9 +20,9 @@ function structureBalanceData(data: BalanceDataProps) {
   const { balances, decimals } = data
   if (!balances) return
   const balanceRows = balances.map((balance) => {
-    const tokenImagePath = getTokenImagePaths(balance.token.toLowerCase())[0]
+    const projectRegistry = getProjectRegistry(balance.token.toLowerCase())[0]
     return {
-      tokenImg: tokenImagePath.path,
+      tokenImg: projectRegistry.icon,
       asset: balance.token,
       type: balance.type,
       fee: formatToUnit(balance.feeFrozen, decimals),
@@ -86,11 +86,11 @@ export default function Balances(): JSX.Element {
   if (!data) {
     return (
       <>
-        <FlatCardPlate
+        <FlatCard
           style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
         >
           <StandardText>{t(`Connect to your wallet to view your Balances`)}</StandardText>
-        </FlatCardPlate>
+        </FlatCard>
       </>
     )
   }

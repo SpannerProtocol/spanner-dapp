@@ -115,7 +115,7 @@ const NetworkIcon = styled(Activity)`
 // eslint-disable-next-line react/prop-types
 function StatusIcon({ connector }: { connector: AbstractConnector | string }) {
   if (typeof connector === 'string' && connector === 'Spanner') {
-    return <img src={SpannerLogo} style={{ height: '1rem', width: '1rem' }} />
+    return <img src={SpannerLogo} style={{ height: '1rem', width: '1rem' }} alt="spanner connection logo" />
   } else {
     if (connector === injected) {
       return <Identicon />

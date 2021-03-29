@@ -11,10 +11,12 @@ export function formatToUnit(
 ): string {
   let balanceStr = formatBalance(balance.toString(), { withSi: false, forceUnit: '-' }, decimals)
   if (precision) {
-    balanceStr = parseFloat(balanceStr.replace(',', '')).toLocaleString(undefined, { maximumFractionDigits: precision })
+    balanceStr = parseFloat(balanceStr.replaceAll(',', '')).toLocaleString(undefined, {
+      maximumFractionDigits: precision,
+    })
   }
   if (unformatted) {
-    balanceStr = balanceStr.toString().replace(',', '').split('.')[0]
+    balanceStr = balanceStr.toString().replaceAll(',', '').split('.')[0]
   }
   return balanceStr
 }

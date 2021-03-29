@@ -39,7 +39,8 @@ export const HeavyHeader = styled.div`
   font-weight: 700;
 `
 
-export const ErrorMsg = styled.span`
+export const ErrorMsg = styled.div`
+  display: block;
   color: #ff9494;
   font-size: 0.8rem;
 `

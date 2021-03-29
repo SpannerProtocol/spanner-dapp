@@ -1,4 +1,4 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { Heading, StandardText } from 'components/Text'
 import useWallet from 'hooks/useWallet'
@@ -62,7 +62,7 @@ export default function Account() {
           alignItems: 'center',
         }}
       >
-        <FlatCardPlate>
+        <FlatCard>
           <Section style={{ marginBottom: '1rem' }}>
             <Heading>{t(`Account`)}</Heading>
           </Section>
@@ -94,7 +94,7 @@ export default function Account() {
             onClick={handleClick}
             margin="0"
           />
-        </FlatCardPlate>
+        </FlatCard>
       </Wrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
