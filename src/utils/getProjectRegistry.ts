@@ -1,13 +1,6 @@
 import { default as projectJson } from '../spanner-projects.json'
 
-interface ProjectRegistryInfo {
-  name: string
-  token: string
-  description: string
-  icon: string
-}
-
-interface ProjectRegistry {
+export interface ProjectRegistry {
   name: string
   token: string
   icon: string
@@ -17,7 +10,7 @@ export interface ProjectJson {
   [index: string]: ProjectRegistry
 }
 
-export default function getProjectRegistry(token: string | Array<string>): Array<ProjectRegistryInfo> {
+export default function getProjectRegistry(token: string | Array<string>): Array<ProjectRegistry> {
   const projectDesc = projectJson as ProjectJson
   if (typeof token === 'string') {
     const projectRegistry = Object.keys(projectDesc).includes(token)
@@ -32,7 +25,7 @@ export default function getProjectRegistry(token: string | Array<string>): Array
       },
     ]
   }
-  const registryInfo: Array<ProjectRegistryInfo> = []
+  const registryInfo: Array<ProjectRegistry> = []
   token.forEach((tokenName) => {
     const projectRegistry = Object.keys(projectDesc).includes(tokenName)
       ? projectDesc[tokenName]

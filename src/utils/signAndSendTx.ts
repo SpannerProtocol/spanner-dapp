@@ -169,10 +169,8 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
   } else {
     // Use signing server. They use a different key derivation.
     signAndVerify(custodialProvider, message).then((custodialPayload) => {
-      // console.log('custodial payload', JSON.stringify(custodialPayload))
       postSignature(custodialPayload).then((txSignature) => {
         if (!api) return
-        console.log('txSignature:', txSignature)
         const submittableTx = api.createType('Extrinsic', txSignature.data)
         api.rpc.author.submitAndWatchExtrinsic(submittableTx, (status) =>
           handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })

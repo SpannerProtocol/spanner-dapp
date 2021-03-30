@@ -88,7 +88,6 @@ export interface GetPriceParam {
 export function getPrice({ token1, token2, from, interval, setData }: GetPriceParam) {
   postPriceData({ token_1: token1, token_2: token2, from, interval }).then(
     (resp: AxiosResponse<SpanfuraPriceResponse>) => {
-      console.log(resp)
       if (!resp.data.data) {
         setData([])
         return

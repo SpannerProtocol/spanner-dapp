@@ -92,11 +92,11 @@ function ProjectCatalogue() {
         {projects &&
           projects.map((project, index) => {
             const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
-            if (projectRegistry.description === '') return <></>
+            if (projectRegistry.description === '') return <div key={index}></div>
             // eslint-disable-next-line @typescript-eslint/no-var-requires
             const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
             return (
-              <>
+              <div key={index}>
                 <Link
                   key={index}
                   to={{ pathname: `/launchpad/${project.token.toLowerCase()}` }}
@@ -121,7 +121,7 @@ function ProjectCatalogue() {
                     </ProjectCard>
                   </ProjectCardPlate>
                 </Link>
-              </>
+              </div>
             )
           })}
       </ProjectsContainer>
