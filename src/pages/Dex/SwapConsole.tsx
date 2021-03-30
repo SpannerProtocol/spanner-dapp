@@ -1,5 +1,8 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { u32 } from '@polkadot/types'
+import { Balance } from '@polkadot/types/interfaces'
+import BN from 'bn.js'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DisclaimerText, ModalText } from 'components/Text'
@@ -11,9 +14,12 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
+import SlippageTabs from '../../components/TransactionSettings'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
+import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
+import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
 import {
   ConsoleStat,
   ErrorMsg,
@@ -24,13 +30,8 @@ import {
   TokenInputAmount,
   TokenInputWrapper,
 } from './components'
-import MenuSelect from './components/MenuSelect'
-import { Balance } from '@polkadot/types/interfaces'
-import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
-import { u32 } from '@polkadot/types'
-import SlippageTabs from '../../components/TransactionSettings'
-import { useUserSlippageTolerance } from '../../state/user/hooks'
-import BN from 'bn.js'
+import TokenSelector from './components/TokenSelector'
+
 // interface SwapErrors {
 //   slippage?: string
 //   amountA?: string
@@ -133,16 +134,6 @@ export default function SwapConsole(): JSX.Element {
     [{ Token: tokenA }, { Token: tokenB }],
     1000
   )
-
-  const handleTokenA = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toUpperCase()
-    setTokenA(tokenName)
-  }
-
-  const handleTokenB = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toUpperCase()
-    setTokenB(tokenName)
-  }
 
   const handleAmountA = (value: number) => {
     if (!isOnA) return
@@ -348,7 +339,7 @@ export default function SwapConsole(): JSX.Element {
                   value={Number.isNaN(amountA) ? '' : amountA}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'BOLT'} onClick={handleTokenA} />
+                <TokenSelector defaultToken={'BOLT'} selectToken={(token) => setTokenA(token)} />
               </TokenInputWrapper>
               {supplyAmount.gt(balanceA) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
               {unsafeInteger && isOnA && <ErrorMsg>Amount is too high</ErrorMsg>}
@@ -378,7 +369,7 @@ export default function SwapConsole(): JSX.Element {
                   value={Number.isNaN(amountB) ? '' : amountB}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'WUSD'} onClick={handleTokenB} />
+                <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
               </TokenInputWrapper>
               <div style={{ display: 'block' }}>
                 {targetAmount.gt(balanceB) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
