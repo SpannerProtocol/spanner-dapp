@@ -19,10 +19,6 @@
   "BulletTrain": "BulletTrain",
   "BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects on Spanner can use to grow their communities.": "BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects on Spanner can use to grow their communities.",
   "How to Participate?": "How to Participate?",
-  "1. Purchase a Cabin or start a DPO to crowdfund for it (it is just a deposit).": "1. Purchase a Cabin or start a DPO to crowdfund for it (it is just a deposit).",
-  "2. Funds from your wallet or from your DPO is deposited as Ticket Fare in your Cabin.": "2. Funds from your wallet or from your DPO is deposited as Ticket Fare in your Cabin.",
-  "3. Withdraw/Release rewards from the Cabin to your wallet or to your DPO. If DPO, withdraw from DPO to all member wallets or vaults. Do this periodically as yields generate from the Cabin.": "3. Withdraw/Release rewards from the Cabin to your wallet or to your DPO. If DPO, withdraw from DPO to all member wallets or vaults. Do this periodically as yields generate from the Cabin.",
-  "4. Withdraw/Release your Ticket Fare back.": "4. Withdraw/Release your Ticket Fare back.",
   "BulletTrain Journey": "BulletTrain Journey",
   "The follow diagram shows the different actions that can take place during the BulletTrain Journey.": "The follow diagram shows the different actions that can take place during the BulletTrain Journey.",
   "TravelCabin ": "TravelCabin ",
@@ -78,7 +74,7 @@
   "Select a Project": "Select a Project",
   "Instructions": "Instructions",
   "TravelCabins": "TravelCabins",
-  "projectMissing": "Looks like {{project}} does not have a BulletTrain yet.",
+  "Looks like {{project}} does not have a BulletTrain yet.": "Looks like {{project}} does not have a BulletTrain yet.",
   "Bridge Spanner WUSD to Ethereum USDT": "Bridge Spanner WUSD to Ethereum USDT",
   "Withdraw Amount": "Withdraw Amount",
   "Transfer to": "Transfer to",
@@ -276,5 +272,11 @@
   "Token": "Token",
   "Total Supply": "Total Supply",
   "BulletTrain Performance": "BulletTrain Performance",
-  "DEX Metrics": "DEX Metrics"
+  "DEX Metrics": "DEX Metrics",
+  "Buy a Cabin with Ticket Fare": "Buy a Cabin with Ticket Fare",
+  "Claim your Rewards": "Claim your Rewards",
+  "Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.": "Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.",
+  "Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.": "Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.",
+  "Insufficient Balance": "Insufficient Balance",
+  "Amount is too high": "Amount is too high."
 }
