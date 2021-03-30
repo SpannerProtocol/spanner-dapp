@@ -1,7 +1,7 @@
 import { FlatCard } from 'components/Card'
 import { StandardText, SectionHeading, Heading, ItalicText, HeavyText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
-import useProject from 'hooks/useProject'
+import { useProjectPath } from 'hooks/useProject'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useEffect, useState } from 'react'
@@ -64,7 +64,7 @@ const TokenGrid = styled.div`
 `
 
 export default function Project(): JSX.Element {
-  const projectPath = useProject()
+  const projectPath = useProjectPath()
   const projectInfos = useProjectInfos()
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>()
   const { chainDecimals } = useSubstrate()

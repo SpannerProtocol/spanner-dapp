@@ -12,7 +12,12 @@ export interface TokenData {
  */
 export default function useTokens() {
   const { api, connected } = useApi()
-  const [tokens, setTokens] = useState<TokenData[]>([])
+  const [tokens, setTokens] = useState<TokenData[]>([
+    {
+      name: 'BOLT',
+      iconPath: Object.keys(projectJson).includes('bolt') ? projectJson['bolt'].icon : 'placeholder-token.svg',
+    },
+  ])
 
   useEffect(() => {
     if (!connected) return
@@ -32,7 +37,7 @@ export default function useTokens() {
         ])
       })
     )
-  }, [api.query.tokens.totalIssuance, connected])
+  }, [api, connected])
 
   return tokens
 }

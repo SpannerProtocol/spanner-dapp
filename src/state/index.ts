@@ -10,13 +10,7 @@ import user from './user/reducer'
 import wallet from './wallet/reducer'
 import referrer from './referrer/reducer'
 
-const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists', 'project']
-
-if (process.env.NODE_ENV === 'development') {
-  PERSISTED_KEYS.push('referrer')
-}
-
-console.log('PERSISTED KEYS:', PERSISTED_KEYS)
+const PERSISTED_KEYS: string[] = ['user', 'transactions', 'lists', 'project', 'referrer']
 
 const store = configureStore({
   reducer: {

@@ -1,9 +1,9 @@
 import ProjectSettings from 'components/ProjectSettings'
+import { ProjectData } from 'hooks/useProject'
 import React, { useContext, useRef } from 'react'
 import { Settings } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
-import { Project } from 'state/project/actions'
 import { useSelectProject } from 'state/project/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { CloseIcon } from 'theme/components'
@@ -96,8 +96,8 @@ export default function SettingsTab() {
 
   const [darkMode, toggleDarkMode] = useDarkModeManager()
 
-  const handleSelectProject = (project: Project) => {
-    selectProject(project)
+  const handleSelectProject = (project: ProjectData) => {
+    selectProject({ project: project.name, token: project.token, totalIssuance: project.totalIssuance.toString() })
   }
 
   return (

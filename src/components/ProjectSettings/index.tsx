@@ -1,36 +1,43 @@
 import Selector, { SelectorOption } from 'components/Selector'
-import useProjectInfos from 'hooks/useProjectInfo'
-import React, { useContext, useEffect, useState } from 'react'
+import { ProjectData, useProject } from 'hooks/useProject'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectState } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
-import { Project } from '../../state/project/actions'
 import { TYPE } from '../../theme'
+import getProjectRegistry from '../../utils/getProjectRegistry'
 import { AutoColumn } from '../Column'
 import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
-
 export interface ProjectSettingsProps {
-  setSelectedProject: (project: Project) => void
+  setSelectedProject: (project: ProjectData) => void
 }
 
 export default function ProjectSettings({ setSelectedProject }: ProjectSettingsProps) {
   const theme = useContext(ThemeContext)
-  const projects = useProjectInfos()
+  const projects = useProject()
   const [projectOptions, setProjectOptions] = useState<Array<SelectorOption>>()
   const projectState = useProjectState()
   const { t } = useTranslation()
-  const selectedProject = projectState.selectedProject
+
+  const selectedProject = useMemo(
+    () =>
+      projectState.selectedProject ? getProjectRegistry(projectState.selectedProject.token.toLocaleLowerCase()) : [],
+    [projectState]
+  )
 
   useEffect(() => {
     if (!projects) return
     const options = projects.map((project) => ({
-      label: `${project.project} (${project.token})`,
+      label: `${project.name} (${project.token})`,
+      icon: project.icon,
       callback: () =>
         setSelectedProject({
-          project: project.project,
+          name: project.name,
           token: project.token,
-          totalIssuance: project.totalIssuance.toString(),
+          description: project.description,
+          icon: project.icon,
+          totalIssuance: project.totalIssuance,
         }),
     }))
     setProjectOptions(options)
@@ -46,13 +53,15 @@ export default function ProjectSettings({ setSelectedProject }: ProjectSettingsP
           <QuestionHelper text={t(`You can switch projects to view data specific to that project (in most views).`)} />
         </RowFixed>
         <RowBetween>
-          {projectOptions && selectedProject && (
+          {projectOptions && selectedProject.length > 0 && (
             <Selector
               title={t(`Select a Project`)}
               options={projectOptions}
               defaultOption={{
-                label: selectedProject.project,
+                label: `${selectedProject[0].name} (${selectedProject[0].token.toUpperCase()})`,
               }}
+              selectedIconMaxWidth={'20px'}
+              selectedIconMaxWidthMobile={'20px'}
             />
           )}
         </RowBetween>
