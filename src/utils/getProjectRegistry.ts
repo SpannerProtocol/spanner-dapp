@@ -13,7 +13,7 @@ interface ProjectRegistry {
   icon: string
   description: string
 }
-interface ProjectJson {
+export interface ProjectJson {
   [index: string]: ProjectRegistry
 }
 
