@@ -18,7 +18,7 @@ import SlippageTabs from '../../components/TransactionSettings'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
-import { formatToUnit } from '../../utils/formatUnit'
+import { formatToUnit, numberToBnUnit } from '../../utils/formatUnit'
 import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
 import {
   ConsoleStat,
@@ -158,7 +158,6 @@ export default function SwapConsole(): JSX.Element {
   const openModal = () => {
     let txData
     if (isOnA) {
-      console.log('supplyAmount', supplyAmount.toString(), 'minTargetAmount', targetAmountWithSlippage.toString())
       txData = createTx({
         section: 'dex',
         method: 'swapWithExactSupply',
@@ -169,7 +168,6 @@ export default function SwapConsole(): JSX.Element {
         },
       })
     } else {
-      console.log('target', targetAmount.toString(), 'maxSupplyAmount', supplyAmountWithSlippage.toString())
       txData = createTx({
         section: 'dex',
         method: 'swapWithExactTarget',
@@ -216,14 +214,7 @@ export default function SwapConsole(): JSX.Element {
     if (targetAmount.isZero()) {
       setAmountB(0)
     } else {
-      console.log(slippage)
       const amountWithSlippage = targetAmount.sub(targetAmount.div(new BN(10000)).mul(new BN(slippage)))
-      console.log(
-        'amountWithSlippage',
-        amountWithSlippage.toString(),
-        'amountWithSlippage',
-        amountWithSlippage.mul(new BN(10000)).toString()
-      )
       setTargetAmountWithSlippage(amountWithSlippage)
       const targetStr = targetAmount.toString()
       if (targetStr.length > chainDecimals) {
@@ -260,7 +251,6 @@ export default function SwapConsole(): JSX.Element {
 
   // Calculate supplyAmount and targetAmount
   useEffect(() => {
-    // const cd = new BN(chainDecimals)
     if (isOnA) {
       // user provided supply
       setFromHeader('From')
@@ -271,7 +261,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const supply = new BN(amountA * 10 ** chainDecimals)
+        const supply = numberToBnUnit(amountA, chainDecimals)
         setSupplyAmount(supply)
         if (supply.lte(balanceA)) {
           setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
@@ -287,7 +277,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const target = new BN(amountB * 10 ** chainDecimals)
+        const target = numberToBnUnit(amountB, chainDecimals)
         setTargetAmount(target)
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
