@@ -1,41 +1,37 @@
-import { StorageKey } from '@polkadot/types'
 import { useEffect, useState } from 'react'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { getCabinOrder } from 'utils/getCabinClass'
 import { useApi } from './useApi'
 
-export function useQueryTravelCabinsWithKeys(token?: string): Array<[StorageKey, TravelCabinInfo]> {
-  const { api } = useApi()
-  const [travelCabinEntries, setTravelCabinEntries] = useState<Array<[StorageKey, TravelCabinInfo]>>([])
+export function useTravelCabins(token?: string): [TravelCabinIndex, TravelCabinInfo][] {
+  const { api, connected } = useApi()
+  const [travelCabins, setTravelCabins] = useState<[TravelCabinIndex, TravelCabinInfo][]>([])
 
   useEffect(() => {
-    if (!api) return
-    api?.query?.bulletTrain.travelCabins
+    if (!connected) return
+    api.query.bulletTrain.travelCabins
       .entries()
       .then((entries) => {
-        const unwrapped: Array<[StorageKey, TravelCabinInfo]> = entries.map((entry) => {
-          return [entry[0], entry[1].unwrapOrDefault()]
+        const orderedCabins: [TravelCabinIndex, TravelCabinInfo][] = []
+        entries.forEach((entry) => {
+          if (entry[1].isSome) {
+            const cabinIndex = entry[0].args[0]
+            const cabinInfo = entry[1].unwrapOrDefault()
+            if (token) {
+              // Filtered for token
+              if (cabinInfo.token_id.asToken.eq(token)) {
+                orderedCabins.splice(getCabinOrder(cabinInfo.name.toString()), 0, [cabinIndex, cabinInfo])
+              }
+            } else {
+              // No token, just return all
+              orderedCabins.push([cabinIndex, cabinInfo])
+            }
+          }
         })
-        let filtered = unwrapped
-        if (token) {
-          filtered = unwrapped.filter((entry) => entry[1].token_id.eq({ Token: token }))
-        }
-        setTravelCabinEntries(filtered)
+        setTravelCabins(orderedCabins)
       })
       .catch((err) => console.log(err))
-  }, [api, token])
-
-  return travelCabinEntries
-}
-
-export function useQueryTravelCabins(): Array<TravelCabinInfo> {
-  const travelCabinEntries = useQueryTravelCabinsWithKeys()
-  const [travelCabins, setTravelCabins] = useState<Array<TravelCabinInfo>>([])
-
-  useEffect(() => {
-    if (!travelCabinEntries || travelCabinEntries.length === 0) return
-    const unwrappedTravelCabins = travelCabinEntries.map((entry) => entry[1])
-    setTravelCabins(unwrappedTravelCabins)
-  }, [travelCabinEntries])
+  }, [api, connected, token])
 
   return travelCabins
 }

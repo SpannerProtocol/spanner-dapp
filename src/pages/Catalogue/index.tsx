@@ -1,6 +1,6 @@
 import { FlatCard } from 'components/Card'
 import { Heading } from 'components/Text'
-import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
+import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectManager } from 'state/project/hooks'
@@ -35,7 +35,7 @@ export default function Catalogue() {
   const [activeTab, setActiveTab] = useState<string>('travelcabins')
   const { projectState } = useProjectManager()
   // Using this to check if a project has a bullettrain campaign started
-  const travelCabins = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token)
+  const travelCabins = useTravelCabins(projectState.selectedProject?.token)
   const [hasBulletTrain, setHasBulletTrain] = useState<boolean>(false)
   const { t } = useTranslation()
 

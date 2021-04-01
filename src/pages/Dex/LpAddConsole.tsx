@@ -18,9 +18,9 @@ import {
   InputHeader,
   LightHeader,
   TokenInputAmount,
-  TokenInputWrapper,
+  TokenInputWrapper
 } from './components'
-import MenuSelect from './components/MenuSelect'
+import TokenSelector from './components/TokenSelector'
 
 interface LpAddData {
   amountA: number
@@ -92,16 +92,6 @@ export default function LpAddConsole(): JSX.Element {
   const balanceA = useSubscribeBalance({ Token: tokenA })
   const balanceB = useSubscribeBalance({ Token: tokenB })
 
-  const handleTokenA = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toLowerCase()
-    setTokenA(tokenName)
-  }
-
-  const handleTokenB = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toLowerCase()
-    setTokenB(tokenName)
-  }
-
   const openModal = () => {
     const txData = createTx({
       section: 'dex',
@@ -164,7 +154,7 @@ export default function LpAddConsole(): JSX.Element {
                   pattern="[0-9]*"
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'BOLT'} onClick={handleTokenA} />
+                <TokenSelector defaultToken={'BOLT'} selectToken={(token) => setTokenA(token)} />
               </TokenInputWrapper>
             </InputGroup>
           </CenteredRow>
@@ -189,7 +179,7 @@ export default function LpAddConsole(): JSX.Element {
                   style={{ alignItems: 'flex-start', width: '100%' }}
                   color="primary"
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'WUSD'} onClick={handleTokenB} />
+                <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
               </TokenInputWrapper>
             </InputGroup>
           </CenteredRow>
