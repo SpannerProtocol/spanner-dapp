@@ -13,6 +13,10 @@
 .env.local
 .env.development.local
 .env.test.local
+<<<<<<< HEAD
+=======
+.env.production
+>>>>>>> b0256725d31b802afae4fed1610047e49f6e1db0
 .env.production.local
 
 /.netlify
