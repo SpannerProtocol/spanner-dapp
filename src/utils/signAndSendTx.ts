@@ -1,15 +1,14 @@
 import { Web3Provider } from '@ethersproject/providers'
+import { ApiPromise } from '@polkadot/api'
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
 import { Signer } from '@polkadot/api/types'
-import { ApiPromise } from '@polkadot/api'
 import { ExtrinsicStatus } from '@polkadot/types/interfaces'
+import { postSignature } from 'bridge'
+import { Transaction } from 'components/TransactionMsgs'
 import { ethers } from 'ethers'
 import { Dispatch, SetStateAction } from 'react'
-import getCustodialAccount from './getCustodialAccount'
-import { isJsonRpcSigner } from './typeguards/signer'
-import { Transaction } from 'components/TransactionMsgs'
 import { WalletInfo } from './getWalletInfo'
-import { postSignature } from 'bridge'
+import { isJsonRpcSigner } from './typeguards/signer'
 
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
 
@@ -116,8 +115,10 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
       // setPendingMsg('Waiting for confirmation on your mobile wallet.')
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
-      console.log(err)
-      setErrorMsg(err)
+      if (err.code === 4001) {
+        setErrorMsg('Transaction cancelled')
+        return undefined
+      }
     }
     const recoveredAddress = ethers.utils.recoverAddress(ethers.utils.hashMessage(message), ethSig)
     const custodialPayload = {
@@ -130,7 +131,7 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     return custodialPayload
   }
 
-  const spannerAccount = getCustodialAccount(address)
+  // Format message for custodial wallet to sign
   const paramKeys = tx.meta.args.map((arg) => arg.name.toString())
   const paramsMap: { [index: string]: any } = {}
   paramKeys.forEach((key, index) => (paramsMap[key] = tx.args[index].toHuman()))
@@ -144,31 +145,9 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     },
   })
 
-  if (wallet && wallet.developmentKeyring === true) {
-    signAndVerify(custodialProvider, message)
-      .then((ethAccount) => {
-        if (!ethAccount.verified) {
-          setErrorMsg('Message signature does not match custodial wallet address.')
-          return
-        }
-      })
-      .then(() => {
-        tx.signAsync(spannerAccount)
-          .then(() => {
-            tx.send(({ status }) => {
-              handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
-            })
-          })
-          .catch((err) => {
-            setPendingMsg(undefined)
-            setHash(undefined)
-            setErrorMsg(`Transaction failed: ${err}`)
-            console.log('Transaction failed ', err)
-          })
-      })
-  } else {
-    // Use signing server. They use a different key derivation.
-    signAndVerify(custodialProvider, message).then((custodialPayload) => {
+  // Use signing server. They use a different key derivation.
+  signAndVerify(custodialProvider, message).then((custodialPayload) => {
+    if (custodialPayload) {
       postSignature(custodialPayload).then((txSignature) => {
         if (!api) return
         const submittableTx = api.createType('Extrinsic', txSignature.data)
@@ -176,8 +155,8 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
           handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
         )
       })
-    })
-  }
+    }
+  })
 }
 
 export default function signAndSendTx(params: SignAndSendTxParams) {
