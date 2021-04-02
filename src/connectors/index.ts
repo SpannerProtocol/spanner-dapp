@@ -12,6 +12,9 @@ const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 
 export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
 
+console.log(process.env.NODE_ENV)
+console.log(process.env.REACT_APP_NETWORK_URL)
+
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
 }

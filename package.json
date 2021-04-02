@@ -1,7 +1,7 @@
 {
   "name": "spanner-dapp",
   "description": "Spanner Dapp",
-  "homepage": "",
+  "homepage": ".",
   "private": true,
   "devDependencies": {
     "@ant-design/icons": "^4.3.0",

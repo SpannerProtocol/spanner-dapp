@@ -19,6 +19,7 @@ import Account from './Account'
 import AppBody from './AppBody'
 import Catalogue from './Catalogue'
 import Dex from './Dex'
+import Diagnostics from './Diagnostics'
 import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
@@ -119,6 +120,7 @@ export default function App() {
               <Route exact strict path="/launchpad" component={Launchpad} />
               <Route exact strict path="/launchpad/:token" component={Project} />
               <Route exact strict path="/faq" component={Faq} />
+              <Route exact strict path="/diagnostics" component={Diagnostics} />
             </Switch>
           </Web3ReactManager>
           <Marginer />
