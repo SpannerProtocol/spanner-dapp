@@ -12,17 +12,17 @@ import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubTravelCabin, useSubTravelCabinInventory, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
+import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
-import { useReferrer } from 'hooks/useReferrer'
 import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
-import getCabinClass, { getCabinClassImage } from '../../../utils/getCabinClass'
+import { getCabinClassImage } from '../../../utils/getCabinClass'
 import truncateString, { shortenAddr } from '../../../utils/truncateString'
 
 interface TravelCabinItemProps {
@@ -46,6 +46,8 @@ interface TravelCabinJoinTxConfirmProps {
 function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
   const [managerSeats, setManagerSeats] = useState<string | null>('')
   const [dpoName, setDpoName] = useState<string | null>('')
+  const [baseFee, setBaseFee] = useState<number>(0)
+  const [directReferralRate, setDirectReferralRate] = useState<number>(0)
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
@@ -65,7 +67,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     setEnd(parseInt(value))
   }
 
-  const handleSubmit = () => onSubmit({ managerSeats, end, dpoName, referrer: referralCode })
+  const handleSubmit = () =>
+    onSubmit({ managerSeats, baseFee, directReferralRate, end, dpoName, referrer: referralCode })
 
   useEffect(() => {
     if (!referralCode && referrer) {
@@ -136,6 +139,44 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
+            <StandardText>{t(`Base Fee`)}</StandardText>
+            <QuestionHelper
+              text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-base-fee"
+            type="number"
+            placeholder="0 - 5"
+            onChange={(e) => setBaseFee(parseInt(e.target.value))}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+            <QuestionHelper
+              text={t(`The referral bonus rate given to the Direct Referrer.`)}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-direct-referral-rate"
+            type="number"
+            min="0"
+            max="100"
+            placeholder="0 - 100"
+            onChange={(e) => setDirectReferralRate(parseInt(e.target.value))}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
             <StandardText>{t(`End Block`)}</StandardText>
             <QuestionHelper
               text={t(
@@ -196,12 +237,14 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
 }
 
 interface TravelCabinCrowdfundTxConfirmProps {
-  deposit: string
-  dpoName: string
-  managerSeats: string
-  end: number
-  referrer: string | null
-  token: string
+  deposit?: string
+  dpoName?: string
+  managerSeats?: string
+  baseFee?: number
+  directReferralRate?: number
+  end?: number
+  referrer?: string | null
+  token?: string
   errorMsg?: string
   estimatedFee?: string
 }
@@ -210,6 +253,8 @@ function TravelCabinCrowdfundTxConfirm({
   deposit,
   dpoName,
   managerSeats,
+  baseFee,
+  directReferralRate,
   end,
   referrer,
   token,
@@ -234,9 +279,15 @@ function TravelCabinCrowdfundTxConfirm({
             {deposit} {token}
           </StandardText>
         </RowBetween>
+        {managerSeats && baseFee && (
+          <RowBetween>
+            <StandardText>{t(`Manager Fee`)}</StandardText>
+            <StandardText>{managerSeats + baseFee} %</StandardText>
+          </RowBetween>
+        )}
         <RowBetween>
-          <StandardText>{t(`Manager Seats`)}</StandardText>
-          <StandardText>{managerSeats}</StandardText>
+          <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+          <StandardText>{directReferralRate} %</StandardText>
         </RowBetween>
         <RowBetween>
           <StandardText>{t(`End Block`)}</StandardText>
@@ -277,6 +328,16 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: Tr
   )
 }
 
+interface CrowdfundData {
+  dpoName?: string
+  targetSeats?: string
+  managerSeats?: string
+  baseFee?: number
+  directReferralRate?: number
+  end?: number
+  referrer?: string | null
+}
+
 function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const { travelCabinIndex } = props
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
@@ -288,10 +349,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const [userDpoName, setUserDpoName] = useState<string>('')
-  const [userManagerSeats, setUserManagerSeats] = useState<string>('')
-  const [userEnd, setUserEnd] = useState<number>(0)
-  const [userReferrer, setUserReferrer] = useState<string>('')
+  const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
   const { expectedBlockTime } = useBlockManager()
   // const { queueTransaction } = useTransactionMsg()
   const { createTx, submitTx } = useTxHelpers()
@@ -321,25 +379,34 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const handleCrowdfundFormCallback = ({
     dpoName,
     managerSeats,
+    baseFee,
+    directReferralRate,
     end,
     referrer,
   }: {
     dpoName: string
     managerSeats: string
+    baseFee: number
+    directReferralRate: number
     end: number
     referrer: string
   }) => {
-    setUserDpoName(dpoName)
-    setUserManagerSeats(managerSeats)
-    setUserEnd(end)
-    setUserReferrer(referrer)
+    setCrowdfundData({ dpoName, managerSeats, baseFee, directReferralRate, end, referrer })
     if (!travelCabinIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
     const txData = createTx({
       section: 'bulletTrain',
       method: 'createDpo',
-      params: { name: dpoName, target: { TravelCabin: travelCabinIndex }, managerSeats, end, referrer },
+      params: {
+        name: dpoName,
+        target: { TravelCabin: travelCabinIndex },
+        managerSeats,
+        baseFee: baseFee * 10,
+        directReferralRate: baseFee * 10,
+        end,
+        referrer,
+      },
     })
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
@@ -403,10 +470,12 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       >
         <TravelCabinCrowdfundTxConfirm
           deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
-          dpoName={userDpoName}
-          managerSeats={userManagerSeats}
-          end={userEnd}
-          referrer={userReferrer}
+          dpoName={crowdfundData.dpoName}
+          managerSeats={crowdfundData.managerSeats}
+          baseFee={crowdfundData.baseFee}
+          directReferralRate={crowdfundData.directReferralRate}
+          end={crowdfundData.end}
+          referrer={crowdfundData.referrer}
           token={token}
           estimatedFee={txInfo?.estimatedFee}
         />
@@ -415,8 +484,8 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         <Section>
           <RowBetween>
             <SectionHeading style={{ display: 'flex' }}>
-              {t(`TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}
-              {getCabinClassImage(travelCabinInfo.index.toString())}
+              {t(`TravelCabin`)}: {travelCabinInfo.name.toString()}
+              {getCabinClassImage(travelCabinInfo.name.toString())}
             </SectionHeading>
             <CollapseWrapper>
               <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
@@ -441,7 +510,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 </RowBetween>
                 <RowBetween>
                   <StandardText>{t(`Travel Class`)}</StandardText>
-                  <StandardText>{getCabinClass(travelCabinInfo.index.toString())}</StandardText>
+                  <StandardText>{travelCabinInfo.name.toString()}</StandardText>
                 </RowBetween>
                 <RowBetween>
                   <StandardText>{t(`Ticket Fare`)}</StandardText>

@@ -278,5 +278,14 @@
   "Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.": "Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.",
   "Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.": "Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.",
   "Insufficient Balance": "Insufficient Balance",
-  "Amount is too high": "Amount is too high."
+  "Amount is too high": "Amount is too high.",
+  "Base Fee": "Base Fee",
+  "The base fee of your management fee. Manager Fee = Base Fee + Manager Seats.": "The base fee of your management fee. Manager Fee = Base Fee + Manager Seats.",
+  "Manager Fee": "Manager Fee",
+  "Return": "Return",
+  "Error": "Error",
+  "Transaction Pending": "Transaction Pending",
+  "Please wait": "Please wait",
+  "In Block": "In Block",
+  "Max Seats per DPO": "Max Seats per DPO"
 }

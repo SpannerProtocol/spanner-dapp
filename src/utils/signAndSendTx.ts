@@ -146,17 +146,32 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
   })
 
   // Use signing server. They use a different key derivation.
-  signAndVerify(custodialProvider, message).then((custodialPayload) => {
-    if (custodialPayload) {
-      postSignature(custodialPayload).then((txSignature) => {
-        if (!api) return
-        const submittableTx = api.createType('Extrinsic', txSignature.data)
-        api.rpc.author.submitAndWatchExtrinsic(submittableTx, (status) =>
-          handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
-        )
-      })
-    }
-  })
+  signAndVerify(custodialProvider, message)
+    .then((custodialPayload) => {
+      if (custodialPayload) {
+        postSignature(custodialPayload)
+          .then((txSignature) => {
+            if (!api) return
+            const submittableTx = api.createType('Extrinsic', txSignature.data)
+            api.rpc.author
+              .submitAndWatchExtrinsic(submittableTx, (status) =>
+                handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
+              )
+              .catch((err) => {
+                console.log(err)
+                setErrorMsg(err.message)
+              })
+          })
+          .catch((err) => {
+            console.log(err)
+            setErrorMsg(err.message)
+          })
+      }
+    })
+    .catch((err) => {
+      console.log(err)
+      setErrorMsg(err.message)
+    })
 }
 
 export default function signAndSendTx(params: SignAndSendTxParams) {

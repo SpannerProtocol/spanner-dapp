@@ -45,7 +45,7 @@ export const toNiceDate = (date: number) => {
   return dayjs.utc(dayjs.unix(date)).format('MMM DD')
 }
 
-export const toNiceDateYear = (date: number) => dayjs.utc(dayjs.unix(date)).format('MMMM DD, YYYY HH:mm:ss')
+export const toNiceDateYear = (date: number) => dayjs.utc(dayjs.unix(date)).local().format('MMMM DD, YYYY HH:mm:ss')
 
 interface ChartProps {
   token1: string

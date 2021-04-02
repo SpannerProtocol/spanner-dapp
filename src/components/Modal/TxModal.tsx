@@ -4,10 +4,12 @@ import { CloseIcon, CustomLightSpinner } from '../../theme/components'
 import { AlertTriangle } from 'react-feather'
 import { ButtonPrimary } from 'components/Button'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { ModalTitle } from 'components/Text'
+import { HeavyText, ModalTitle, StandardText } from 'components/Text'
 import { ModalWrapper, Section } from 'components/Wrapper'
 import Modal from '.'
-import Circle from 'assets/images/blue-loader.svg'
+import Circle from 'assets/svg/yellow-loader.svg'
+import { useTranslation } from 'react-i18next'
+import { CheckCircle } from 'react-feather'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -17,11 +19,6 @@ interface ConfirmModalProps {
   buttonText: string
   content: JSX.Element
 }
-
-const Image = styled.img`
-  margin: 0;
-  height: 80px;
-`
 
 const ImageWrapper = styled.div`
   text-align: center;
@@ -73,6 +70,7 @@ export default function TxModal({
   children,
 }: TxModalProps) {
   const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
 
   if (txError) {
     return (
@@ -80,7 +78,7 @@ export default function TxModal({
         <ModalWrapper>
           <Section>
             <RowBetween>
-              <ModalTitle>Error</ModalTitle>
+              <ModalTitle>{t(`Error`)}</ModalTitle>
               <CloseIcon onClick={onDismiss} />
             </RowBetween>
           </Section>
@@ -91,7 +89,7 @@ export default function TxModal({
             <CenteredRow>{txError}</CenteredRow>
           </Section>
           <Section>
-            <ButtonPrimary onClick={onDismiss}>Return</ButtonPrimary>
+            <ButtonPrimary onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
           </Section>
         </ModalWrapper>
       </Modal>
@@ -102,7 +100,7 @@ export default function TxModal({
         <ModalWrapper>
           <Section>
             <RowBetween>
-              <ModalTitle>Tx Pending</ModalTitle>
+              <ModalTitle>{t(`Transaction Pending`)}</ModalTitle>
               <CloseIcon onClick={onDismiss} />
             </RowBetween>
           </Section>
@@ -114,7 +112,7 @@ export default function TxModal({
           </Section>
           <Section>
             <ButtonPrimary onClick={onConfirm} disabled>
-              Please wait
+              {t(`Please wait`)}
             </ButtonPrimary>
           </Section>
         </ModalWrapper>
@@ -126,34 +124,35 @@ export default function TxModal({
         <ModalWrapper>
           <Section>
             <RowBetween>
-              <ModalTitle>In Block</ModalTitle>
+              <ModalTitle>{t(`In Block`)}</ModalTitle>
               <CloseIcon onClick={onDismiss} />
             </RowBetween>
           </Section>
           <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
             <CenteredRow>
               <ImageWrapper>
-                <Image src={require('assets/images/complete-checkmark.png')} />
+                <CheckCircle size={80} color={'#FFBE2E'} />
               </ImageWrapper>
             </CenteredRow>
           </Section>
           <Section>
             <CenteredRow
               style={{
-                marginTop: '1rem',
-                marginBottom: '1rem',
-                fontWeight: 'bolder',
+                display: 'block',
+                marginTop: '0.5rem',
+                marginBottom: '0.5rem',
                 textAlign: 'center',
                 overflowWrap: 'anywhere',
               }}
             >
-              Transaction submitted to block at {txHash}
+              <StandardText>{t(`Transaction submitted to block at`)} </StandardText>
+              <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
             </CenteredRow>
             <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>View on Polkascan</CenteredRow>
           </Section>
           <Section>
             <RowBetween>
-              <ButtonPrimary onClick={onDismiss}>Return</ButtonPrimary>
+              <ButtonPrimary onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
             </RowBetween>
           </Section>
         </ModalWrapper>

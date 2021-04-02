@@ -11,7 +11,7 @@ import { Link } from 'react-router-dom'
 import { TravelCabinIndex, TravelCabinInfo } from 'spanner-interfaces'
 import { blockToDays } from 'utils/formatBlocks'
 import getApy from 'utils/getApy'
-import getCabinClass, { getCabinClassImage } from 'utils/getCabinClass'
+import { getCabinClassImage } from 'utils/getCabinClass'
 import { formatToUnit } from '../../utils/formatUnit'
 
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
@@ -34,8 +34,8 @@ export default function TravelCabinCard(props: TravelCabinCard) {
       <Section>
         <SectionHeading style={{ marginLeft: '0', marginTop: '0', display: 'inline-flex' }}>
           {t(`TravelCabin `)}
-          {getCabinClass(travelCabinInfo.index.toString())}
-          {getCabinClassImage(travelCabinInfo.index.toString())}
+          {travelCabinInfo.name.toString()}
+          {getCabinClassImage(travelCabinInfo.name.toString())}
         </SectionHeading>
       </Section>
       <Section>

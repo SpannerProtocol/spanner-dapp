@@ -132,7 +132,7 @@ export default function SwapConsole(): JSX.Element {
 
   const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
     [{ Token: tokenA }, { Token: tokenB }],
-    1000
+    800
   )
 
   const handleAmountA = (value: number) => {
@@ -202,8 +202,6 @@ export default function SwapConsole(): JSX.Element {
       return
     } else {
       setPool(subscribedPool)
-      setAmountA(0)
-      setAmountB(0)
       if (subscribedFee) setFee(subscribedFee)
       if (subscribedPrice) setPrice(subscribedPrice)
     }
@@ -262,7 +260,10 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const supply = new BN(amountA.toString()).mul(new BN(10).pow(cd))
+        const [integer, decimal] = amountA.toString().split('.')
+        const supply = new BN(parseFloat('0.' + decimal) * 10 ** chainDecimals).add(
+          new BN(integer).mul(new BN(10).pow(cd))
+        )
         setSupplyAmount(supply)
         if (supply.lte(balanceA)) {
           setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
@@ -278,7 +279,10 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const target = new BN(amountB).mul(new BN(10).pow(cd))
+        const [integer, decimal] = amountB.toString().split('.')
+        const target = new BN(parseFloat('0.' + decimal) * 10 ** chainDecimals).add(
+          new BN(integer).mul(new BN(10).pow(cd))
+        )
         setTargetAmount(target)
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
@@ -372,7 +376,6 @@ export default function SwapConsole(): JSX.Element {
                 <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
               </TokenInputWrapper>
               <div style={{ display: 'block' }}>
-                {targetAmount.gt(balanceB) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
                 {unsafeInteger && !isOnA && <ErrorMsg>Largest Input is {Number.MAX_SAFE_INTEGER}</ErrorMsg>}
               </div>
             </InputGroup>
@@ -401,7 +404,7 @@ export default function SwapConsole(): JSX.Element {
           </InputHeader>
         </Section>
         <Section>
-          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError ? (
+          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError || targetAmount.gt(balanceB) ? (
             <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
           ) : (
             <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>

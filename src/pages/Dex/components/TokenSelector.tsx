@@ -8,12 +8,6 @@ const TokenSelectorWrapper = styled.div<{ background?: string }>`
   align-items: center;
   justify-content: center;
   display: flex;
-  border-top: 1px solid #e6ebf2;
-  border-bottom: 1px solid #e6ebf2 !important;
-  border-right: 1px solid #e6ebf2 !important;
-  border-left: 0px solid !important;
-  border-left-width: 0px;
-  border-radius: 0 8px 8px 0;
   padding: 0;
   width: fit-content;
   padding-left: 1rem;
@@ -21,7 +15,6 @@ const TokenSelectorWrapper = styled.div<{ background?: string }>`
   ${({ theme }) => theme.mediaWidth.upToMedium`
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-
   `};
 `
 
