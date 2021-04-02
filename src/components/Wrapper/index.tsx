@@ -92,20 +92,21 @@ export const BorderedWrapper = styled.div<{ borderColor?: string; background?: s
 
 export const RoundWrapper = styled(BorderedWrapper)`
   border-radius: 14px;
-  padding: 0.5rem;
   width: auto;
+  margin: 0;
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
 `
 
-export const MemberWrapper = styled.div<{ borderColor?: string; background?: string }>`
+export const MemberWrapper = styled(RoundWrapper)<{ borderColor?: string; background?: string }>`
   display: block;
   align-items: center;
   width: 100%;
-  margin: 0;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  font-size: 11px;
+  font-weight: 500;
   color: ${({ color, theme }) => (color ? color : theme.text1)}
   background: ${({ background }) => (background ? background : 'transparent')}
-  border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'none')} !important;
-  border-radius: 8px;
   padding: 0.5rem;
   overflow-wrap: anywhere;
 `
@@ -114,7 +115,7 @@ export const StateWrapper = styled(RoundWrapper)`
   border-radius: 14px;
   font-size: 11px;
   font-weight: 500;
-  margin: 0;
+  margin-right: 0.5rem;
   padding: 0.5rem;
   width: auto;
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;

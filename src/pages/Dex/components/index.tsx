@@ -1,15 +1,31 @@
 import styled from 'styled-components'
-import { BorderedInput } from '../../../components/Input'
 
-export const TokenInputAmount = styled(BorderedInput)`
-  border-right: 0px !important;
-  border-radius: 8px 0 0 8px;
+export const TokenInputAmount = styled.input`
+  border: transparent;
+  border-radius: 8px;
+  display: block;
+  padding: 0.75rem;
+  font-weight: 400;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #575757;
+  background-clip: padding-box;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  -moz-appearance: textfield;
+  outline: none;
+  -webkit-box-align: stretch;
 `
 
 export const TokenInputWrapper = styled.div`
   display: flex;
   webkit-box-align: stretch;
   box-align: stretch;
+  border: 1px solid #e6ebf2;
+  border-radius: 8px;
 `
 
 export const InputGroup = styled.div`

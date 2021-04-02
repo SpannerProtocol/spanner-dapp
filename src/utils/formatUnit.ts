@@ -22,6 +22,22 @@ export function formatToUnit(
 }
 
 /**
+ * Get a Bn with chainDecimals accounted for from a number
+ * @param amount any number
+ * @param chainDecimals chain decimals
+ * @returns BN
+ */
+export function numberToBnUnit(amount: number, chainDecimals: number) {
+  if (amount.toString().includes('.')) {
+    const amountStripped = amount.toString().replace('.', '')
+    const numDecimals = amount.toString().length - amount.toString().indexOf('.') - 1
+    const zeros = '0'.repeat(chainDecimals - numDecimals)
+    return new BN(amountStripped + zeros)
+  }
+  return new BN(amount.toString()).mul(new BN(10).pow(new BN(chainDecimals)))
+}
+
+/**
  * Given a number string, trim all leading and trailing zeros.
  * Will prefix 0 if original value started with a decimal
  * @param num number as a string

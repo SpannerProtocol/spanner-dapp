@@ -46,11 +46,11 @@ export const SPANNER_SUPPORTED_CHAINS = [
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {
-  0: { name: 'Bronze', image: BronzeIcon },
-  1: { name: 'Silver', image: SilverIcon },
-  2: { name: 'Gold', image: GoldIcon },
-  3: { name: 'Platinum', image: PlatinumIcon },
-  4: { name: 'Diamond', image: DiamondIcon },
+  Bronze: { name: 'Bronze', image: BronzeIcon, order: 0 },
+  Silver: { name: 'Silver', image: SilverIcon, order: 1 },
+  Gold: { name: 'Gold', image: GoldIcon, order: 2 },
+  Platinum: { name: 'Platinum', image: PlatinumIcon, order: 3 },
+  Diamond: { name: 'Diamond', image: DiamondIcon, order: 4 },
 }
 
 export const DPO_COMMIT_GRACE_BLOCKS = 86_400

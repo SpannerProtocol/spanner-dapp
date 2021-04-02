@@ -1,23 +1,20 @@
-import { StorageKey } from '@polkadot/types'
 import TravelCabinCard from 'components/Item/TravelCabinCard'
 import { GridWrapper, Wrapper } from 'components/Wrapper'
-import { useQueryTravelCabinsWithKeys } from 'hooks/useQueryTravelCabins'
+import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
-import { TravelCabinInfo } from 'spanner-interfaces/bulletTrain'
 import React from 'react'
+import { TravelCabinIndex, TravelCabinInfo } from 'spanner-interfaces'
 import { useItemManager } from 'state/item/hooks'
 import { useProjectManager } from 'state/project/hooks'
 
 export default function TravelCabinCatalogue() {
   const { projectState } = useProjectManager()
   const { chainDecimals } = useSubstrate()
-  const travelCabinsWithIds = useQueryTravelCabinsWithKeys(projectState.selectedProject?.token).sort(
-    (cabin1, cabin2) => cabin1[1].index.toNumber() - cabin2[1].index.toNumber()
-  )
+  const travelCabinsWithIds = useTravelCabins(projectState.selectedProject?.token)
   const { setItem } = useItemManager()
 
-  const handleClick = (selectedTravelCabin: [StorageKey, TravelCabinInfo]) => {
-    setItem({ item: 'travelcabin', itemKey: selectedTravelCabin[0].args.toString() })
+  const handleClick = (selectedTravelCabin: [TravelCabinIndex, TravelCabinInfo]) => {
+    setItem({ item: 'travelcabin', itemKey: selectedTravelCabin[0].toString() })
   }
 
   return (

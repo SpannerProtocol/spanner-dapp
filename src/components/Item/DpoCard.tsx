@@ -64,7 +64,7 @@ function CardContent(props: DpoCard) {
           )}
           <RowBetween>
             <StandardText>{t(`Commission Fee`)}</StandardText>
-            <StandardText>{dpoInfo.commission_rate.toNumber() / 10}%</StandardText>
+            <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
           </RowBetween>
           <RowBetween>
             <StandardText>{t(`Seat Value`)}</StandardText>
@@ -158,7 +158,7 @@ function ProfileCardContent(props: ProfileCard) {
       <Section>
         <RowBetween>
           <StandardText>{t(`Commission Fee`)}</StandardText>
-          <StandardText>{dpoInfo.commission_rate.toNumber() / 10}%</StandardText>
+          <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
         </RowBetween>
         <RowBetween>
           <StandardText>{t(`Seat Value`)}</StandardText>

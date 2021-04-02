@@ -67,11 +67,12 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
       }
       setTimeout(
         () => {
-          setPool(lpTradingPair)
           const cd = new BN(chainDecimals)
           if (validQuery.reversed) {
+            setPool([lpTradingPair[1], lpTradingPair[0]])
             setPrice(lpTradingPair[0].div(cd).toNumber() / lpTradingPair[1].div(cd).toNumber())
           } else {
+            setPool(lpTradingPair)
             setPrice(lpTradingPair[1].div(cd).toNumber() / lpTradingPair[0].div(cd).toNumber())
           }
           setPoolQueryError(undefined)
