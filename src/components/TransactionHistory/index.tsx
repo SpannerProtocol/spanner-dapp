@@ -5,16 +5,16 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
 import TabBar, { TabMetaData } from 'components/TabBar'
 import { HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
-import { FeeWrapper, Section, SectionContainer, SpacedSection } from 'components/Wrapper'
+import { TransferWrapper, Section, SectionContainer, SpacedSection } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
-import { postTxHistory, postTransfers } from 'queries'
+import { postTxHistory, postTransfers, postTransfersTokens } from 'queries'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
-import { formatToUnit } from 'utils/formatUnit'
+import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
 import truncateString from 'utils/truncateString'
 import { encodeAddress } from '@polkadot/keyring'
 
@@ -99,13 +99,13 @@ function TransferRow({ event }: EventRowProps) {
           </TxCell>
           <TxCell>
             {wallet.address === sender ? (
-              <FeeWrapper color="#fff" background="#EC3D3D">
+              <TransferWrapper color="#fff" background="#EC3D3D">
                 {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
-              </FeeWrapper>
+              </TransferWrapper>
             ) : (
-              <FeeWrapper color="#fff" background="#5BC85B">
+              <TransferWrapper color="#fff" background="#5BC85B">
                 {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
-              </FeeWrapper>
+              </TransferWrapper>
             )}
           </TxCell>
         </TxRow>
@@ -167,9 +167,104 @@ function TransactionRow({ tx }: TransactionRowProps) {
         <HeavyText fontSize="14">{`${tx.call_module_function} (${tx.call_module})`}</HeavyText>
       </TxCell>
       <TxCell>
-        <FeeWrapper>{formatToUnit(tx.fee, chainDecimals, 2)} BOLT</FeeWrapper>
+        <TransferWrapper>{formatToUnit(tx.fee, chainDecimals, 2)} BOLT</TransferWrapper>
       </TxCell>
     </TxRow>
+  )
+}
+function TransferTokenRow({ event }: EventRowProps) {
+  const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
+  const wallet = useWallet()
+
+  const token = event.params_json[0].value.Token
+  const sender = encodeAddress('0x' + event.params_json[1].value, 42)
+  const receiver = encodeAddress('0x' + event.params_json[2].value, 42)
+  const amount = formatToHumanFromUnit(event.params_json[3].value, chainDecimals)
+
+  return (
+    <>
+      {wallet && wallet.address && (
+        <TxRow>
+          <TxCell>
+            <RowBetween>
+              <StandardText color={'#3498db'}>{truncateString(event.extrinsic_hash, 36)}</StandardText>
+              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
+            </RowBetween>
+            <SmallText>
+              {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
+            </SmallText>
+          </TxCell>
+          <TxCell>
+            {wallet.address === sender ? (
+              <>
+                <div style={{ display: 'inline-flex' }}>
+                  <HeavyText fontSize="14">{t(`To`)}:</HeavyText>
+                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(receiver)}`}</StandardText>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'inline-flex' }}>
+                  <HeavyText fontSize="14">{t(`From`)}:</HeavyText>
+                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(sender)}`}</StandardText>
+                </div>
+              </>
+            )}
+          </TxCell>
+          <TxCell>
+            {wallet.address === sender ? (
+              <TransferWrapper color="#fff" background="#EC3D3D">
+                {amount} {token}
+              </TransferWrapper>
+            ) : (
+              <TransferWrapper color="#fff" background="#5BC85B">
+                {amount} {token}
+              </TransferWrapper>
+            )}
+          </TxCell>
+        </TxRow>
+      )}
+    </>
+  )
+}
+
+function TransfersTokens() {
+  const { t } = useTranslation()
+  const wallet = useWallet()
+  const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
+  const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
+  const [page, setPage] = useState(0)
+  console.log('inside tranfserstokens')
+
+  useEffect(() => {
+    if (!wallet || !wallet.address) return
+    console.log('calling postTransfersToken')
+    postTransfersTokens({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
+  }, [wallet, page])
+
+  return (
+    <>
+      <Section style={{ marginBottom: '1rem', padding: '0' }}>
+        <div style={{ display: 'flex' }}>
+          <SectionHeading>{t(`Transfers`)}</SectionHeading>
+          <QuestionHelper
+            size={14}
+            backgroundColor={'transparent'}
+            text={t(
+              `Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.`
+            )}
+          />
+        </div>
+      </Section>
+      <SpacedSection>
+        {transactions.length > 0 &&
+          transactions.map((transaction, index) => (
+            <TransferTokenRow key={index} event={transaction}></TransferTokenRow>
+          ))}
+      </SpacedSection>
+      <Pagination currentPage={setPage} maxPage={Math.ceil(meta.count / 10) - 1} />
+    </>
   )
 }
 
@@ -235,11 +330,16 @@ const tabData: Array<TabMetaData> = [
   {
     id: 'tab-transfers',
     className: 'tab transfers-container',
-    label: 'Transfers',
+    label: 'Transfers (BOLT)',
+  },
+  {
+    id: 'tab-transfers-tokens',
+    className: 'tab transfers-tokens-container',
+    label: 'Transfers (Tokens)',
   },
 ]
 
-const tabOptions = ['latest-transactions', 'transfers']
+const tabOptions = ['latest-transactions', 'transfers', 'transfers-tokens']
 
 export default function TransactionHistory() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
@@ -269,6 +369,7 @@ export default function TransactionHistory() {
         <SectionContainer style={{ marginTop: '0' }}>
           {activeTab === 'latest-transactions' && <LatestTransactions />}
           {activeTab === 'transfers' && <Transfers />}
+          {activeTab === 'transfers-tokens' && <TransfersTokens />}
         </SectionContainer>
       </FlatCard>
     </>

@@ -24,6 +24,7 @@ import {
   StateWrapper,
 } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
+import useConsts from 'hooks/useConsts'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
 import { useReferrer } from 'hooks/useReferrer'
@@ -35,7 +36,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { Share2 } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
@@ -95,6 +96,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   const [seats, setSeats] = useState<string>('')
   const [managerSeats, setManagerSeats] = useState<string | null>('')
   const [baseFee, setBaseFee] = useState<number>(0)
+  const { passengerSeatCap, dpoSeatCap } = useConsts()
   const [directReferralRate, setDirectReferralRate] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string | null>('')
   const [end, setEnd] = useState<number>(0)
@@ -168,7 +170,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>15</StandardText>
+            <StandardText>{passengerSeatCap}</StandardText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
@@ -179,7 +181,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>30</StandardText>
+            <StandardText>{dpoSeatCap}</StandardText>
           </RowBetween>
         </BorderedWrapper>
       </Section>
@@ -488,18 +490,18 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
-      <Section>
-        <RowFixed>
-          <StandardText>{t(`Referral Code`)}</StandardText>
-          <QuestionHelper
-            text={t(
-              `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
-            )}
-            size={12}
-            backgroundColor={'#fff'}
-          ></QuestionHelper>
-        </RowFixed>
-        {!referralCode && (
+      {!referralCode && (
+        <Section>
+          <RowFixed>
+            <StandardText>{t(`Referral Code`)}</StandardText>
+            <QuestionHelper
+              text={t(
+                `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
+              )}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
           <BorderedInput
             required
             id="dpo-referrer"
@@ -508,8 +510,8 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
             onChange={(e) => handleReferralCode(e)}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
-        )}
-      </Section>
+        </Section>
+      )}
       <Section style={{ marginTop: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit}>{t(`Join`)}</ButtonPrimary>
       </Section>
@@ -523,6 +525,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const wallet = useWallet()
   const [targetItem, setTargetItem] = useState<[string, string]>(['', ''])
   const { chainDecimals } = useSubstrate()
+  const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
   const [joinFormModalOpen, setJoinFormModalOpen] = useState<boolean>(false)
   const [crowdfundFormModalOpen, setCrowdfundFormModalOpen] = useState<boolean>(false)
   const [joinTxModalOpen, setJoinTxModalOpen] = useState<boolean>(false)
@@ -540,6 +543,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
   const { lastBlock } = useBlockManager()
+  const { passengerSeatCap } = useConsts()
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -635,6 +639,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     openCrowdfundTxModal()
   }
 
+  useEffect(() => {
+    if (!wallet || !wallet.address || !dpoMembers || dpoMembers.length === 0) return
+    const memberInfo = dpoMembers.find(
+      (entry) => entry[1].buyer.isPassenger && entry[1].buyer.asPassenger.eq(wallet.address)
+    )
+    setUserMemberInfo(memberInfo ? memberInfo[1] : undefined)
+  }, [dpoMembers, wallet])
+
   if (!dpoInfo) return <></>
   const token = dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()
 
@@ -708,30 +720,22 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               <Heading style={{ margin: '0' }}>{dpoInfo.name}</Heading>
             </div>
             {isConnected ? (
-              <>
-                {!userInDpo.inDpo ? (
-                  <CollapseWrapper>
+              <CollapseWrapper>
+                {passengerSeatCap &&
+                  (!userMemberInfo ||
+                    (userMemberInfo && userMemberInfo.number_of_seats.toNumber() < passengerSeatCap)) && (
                     <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                       <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={openJoinFormModal}>
                         {t(`Join`)}
                       </ButtonPrimary>
                     </ButtonWrapper>
-                    <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                      <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                        {t(`Crowdfund`)}
-                      </ButtonSecondary>
-                    </ButtonWrapper>
-                  </CollapseWrapper>
-                ) : (
-                  <CollapseWrapper>
-                    <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                      <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                        {t(`Crowdfund`)}
-                      </ButtonSecondary>
-                    </ButtonWrapper>
-                  </CollapseWrapper>
-                )}
-              </>
+                  )}
+                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                  <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                    {t(`Crowdfund`)}
+                  </ButtonSecondary>
+                </ButtonWrapper>
+              </CollapseWrapper>
             ) : (
               <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
                 <HeavyText fontSize={'12px'} color={theme.primary1}>
@@ -756,7 +760,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   </StateWrapper>
                 )}
               </AnyQuestionHelper>
-              {isConnected && (
+              {isConnected && userInDpo.inDpo && (
                 <MemberWrapper style={{ background: membershipBg, width: 'auto', margin: '0.25rem' }}>
                   <StandardText fontSize={'12px'} color={'#fff'} style={{ textAlign: 'center' }}>
                     {userInDpo.role}

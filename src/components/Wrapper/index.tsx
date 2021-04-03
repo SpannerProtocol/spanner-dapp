@@ -121,7 +121,7 @@ export const StateWrapper = styled(RoundWrapper)`
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
 `
 
-export const FeeWrapper = styled.div<{ borderColor?: string; background?: string }>`
+export const TransferWrapper = styled.div<{ borderColor?: string; background?: string }>`
   display: block;
   align-items: center;
   font-size: 10px;
