@@ -7,7 +7,7 @@ import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { SectionHeading, SmallText, StandardText } from 'components/Text'
+import { HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -15,15 +15,17 @@ import { useSubTravelCabin, useSubTravelCabinInventory, useTravelCabinBuyers } f
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useIsConnected } from 'hooks/useWallet'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
+import { ThemeContext } from 'styled-components'
 import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
 import { getCabinClassImage } from '../../../utils/getCabinClass'
-import truncateString, { shortenAddr } from '../../../utils/truncateString'
+import { shortenAddr } from '../../../utils/truncateString'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -76,10 +78,12 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     }
   }, [referralCode, referrer])
 
+  console.log('referrer', referrer)
+
   return (
     <>
       <Section>
-        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin's Join Requirement.`)}</StandardText>
+        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
       </Section>
       <SpacedSection>
         <Section>
@@ -88,7 +92,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               <StandardText>{t(`Seat Price`)}</StandardText>
               <QuestionHelper
                 text={t(
-                  `The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.`
+                  `The cost of Ticket Fare is split equally by DPO seats. Your total price is equal to the number of seats you want to buy.`
                 )}
                 size={12}
                 backgroundColor={'#fff'}
@@ -122,7 +126,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             <StandardText>{t(`Manager Seats in DPO`)}</StandardText>
             <QuestionHelper
               text={t(
-                `The # of Seats to buy for yourself as Manager from YOUR new DPO. More seats, more commission rate off your Member's yields.`
+                `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.`
               )}
               size={12}
               backgroundColor={'#fff'}
@@ -195,29 +199,16 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <QuestionHelper
-              text={t(
-                `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
-              )}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          {referralCode && referrer ? (
-            <BorderedInput
-              required
-              id="dpo-referrer"
-              type="string"
-              placeholder="e.g. 5F3A9CA..."
-              defaultValue={referralCode}
-              onChange={(e) => handleReferralCode(e)}
-              style={{ alignItems: 'flex-end', width: '100%' }}
-              disabled
-            />
-          ) : (
+        {!referralCode && (
+          <Section>
+            <RowFixed>
+              <StandardText>{t(`Referral Code`)}</StandardText>
+              <QuestionHelper
+                text={t(`Enter the referrer (the referral code) that introduced you to this project.`)}
+                size={12}
+                backgroundColor={'#fff'}
+              ></QuestionHelper>
+            </RowFixed>
             <BorderedInput
               required
               id="dpo-referrer"
@@ -226,8 +217,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               onChange={(e) => handleReferralCode(e)}
               style={{ alignItems: 'flex-end', width: '100%' }}
             />
-          )}
-        </Section>
+          </Section>
+        )}
       </SpacedSection>
       <SpacedSection style={{ marginTop: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
@@ -293,14 +284,6 @@ function TravelCabinCrowdfundTxConfirm({
           <StandardText>{t(`End Block`)}</StandardText>
           <StandardText>{end}</StandardText>
         </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Referral Code`)}</StandardText>
-          {referrer ? (
-            <StandardText>{truncateString(referrer)}</StandardText>
-          ) : (
-            <StandardText>{t(`None`)}</StandardText>
-          )}
-        </RowBetween>
       </Section>
       <TxFee fee={estimatedFee} />
     </>
@@ -317,7 +300,7 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: Tr
       {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
       <SpacedSection>
         <RowBetween>
-          <StandardText>{t(`Deposit Required`)}</StandardText>
+          <StandardText>{t(`Ticket Fare (deposit)`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
@@ -355,6 +338,8 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
+  const isConnected = useIsConnected()
+  const theme = useContext(ThemeContext)
 
   const openJoinTxModal = () => {
     setCrowdfundFormModalOpen(false)
@@ -487,18 +472,26 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
               {t(`TravelCabin`)}: {travelCabinInfo.name.toString()}
               {getCabinClassImage(travelCabinInfo.name.toString())}
             </SectionHeading>
-            <CollapseWrapper>
-              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
-                  {t(`Buy`)}
-                </ButtonPrimary>
-              </ButtonWrapper>
-              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                  {t(`Crowdfund`)}
-                </ButtonSecondary>
-              </ButtonWrapper>
-            </CollapseWrapper>
+            {isConnected ? (
+              <CollapseWrapper>
+                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                  <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
+                    {t(`Buy`)}
+                  </ButtonPrimary>
+                </ButtonWrapper>
+                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                  <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                    {t(`Crowdfund`)}
+                  </ButtonSecondary>
+                </ButtonWrapper>
+              </CollapseWrapper>
+            ) : (
+              <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
+                <HeavyText fontSize={'12px'} color={theme.primary1}>
+                  {t(`Login for more`)}
+                </HeavyText>
+              </BorderedWrapper>
+            )}
           </RowBetween>
           <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
             <SmallText>{t(`General Information`)}</SmallText>

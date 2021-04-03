@@ -32,12 +32,11 @@
   "Commission Fee": "Commission Fee",
   "Seat Value": "Seat Value",
   "Available Seats": "Available Seats",
-  "Create a DPO to Crowdfund for this TravelCabin's Join Requirement.": "Create a DPO to Crowdfund for this TravelCabin's Join Requirement.",
-  "The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.": "The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.",
+  "The cost of Ticket Fare is split equally by DPO seats. Your total price is equal to the number of seats you want to buy.": "The cost of Ticket Fare is split equally by DPO seats. Your total price is equal to the number of seats you want to buy.",
   "Name your DPO": "Name your DPO",
   "Name your DPO community to make it easier for others to search for you.": "Name your DPO community to make it easier for others to search for you.",
   "Manager Seats in DPO": "Manager Seats in DPO",
-  "The # of Seats to buy for yourself as Manager from YOUR new DPO. More seats, more commission rate off your Member's yields.": "The # of Seats to buy for yourself as Manager from YOUR new DPO. More seats, more commission rate off your Member's yields.",
+  "# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.": "# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.",
   "End Block": "End Block",
   "The Block Number for this Crowdfund to target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.": "The Block Number for this Crowdfund to target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.",
   "Referral Code": "Referral Code",
@@ -287,5 +286,6 @@
   "Transaction Pending": "Transaction Pending",
   "Please wait": "Please wait",
   "In Block": "In Block",
-  "Max Seats per DPO": "Max Seats per DPO"
+  "Max Seats per DPO": "Max Seats per DPO",
+  "Enter the referrer (the referral code) that introduced you to this project.": "Enter the referrer (the referral code) that introduced you to this project."
 }
