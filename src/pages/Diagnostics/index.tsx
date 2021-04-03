@@ -25,12 +25,10 @@ export default function Diagnostics() {
       >
         <FlatCard style={{ textAlign: 'left' }}>
           <Heading>{`Diagnostics`}</Heading>
-          {referrer && (
-            <SpacedSection>
-              <SectionTitle>{`Referral`}</SectionTitle>
-              <Text>{referrer}</Text>
-            </SpacedSection>
-          )}
+          <SpacedSection>
+            <SectionTitle>{`Referral (DynamoDB)`}</SectionTitle>
+            <Text>{referrer}</Text>
+          </SpacedSection>
           {referrerState.referrerState && projectState.selectedProject && referrerState.referrerState.referrer && (
             <SpacedSection>
               <SectionTitle>{`Referrer State (from REDUX)`}</SectionTitle>
