@@ -349,9 +349,11 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="catalogue" />}
             {t(`BulletTrain`)}
           </StyledNavLink>
-          <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
-            {`Diagnostics`}
-          </StyledNavLink>
+          {process.env.REACT_APP_DEBUG_MODE === 'true' && (
+            <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
+              {`Diagnostics`}
+            </StyledNavLink>
+          )}
           {/* <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
             {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
