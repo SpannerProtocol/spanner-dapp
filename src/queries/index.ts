@@ -56,6 +56,7 @@ export function postTransfers({ row, page, address, success = 'true', setData, s
   // Filter for the users address as a hex
   let addressHex = getUserPublicKey(address)
   addressHex = addressHex.slice(2, addressHex.length)
+  console.log(addressHex)
   postScanEvents({
     row,
     page,
@@ -73,6 +74,39 @@ export function postTransfers({ row, page, address, success = 'true', setData, s
     setMeta({ count: response.data.data.count })
     response.data.data.events.forEach((event) => {
       setData((prev) => [...prev, event])
+    })
+  })
+}
+
+/**
+ * Get currencies.transfers from events api.
+ * Addresses returned will be formatted in SS58.
+ * Filters out bolt because currencies.transfers includes some but not all bolt transfers
+ */
+export function postTransfersTokens({ row, page, address, success = 'true', setData, setMeta }: EventQueryParams) {
+  if (!address) return
+  // Filter for the users address as a hex
+  let addressHex = getUserPublicKey(address)
+  addressHex = addressHex.slice(2, addressHex.length)
+  postScanEvents({
+    row,
+    page,
+    module: 'currencies',
+    call: 'transferred',
+    param_match: `%${addressHex}%`,
+    success,
+  }).then((response: AxiosResponse<SpanfuraEventsResponse>) => {
+    console.log(response.data.data.events)
+    if (!response.data.data.events) {
+      setData([])
+      return
+    }
+    setData([])
+    setMeta({ count: response.data.data.count })
+    response.data.data.events.forEach((event) => {
+      if (event.params_json[0].value.Token !== 'BOLT') {
+        setData((prev) => [...prev, event])
+      }
     })
   })
 }
