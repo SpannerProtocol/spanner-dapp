@@ -52,7 +52,7 @@ export function useCreateTableUser() {
             }
           })
         } else {
-          if (data.Table && data.Table.TableName === 'User' && data.Table.TableStatus === 'ACTIVE') {
+          if (data && data.Table && data.Table.TableName === 'User' && data.Table.TableStatus === 'ACTIVE') {
             console.log('INIT: DynamoDB connected, User table found.')
             setTableExists(true)
           }

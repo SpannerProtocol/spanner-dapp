@@ -42,7 +42,6 @@ import { formatToUnit } from 'utils/formatUnit'
 import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
-import truncateString from '../../../utils/truncateString'
 import DpoActions from './actions'
 
 const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
@@ -227,7 +226,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
           <StandardText>{t(`Manager Seats in New DPO`)}</StandardText>
           <QuestionHelper
             text={t(
-              `The # of Seats you wish to buy from THIS DPO will determine the crowdfunding target of YOUR new DPO. The crowdfunding target will be split equally to 100 seats for your DPO members.`
+              `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.`
             )}
             size={12}
             backgroundColor={'#fff'}
@@ -302,29 +301,18 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
-      <Section>
-        <RowFixed>
-          <StandardText>{t(`Referral Code`)}</StandardText>
-          <QuestionHelper
-            text={t(
-              `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
-            )}
-            size={12}
-            backgroundColor={'#fff'}
-          ></QuestionHelper>
-        </RowFixed>
-        {referralCode ? (
-          <BorderedInput
-            required
-            id="dpo-referrer"
-            type="string"
-            placeholder="e.g. 5F3A9CA..."
-            defaultValue={referralCode}
-            onChange={(e) => handleReferralCode(e)}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-            disabled
-          />
-        ) : (
+      {!referralCode && (
+        <Section>
+          <RowFixed>
+            <StandardText>{t(`Referral Code`)}</StandardText>
+            <QuestionHelper
+              text={t(
+                `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
+              )}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
           <BorderedInput
             required
             id="dpo-referrer"
@@ -333,8 +321,8 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
             onChange={(e) => handleReferralCode(e)}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
-        )}
-      </Section>
+        </Section>
+      )}
       <Section style={{ marginTop: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
       </Section>
@@ -378,14 +366,6 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
           <StandardText>{t(`End Block`)}</StandardText>
           <StandardText>{props.end}</StandardText>
         </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Referral Code`)}</StandardText>
-          {props.referrer ? (
-            <StandardText>{truncateString(props.referrer)}</StandardText>
-          ) : (
-            <StandardText>{t(`None`)}</StandardText>
-          )}
-        </RowBetween>
       </SpacedSection>
       <TxFee fee={props.estimatedFee} />
     </>
@@ -410,12 +390,6 @@ function DpoJoinTxConfirm(props: DpoJoinTxConfirmProps) {
             {props.deposit} {props.token}
           </StandardText>
         </RowBetween>
-        {props.referrer && props.referrer !== null && (
-          <RowBetween>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <StandardText>{truncateString(props.referrer)}</StandardText>
-          </RowBetween>
-        )}
       </SpacedSection>
       <TxFee fee={props.estimatedFee} />
     </>
@@ -525,18 +499,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
             backgroundColor={'#fff'}
           ></QuestionHelper>
         </RowFixed>
-        {referralCode ? (
-          <BorderedInput
-            required
-            id="dpo-referrer"
-            type="string"
-            placeholder="e.g. 5F3A9CA..."
-            defaultValue={referralCode}
-            onChange={(e) => handleReferralCode(e)}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-            disabled
-          />
-        ) : (
+        {!referralCode && (
           <BorderedInput
             required
             id="dpo-referrer"
