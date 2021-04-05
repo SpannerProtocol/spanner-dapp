@@ -11,6 +11,10 @@ export const Section = styled(AutoColumn)`
   margin-bottom: 5px;
 `
 
+export const InlineSection = styled.div`
+  display: inline-flex;
+`
+
 export const SpacedSection = styled(AutoColumn)`
   margin-top: 1rem;
   margin-bottom: 1rem;

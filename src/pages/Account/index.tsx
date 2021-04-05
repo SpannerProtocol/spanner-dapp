@@ -62,7 +62,7 @@ export default function Account() {
   }, [activeTabIndex])
 
   return (
-    <PageWrapper style={{ width: '100%', maxWidth: '960px', justifyContent: 'center', alignItems: 'center' }}>
+    <PageWrapper style={{ width: '100%', maxWidth: '720px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
         style={{
           display: 'flex',
