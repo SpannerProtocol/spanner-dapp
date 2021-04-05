@@ -127,11 +127,15 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                     <InlineSection style={{ width: 'auto' }}>
                       {expiry.isZero() ? (
                         <>
-                          <HeavyText fontSize="10px">{t(`Expired`)}</HeavyText>
+                          <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                            <StandardText color="#fff" fontSize="9px">
+                              {t(`EXPIRED`)}
+                            </StandardText>
+                          </StateWrapper>
                         </>
                       ) : (
                         <>
-                          <HeavyText fontSize="10px">{t(`Expires in`)}</HeavyText>
+                          <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
                           <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
                             `Blocks`
                           )}`}</StandardText>
@@ -142,7 +146,9 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   {!dpoInfo.state.isCreated && (
                     <InlineSection style={{ width: 'auto' }}>
                       <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                        {dpoInfo.state.toString()}
+                        <StandardText color="#fff" fontSize="9px">
+                          {t(dpoInfo.state.toString())}
+                        </StandardText>
                       </StateWrapper>
                     </InlineSection>
                   )}
@@ -150,28 +156,32 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               </DpoTitle>
               <DpoData1>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
                   </StandardText>
                 </InlineSection>
+                {dpoInfo.state.isCreated && (
+                  <InlineSection>
+                    <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
+                    <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      {dpoInfo.empty_seats.toString()} {t(`Seats`)}
+                    </StandardText>
+                  </InlineSection>
+                )}
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Seats Open`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
-                    {dpoInfo.empty_seats.toString()} {t(`Seats`)}
+                  <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    {dpoInfo.fee.toNumber() / 10}%
                   </StandardText>
-                </InlineSection>
-                <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Manager Fee`)}</HeavyText>
-                  <StandardText fontSize="12px">{dpoInfo.fee.toNumber() / 10}%</StandardText>
                 </InlineSection>
               </DpoData1>
               <DpoData2>
                 <InlineSection>
                   {expectedBlockTime && (
                     <>
-                      <HeavyText fontSize="12px">{t(`APY`)}</HeavyText>
-                      <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                      <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
+                      <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -184,8 +194,8 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   )}
                 </InlineSection>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Bonus`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                  <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
                   </StandardText>
                 </InlineSection>
@@ -197,16 +207,6 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
     </>
   )
 }
-
-// const actionIcons: { [index: string]: string } = {
-//   withdrawFareFromTravelCabin: WithdrawFromTargetIcon,
-//   withdrawYieldFromTravelCabin: VaultIcon,
-//   dpoBuyTravelCabin: CommitToTargetIcon,
-//   dpoBuyDpoSeats: CommitToTargetIcon,
-//   releaseFareFromDpo: WithdrawFromTargetIcon,
-//   releasePeriodicDropFromDpo: ReleaseTokenIcon,
-//   releaseInstantDropFromDpo: ReleaseTokenIcon,
-// }
 
 export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
   const dpoInfo = useSubDpo(dpoIndex)
@@ -246,11 +246,15 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                       <InlineSection style={{ width: 'auto' }}>
                         {expiry.isZero() ? (
                           <>
-                            <HeavyText fontSize="10px">{t(`Expired`)}</HeavyText>
+                            <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                              <StandardText color="#fff" fontSize="9px">
+                                {t(`EXPIRED`)}
+                              </StandardText>
+                            </StateWrapper>{' '}
                           </>
                         ) : (
                           <>
-                            <HeavyText fontSize="10px">{t(`Expires in`)}</HeavyText>
+                            <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
                             <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
                               `Blocks`
                             )}`}</StandardText>
@@ -261,7 +265,9 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                     {!dpoInfo.state.isCreated && (
                       <InlineSection style={{ width: 'auto' }}>
                         <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                          {dpoInfo.state.toString()}
+                          <StandardText color="#fff" fontSize="9px">
+                            {t(dpoInfo.state.toString())}
+                          </StandardText>
                         </StateWrapper>
                       </InlineSection>
                     )}
@@ -272,7 +278,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <InlineSection>
                         <HeavyText fontSize="12px" style={{ display: 'flex', alignItems: 'center' }}>
-                          {t(`Pending Actions`)}
+                          {t(`Pending Actions`)}:
                         </HeavyText>
                         {actions.map((action, index) => (
                           <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
@@ -286,20 +292,22 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               </DpoTitle>
               <DpoData1>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
                   </StandardText>
                 </InlineSection>
+                {dpoInfo.state.isCreated && (
+                  <InlineSection>
+                    <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
+                    <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      {dpoInfo.empty_seats.toString()} {t(`Seats`)}
+                    </StandardText>
+                  </InlineSection>
+                )}
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Seats Open`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
-                    {dpoInfo.empty_seats.toString()} {t(`Seats`)}
-                  </StandardText>
-                </InlineSection>
-                <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Manager Fee`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                  <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.fee.toNumber() / 10}%
                   </StandardText>
                 </InlineSection>
@@ -308,8 +316,8 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   {expectedBlockTime && (
                     <>
-                      <HeavyText fontSize="12px">{t(`APY`)}</HeavyText>
-                      <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                      <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
+                      <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -322,8 +330,8 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   )}
                 </InlineSection>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Bonus`)}</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                  <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
                   </StandardText>
                 </InlineSection>
