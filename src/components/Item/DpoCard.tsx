@@ -1,195 +1,337 @@
-import { StorageKey } from '@polkadot/types'
+import BN from 'bn.js'
 import { AlertIcon, AlertWrapper } from 'components/Alert'
-import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { SectionHeading, StandardText } from 'components/Text'
-import { Section } from 'components/Wrapper'
+import { HeavyText, StandardText } from 'components/Text'
+import { Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import React, { Dispatch, SetStateAction } from 'react'
+import { useDpoActions } from 'hooks/useDpoActions'
+import { useSubDpo } from 'hooks/useQueryDpos'
+import { useSubstrate } from 'hooks/useSubstrate'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoIndex, DpoInfo } from 'spanner-interfaces'
+import { DpoIndex } from 'spanner-interfaces'
+import styled from 'styled-components'
 import getApy from 'utils/getApy'
-import { DpoAction } from 'utils/getDpoActions'
-import CommitToTargetIcon from '../../assets/svg/icon-commit-to-target.svg'
-import ReleaseTokenIcon from '../../assets/svg/icon-release-token.svg'
-import VaultIcon from '../../assets/svg/icon-vault.svg'
-import WithdrawFromTargetIcon from '../../assets/svg/icon-withdraw-from-target.svg'
+import { ACTION_ICONS, DPO_STATE_COLORS } from '../../constants'
 import { formatToUnit } from '../../utils/formatUnit'
 
-type Dispatcher<S> = Dispatch<SetStateAction<S>>
+export const DpoInnerCard = styled.div`
+  display: grid;
+  grid-template-areas:
+    'title title'
+    'data1 data2'
+    'data1 data2';
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  grid-column-gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    grid-template-areas:
+    'title title'
+    'data1 data2';
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    grid-column-gap: 0.5rem;
+    text-align: left;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  `};
+`
 
-interface DpoCard {
-  item: [DpoIndex | StorageKey, DpoInfo]
-  chainDecimals: number
-  token: string
-  onClick: Dispatcher<any>
-}
+export const DpoData1 = styled.div`
+  grid-area: data1;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  display: block;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  `};
+`
 
-function CardContent(props: DpoCard) {
-  const { item, chainDecimals, token, onClick } = props
-  const [storageKey, dpoInfo] = item
-  const { expectedBlockTime } = useBlockManager()
+export const DpoData2 = styled.div`
+  grid-area: data2;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  display: block;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  `};
+`
+
+export const DpoTitle = styled.div`
+  grid-area: title;
+  padding-bottom: 0.5rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  padding-bottom: 0;
+  `};
+`
+
+export const DpoWrapper = styled(FlatCard)`
+  transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
+  &:hover {
+    cursor: pointer;
+    box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
+    transform: translate(0, -5px);
+  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    padding: 0.9rem;
+`};
+`
+
+const InlineSection = styled.div`
+  display: inline-flex;
+  justify-content: center;
+  width: 100%
+    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  justify-content: flex-start;
+`};
+`
+
+export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
+  const dpoInfo = useSubDpo(dpoIndex)
+  const { chainDecimals } = useSubstrate()
+  const { lastBlock } = useBlockManager()
+  const { expectedBlockTime, genesisTs } = useBlockManager()
   const { t } = useTranslation()
+  const [expiry, setExpiry] = useState<BN>()
+
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
+
+  useEffect(() => {
+    if (!lastBlock || !dpoInfo) return
+    if (dpoInfo.state.isCreated) {
+      if (dpoInfo.expiry_blk.sub(lastBlock).isNeg()) {
+        setExpiry(new BN(0))
+      } else {
+        setExpiry(dpoInfo.expiry_blk.sub(lastBlock))
+      }
+    }
+  }, [lastBlock, dpoInfo])
 
   return (
     <>
-      <div style={{ overflow: 'hidden' }}>
-        <Section>
-          <SectionHeading style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</SectionHeading>
-        </Section>
-        <Section>
-          <RowBetween>
-            <StandardText>{t(`Crowdfund Target`)}</StandardText>
-            <StandardText>
-              {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
-            </StandardText>
-          </RowBetween>
-        </Section>
-        <Section>
-          {expectedBlockTime && (
-            <RowBetween>
-              <StandardText>{t(`Yield (APY)`)}</StandardText>
-              <StandardText>
-                {`${getApy({
-                  totalYield: dpoInfo.target_yield_estimate.toBn(),
-                  totalDeposit: dpoInfo.target_amount.toBn(),
-                  chainDecimals: chainDecimals,
-                  blocksInPeriod: expectedBlockTime,
-                  period: dpoInfo.target_maturity,
-                }).toString()} %`}
-              </StandardText>
-            </RowBetween>
-          )}
-          <RowBetween>
-            <StandardText>{t(`Commission Fee`)}</StandardText>
-            <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
-          </RowBetween>
-          <RowBetween>
-            <StandardText>{t(`Seat Value`)}</StandardText>
-            <StandardText>
-              {formatToUnit(dpoInfo.amount_per_seat.toBn(), chainDecimals, 2)} {token}
-            </StandardText>
-          </RowBetween>
-          <RowBetween>
-            <StandardText>{t(`Available Seats`)}</StandardText>
-            <StandardText>{dpoInfo.empty_seats.toString()} Seats</StandardText>
-          </RowBetween>
-        </Section>
-        <Section>
-          <Link to={{ pathname: `/item/dpo/${dpoInfo.index.toString()}` }} style={{ textDecoration: 'none' }}>
-            <ButtonPrimary
-              onClick={() => onClick([storageKey, dpoInfo])}
-              style={{ width: '100%', padding: '8px', borderRadius: '8px', marginTop: '1rem' }}
-            >
-              {t(`Learn More`)}
-            </ButtonPrimary>
+      {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
+        <DpoWrapper style={{ overflow: 'hidden' }}>
+          <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+            <DpoInnerCard>
+              <DpoTitle>
+                <RowBetween>
+                  <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                  {dpoInfo.state.isCreated && expiry && (
+                    <InlineSection style={{ width: 'auto' }}>
+                      {expiry.isZero() ? (
+                        <>
+                          <HeavyText fontSize="10px">{t(`Expired`)}</HeavyText>
+                        </>
+                      ) : (
+                        <>
+                          <HeavyText fontSize="10px">{t(`Expires in`)}</HeavyText>
+                          <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
+                            `Blocks`
+                          )}`}</StandardText>
+                        </>
+                      )}
+                    </InlineSection>
+                  )}
+                  {!dpoInfo.state.isCreated && (
+                    <InlineSection style={{ width: 'auto' }}>
+                      <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                        {dpoInfo.state.toString()}
+                      </StateWrapper>
+                    </InlineSection>
+                  )}
+                </RowBetween>
+              </DpoTitle>
+              <DpoData1>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Seats Open`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {dpoInfo.empty_seats.toString()} {t(`Seats`)}
+                  </StandardText>
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Manager Fee`)}</HeavyText>
+                  <StandardText fontSize="12px">{dpoInfo.fee.toNumber() / 10}%</StandardText>
+                </InlineSection>
+              </DpoData1>
+              <DpoData2>
+                <InlineSection>
+                  {expectedBlockTime && (
+                    <>
+                      <HeavyText fontSize="12px">{t(`APY`)}</HeavyText>
+                      <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                        {`${getApy({
+                          totalYield: dpoInfo.target_yield_estimate.toBn(),
+                          totalDeposit: dpoInfo.target_amount.toBn(),
+                          chainDecimals: chainDecimals,
+                          blocksInPeriod: expectedBlockTime,
+                          period: dpoInfo.target_maturity,
+                        }).toString()} %`}
+                      </StandardText>
+                    </>
+                  )}
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Bonus`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </InlineSection>
+              </DpoData2>
+            </DpoInnerCard>
           </Link>
-        </Section>
-      </div>
+        </DpoWrapper>
+      )}
     </>
   )
 }
 
-export default function DpoCard(props: DpoCard) {
-  const { item, chainDecimals, token, onClick } = props
+// const actionIcons: { [index: string]: string } = {
+//   withdrawFareFromTravelCabin: WithdrawFromTargetIcon,
+//   withdrawYieldFromTravelCabin: VaultIcon,
+//   dpoBuyTravelCabin: CommitToTargetIcon,
+//   dpoBuyDpoSeats: CommitToTargetIcon,
+//   releaseFareFromDpo: WithdrawFromTargetIcon,
+//   releasePeriodicDropFromDpo: ReleaseTokenIcon,
+//   releaseInstantDropFromDpo: ReleaseTokenIcon,
+// }
 
-  return (
-    <FlatCard>
-      <CardContent item={item} chainDecimals={chainDecimals} token={token} onClick={onClick} />
-    </FlatCard>
-  )
-}
-
-interface ProfileCard {
-  item: [DpoIndex | StorageKey, DpoInfo]
-  chainDecimals: number
-  token: string
-  alerts?: Array<DpoAction | undefined>
-  onClick: Dispatcher<any>
-}
-
-const actionIcons: { [index: string]: string } = {
-  withdrawFareFromTravelCabin: WithdrawFromTargetIcon,
-  withdrawYieldFromTravelCabin: VaultIcon,
-  dpoBuyTravelCabin: CommitToTargetIcon,
-  dpoBuyDpoSeats: CommitToTargetIcon,
-  releaseFareFromDpo: WithdrawFromTargetIcon,
-  releasePeriodicDropFromDpo: ReleaseTokenIcon,
-  releaseInstantDropFromDpo: ReleaseTokenIcon,
-}
-
-function ProfileCardContent(props: ProfileCard) {
-  const { item, chainDecimals, token, alerts, onClick } = props
-  const [storageKey, dpoInfo] = item
+export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
+  const dpoInfo = useSubDpo(dpoIndex)
+  const { chainDecimals } = useSubstrate()
+  const { lastBlock } = useBlockManager()
+  const { expectedBlockTime, genesisTs } = useBlockManager()
+  const dpoActions = useDpoActions(dpoInfo)
   const { t } = useTranslation()
+
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
+  const actions = dpoActions.dpoActions
+
+  const [expiry, setExpiry] = useState<BN>()
+
+  useEffect(() => {
+    if (!lastBlock || !dpoInfo) return
+    if (dpoInfo.state.isCreated) {
+      if (dpoInfo.expiry_blk.sub(lastBlock).isNeg()) {
+        setExpiry(new BN(0))
+      } else {
+        setExpiry(dpoInfo.expiry_blk.sub(lastBlock))
+      }
+    }
+  }, [lastBlock, dpoInfo])
+
   return (
     <>
-      <Section>
-        <RowBetween>
-          <SectionHeading style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</SectionHeading>
-          <div style={{ display: 'flex' }}>
-            {alerts &&
-              alerts.length > 0 &&
-              alerts.map((alert, index) => {
-                if (!alert || !alert.action) return <></>
-                return (
-                  <div key={index}>
-                    <Link to={{ pathname: `/item/dpo/${dpoInfo.index.toString()}` }} style={{ textDecoration: 'none' }}>
-                      <AlertWrapper onClick={() => onClick([storageKey, dpoInfo])}>
-                        <AlertIcon src={actionIcons[alert.action]} />
-                      </AlertWrapper>
-                    </Link>
-                  </div>
-                )
-              })}
-          </div>
-        </RowBetween>
-      </Section>
-      <Section>
-        <RowBetween>
-          <StandardText>{t(`Crowdfund Target`)}</StandardText>
-          <StandardText>
-            {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
-          </StandardText>
-        </RowBetween>
-      </Section>
-      <Section>
-        <RowBetween>
-          <StandardText>{t(`Commission Fee`)}</StandardText>
-          <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Seat Value`)}</StandardText>
-          <StandardText>
-            {formatToUnit(dpoInfo.amount_per_seat.toBn(), chainDecimals, 2)} {token}
-          </StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Available Seats`)}</StandardText>
-          <StandardText>{dpoInfo.empty_seats.toString()} Seats</StandardText>
-        </RowBetween>
-      </Section>
-      <Section>
-        <Link to={{ pathname: `/item/dpo/${dpoInfo.index.toString()}` }} style={{ textDecoration: 'none' }}>
-          <ButtonPrimary
-            onClick={() => onClick([storageKey, dpoInfo])}
-            style={{ width: '100%', padding: '8px', borderRadius: '8px', marginTop: '1rem' }}
-          >
-            {t(`Learn More`)}
-          </ButtonPrimary>
-        </Link>
-      </Section>
+      {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
+        <DpoWrapper style={{ overflow: 'hidden' }}>
+          <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+            <DpoInnerCard>
+              <DpoTitle>
+                <Section>
+                  <RowBetween>
+                    <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                    {dpoInfo.state.isCreated && expiry && (
+                      <InlineSection style={{ width: 'auto' }}>
+                        {expiry.isZero() ? (
+                          <>
+                            <HeavyText fontSize="10px">{t(`Expired`)}</HeavyText>
+                          </>
+                        ) : (
+                          <>
+                            <HeavyText fontSize="10px">{t(`Expires in`)}</HeavyText>
+                            <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
+                              `Blocks`
+                            )}`}</StandardText>
+                          </>
+                        )}
+                      </InlineSection>
+                    )}
+                    {!dpoInfo.state.isCreated && (
+                      <InlineSection style={{ width: 'auto' }}>
+                        <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                          {dpoInfo.state.toString()}
+                        </StateWrapper>
+                      </InlineSection>
+                    )}
+                  </RowBetween>
+                </Section>
+                {actions && actions.length > 0 && (
+                  <Section>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <InlineSection>
+                        <HeavyText fontSize="12px" style={{ display: 'flex', alignItems: 'center' }}>
+                          {t(`Pending Actions`)}
+                        </HeavyText>
+                        {actions.map((action, index) => (
+                          <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
+                            <AlertIcon src={ACTION_ICONS[action.action]} />
+                          </AlertWrapper>
+                        ))}
+                      </InlineSection>
+                    </div>
+                  </Section>
+                )}
+              </DpoTitle>
+              <DpoData1>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Seats Open`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {dpoInfo.empty_seats.toString()} {t(`Seats`)}
+                  </StandardText>
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Manager Fee`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {dpoInfo.fee.toNumber() / 10}%
+                  </StandardText>
+                </InlineSection>
+              </DpoData1>
+              <DpoData2>
+                <InlineSection>
+                  {expectedBlockTime && (
+                    <>
+                      <HeavyText fontSize="12px">{t(`APY`)}</HeavyText>
+                      <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                        {`${getApy({
+                          totalYield: dpoInfo.target_yield_estimate.toBn(),
+                          totalDeposit: dpoInfo.target_amount.toBn(),
+                          chainDecimals: chainDecimals,
+                          blocksInPeriod: expectedBlockTime,
+                          period: dpoInfo.target_maturity,
+                        }).toString()} %`}
+                      </StandardText>
+                    </>
+                  )}
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Bonus`)}</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.2rem' }}>
+                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
+                  </StandardText>
+                </InlineSection>
+              </DpoData2>
+            </DpoInnerCard>
+          </Link>
+        </DpoWrapper>
+      )}
     </>
-  )
-}
-
-export function DpoProfileCard(props: ProfileCard) {
-  const { item, chainDecimals, token, alerts, onClick } = props
-  return (
-    <FlatCard>
-      <ProfileCardContent item={item} chainDecimals={chainDecimals} token={token} alerts={alerts} onClick={onClick} />
-    </FlatCard>
   )
 }

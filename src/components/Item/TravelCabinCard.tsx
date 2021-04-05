@@ -72,9 +72,12 @@ export const IconWrapper = styled.div`
   width: 100%
   max-width: none;
   justify-content: center;
-  padding: 1rem;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 25px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    padding: 0.25rem;
+    padding: 0;
+    margin: 0;
   `};
 `
 

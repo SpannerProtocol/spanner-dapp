@@ -7,7 +7,7 @@ import TxFee from 'components/TxFee'
 import { Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useDpoActions } from 'hooks/useDpoActions'
-import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
+import { useSubDpo } from 'hooks/useQueryDpos'
 import { useDPOTravelCabinInventoryIndex } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useEffect, useState } from 'react'
@@ -439,7 +439,7 @@ interface DpoActionsProps {
 // Need to conditionally render this depending on if users have actions
 export default function DpoActions(props: DpoActionsProps) {
   const { dpoIndex } = props
-  const dpoInfo = useQuerySubscribeDpo(dpoIndex)
+  const dpoInfo = useSubDpo(dpoIndex)
   const { dpoActions } = useDpoActions(dpoInfo)
   return (
     <>

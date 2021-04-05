@@ -43,9 +43,7 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
             style={{ textDecoration: 'none' }}
           >
             <CabinCard>
-              <IconWrapper>
-                <div style={{ maxWidth: '25px' }}>{getCabinClassImage(cabinInfo.name.toString())}</div>
-              </IconWrapper>
+              <IconWrapper>{getCabinClassImage(cabinInfo.name.toString())}</IconWrapper>
               <CabinTitle>
                 <HeavyText style={{ marginLeft: '0', marginTop: '0', display: 'inline-flex' }}>
                   {t(`TravelCabin `)}
