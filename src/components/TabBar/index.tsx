@@ -20,12 +20,15 @@ const Tab = styled.div`
   width: 100%;
 `
 
-const TabText = styled.div`
+const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
   width: 100%;
-  font-size: 18px;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '18px')}
   font-weight: 500;
   text-align: left;
   cursor: pointer;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? `${mobileFontSize}` : '16px'};
+  `}
 `
 
 interface TabBarProps {
@@ -33,6 +36,8 @@ interface TabBarProps {
   className?: string
   tabs: Array<TabMetaData>
   activeColor?: string
+  fontSize?: string
+  mobileFontSize?: string
   onClick?: (index: number) => void
   margin?: string
 }
@@ -47,8 +52,15 @@ export interface TabMetaData {
 
 // TabBar component takes an array of TabMetaData. If passed a click handler as a callback,
 // it will return the index of the tab clicked.
-export default function TabBar(props: TabBarProps): JSX.Element {
-  const { id, className, tabs, onClick, margin } = props
+export default function TabBar({
+  id,
+  className,
+  tabs,
+  onClick,
+  margin,
+  fontSize,
+  mobileFontSize,
+}: TabBarProps): JSX.Element {
   const [activeIndex, setActiveIndex] = useState<number>(0)
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
@@ -74,6 +86,8 @@ export default function TabBar(props: TabBarProps): JSX.Element {
             <TabWrapper key={index}>
               <Tab key={index} id={tab.id} className={tab.className} onClick={(event) => handleClick(event, index)}>
                 <TabText
+                  fontSize={fontSize}
+                  mobileFontSize={mobileFontSize}
                   style={{
                     color: active ? `${theme.black}` : `${theme.text3}`,
                     borderBottom: active ? `3px solid ${theme.primary1}` : `none`,
