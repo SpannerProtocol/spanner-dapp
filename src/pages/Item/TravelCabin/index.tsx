@@ -7,7 +7,7 @@ import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SectionHeading, SmallText, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -16,7 +16,7 @@ import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { useIsConnected } from 'hooks/useWallet'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
@@ -468,10 +468,14 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <RowBetween>
-            <SectionHeading style={{ display: 'flex' }}>
-              {t(`TravelCabin`)}: {travelCabinInfo.name.toString()}
-              {getCabinClassImage(travelCabinInfo.name.toString())}
-            </SectionHeading>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex', maxWidth: '25px', maxHeight: '25px', paddingRight: '0.5rem' }}>
+                {getCabinClassImage(travelCabinInfo.name.toString())}
+              </div>
+              <SectionHeading style={{ display: 'flex', margin: '0' }}>
+                {t(`TravelCabin`)} {travelCabinInfo.name.toString()}
+              </SectionHeading>
+            </div>
             {isConnected ? (
               <CollapseWrapper>
                 <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
@@ -528,7 +532,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 <BorderedWrapper style={{ marginTop: '0' }}>
                   <Section>
                     <RowBetween>
-                      <StandardText>{t(`Stock`)}</StandardText>
+                      <StandardText>{t(`Inventory`)}</StandardText>
                       <StandardText>
                         {inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/{inventoryCount[1].toNumber()}
                       </StandardText>
@@ -576,6 +580,8 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
   const { expectedBlockTime, genesisTs } = useBlockManager()
   const { t } = useTranslation()
 
+  const sortedBuyers = useMemo(() => buyers.sort((b1, b2) => b2[0][1].toNumber() - b1[0][1].toNumber()), [buyers])
+
   return (
     <>
       <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
@@ -592,7 +598,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
         <SpacedSection>
           {genesisTs &&
             expectedBlockTime &&
-            buyers.map((buyer, index) => {
+            sortedBuyers.map((buyer, index) => {
               return (
                 <Link
                   key={index}
@@ -601,23 +607,23 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
                 >
                   <GridRow>
                     <GridCell>
-                      <StandardText>
+                      <HeavyText>
                         {t(`Inventory`)} #{buyer[0][1].toString()}
-                      </StandardText>
-                      <StandardText>
+                      </HeavyText>
+                      <ItalicText fontSize="12px">
                         {tsToRelative(
                           blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
                         )}
-                      </StandardText>
+                      </ItalicText>
                     </GridCell>
                     <GridCell>
                       {buyer[1].buyer.isPassenger && (
-                        <StandardText>
+                        <StandardText fontSize="12px">
                           {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
                         </StandardText>
                       )}
                       {buyer[1].buyer.isDpo && (
-                        <StandardText>
+                        <StandardText fontSize="12px">
                           {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
                         </StandardText>
                       )}

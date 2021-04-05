@@ -27,14 +27,9 @@ export function formatToUnit(
  * @param chainDecimals chain decimals
  * @returns BN
  */
-export function numberToBnUnit(amount: number, chainDecimals: number) {
-  if (amount.toString().includes('.')) {
-    const amountStripped = amount.toString().replace('.', '')
-    const numDecimals = amount.toString().length - amount.toString().indexOf('.') - 1
-    const zeros = '0'.repeat(chainDecimals - numDecimals)
-    return new BN(amountStripped + zeros)
-  }
-  return new BN(amount.toString()).mul(new BN(10).pow(new BN(chainDecimals)))
+export function numberToBnUnit(amount: number, cd: number) {
+  const [integer, decimal] = amount.toString().split('.')
+  return new BN(parseFloat('0.' + decimal) * 10 ** cd).add(new BN(integer).mul(new BN(10).pow(new BN(cd))))
 }
 
 /**

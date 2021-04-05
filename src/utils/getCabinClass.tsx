@@ -19,13 +19,11 @@ export default function getCabinClass(cabinName: string) {
 export function getCabinClassImage(cabinName: string) {
   if (Object.keys(TRAVELCABIN_CLASSES).includes(cabinName)) {
     return (
-      <div style={{ display: 'flex', maxWidth: '25px', maxHeight: '25px', marginLeft: '0.5rem' }}>
-        <img
-          src={TRAVELCABIN_CLASSES[cabinName].image}
-          style={{ width: '100%' }}
-          alt={`${TRAVELCABIN_CLASSES[cabinName].name} cabin icon`}
-        />
-      </div>
+      <img
+        src={TRAVELCABIN_CLASSES[cabinName].image}
+        style={{ width: '100%' }}
+        alt={`${TRAVELCABIN_CLASSES[cabinName].name} cabin icon`}
+      />
     )
   }
   return <></>
