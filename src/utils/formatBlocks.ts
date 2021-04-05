@@ -2,7 +2,7 @@ import type { Moment, BlockNumber } from '@polkadot/types/interfaces'
 import { ApiPromise } from '@polkadot/api'
 import { u32 } from '@polkadot/types'
 import moment from 'moment'
-
+import BN from 'bn.js'
 /**
  * Converts a block into days
  * @param blockTime Expected blocktime in milliseconds
@@ -17,7 +17,7 @@ export function blockToDays(blockTime: Moment, block: BlockNumber | u32, precisi
  * @param blockTime Expected blocktime in milliseconds
  * @param block block to convert
  */
-export function blockToHours(blockTime: Moment, block: BlockNumber | u32, precision?: number) {
+export function blockToHours(blockTime: Moment | BlockNumber | BN, block: BlockNumber | u32 | BN, precision?: number) {
   return ((block.toNumber() * blockTime.toNumber()) / 1000 / 60).toFixed(precision ? precision : 2)
 }
 
@@ -27,6 +27,15 @@ export function blockToHours(blockTime: Moment, block: BlockNumber | u32, precis
  */
 export function tsToDateTimeHuman(timestamp: number) {
   return moment.unix(timestamp).format('MMMM Do YYYY, h:mm:ss a')
+}
+
+/**
+ * Converts a unix ts to time, e.g. 11:54:22
+ * @param timestamp unix timestamp in seconds
+ * @returns time as string in 'hh:mm:ss'
+ */
+export function tsToTime(timestamp: number) {
+  return moment.unix(timestamp).format('hh:mm:ss')
 }
 
 /**
@@ -60,5 +69,6 @@ export async function blockToTsAsync(api: ApiPromise, block: BlockNumber) {
 }
 
 export function blockToTs(genesisTs: number, expectedBlockTime: number, currentBlock: number) {
+  console.log(genesisTs + currentBlock * expectedBlockTime)
   return genesisTs + currentBlock * expectedBlockTime
 }

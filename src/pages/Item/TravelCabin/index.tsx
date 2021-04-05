@@ -595,7 +595,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
             />
           </div>
         </Section>
-        <SpacedSection>
+        <SpacedSection style={{ marginTop: '0' }}>
           {genesisTs &&
             expectedBlockTime &&
             sortedBuyers.map((buyer, index) => {
@@ -607,7 +607,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
                 >
                   <GridRow>
                     <GridCell>
-                      <HeavyText>
+                      <HeavyText fontSize="14px">
                         {t(`Inventory`)} #{buyer[0][1].toString()}
                       </HeavyText>
                       <ItalicText fontSize="12px">

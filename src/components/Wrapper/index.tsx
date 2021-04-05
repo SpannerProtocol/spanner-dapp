@@ -158,7 +158,7 @@ export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
 
-  ${({ mobileColumns, theme }) => theme.mediaWidth.upToMedium`
+  ${({ mobileColumns, theme }) => theme.mediaWidth.upToExtraSmall`
   display:grid;
   grid-template-columns: repeat(${mobileColumns ? mobileColumns : '1'}, minmax(0, 4fr));
   grid-column-gap: 0.5rem;
