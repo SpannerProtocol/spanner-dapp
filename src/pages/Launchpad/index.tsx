@@ -115,8 +115,8 @@ function ProjectCatalogue() {
                         <img src={TokenImage} style={{ width: '100%' }} alt="token icon" />
                       </ProjectIconWrapper>
                       <div style={{ textAlign: 'center' }}>
-                        <HeavyText>{projectRegistry.name}</HeavyText>
-                        <StandardText>{project.token}</StandardText>
+                        <HeavyText style={{ width: '100%' }}>{projectRegistry.name}</HeavyText>
+                        <StandardText style={{ width: '100%' }}>{project.token}</StandardText>
                       </div>
                     </ProjectCard>
                   </ProjectCardPlate>

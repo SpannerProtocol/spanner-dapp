@@ -1,22 +1,16 @@
-import { StorageKey } from '@polkadot/types'
 import DpoCard from 'components/Item/DpoCard'
 import SearchBar from 'components/SearchBar'
 import { GridWrapper, Section, Wrapper } from 'components/Wrapper'
-import { useQueryDposWithKeys } from 'hooks/useQueryDpos'
-import { useSubstrate } from 'hooks/useSubstrate'
-import { DpoInfo } from 'spanner-interfaces'
+import { useDposWithKeys } from 'hooks/useQueryDpos'
 import React, { useEffect, useState } from 'react'
-import { useItemManager } from 'state/item/hooks'
 import { useProjectManager } from 'state/project/hooks'
 
 // A list of DPOs with search functionality
 export default function DpoCatalogue() {
   const { projectState } = useProjectManager()
-  const dposWithIds = useQueryDposWithKeys(projectState.selectedProject?.token)
+  const dposWithIds = useDposWithKeys(projectState.selectedProject?.token)
   const [searchResults, setSearchResults] = useState<typeof dposWithIds>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const { chainDecimals } = useSubstrate()
-  const { setItem } = useItemManager()
 
   useEffect(() => {
     const results = dposWithIds.filter((dposWithId) =>
@@ -24,10 +18,6 @@ export default function DpoCatalogue() {
     )
     setSearchResults(results)
   }, [dposWithIds, searchTerm])
-
-  const handleClick = (selectedDpo: [StorageKey, DpoInfo]) => {
-    setItem({ item: 'dpo', itemKey: selectedDpo[0].args.toString() })
-  }
 
   return (
     <>
@@ -41,15 +31,9 @@ export default function DpoCatalogue() {
             backgroundColor={'#fff'}
           />
         </Section>
-        <GridWrapper columns="3">
+        <GridWrapper columns="2">
           {searchResults.map((entry, index) => {
-            const dpoInfo = entry[1]
-            const token = dpoInfo.token_id.isToken
-              ? dpoInfo.token_id.asToken.toString()
-              : dpoInfo.token_id.asDexShare.toString()
-            return (
-              <DpoCard key={index} item={entry} token={token} chainDecimals={chainDecimals} onClick={handleClick} />
-            )
+            return <DpoCard key={index} dpoIndex={entry[0]} />
           })}
         </GridWrapper>
       </Wrapper>

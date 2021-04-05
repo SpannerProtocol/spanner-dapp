@@ -1,26 +1,26 @@
+import { encodeAddress } from '@polkadot/keyring'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
 import TabBar, { TabMetaData } from 'components/TabBar'
-import { HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
-import { TransferWrapper, Section, SectionContainer, SpacedSection } from 'components/Wrapper'
+import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
+import { Section, SectionContainer, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
-import { postTxHistory, postTransfers, postTransfersTokens } from 'queries'
+import { postTransfers, postTransfersTokens, postTxHistory } from 'queries'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
-import truncateString from 'utils/truncateString'
-import { encodeAddress } from '@polkadot/keyring'
+import truncateString, { shortenAddr } from 'utils/truncateString'
 
 const TxRow = styled.div`
   display: grid;
-  grid-template-columns: min(320px) auto min(160px);
+  grid-template-columns: min(260px) auto min(160px);
   grid-column-gap: 40px;
   border-bottom: 1px solid ${({ theme }) => theme.text5};
   transition: background-color 0.3s ease-in;
@@ -73,26 +73,34 @@ function TransferRow({ event }: EventRowProps) {
         <TxRow>
           <TxCell>
             <RowBetween>
-              <StandardText color={'#3498db'}>{truncateString(event.extrinsic_hash, 36)}</StandardText>
+              <StandardText fontSize="12px" color={'#3498db'}>
+                {truncateString(event.extrinsic_hash, 26)}
+              </StandardText>
               <CopyHelper toCopy={`${event.extrinsic_hash}`} />
             </RowBetween>
-            <SmallText>
+            <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
-            </SmallText>
+            </ItalicText>
           </TxCell>
           <TxCell>
             {wallet.address === sender ? (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`To`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(receiver)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    receiver,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             ) : (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`From`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(sender)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    sender,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             )}
@@ -156,15 +164,17 @@ function TransactionRow({ tx }: TransactionRowProps) {
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StandardText color={'#3498db'}>{truncateString(tx.extrinsic_hash, 36)}</StandardText>
+          <StandardText fontSize="12px" color={'#3498db'}>
+            {truncateString(tx.extrinsic_hash, 26)}
+          </StandardText>
           <CopyHelper toCopy={`${tx.extrinsic_hash}`} />
         </RowBetween>
-        <SmallText>
+        <ItalicText fontSize="11px">
           {tsToRelative(tx.block_timestamp)} - {tsToDateTimeHuman(tx.block_timestamp)}
-        </SmallText>
+        </ItalicText>
       </TxCell>
       <TxCell>
-        <HeavyText fontSize="14">{`${tx.call_module_function} (${tx.call_module})`}</HeavyText>
+        <HeavyText fontSize="12px">{`${tx.call_module_function} (${tx.call_module})`}</HeavyText>
       </TxCell>
       <TxCell>
         <TransferWrapper>{formatToUnit(tx.fee, chainDecimals, 2)} BOLT</TransferWrapper>
@@ -188,26 +198,34 @@ function TransferTokenRow({ event }: EventRowProps) {
         <TxRow>
           <TxCell>
             <RowBetween>
-              <StandardText color={'#3498db'}>{truncateString(event.extrinsic_hash, 36)}</StandardText>
+              <StandardText fontSize="12px" color={'#3498db'}>
+                {truncateString(event.extrinsic_hash, 26)}
+              </StandardText>
               <CopyHelper toCopy={`${event.extrinsic_hash}`} />
             </RowBetween>
-            <SmallText>
+            <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
-            </SmallText>
+            </ItalicText>
           </TxCell>
           <TxCell>
             {wallet.address === sender ? (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`To`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(receiver)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    receiver,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             ) : (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`From`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(sender)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    sender,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             )}
@@ -325,7 +343,7 @@ const tabData: Array<TabMetaData> = [
   {
     id: 'tab-latest-transactions',
     className: 'tab latest-transactions-container',
-    label: 'Latest Transactions',
+    label: 'Transactions',
   },
   {
     id: 'tab-transfers',
@@ -364,6 +382,8 @@ export default function TransactionHistory() {
             tabs={tabData}
             onClick={handleTabSelect}
             margin="0"
+            fontSize="18px"
+            mobileFontSize="12px"
           />
         </SectionContainer>
         <SectionContainer style={{ marginTop: '0' }}>

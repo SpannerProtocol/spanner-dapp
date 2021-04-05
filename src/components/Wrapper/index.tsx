@@ -11,6 +11,10 @@ export const Section = styled(AutoColumn)`
   margin-bottom: 5px;
 `
 
+export const InlineSection = styled.div`
+  display: inline-flex;
+`
+
 export const SpacedSection = styled(AutoColumn)`
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -154,7 +158,7 @@ export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
 
-  ${({ mobileColumns, theme }) => theme.mediaWidth.upToMedium`
+  ${({ mobileColumns, theme }) => theme.mediaWidth.upToExtraSmall`
   display:grid;
   grid-template-columns: repeat(${mobileColumns ? mobileColumns : '1'}, minmax(0, 4fr));
   grid-column-gap: 0.5rem;

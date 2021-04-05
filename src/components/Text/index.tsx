@@ -9,7 +9,7 @@ export const ModalTitle = styled.span`
 `
 
 export const HeavyText = styled.div<{ fontSize?: string; fontWeight?: string; color?: string }>`
-  width: 100%;
+  width: fit-content;
   color: ${({ color, theme }) => (color ? color : theme.text2)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
@@ -87,10 +87,17 @@ export const LightText = styled.div`
   font-size: 14px;
 `
 
-export const StandardText = styled.div<{ fontSize?: string; color?: string; fontWeight?: string }>`
+export const StandardText = styled.div<{
+  fontSize?: string
+  color?: string
+  fontWeight?: string
+  paddingLeft?: string
+}>`
+  width: fit-content;
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '500')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
+  padding-left: ${({ paddingLeft }) => (paddingLeft ? paddingLeft : '0')}
   overflow-wrap: break-word;
 `
 

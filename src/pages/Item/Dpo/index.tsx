@@ -26,7 +26,7 @@ import {
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
-import { useQuerySubscribeDpo } from 'hooks/useQueryDpos'
+import { useSubDpo } from 'hooks/useQueryDpos'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
@@ -520,7 +520,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
 }
 
 function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
-  const dpoInfo = useQuerySubscribeDpo(dpoIndex)
+  const dpoInfo = useSubDpo(dpoIndex)
   const dpoMembers = useQueryDpoMembers(dpoIndex)
   const wallet = useWallet()
   const [targetItem, setTargetItem] = useState<[string, string]>(['', ''])

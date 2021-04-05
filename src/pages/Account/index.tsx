@@ -1,7 +1,7 @@
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
-import { Heading, StandardText } from 'components/Text'
+import { Heading, HeavyText, StandardText } from 'components/Text'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
 import React, { useEffect, useState } from 'react'
@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { shortenAddress } from 'utils'
 import TabBar, { TabMetaData } from '../../components/TabBar'
-import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
+import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
 import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
 import Bridge from './Bridge'
@@ -62,7 +62,7 @@ export default function Account() {
   }, [activeTabIndex])
 
   return (
-    <PageWrapper style={{ width: '100%', maxWidth: '960px', justifyContent: 'center', alignItems: 'center' }}>
+    <PageWrapper style={{ width: '100%', maxWidth: '720px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
         style={{
           display: 'flex',
@@ -76,42 +76,42 @@ export default function Account() {
             <Heading>{t(`Account`)}</Heading>
           </Section>
           {wallet && wallet.address && (
-            <SpacedSection>
+            <BorderedWrapper>
               <Section>
                 <RowBetween>
-                  <StandardText>{t(`Wallet Type`)}:</StandardText>
-                  <StandardText>{wallet.type}</StandardText>
+                  <HeavyText fontSize="14px">{t(`Wallet Type`)}</HeavyText>
+                  <StandardText fontSize="14px">{wallet.type}</StandardText>
                 </RowBetween>
                 {wallet.type === 'custodial' && wallet.ethereumAddress && (
                   <RowBetween>
-                    <StandardText>{t(`Ethereum Address`)}:</StandardText>
+                    <HeavyText fontSize="14px">{t(`Ethereum Address`)}</HeavyText>
                     <CopyWrapper style={{ display: 'flex' }}>
                       <CopyHelper toCopy={`${wallet.ethereumAddress}`} childrenIsIcon={true}>
-                        <StandardText>{shortenAddress(wallet.ethereumAddress)}</StandardText>
+                        <StandardText fontSize="14px">{shortenAddress(wallet.ethereumAddress, 8)}</StandardText>
                       </CopyHelper>
                     </CopyWrapper>
                   </RowBetween>
                 )}
                 <RowBetween>
-                  <StandardText>{t(`Address`)}:</StandardText>
+                  <HeavyText fontSize="14px">{t(`Address`)}</HeavyText>
                   <CopyWrapper style={{ display: 'flex' }}>
                     <CopyHelper toCopy={`${wallet.address}`} childrenIsIcon={true}>
-                      <StandardText>{shortenAddr(wallet.address)}</StandardText>
+                      <StandardText fontSize="14px">{shortenAddr(wallet.address, 8)}</StandardText>
                     </CopyHelper>
                   </CopyWrapper>
                 </RowBetween>
                 {referrer && (
                   <RowBetween>
-                    <StandardText>{t(`Referrer`)}</StandardText>
+                    <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
                     <CopyWrapper style={{ display: 'flex' }}>
                       <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
-                        <StandardText>{shortenAddr(referrer)}</StandardText>
+                        <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
                       </CopyHelper>
                     </CopyWrapper>
                   </RowBetween>
                 )}
               </Section>
-            </SpacedSection>
+            </BorderedWrapper>
           )}
           <TabBar
             id={'tabbar-account'}
