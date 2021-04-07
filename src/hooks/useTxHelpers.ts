@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useState } from 'react'
+import { useState } from 'react'
 import signAndSendTx from 'utils/signAndSendTx'
 import { useApi } from './useApi'
 import useWallet from './useWallet'
@@ -6,6 +6,8 @@ import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
 import { formatToUnit } from 'utils/formatUnit'
 import { useSubstrate } from './useSubstrate'
 import { useTranslation } from 'react-i18next'
+import { Dispatcher } from 'types/dispatcher'
+import { useToastContext } from 'environment/ToastContext'
 
 export interface CreateTxParams {
   section: string
@@ -16,8 +18,6 @@ export interface CreateTxParams {
 interface TxMeta extends CreateTxParams {
   unsignedTx: SubmittableExtrinsic
 }
-
-type Dispatcher<S> = Dispatch<SetStateAction<S>>
 
 interface SubmitTxParams {
   setTxErrorMsg: Dispatcher<string | undefined>
@@ -41,6 +41,7 @@ export default function useTxHelpers() {
   const [txMeta, setTxMeta] = useState<TxMeta>()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
+  const { toastDispatch } = useToastContext()
 
   // Create both the transaction and get the estimated payment info
   const createTx = ({
@@ -56,6 +57,7 @@ export default function useTxHelpers() {
       .then((fee) => formatToUnit(fee.partialFee.toString(), chainDecimals, 2))
     // Saving the transaction information in the event submitTx is called
     setTxMeta({ unsignedTx, section, method, params })
+    toastDispatch({ type: 'ADD', payload: { title: `${section}.${method}`, content: `Transaction created` } })
     return { unsignedTx, estimatedFee }
   }
 
@@ -73,6 +75,7 @@ export default function useTxHelpers() {
       setErrorMsg: setTxErrorMsg,
       setHash: setTxHash,
       setPendingMsg: setTxPendingMsg,
+      toastDispatch: toastDispatch,
       walletType: wallet.type,
       custodialProvider: wallet.custodialProvider,
       txInfo: {

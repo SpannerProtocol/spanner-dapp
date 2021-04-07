@@ -2,7 +2,6 @@ import { Compact } from '@polkadot/types'
 import { BlockNumber } from '@polkadot/types/interfaces'
 import BlockBar from 'components/BlockBar'
 import NetworkSelector from 'components/Network'
-import TransactionMsgProvider from 'components/TransactionMsgs'
 import { useBridgeHealthCheck } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
@@ -107,7 +106,6 @@ export default function App() {
           <BlockBar />
         </SubControl>
         <AppBody>
-          <TransactionMsgProvider />
           <Popups />
           <Web3ReactManager>
             <Switch>
