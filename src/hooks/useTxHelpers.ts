@@ -7,7 +7,7 @@ import { formatToUnit } from 'utils/formatUnit'
 import { useSubstrate } from './useSubstrate'
 import { useTranslation } from 'react-i18next'
 import { Dispatcher } from 'types/dispatcher'
-import { useToastContext } from 'environment/ToastContext'
+import { useToastContext } from 'contexts/ToastContext'
 
 export interface CreateTxParams {
   section: string

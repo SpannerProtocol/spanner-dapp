@@ -145,7 +145,7 @@ export default function TxModal({
                 overflowWrap: 'anywhere',
               }}
             >
-              <StandardText>{t(`Transaction submitted to block at`)} </StandardText>
+              <StandardText style={{ margin: 'auto' }}>{t(`Transaction submitted to block at`)} </StandardText>
               <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
             </CenteredRow>
             <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>View on Polkascan</CenteredRow>
