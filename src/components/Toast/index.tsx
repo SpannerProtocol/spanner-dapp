@@ -3,8 +3,9 @@ import { HeavyText, StandardText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { darken } from 'polished'
 import React from 'react'
+import { AlertCircle, CheckCircle, Info, XCircle } from 'react-feather'
 import styled, { keyframes } from 'styled-components'
-import { ToastState, useToastContext } from '../../environment/ToastContext'
+import { ToastState, useToastContext } from '../../contexts/ToastContext'
 
 const ToastMain = styled.div`
   position: fixed;
@@ -47,11 +48,24 @@ const ToastContainerItem = styled.div<{ backgroundColor?: string }>`
   opacity: 0.9;
 `
 
+const ToastInnerGrid = styled.div`
+  display: grid;
+  grid-template-columns: max(30px) auto;
+  grid-column-gap: 0.5rem;
+`
+
 const ITEM_COLORS = {
   info: '#00B8FF',
   success: '#5BC85B',
   warning: '#FFBD14',
   danger: '#EC3D3D',
+}
+
+const ITEM_ICONS = {
+  info: <Info color="#fff" size="24px" />,
+  success: <CheckCircle color="#fff" size="24px" />,
+  warning: <AlertCircle color="#fff" size="24px" />,
+  danger: <XCircle color="#fff" size="24px" />,
 }
 
 export default function Toast({ toast }: { toast: ToastState[] }) {
@@ -65,29 +79,34 @@ export default function Toast({ toast }: { toast: ToastState[] }) {
             <ToastContainerItem
               className={`toast-container-item ${item.type ? item.type : ''}`}
               key={item.id}
-              backgroundColor={item.type ? ITEM_COLORS[item.type] : ITEM_COLORS['info']}
+              backgroundColor={ITEM_COLORS[item.type ? item.type : 'info']}
             >
-              <Section style={{ margin: '0' }}>
-                <RowBetween>
-                  <HeavyText color="#fff" fontSize="12px">
-                    {item.title}
-                  </HeavyText>
-                  <HeavyText
-                    role="img"
-                    aria-label="close toast"
-                    className="toast-close"
-                    style={{ cursor: 'pointer', color: '#fff' }}
-                    onClick={() => toastDispatch({ type: 'REMOVE', payload: { id: item.id } })}
-                  >
-                    &times;
-                  </HeavyText>
-                </RowBetween>
-              </Section>
-              <Section style={{ margin: '0' }}>
-                <StandardText color="#fff" fontSize="12px">
-                  {item.content}
-                </StandardText>
-              </Section>
+              <ToastInnerGrid>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  {ITEM_ICONS[item.type ? item.type : 'info']}
+                </div>
+                <Section style={{ margin: '0' }}>
+                  <RowBetween>
+                    <HeavyText color="#fff" fontSize="12px">
+                      {item.title}
+                    </HeavyText>
+                    <HeavyText
+                      role="img"
+                      aria-label="close toast"
+                      className="toast-close"
+                      style={{ cursor: 'pointer', color: '#fff' }}
+                      onClick={() => toastDispatch({ type: 'REMOVE', payload: { id: item.id } })}
+                    >
+                      &times;
+                    </HeavyText>
+                  </RowBetween>
+                  <Section style={{ margin: '0' }}>
+                    <StandardText color="#fff" fontSize="12px">
+                      {item.content}
+                    </StandardText>
+                  </Section>
+                </Section>
+              </ToastInnerGrid>
             </ToastContainerItem>
           )
         })}
