@@ -13,6 +13,7 @@ const ToastMain = styled.div`
   width: 300px;
   max-height: 90vh;
   overflow-y: scroll;
+  z-index: 3;
 `
 
 const ToastContainer = styled.div`

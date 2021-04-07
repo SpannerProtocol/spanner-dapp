@@ -69,6 +69,5 @@ export async function blockToTsAsync(api: ApiPromise, block: BlockNumber) {
 }
 
 export function blockToTs(genesisTs: number, expectedBlockTime: number, currentBlock: number) {
-  console.log(genesisTs + currentBlock * expectedBlockTime)
   return genesisTs + currentBlock * expectedBlockTime
 }

@@ -78,8 +78,6 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     }
   }, [referralCode, referrer])
 
-  console.log('referrer', referrer)
-
   return (
     <>
       <Section>
