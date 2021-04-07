@@ -8,7 +8,7 @@ import { useApi } from './useApi'
 import { useEnabledTradingPairs } from './useQueryTradingPairs'
 import useWallet from './useWallet'
 
-export default function useSubscribeBalance(currencyObj: object): BN {
+export default function useSubscribeBalance(token: string): BN {
   const { api, connected } = useApi()
   const [balance, setBalance] = useState<BN>(BN_ZERO)
   const wallet = useWallet()
@@ -16,8 +16,7 @@ export default function useSubscribeBalance(currencyObj: object): BN {
   useEffect(() => {
     if (!connected || !wallet || !wallet.address) return
     try {
-      if (Object.values(currencyObj)[0].length < 1) return
-      const currencyId: CurrencyId = api.createType('CurrencyId', currencyObj)
+      const currencyId: CurrencyId = api.createType('CurrencyId', { Token: token })
       if (currencyId.isToken && currencyId.asToken.toString().toLowerCase() === 'bolt') {
         api.query.system
           .account(wallet.address, (result: AccountInfo) => setBalance(result.data.free.toBn()))
@@ -30,7 +29,7 @@ export default function useSubscribeBalance(currencyObj: object): BN {
     } catch (err) {
       throw err
     }
-  }, [api, connected, currencyObj, wallet])
+  }, [api, connected, token, wallet])
 
   return balance
 }

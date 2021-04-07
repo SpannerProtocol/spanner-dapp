@@ -115,6 +115,7 @@ export default function App() {
               <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/catalogue" component={Catalogue} />
+              <Route exact strict path="/catalogue/:name" component={Catalogue} />
               <Route exact strict path="/launchpad" component={Launchpad} />
               <Route exact strict path="/launchpad/:token" component={Project} />
               <Route exact strict path="/faq" component={Faq} />

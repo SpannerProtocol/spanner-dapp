@@ -1,10 +1,11 @@
 import { formatBalance } from '@polkadot/util'
+import { Balance } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
 import BigNumber from 'bignumber.js'
 import { toHumanNumber } from './formatLargeNumbers'
 
 export function formatToUnit(
-  balance: number | BN | BigNumber | string,
+  balance: number | BN | BigNumber | string | Balance,
   decimals: number,
   precision?: number,
   unformatted?: boolean

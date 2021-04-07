@@ -1,7 +1,7 @@
 import Selector from 'components/Selector'
+import useTokens from 'hooks/useTokens'
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import useTokens from 'hooks/useTokens'
 
 const TokenSelectorWrapper = styled.div<{ background?: string }>`
   background: ${({ background }) => (background ? background : 'transparent')};
@@ -34,6 +34,7 @@ export default function TokenSelector({
   selectToken,
 }: TokenSelectorProps) {
   const tokens = useTokens()
+  // const tokens = useTokenRegistry()
 
   const selectorOptions = useMemo(() => {
     const options = tokens.map((token) => ({

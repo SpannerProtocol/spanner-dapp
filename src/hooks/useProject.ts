@@ -1,9 +1,9 @@
 import { Balance } from '@polkadot/types/interfaces'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
-import getProjectRegistry from 'utils/getProjectRegistry'
+import { default as projectJson } from '../spanner-projects.json'
+import { ProjectJson } from '../utils/getProjectRegistry'
 import useProjectInfos from './useProjectInfo'
-import useTokens from './useTokens'
 
 interface ProjectPath {
   token: string
@@ -25,16 +25,26 @@ export interface ProjectData {
   totalIssuance: Balance
 }
 
+export function useProjectRegistry() {
+  return useMemo(() => {
+    const projectInfo = projectJson as ProjectJson
+    return Object.keys(projectInfo).map((token) => ({
+      name: projectInfo[token].name,
+      iconPath: projectInfo[token].icon,
+      token: token.toUpperCase(),
+      description: projectInfo[token].description,
+    }))
+  }, [])
+}
+
 export function useProject() {
   const [projects, setProjects] = useState<ProjectData[]>([])
   const projectInfos = useProjectInfos()
-  const tokens = useTokens()
+  const registries = useProjectRegistry()
 
-  const tokenNames = useMemo(() => tokens.map((token) => token.name.toLowerCase()), [tokens])
-  const registries = useMemo(() => getProjectRegistry(tokenNames), [tokenNames])
+  // const registries = useMemo(() => getProjectRegistry(tokenNames), [tokenNames])
 
   useEffect(() => {
-    if (tokens.length <= 0) return
     if (!projectInfos) return
     setProjects([])
     projectInfos.forEach((projectInfo) => {
@@ -45,14 +55,14 @@ export function useProject() {
           {
             name: registry.name,
             token: registry.token.toUpperCase(),
-            icon: registry.icon,
+            icon: registry.iconPath,
             description: registry.description,
             totalIssuance: projectInfo.totalIssuance,
           },
         ])
       }
     })
-  }, [tokenNames, tokens, registries, projectInfos])
+  }, [registries, projectInfos])
 
   return projects
 }
