@@ -80,7 +80,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
           <RowBetween>
             <HeavyHeader>{t(`Average Swap Price`)}</HeavyHeader>
             <ConsoleStat>
-              {averagePrice?.toFixed(3)} {tokenA} / {tokenB}
+              {averagePrice?.toFixed(6)} {tokenA} / {tokenB}
             </ConsoleStat>
           </RowBetween>
           <RowBetween>
@@ -127,11 +127,12 @@ export default function SwapConsole(): JSX.Element {
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
 
-  const balanceA = useSubscribeBalance({ Token: tokenA })
-  const balanceB = useSubscribeBalance({ Token: tokenB })
+  const balanceA = useSubscribeBalance(tokenA)
+  const balanceB = useSubscribeBalance(tokenB)
 
   const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
-    [{ Token: tokenA }, { Token: tokenB }],
+    tokenA,
+    tokenB,
     800
   )
 
@@ -345,8 +346,8 @@ export default function SwapConsole(): JSX.Element {
                 />
                 <TokenSelector defaultToken={'BOLT'} selectToken={(token) => setTokenA(token)} />
               </TokenInputWrapper>
-              {supplyAmount.gt(balanceA) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
-              {unsafeInteger && isOnA && <ErrorMsg>Amount is too high</ErrorMsg>}
+              {supplyAmount.gt(balanceA) && <ErrorMsg>{t(`Insufficient Balance`)}</ErrorMsg>}
+              {unsafeInteger && isOnA && <ErrorMsg>{t(`Amount is too high`)}</ErrorMsg>}
             </InputGroup>
           </CenteredRow>
           <CenteredRow>
@@ -376,7 +377,11 @@ export default function SwapConsole(): JSX.Element {
                 <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
               </TokenInputWrapper>
               <div style={{ display: 'block' }}>
-                {unsafeInteger && !isOnA && <ErrorMsg>Largest Input is {Number.MAX_SAFE_INTEGER}</ErrorMsg>}
+                {unsafeInteger && !isOnA && (
+                  <ErrorMsg>
+                    {t(`Largest Input is`)} {Number.MAX_SAFE_INTEGER}
+                  </ErrorMsg>
+                )}
               </div>
             </InputGroup>
           </CenteredRow>
@@ -389,7 +394,7 @@ export default function SwapConsole(): JSX.Element {
             <LightHeader>{t(`Current Price`)}</LightHeader>
             {!poolQueryError && price ? (
               <ConsoleStat>
-                {price.toFixed(3)} {tokenA} / {tokenB}
+                {price.toFixed(6)} {tokenA} / {tokenB}
               </ConsoleStat>
             ) : (
               <ConsoleStat> ------ </ConsoleStat>

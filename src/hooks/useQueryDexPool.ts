@@ -39,7 +39,7 @@ function getEnabledPair(enabledPairs: Array<TradingPair>, inputPair: any): Valid
   return validPair
 }
 
-export default function useSubscribePool(inputTradingPair: any, delay?: number): PoolResponse {
+export default function useSubscribePool(inputA: string, inputB: string, delay?: number): PoolResponse {
   const { api, connected } = useApi()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [price, setPrice] = useState<number>()
@@ -51,16 +51,14 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
 
   useEffect(() => {
     if (!connected || enabledTradingPairs.length === 0) return
-    const validQuery = getEnabledPair(enabledTradingPairs, inputTradingPair)
+    const validQuery = getEnabledPair(enabledTradingPairs, [{ Token: inputA }, { Token: inputB }])
     if (!validQuery.isValid) {
       setPool(undefined)
       setPoolQueryError('This pair is not available.')
       return
     }
-    // needs to change this to use BN
     api.query.dex.liquidityPool(validQuery.validPair, (lpTradingPair: [Balance, Balance]) => {
-      const lp = lpTradingPair.map((currencyId) => parseFloat(currencyId.toString()))
-      if (lp[1] === 0 && lp[0] === 0) {
+      if (lpTradingPair[1].isZero() || lpTradingPair[0].isZero()) {
         setPool(undefined)
         setPoolQueryError(`No liquidity for pair`)
         return
@@ -80,9 +78,9 @@ export default function useSubscribePool(inputTradingPair: any, delay?: number):
         delay ? delay : 2000
       )
     })
-  }, [api, connected, inputTradingPair, enabledTradingPairs, delay, chainDecimals])
+  }, [api, connected, inputA, inputB, enabledTradingPairs, delay, chainDecimals])
 
-  return { pool, price, dexFee, input: inputTradingPair, error: poolQueryError }
+  return { pool, price, dexFee, error: poolQueryError }
 }
 
 export function usePoolsWithToken(token: string) {

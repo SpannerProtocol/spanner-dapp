@@ -13,8 +13,8 @@ import { formatToUnit } from 'utils/formatUnit'
 
 export default function Faucet(): JSX.Element {
   const wallet = useWallet()
-  const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
-  const boltBalance = useSubscribeBalance({ Token: 'BOLT' })
+  const wusdBalance = useSubscribeBalance('WUSD')
+  const boltBalance = useSubscribeBalance('BOLT')
   const { t } = useTranslation()
 
   const { chainDecimals } = useSubstrate()

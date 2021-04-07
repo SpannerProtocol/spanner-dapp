@@ -89,8 +89,8 @@ export default function LpAddConsole(): JSX.Element {
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
 
-  const balanceA = useSubscribeBalance({ Token: tokenA })
-  const balanceB = useSubscribeBalance({ Token: tokenB })
+  const balanceA = useSubscribeBalance(tokenA)
+  const balanceB = useSubscribeBalance(tokenB)
 
   const openModal = () => {
     const txData = createTx({
@@ -140,8 +140,7 @@ export default function LpAddConsole(): JSX.Element {
               <InputHeader>
                 <LightHeader>{t(`Max Input`)}</LightHeader>
                 <ConsoleStat>
-                  {t(`Balance: `)}
-                  {formatToUnit(balanceA, chainDecimals)}
+                  {t(`Balance`)}: {formatToUnit(balanceA, chainDecimals)}
                 </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>
@@ -166,7 +165,7 @@ export default function LpAddConsole(): JSX.Element {
               <InputHeader>
                 <LightHeader>{t(`Max Input`)}</LightHeader>
                 <ConsoleStat>
-                  {t(`Balance: `)} {formatToUnit(balanceB, chainDecimals)}
+                  {t(`Balance`)}: {formatToUnit(balanceB, chainDecimals)}
                 </ConsoleStat>
               </InputHeader>
               <TokenInputWrapper>

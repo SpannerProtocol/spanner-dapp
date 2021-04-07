@@ -67,7 +67,7 @@ export default function Bridge(): JSX.Element {
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txError, setTxErrorMsg] = useState<string | undefined>()
-  const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
+  const wusdBalance = useSubscribeBalance('WUSD')
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const { toastDispatch } = useToastContext()
