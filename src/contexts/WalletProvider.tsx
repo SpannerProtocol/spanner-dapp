@@ -1,6 +1,7 @@
 import { isWeb3Injected, web3AccountsSubscribe, web3Enable, web3FromSource } from '@polkadot/extension-dapp'
 import type { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types'
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { useToastContext } from './ToastContext'
 
 export interface WalletState {
   selectedAddress?: InjectedAccountWithMeta
@@ -23,17 +24,21 @@ export function Web3InjectedProvider({ children }: any): JSX.Element {
   const [injector, setInjector] = useState<InjectedExtension>()
   const [connecting, setConnecting] = useState<boolean>(false)
   const [errorMsg, setErrorMsg] = useState<string | undefined>()
-
+  const { toastDispatch } = useToastContext()
   // Calling this function will trigger web3enable. If the user has not approved
   // injected wallets to Spanner Dapp, he will get the extension popup.
   const createConnection = useCallback(() => {
     if (window.injectedWeb3.length === 0) {
-      setErrorMsg('Cannot find available compatible wallet extensions.')
+      setErrorMsg('Found no wallet extensions.')
+      toastDispatch({
+        type: 'ADD',
+        payload: { title: 'WalletConnectionError', content: 'Found no wallet extensions.', type: 'warning' },
+      })
       setConnecting(false)
     } else {
       setConnecting(true)
     }
-  }, [])
+  }, [toastDispatch])
 
   // A function to select the account object with a matching Addr
   const selectAccount = useCallback(
@@ -56,18 +61,36 @@ export function Web3InjectedProvider({ children }: any): JSX.Element {
   useEffect(() => {
     if (!isWeb3Injected || !connecting) return
     const getAllAccounts = async () => {
-      const extensions = await web3Enable('Spanner Protocol')
+      const extensions = await web3Enable('Spanner Dapp')
       if (extensions.length === 0) {
         setErrorMsg('Access to wallet extensions was not provided or none installed.')
+        toastDispatch({
+          type: 'ADD',
+          payload: {
+            title: 'WalletConnectionError',
+            content: 'Access to wallet extensions was not provided or none installed.',
+            type: 'warning',
+          },
+        })
         // Reset connecting so that user can try again
         setConnecting(false)
       }
       await web3AccountsSubscribe((accounts) => {
         setAllAccounts(accounts)
-      }).catch((err) => console.log(err))
+      }).catch((err) => {
+        setErrorMsg(err)
+        toastDispatch({
+          type: 'ADD',
+          payload: {
+            title: 'WalletConnectionError',
+            content: `Error: ${err}`,
+            type: 'warning',
+          },
+        })
+      })
     }
     getAllAccounts()
-  }, [connecting])
+  }, [connecting, toastDispatch])
 
   useEffect(() => {
     if (!activeAccount) return

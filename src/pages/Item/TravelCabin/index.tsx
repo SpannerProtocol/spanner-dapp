@@ -78,8 +78,6 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     }
   }, [referralCode, referrer])
 
-  console.log('referrer', referrer)
-
   return (
     <>
       <Section>
@@ -247,7 +245,6 @@ function TravelCabinCrowdfundTxConfirm({
   baseFee,
   directReferralRate,
   end,
-  referrer,
   token,
   errorMsg,
   estimatedFee,
