@@ -1,6 +1,7 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
 import { ApiProvider } from 'environment/ApiProvider'
 import { SubstrateProvider } from 'environment/SubstrateProvider'
+import { ToastProvider } from 'environment/ToastContext'
 import { Web3InjectedProvider } from 'environment/WalletProvider'
 import 'inter-ui'
 import React, { StrictMode } from 'react'
@@ -32,7 +33,9 @@ ReactDOM.render(
                 <ThemeProvider>
                   <ThemedGlobalStyle />
                   <HashRouter>
-                    <App />
+                    <ToastProvider>
+                      <App />
+                    </ToastProvider>
                   </HashRouter>
                 </ThemeProvider>
               </Provider>
