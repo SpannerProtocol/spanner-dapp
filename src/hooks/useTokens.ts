@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useApi } from './useApi'
 import { default as projectJson } from '../spanner-projects.json'
 import { ProjectJson } from '../utils/getProjectRegistry'
@@ -21,25 +21,25 @@ export default function useTokens() {
 
   useEffect(() => {
     if (!connected) return
-    api.query.tokens.totalIssuance.entries().then((entries) =>
+    api.query.tokens.totalIssuance.entries().then((entries) => {
+      const tokens: TokenData[] = []
       entries.forEach((entry) => {
+        // filter out non-tokens e.g. dexshares
         if (!entry[0].args[0].isToken) return
         const tokenName = entry[0].args[0].asToken.toString()
         const projectInfo = projectJson as ProjectJson
-        setTokens((prev) => [
-          ...prev,
-          {
-            name: tokenName,
-            iconPath: Object.keys(projectJson).includes(tokenName.toLowerCase())
-              ? projectInfo[tokenName.toLowerCase()].icon
-              : 'placeholder-token.svg',
-          },
-        ])
+        tokens.push({
+          name: tokenName,
+          iconPath: Object.keys(projectJson).includes(tokenName.toLowerCase())
+            ? projectInfo[tokenName.toLowerCase()].icon
+            : 'placeholder-token.svg',
+        })
       })
-    )
+      setTokens((prev) => [...prev, ...tokens])
+    })
   }, [api, connected])
 
-  return tokens
+  return useMemo(() => tokens, [tokens])
 }
 
 /**
