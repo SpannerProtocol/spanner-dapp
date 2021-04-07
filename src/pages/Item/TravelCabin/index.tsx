@@ -247,7 +247,6 @@ function TravelCabinCrowdfundTxConfirm({
   baseFee,
   directReferralRate,
   end,
-  referrer,
   token,
   errorMsg,
   estimatedFee,

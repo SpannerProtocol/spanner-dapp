@@ -6,6 +6,7 @@ import TxModal from 'components/Modal/TxModal'
 import { RowBetween } from 'components/Row'
 import { SectionHeading, StandardText } from 'components/Text'
 import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
+import { useToastContext } from 'environment/ToastContext'
 import { useApi } from 'hooks/useApi'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -69,6 +70,7 @@ export default function Bridge(): JSX.Element {
   const wusdBalance = useSubscribeBalance({ Token: 'WUSD' })
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
+  const { toastDispatch } = useToastContext()
 
   useEffect(() => {
     if (!wallet || !wallet.address) return
@@ -104,12 +106,13 @@ export default function Bridge(): JSX.Element {
           setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
+          toastDispatch,
           custodialProvider: wallet.custodialProvider,
           txInfo: { section: 'currencies', method: 'transfer' },
         })
       })
     },
-    [wallet, t, api, chainDecimals]
+    [wallet, t, api, chainDecimals, toastDispatch]
   )
 
   const dismissModal = () => {
