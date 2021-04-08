@@ -51,14 +51,14 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
             txContent={
               <>
                 <StandardText>
-                  {`Confirm Release Ticket Fare from DPO: `} {dpoInfo.index.toString()}`
+                  {`Confirm Release Deposit from DPO`}: {dpoInfo.index.toString()}`
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Release Ticket Fare'}
-            tip={`Release Ticket Fare from DPO Vault.`}
-            actionDesc={<StandardText>{`Release Ticket Fare DPO Vault.`}</StandardText>}
+            actionName={'Release Deposit'}
+            tip={`Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.`}
+            actionDesc={<StandardText>{`Release Deposit from DPO Deposit Vault to all Members`}</StandardText>}
             icon={ACTION_ICONS[dpoAction.action]}
             buttonText={'Release'}
             transaction={{

@@ -837,7 +837,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 </StandardText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Fare Deposit`)}</StandardText>
+                <StandardText>{t(`Deposit`)}</StandardText>
                 <StandardText>
                   {formatToUnit(dpoInfo.vault_deposit.toString(), chainDecimals, 2)} {token}
                 </StandardText>

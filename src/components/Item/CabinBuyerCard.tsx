@@ -1,4 +1,4 @@
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, StandardText } from 'components/Text'
 import { InlineSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -45,10 +45,15 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
             <CabinCard>
               <IconWrapper>{getCabinClassImage(cabinInfo.name.toString())}</IconWrapper>
               <CabinTitle>
-                <HeavyText style={{ marginLeft: '0', marginTop: '0', display: 'inline-flex' }}>
-                  {t(`TravelCabin `)}
-                  {cabinInfo.name.toString()}
-                </HeavyText>
+                <div style={{ display: 'block' }}>
+                  <HeavyText style={{ marginLeft: '0', marginTop: '0', width: '100%' }}>
+                    {t(`TravelCabin `)}
+                    {cabinInfo.name.toString()}
+                  </HeavyText>
+                  <ItalicText fontSize="10px" style={{ width: '100%' }}>
+                    {t(`Inventory`)} #{inventoryIndex.toString()}
+                  </ItalicText>
+                </div>
               </CabinTitle>
               <CabinData1>
                 <InlineSection>

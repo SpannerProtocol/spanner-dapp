@@ -88,6 +88,8 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
     }
   }, [addActionReq, api, connected, dpoInfo, wallet])
 
+  // Every block change causes a rerender might might be necessary if we want
+  // the DPO State and Actions to update.
   useEffect(() => {
     if (!lastBlock || !wallet || !dpoInfo || !actionsReq) return
     // If DPOInfo, just need dpoInfo, else need all keys in travelCabinKeys
