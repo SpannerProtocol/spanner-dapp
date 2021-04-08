@@ -3,7 +3,8 @@ frontend:
   phases:
     preBuild:
       commands:
-        - yarn install --production=false
+        - yarn install
+        - yarn build:types
     build:
       commands:
         - yarn run build:amplify
