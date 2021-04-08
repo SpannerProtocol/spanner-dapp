@@ -7,7 +7,7 @@ export interface ReadUserResponse {
         Referrer: string | null
       }
     } | null
-    UserId: string
+    User: string
   }
 }
 
@@ -16,11 +16,11 @@ function responseIsReadUser(response: ReadUserResponse | object): response is Re
   return Object.keys(response).length > 0
 }
 
-/** Get the full item for a UserId */
+/** Get the full item for a User */
 export async function kvReadUser(client: DynamoDB.DocumentClient, address: string) {
   const params = {
     Key: {
-      UserId: address,
+      User: address,
     },
     TableName: 'User',
   }
@@ -69,7 +69,7 @@ export async function kvCreateUserReferrer(
   const params = {
     TableName: 'User',
     Key: {
-      UserId: address,
+      User: address,
     },
     UpdateExpression: `set #p.${projectName} = :r`,
     ExpressionAttributeValues: {
