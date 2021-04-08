@@ -4,6 +4,7 @@ frontend:
     preBuild:
       commands:
         - yarn install
+        - yarn build:types
     build:
       commands:
         - yarn run build:amplify
