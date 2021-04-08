@@ -1,6 +1,7 @@
 import { Balance } from '@polkadot/types/interfaces'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { useProjectManager } from 'state/project/hooks'
 import { default as projectJson } from '../spanner-projects.json'
 import { ProjectJson } from '../utils/getProjectRegistry'
 import useProjectInfos from './useProjectInfo'
@@ -42,8 +43,6 @@ export function useProject() {
   const projectInfos = useProjectInfos()
   const registries = useProjectRegistry()
 
-  // const registries = useMemo(() => getProjectRegistry(tokenNames), [tokenNames])
-
   useEffect(() => {
     if (!projectInfos) return
     setProjects([])
@@ -65,4 +64,36 @@ export function useProject() {
   }, [registries, projectInfos])
 
   return projects
+}
+
+interface SelectedProject {
+  name: string
+  token: string
+  totalIssuance: string
+  icon: string
+  description: string
+}
+
+export function useSelectedProject(): SelectedProject | undefined {
+  const { projectState } = useProjectManager()
+  const projectRegistry = useProjectRegistry()
+  const [project, setProject] = useState<SelectedProject>()
+  const selectedProject = projectState.selectedProject
+
+  useEffect(() => {
+    if (!selectedProject) return
+    const selectedProjectRegistry = projectRegistry.find(
+      (registry) => registry.token.toUpperCase() === selectedProject.token.toUpperCase()
+    )
+    if (!selectedProjectRegistry) return
+    setProject({
+      name: selectedProject.project,
+      token: selectedProject.token,
+      totalIssuance: selectedProject.totalIssuance,
+      icon: selectedProjectRegistry.iconPath,
+      description: selectedProjectRegistry.description,
+    })
+  }, [projectRegistry, selectedProject])
+
+  return project
 }

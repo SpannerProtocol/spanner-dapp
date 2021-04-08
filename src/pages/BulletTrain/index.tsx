@@ -30,7 +30,7 @@ const tabData: Array<TabMetaData> = [
 
 const tabOptions = ['instructions', 'travelcabins', 'dpo']
 
-export default function Catalogue() {
+export default function BulletTrain() {
   const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<string>('travelcabins')
   const { projectState } = useProjectManager()
@@ -72,6 +72,12 @@ export default function Catalogue() {
               <Section style={{ marginBottom: '1rem' }}>
                 <Heading>{t(`BulletTrain`)}</Heading>
               </Section>
+              {/* {projectState.selectedProject && (
+                <Section style={{ marginBottom: '1rem' }}>
+                  <BulletTrainStats token={projectState.selectedProject.token} />
+                  <Milestones />
+                </Section>
+              )} */}
               <TabBar
                 margin="0px"
                 id={'tabbar-catalogue'}

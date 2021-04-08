@@ -345,8 +345,8 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
             {t(`Launchpad`)}
           </StyledNavLink>
-          <StyledNavLink id={`catalogue-nav-link`} to={'/catalogue'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="catalogue" />}
+          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
             {t(`BulletTrain`)}
           </StyledNavLink>
           {process.env.REACT_APP_DEBUG_MODE === 'true' && (
