@@ -105,7 +105,6 @@
     "serve": "^11.3.0",
     "start-server-and-test": "^1.11.0",
     "styled-components": "^4.2.0",
-    "ts-node": "^8.6.2",
     "typescript": "^3.8.3",
     "use-count-up": "^2.2.5",
     "wcag-contrast": "^3.0.0"
@@ -176,6 +175,7 @@
     "react-table": "^7.6.3",
     "react-use": "^12.2.0",
     "recharts": "^2.0.9",
+    "ts-node": "^8.6.2",
     "webpack-cli": "^4.3.0"
   }
 }
