@@ -6,7 +6,7 @@ frontend:
         - yarn install
     build:
       commands:
-        - yarn build:production
+        - yarn run build:amplify
   artifacts:
     baseDirectory: /
     files:
