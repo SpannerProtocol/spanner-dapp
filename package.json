@@ -132,6 +132,7 @@
     "start:production": "REACT_APP_ENV=production yarn start_with_env",
     "start_with_env": "react-app-rewired start",
     "build": "REACT_APP_ENV=local yarn build_with_env",
+    "build:ampify": "react-app-rewired build",
     "build:production": "REACT_APP_ENV=production yarn build_with_env",
     "build_with_env": "sh -ac '. .env.${REACT_APP_ENV}; react-app-rewired build'",
     "test": "react-app-rewired test --env=jsdom",
