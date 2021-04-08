@@ -77,11 +77,11 @@ export function useUserKvHasProject() {
     const params = {
       TableName: 'User',
       Item: {
-        UserId: wallet.address,
+        User: wallet.address,
         Project: {},
       },
       Key: {
-        UserId: wallet.address,
+        User: wallet.address,
       },
     }
     kvReadUser(client, wallet.address).then((result) => {

@@ -52,7 +52,12 @@ const StatDisplay = styled.div`
   `};
 `
 
-export default function BulletTrainStats({ token }: { token: string }) {
+// const StatDisplaySmall = styled.div`
+//   display: flex;
+//   width: 100%;
+// `
+
+export default function BulletTrainStats({ token, small }: { token: string, small?: boolean }) {
   const stats = useStats(token)
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
