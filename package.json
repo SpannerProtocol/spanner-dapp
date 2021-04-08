@@ -1,7 +1,7 @@
 {
   "name": "spanner-dapp",
   "description": "Spanner Dapp",
-  "homepage": ".",
+  "homepage": "/",
   "private": true,
   "resolutions": {
     "@polkadot/api": "^4.0.3",
