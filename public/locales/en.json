@@ -151,7 +151,7 @@
   "Milestone": "Milestone",
   "Details": "Details",
   "DPO Account Vault": "DPO Account Vault",
-  "Fare Deposit": "Fare Deposit",
+  "Deposit": "Deposit",
   "DPO Id": "DPO Id",
   "Block": "Block",
   "Crowdfunding Information": "Crowdfunding Information",
@@ -295,6 +295,8 @@
   "Your DPOs": "Your DPOs",
   "Your TravelCabins": "Your TravelCabins", 
   "Step 1: Before Boarding": "Step 1: Before Boarding",
-  "Largest Input is": "Largest Input is"
-
+  "Largest Input is": "Largest Input is",
+  "Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.": "Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.",
+  "Release Deposit from DPO Deposit Vault to all Members": "Release Deposit from DPO Deposit Vault to all Members", 
+  "Confirm Release Deposit from DPO": "Confirm Release Deposit from DPO"
 }

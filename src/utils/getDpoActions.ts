@@ -57,7 +57,7 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
   if (dpoInfo.state.toString() === 'CREATED') {
     // If expired then anyone can withdraw from target [Verified]
     if (lastBlock.gte(dpoInfo.expiry_blk)) {
-      if (!dpoInfo.vault_bonus.isZero()) {
+      if (!dpoInfo.vault_deposit.isZero()) {
         actions.push({ role: 'any', hasGracePeriod: false, action: 'releaseFareFromDpo', dpoIndex: dpoInfo.index })
       }
     }

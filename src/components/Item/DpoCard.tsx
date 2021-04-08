@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { AlertIcon, AlertWrapper } from 'components/Alert'
 import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, StandardText } from 'components/Text'
 import { Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoActions } from 'hooks/useDpoActions'
@@ -122,7 +122,12 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
             <DpoInnerCard>
               <DpoTitle>
                 <RowBetween>
-                  <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                  <div style={{ display: 'block' }}>
+                    <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                    <ItalicText fontSize="10px">
+                      {t(`DPO`)} #{dpoInfo.index.toString()}
+                    </ItalicText>
+                  </div>
                   {dpoInfo.state.isCreated && expiry && (
                     <InlineSection style={{ width: 'auto' }}>
                       {expiry.isZero() ? (
@@ -241,7 +246,12 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               <DpoTitle>
                 <Section>
                   <RowBetween>
-                    <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                    <div style={{ display: 'block' }}>
+                      <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                      <ItalicText fontSize="10px">
+                        {t(`DPO`)} #{dpoInfo.index.toString()}
+                      </ItalicText>
+                    </div>
                     {dpoInfo.state.isCreated && expiry && (
                       <InlineSection style={{ width: 'auto' }}>
                         {expiry.isZero() ? (
