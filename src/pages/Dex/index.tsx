@@ -1,48 +1,42 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import TabBar, { TabMetaData } from '../../components/TabBar'
 import { PageWrapper, Wrapper } from '../../components/Wrapper'
 import MainConsole from './MainConsole'
 
-const consoleOptions = ['swap', 'lp-add', 'lp-remove']
-
 const tabData: Array<TabMetaData> = [
   {
-    id: 'tab-swap',
-    className: 'tab swap-container',
+    id: 'swap',
     label: 'Swap',
   },
   {
-    id: 'tab-lp-add',
-    className: 'tab lp-add-container',
+    id: 'lp-add',
     label: 'Add Liquidity',
   },
   {
-    id: 'tab-lp-remove',
-    className: 'tab lp-remove-container',
+    id: 'lp-remove',
     label: 'Remove Liquidity',
   },
 ]
 
 export default function Dex() {
-  const [activeConsoleIndex, setActiveConsoleIndex] = useState<number>(0)
   const [activeConsole, setActiveConsole] = useState<string>('swap')
 
-  const handleClick = (indexClicked: number) => {
-    setActiveConsoleIndex(indexClicked)
+  const handleTabSelect = (activeTab: string) => {
+    setActiveConsole(activeTab)
   }
-
-  // Side effects of choosing the active console from tabs
-  useEffect(() => {
-    const consoleName = consoleOptions[activeConsoleIndex]
-    setActiveConsole(consoleName)
-  }, [activeConsoleIndex])
 
   return (
     <PageWrapper>
       <Wrapper
         style={{ width: '100%', maxWidth: '640px', padding: '0.5rem', justifyContent: 'center', alignItems: 'center' }}
       >
-        <TabBar id={'tabbar-dex'} className={'tabbar-container'} tabs={tabData} onClick={handleClick} />
+        <TabBar
+          id={'tabbar-dex'}
+          className={'tabbar-container'}
+          activeTab={activeConsole}
+          tabs={tabData}
+          onClick={handleTabSelect}
+        />
         <MainConsole activeConsole={activeConsole} />
       </Wrapper>
     </PageWrapper>

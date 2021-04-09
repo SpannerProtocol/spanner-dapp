@@ -4,6 +4,7 @@ import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectManager } from 'state/project/hooks'
+import { useBulletTrain } from 'utils/usePath'
 import TabBar, { TabMetaData } from '../../components/TabBar'
 import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import BulletTrainInstructions from './BulletTrainInstructions'
@@ -13,41 +14,37 @@ import TravelCabinCatalogue from './TravelCabin'
 
 const tabData: Array<TabMetaData> = [
   {
-    id: 'tab-instructions',
-    className: 'tab instructions-container',
+    id: 'instructions',
     label: 'Instructions',
   },
   {
-    id: 'tab-travelcabins',
-    className: 'tab travelcabins-container',
+    id: 'travelcabins',
     label: 'TravelCabins',
   },
   {
-    id: 'tab-lp-dpo',
-    className: 'tab dpo-container',
-    label: 'DPO',
+    id: 'dpos',
+    label: 'DPOs',
   },
 ]
 
-const tabOptions = ['instructions', 'travelcabins', 'dpo']
-
 export default function BulletTrain() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
-  const [activeTab, setActiveTab] = useState<string>('travelcabins')
+  const selectedPath = useBulletTrain()
+  const [activeTab, setActiveTab] = useState<string>('instructions')
   const { projectState } = useProjectManager()
   // Using this to check if a project has a bullettrain campaign started
   const travelCabins = useTravelCabins(projectState.selectedProject?.token)
   const [hasBulletTrain, setHasBulletTrain] = useState<boolean>(false)
   const { t } = useTranslation()
 
-  const handleClick = (indexClicked: number) => {
-    setActiveTabIndex(indexClicked)
+  const handleTabSelect = (tab: string) => {
+    setActiveTab(tab)
   }
 
   useEffect(() => {
-    const tabName = tabOptions[activeTabIndex]
-    setActiveTab(tabName)
-  }, [activeTabIndex])
+    if (!selectedPath.item) return
+    console.log('path changed: ', selectedPath.item)
+    setActiveTab(selectedPath.item)
+  }, [selectedPath.item])
 
   useEffect(() => {
     if (travelCabins.length === 0) {
@@ -82,8 +79,9 @@ export default function BulletTrain() {
                 margin="0px"
                 id={'tabbar-catalogue'}
                 className={'tabbar-container'}
+                activeTab={activeTab}
                 tabs={tabData}
-                onClick={handleClick}
+                onClick={handleTabSelect}
               />
             </FlatCard>
           </Wrapper>
@@ -92,7 +90,7 @@ export default function BulletTrain() {
             <SpacedSection style={{ marginTop: '0' }}>
               {activeTab === 'instructions' && <BulletTrainInstructions />}
               {activeTab === 'travelcabins' && <TravelCabinCatalogue />}
-              {activeTab === 'dpo' && <DpoCatalogue />}
+              {activeTab === 'dpos' && <DpoCatalogue />}
             </SpacedSection>
           </SectionContainer>
         </>

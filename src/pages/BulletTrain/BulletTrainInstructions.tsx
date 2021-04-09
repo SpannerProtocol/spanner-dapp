@@ -1,9 +1,10 @@
 import Card, { FlatCard } from 'components/Card'
 import ImageLightBox from 'components/LightBox'
-import { AnyQuestionHelper } from 'components/QuestionHelper'
+import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import BulletTrainDiagram from '../../assets/images/bullettrain-rules.png'
 import { HeavyText, SectionHeading, SectionTitle, StandardText } from '../../components/Text'
@@ -64,15 +65,17 @@ export default function BulletTrainInstructions() {
               <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>1</StepNumber>
                 <HeavyText>{t(`Before Boarding`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(
+                    `Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.`
+                  )}
+                />
               </div>
-
-              <AnyQuestionHelper
-                text={t(
-                  `Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.`
-                )}
-              >
+              <Link to={{ pathname: '' }}>
                 <Step>{t(`Buy a Cabin with Ticket Fare`)}</Step>
-              </AnyQuestionHelper>
+              </Link>
             </SpacedSection>
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '0.5rem' }}>

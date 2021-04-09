@@ -253,11 +253,9 @@ function TransfersTokens() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
-  console.log('inside tranfserstokens')
 
   useEffect(() => {
     if (!wallet || !wallet.address) return
-    console.log('calling postTransfersToken')
     postTransfersTokens({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
   }, [wallet, page])
 
@@ -341,36 +339,25 @@ export function LatestTransactions() {
 
 const tabData: Array<TabMetaData> = [
   {
-    id: 'tab-latest-transactions',
-    className: 'tab latest-transactions-container',
+    id: 'latest-transactions',
     label: 'Transactions',
   },
   {
-    id: 'tab-transfers',
-    className: 'tab transfers-container',
+    id: 'transfers',
     label: 'Transfers (BOLT)',
   },
   {
-    id: 'tab-transfers-tokens',
-    className: 'tab transfers-tokens-container',
+    id: 'transfers-tokens',
     label: 'Transfers (Tokens)',
   },
 ]
 
-const tabOptions = ['latest-transactions', 'transfers', 'transfers-tokens']
-
 export default function TransactionHistory() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
-  const [activeTab, setActiveTab] = useState<string>('balances')
+  const [activeTab, setActiveTab] = useState<string>('latest-transactions')
 
-  const handleTabSelect = (indexClicked: number) => {
-    setActiveTabIndex(indexClicked)
+  const handleTabSelect = (tab: string) => {
+    setActiveTab(tab)
   }
-
-  useEffect(() => {
-    const tabName = tabOptions[activeTabIndex]
-    setActiveTab(tabName)
-  }, [activeTabIndex])
 
   return (
     <>
@@ -379,6 +366,7 @@ export default function TransactionHistory() {
           <TabBar
             id={'tabbar-transaction-history'}
             className={'tabbar-container'}
+            activeTab={activeTab}
             tabs={tabData}
             onClick={handleTabSelect}
             margin="0"

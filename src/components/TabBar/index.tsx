@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import React, { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import styled, { ThemeContext } from 'styled-components'
 
 const TabBarWrapper = styled.div<{ margin?: string }>`
   display: flex;
@@ -34,57 +34,52 @@ const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
 interface TabBarProps {
   id?: string
   className?: string
+  activeTab: string
   tabs: Array<TabMetaData>
   activeColor?: string
   fontSize?: string
   mobileFontSize?: string
-  onClick?: (index: number) => void
+  onClick: (tabId: string) => void
   margin?: string
 }
 
 export interface TabMetaData {
-  id?: string
-  className?: string
+  id: string
   label: string
-  callback?: () => any
   onClick?: (e: React.MouseEvent) => any
 }
 
-// TabBar component takes an array of TabMetaData. If passed a click handler as a callback,
-// it will return the index of the tab clicked.
 export default function TabBar({
   id,
   className,
+  activeTab,
   tabs,
   onClick,
   margin,
   fontSize,
   mobileFontSize,
 }: TabBarProps): JSX.Element {
-  const [activeIndex, setActiveIndex] = useState<number>(0)
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
 
-  const handleClick = (event: React.MouseEvent, indexClicked: number) => {
-    setActiveIndex(indexClicked)
-    const activeTab = tabs[indexClicked]
-    if (!activeTab.callback) return
-    activeTab.callback()
+  const handleClick = (indexClicked: number) => {
+    const selectedTab = tabs[indexClicked]
+    onClick(selectedTab.id)
   }
 
   useEffect(() => {
-    if (!onClick) return
-    return onClick(activeIndex)
-  }, [activeIndex, onClick])
+    if (!onClick || !activeTab) return
+    return onClick(activeTab)
+  }, [activeTab, onClick])
 
   return (
     <TabBarWrapper id={id} className={className} margin={margin}>
       {tabs &&
         tabs.map((tab, index) => {
-          const active = activeIndex === index
+          const active = tabs.findIndex((tab) => tab.id === activeTab) === index
           return (
             <TabWrapper key={index}>
-              <Tab key={index} id={tab.id} className={tab.className} onClick={(event) => handleClick(event, index)}>
+              <Tab key={index} onClick={() => handleClick(index)}>
                 <TabText
                   fontSize={fontSize}
                   mobileFontSize={mobileFontSize}
