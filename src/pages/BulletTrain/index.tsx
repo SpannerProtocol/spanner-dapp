@@ -8,6 +8,7 @@ import TabBar, { TabMetaData } from '../../components/TabBar'
 import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import BulletTrainInstructions from './BulletTrainInstructions'
 import DpoCatalogue from './Dpo'
+import Milestones from './Milestones'
 import TravelCabinCatalogue from './TravelCabin'
 
 const tabData: Array<TabMetaData> = [
@@ -72,12 +73,11 @@ export default function BulletTrain() {
               <Section style={{ marginBottom: '1rem' }}>
                 <Heading>{t(`BulletTrain`)}</Heading>
               </Section>
-              {/* {projectState.selectedProject && (
+              {projectState.selectedProject && (
                 <Section style={{ marginBottom: '1rem' }}>
-                  <BulletTrainStats token={projectState.selectedProject.token} />
                   <Milestones />
                 </Section>
-              )} */}
+              )}
               <TabBar
                 margin="0px"
                 id={'tabbar-catalogue'}
