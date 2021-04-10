@@ -290,11 +290,13 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                         <HeavyText fontSize="12px" style={{ display: 'flex', alignItems: 'center' }}>
                           {t(`Pending Actions`)}:
                         </HeavyText>
-                        {actions.map((action, index) => (
-                          <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
-                            <AlertIcon src={ACTION_ICONS[action.action]} />
-                          </AlertWrapper>
-                        ))}
+                        <div style={{ display: 'flex' }}>
+                          {actions.map((action, index) => (
+                            <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
+                              <AlertIcon src={ACTION_ICONS[action.action]} />
+                            </AlertWrapper>
+                          ))}
+                        </div>
                       </InlineSection>
                     </div>
                   </Section>
