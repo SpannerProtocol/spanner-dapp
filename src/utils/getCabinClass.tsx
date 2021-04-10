@@ -13,6 +13,24 @@ export default function getCabinClass(cabinName: string) {
 }
 
 /**
+ * Get class name by TravelCabinIndex as string. Useful for target travel cabins.
+ * @param cabinIndex TravelabinIndex
+ * @returns class name or index if none
+ */
+export function getCabinClassByIndex(cabinIndex: string) {
+  let cabinClassName
+  Object.keys(TRAVELCABIN_CLASSES).forEach((className) => {
+    if (TRAVELCABIN_CLASSES[className].order.toString() === cabinIndex) {
+      cabinClassName = TRAVELCABIN_CLASSES[className].name
+    }
+  })
+  if (cabinClassName) {
+    return cabinClassName
+  }
+  return cabinIndex
+}
+
+/**
  * Get the image from TravelCabinInfo
  * @param cabinName TravelCabinInfo.name
  */

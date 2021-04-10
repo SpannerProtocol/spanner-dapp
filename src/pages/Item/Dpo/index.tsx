@@ -357,7 +357,7 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
         {props.managerSeats && props.baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>{props.managerSeats + props.baseFee} %</StandardText>
+            <StandardText>{Math.round(parseFloat(props.managerSeats) + props.baseFee).toString()} %</StandardText>
           </RowBetween>
         )}
         <RowBetween>
