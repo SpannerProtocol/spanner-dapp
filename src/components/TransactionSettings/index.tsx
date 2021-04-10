@@ -22,6 +22,7 @@ const FancyButton = styled.button`
   font-size: 1rem;
   width: auto;
   min-width: 3.5rem;
+  font-size: 12px;
   border: 1px solid ${({ theme }) => theme.bg3};
   outline: none;
   background: ${({ theme }) => theme.bg1};
@@ -44,7 +45,7 @@ const Option = styled(FancyButton)<{ active: boolean }>`
 
 const Input = styled.input`
   background: ${({ theme }) => theme.bg1};
-  font-size: 16px;
+  font-size: 12px;
   width: auto;
   outline: none;
   &::-webkit-outer-spin-button,
@@ -127,7 +128,10 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
           <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
             Slippage tolerance
           </TYPE.black>
-          <QuestionHelper text="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+          <QuestionHelper
+            text="Your transaction will revert if the price changes unfavorably by more than this percentage."
+            backgroundColor="transparent"
+          />
         </RowFixed>
         <RowBetween>
           <Option

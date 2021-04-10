@@ -1,5 +1,8 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { u32 } from '@polkadot/types'
+import { Balance } from '@polkadot/types/interfaces'
+import BN from 'bn.js'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DisclaimerText, ModalText } from 'components/Text'
@@ -11,9 +14,12 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
+import SlippageTabs from '../../components/TransactionSettings'
 import { BorderedWrapper, Section } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
+import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
+import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
 import {
   ConsoleStat,
   ErrorMsg,
@@ -24,13 +30,7 @@ import {
   TokenInputAmount,
   TokenInputWrapper,
 } from './components'
-import MenuSelect from './components/MenuSelect'
-import { Balance } from '@polkadot/types/interfaces'
-import { getSupplyAmount, getTargetAmount } from '../../utils/getSwapAmounts'
-import { u32 } from '@polkadot/types'
-import BN from 'bn.js'
-import SlippageTabs from '../../components/TransactionSettings'
-import { useUserSlippageTolerance } from '../../state/user/hooks'
+import TokenSelector from './components/TokenSelector'
 
 // interface SwapErrors {
 //   slippage?: string
@@ -80,7 +80,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
           <RowBetween>
             <HeavyHeader>{t(`Average Swap Price`)}</HeavyHeader>
             <ConsoleStat>
-              {averagePrice?.toFixed(3)} {tokenA} / {tokenB}
+              {averagePrice?.toFixed(6)} {tokenA} / {tokenB}
             </ConsoleStat>
           </RowBetween>
           <RowBetween>
@@ -107,12 +107,13 @@ export default function SwapConsole(): JSX.Element {
   const [tokenB, setTokenB] = useState<string>('WUSD')
   const [amountA, setAmountA] = useState<number>(0)
   const [amountB, setAmountB] = useState<number>(0)
-  const [isOnA, setOnA] = useState<boolean>(false)
+  const [isOnA, setIsOnA] = useState<boolean>(false)
   const [fromHeader, setFromHeader] = useState<string>()
   const [toHeader, setToHeader] = useState<string>()
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [price, setPrice] = useState<number>(0)
+  const [unsafeInteger, setUnsafeInteger] = useState<boolean>(false)
   const [supplyAmount, setSupplyAmount] = useState<BN>(new BN(0))
   const [targetAmount, setTargetAmount] = useState<BN>(new BN(0))
   const [supplyAmountWithSlippage, setSupplyAmountWithSlippage] = useState<BN>(new BN(0))
@@ -126,35 +127,32 @@ export default function SwapConsole(): JSX.Element {
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
 
-  const balanceA = useSubscribeBalance({ Token: tokenA })
-  const balanceB = useSubscribeBalance({ Token: tokenB })
+  const balanceA = useSubscribeBalance(tokenA)
+  const balanceB = useSubscribeBalance(tokenB)
 
   const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
-    [{ Token: tokenA }, { Token: tokenB }],
-    4500
+    tokenA,
+    tokenB,
+    800
   )
 
-  const handleTokenA = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toUpperCase()
-    setTokenA(tokenName)
-  }
-
-  const handleTokenB = (event: React.MouseEvent<HTMLElement>) => {
-    const tokenName = event.currentTarget.innerText.toUpperCase()
-    setTokenB(tokenName)
-  }
-
   const handleAmountA = (value: number) => {
-    if (!isOnA) {
+    if (!isOnA) return
+    if (value > Number.MAX_SAFE_INTEGER) {
+      setUnsafeInteger(true)
       return
     }
+    setUnsafeInteger(false)
     setAmountA(value)
   }
 
   const handleAmountB = (value: number) => {
-    if (isOnA) {
+    if (isOnA) return
+    if (value > Number.MAX_SAFE_INTEGER) {
+      setUnsafeInteger(true)
       return
     }
+    setUnsafeInteger(false)
     setAmountB(value)
   }
 
@@ -187,10 +185,12 @@ export default function SwapConsole(): JSX.Element {
     setModalOpen(true)
   }
 
+  // Always set slippage to .5%
   useEffect(() => {
     setSlippage(50)
   }, [setSlippage])
 
+  // Handle Fee and Price
   useEffect(() => {
     if (poolError) {
       setPoolQueryError(poolError)
@@ -203,17 +203,12 @@ export default function SwapConsole(): JSX.Element {
       return
     } else {
       setPool(subscribedPool)
-      setAmountA(0)
-      setAmountB(0)
-      if (subscribedFee) {
-        setFee(subscribedFee)
-      }
-      if (subscribedPrice) {
-        setPrice(subscribedPrice)
-      }
+      if (subscribedFee) setFee(subscribedFee)
+      if (subscribedPrice) setPrice(subscribedPrice)
     }
   }, [subscribedPool, subscribedFee, subscribedPrice, poolError])
 
+  // Calculate Amount B when TargetAmount changes
   useEffect(() => {
     if (targetAmount.isZero()) {
       setAmountB(0)
@@ -233,6 +228,7 @@ export default function SwapConsole(): JSX.Element {
     }
   }, [targetAmount, chainDecimals, slippage])
 
+  // Calculate Amount A when SupplyAmount changes
   useEffect(() => {
     if (supplyAmount.isZero()) {
       setAmountA(0)
@@ -252,7 +248,9 @@ export default function SwapConsole(): JSX.Element {
     }
   }, [supplyAmount, chainDecimals, slippage])
 
+  // Calculate supplyAmount and targetAmount
   useEffect(() => {
+    const cd = new BN(chainDecimals)
     if (isOnA) {
       // user provided supply
       setFromHeader('From')
@@ -263,7 +261,10 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const supply = new BN(amountA * 10 ** chainDecimals)
+        const [integer, decimal] = amountA.toString().split('.')
+        const supply = new BN(parseFloat('0.' + decimal) * 10 ** chainDecimals).add(
+          new BN(integer).mul(new BN(10).pow(cd))
+        )
         setSupplyAmount(supply)
         if (supply.lte(balanceA)) {
           setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
@@ -279,7 +280,10 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(new BN(0))
         setTargetAmount(new BN(0))
       } else {
-        const target = new BN(amountB * 10 ** chainDecimals)
+        const [integer, decimal] = amountB.toString().split('.')
+        const target = new BN(parseFloat('0.' + decimal) * 10 ** chainDecimals).add(
+          new BN(integer).mul(new BN(10).pow(cd))
+        )
         setTargetAmount(target)
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
@@ -335,14 +339,15 @@ export default function SwapConsole(): JSX.Element {
                   placeholder="0.0"
                   onChange={(e) => handleAmountA(parseFloat(e.target.value))}
                   onClick={() => {
-                    setOnA(true)
+                    setIsOnA(true)
                   }}
                   value={Number.isNaN(amountA) ? '' : amountA}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'BOLT'} onClick={handleTokenA} />
+                <TokenSelector defaultToken={'BOLT'} selectToken={(token) => setTokenA(token)} />
               </TokenInputWrapper>
-              {supplyAmount.gt(balanceA) && <ErrorMsg>Insufficient Balance</ErrorMsg>}
+              {supplyAmount.gt(balanceA) && <ErrorMsg>{t(`Insufficient Balance`)}</ErrorMsg>}
+              {unsafeInteger && isOnA && <ErrorMsg>{t(`Amount is too high`)}</ErrorMsg>}
             </InputGroup>
           </CenteredRow>
           <CenteredRow>
@@ -364,13 +369,20 @@ export default function SwapConsole(): JSX.Element {
                   placeholder="0.0"
                   onChange={(e) => handleAmountB(parseFloat(e.target.value))}
                   onClick={() => {
-                    setOnA(false)
+                    setIsOnA(false)
                   }}
                   value={Number.isNaN(amountB) ? '' : amountB}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <MenuSelect items={[{ text: 'BOLT' }, { text: 'WUSD' }]} placeholder={'WUSD'} onClick={handleTokenB} />
+                <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
               </TokenInputWrapper>
+              <div style={{ display: 'block' }}>
+                {unsafeInteger && !isOnA && (
+                  <ErrorMsg>
+                    {t(`Largest Input is`)} {Number.MAX_SAFE_INTEGER}
+                  </ErrorMsg>
+                )}
+              </div>
             </InputGroup>
           </CenteredRow>
         </Section>
@@ -382,7 +394,7 @@ export default function SwapConsole(): JSX.Element {
             <LightHeader>{t(`Current Price`)}</LightHeader>
             {!poolQueryError && price ? (
               <ConsoleStat>
-                {price.toFixed(3)} {tokenA} / {tokenB}
+                {price.toFixed(6)} {tokenA} / {tokenB}
               </ConsoleStat>
             ) : (
               <ConsoleStat> ------ </ConsoleStat>
@@ -397,7 +409,7 @@ export default function SwapConsole(): JSX.Element {
           </InputHeader>
         </Section>
         <Section>
-          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError ? (
+          {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError || targetAmount.gt(balanceB) ? (
             <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
           ) : (
             <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>

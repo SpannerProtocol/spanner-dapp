@@ -1,17 +1,16 @@
 import { Web3Provider } from '@ethersproject/providers'
+import { ApiPromise } from '@polkadot/api'
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
 import { Signer } from '@polkadot/api/types'
-import { ApiPromise } from '@polkadot/api'
-import { ExtrinsicStatus } from '@polkadot/types/interfaces'
-import { ethers } from 'ethers'
-import { Dispatch, SetStateAction } from 'react'
-import getCustodialAccount from './getCustodialAccount'
-import { isJsonRpcSigner } from './typeguards/signer'
-import { Transaction } from 'components/TransactionMsgs'
-import { WalletInfo } from './getWalletInfo'
+import { ExtrinsicStatus, EventRecord, Event } from '@polkadot/types/interfaces'
+import { CallBase, AnyTuple } from '@polkadot/types/types'
 import { postSignature } from 'bridge'
-
-type Dispatcher<S> = Dispatch<SetStateAction<S>>
+import { ToastAction } from 'contexts/ToastContext'
+import { ethers } from 'ethers'
+import { Dispatcher } from 'types/dispatcher'
+import { WalletInfo } from './getWalletInfo'
+import truncateString from './truncateString'
+import { isJsonRpcSigner } from './typeguards/signer'
 
 interface TxInfo {
   section: string
@@ -20,13 +19,14 @@ interface TxInfo {
 
 interface SignAndSendCoreParams {
   tx: SubmittableExtrinsic
+  txInfo?: TxInfo
   address?: string | null
   wallet?: WalletInfo
   api?: ApiPromise
-  queueTransaction?: (tx: Transaction) => void
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
   setPendingMsg: Dispatcher<string | undefined>
+  toastDispatch: React.Dispatch<ToastAction>
 }
 interface SignAndSendParams extends SignAndSendCoreParams {
   signer?: Signer
@@ -34,39 +34,104 @@ interface SignAndSendParams extends SignAndSendCoreParams {
 
 interface SignAndSendCustodialParams extends SignAndSendCoreParams {
   custodialProvider?: Web3Provider
-  txInfo?: TxInfo
 }
 
 interface SignAndSendTxParams extends SignAndSendParams {
   walletType?: string
   signer?: Signer
   custodialProvider?: Web3Provider
-  txInfo?: TxInfo
 }
 
 interface TxStatus {
+  api: ApiPromise
+  txInfo: TxInfo
   status: ExtrinsicStatus
-  queueTransaction?: (tx: Transaction) => void
+  events?: EventRecord[]
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
   setPendingMsg: Dispatcher<string | undefined>
+  toastDispatch: React.Dispatch<ToastAction>
 }
 
-function handleTxStatus(params: TxStatus) {
-  const { status, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
+interface TxEventParams {
+  api: ApiPromise
+  txInfo: TxInfo
+  event: Event
+  blockTxMethod?: CallBase<AnyTuple>
+  toastDispatch: React.Dispatch<ToastAction>
+}
+
+function handleTxEvent({ api, txInfo, event, blockTxMethod, toastDispatch }: TxEventParams) {
+  if (
+    api.events.system.ExtrinsicSuccess.is(event) &&
+    (blockTxMethod ? txInfo.section === blockTxMethod.section && txInfo.method === blockTxMethod.method : true)
+  ) {
+    toastDispatch({
+      type: 'ADD',
+      payload: {
+        title: `${txInfo.section}.${txInfo.method}`,
+        content: `Transaction Succeeded.`,
+        type: 'success',
+      },
+    })
+  } else if (api.events.system.ExtrinsicFailed.is(event)) {
+    const dispatchError = event.data[0]
+    let errorInfo
+    if (dispatchError.isModule) {
+      const decoded = api.registry.findMetaError(dispatchError.asModule)
+      errorInfo = `${decoded.section}.${decoded.name}`
+    } else {
+      // Other, CannotLookup, BadOrigin, no extra info
+      errorInfo = dispatchError.toString()
+    }
+    toastDispatch({
+      type: 'ADD',
+      payload: {
+        title: `${txInfo.section}.${txInfo.method}`,
+        content: `Transaction Failed. ${errorInfo}`,
+        type: 'danger',
+      },
+    })
+  } else {
+  }
+}
+
+function handleTxStatus({ api, txInfo, status, events, setErrorMsg, setHash, setPendingMsg, toastDispatch }: TxStatus) {
   if (status.isInBlock) {
     setErrorMsg(undefined)
     setHash(status.asInBlock.toString())
     setPendingMsg('Transaction submitted to block')
-    if (queueTransaction) {
-      queueTransaction({ message: 'Transaction submitted to block', status: 'queued' })
+    toastDispatch({
+      type: 'ADD',
+      payload: {
+        title: `${txInfo.section}.${txInfo.method}`,
+        content: `Submitted to Block ${truncateString(status.asInBlock.toString(), 16)}`,
+      },
+    })
+    // signAndSendCustodial does not send events
+    if (!events) {
+      api.rpc.chain.getBlock(status.asInBlock.toString()).then((signedBlock) => {
+        api.query.system.events.at(signedBlock.block.header.hash).then((allRecords) => {
+          signedBlock.block.extrinsics.forEach(({ method }, index) => {
+            allRecords
+              .filter(({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index))
+              .forEach(({ event }) => {
+                handleTxEvent({ api, event, txInfo, blockTxMethod: method, toastDispatch })
+              })
+          })
+        })
+      })
+    } else {
+      // Events are provided via signAndSend
+      events.forEach((record) => {
+        const { event } = record
+        handleTxEvent({ api, event, txInfo, toastDispatch })
+      })
     }
-    console.log(`Completed at block hash #${status.asInBlock.toString()}`)
   } else if (status.isReady || status.isBroadcast) {
     setErrorMsg(undefined)
     setHash(undefined)
     setPendingMsg(`Transaction pending`)
-    console.log(`Current status: ${status.type}`)
   } else if (status.isInvalid) {
     setErrorMsg(status.asBroadcast.toString())
     setHash(undefined)
@@ -74,15 +139,24 @@ function handleTxStatus(params: TxStatus) {
   }
 }
 
-function signAndSend(params: SignAndSendParams) {
-  const { tx, address, signer, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
-  if (!address || !signer) {
+function signAndSend({
+  api,
+  tx,
+  txInfo,
+  address,
+  signer,
+  setErrorMsg,
+  setHash,
+  setPendingMsg,
+  toastDispatch,
+}: SignAndSendParams) {
+  if (!api || !address || !signer || !txInfo) {
     setErrorMsg('No wallet detected. Please connect to a wallet and try again.')
     return
   }
   if (isJsonRpcSigner(signer)) return
-  tx.signAndSend(address, { signer }, ({ status }) => {
-    handleTxStatus({ status, queueTransaction, setPendingMsg, setHash, setErrorMsg })
+  tx.signAndSend(address, { signer }, ({ events = [], status }) => {
+    handleTxStatus({ api, txInfo, status, events, setPendingMsg, setHash, setErrorMsg, toastDispatch })
   }).catch((err) => {
     setPendingMsg(undefined)
     setHash(undefined)
@@ -91,9 +165,18 @@ function signAndSend(params: SignAndSendParams) {
   })
 }
 
-function signAndSendCustodial(params: SignAndSendCustodialParams) {
-  const { api, tx, wallet, address, custodialProvider, txInfo, setErrorMsg, setHash, setPendingMsg } = params
-
+function signAndSendCustodial({
+  api,
+  tx,
+  wallet,
+  address,
+  custodialProvider,
+  txInfo,
+  setErrorMsg,
+  setHash,
+  setPendingMsg,
+  toastDispatch,
+}: SignAndSendCustodialParams) {
   // Section and Method are used to reconstruct the @polkadot/api tx call server-side
   if (!custodialProvider || !address || !txInfo || !wallet) {
     setErrorMsg('Unexpected Error with Custodial Signing operation.')
@@ -116,8 +199,10 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
       // setPendingMsg('Waiting for confirmation on your mobile wallet.')
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
-      console.log(err)
-      setErrorMsg(err)
+      if (err.code === 4001) {
+        setErrorMsg('Transaction cancelled')
+        return undefined
+      }
     }
     const recoveredAddress = ethers.utils.recoverAddress(ethers.utils.hashMessage(message), ethSig)
     const custodialPayload = {
@@ -130,10 +215,10 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     return custodialPayload
   }
 
-  const spannerAccount = getCustodialAccount(address)
+  // Format message for custodial wallet to sign
   const paramKeys = tx.meta.args.map((arg) => arg.name.toString())
   const paramsMap: { [index: string]: any } = {}
-  paramKeys.forEach((key, index) => (paramsMap[key] = tx.args[index].toHuman()))
+  paramKeys.forEach((key, index) => (paramsMap[key] = tx.args[index].toJSON()))
   const message = JSON.stringify({
     declaration: 'I authorize Spanner Protocol to sign this transaction on my behalf.',
     custodialAddress: wallet.address,
@@ -144,46 +229,46 @@ function signAndSendCustodial(params: SignAndSendCustodialParams) {
     },
   })
 
-  if (wallet && wallet.developmentKeyring === true) {
-    signAndVerify(custodialProvider, message)
-      .then((ethAccount) => {
-        if (!ethAccount.verified) {
-          setErrorMsg('Message signature does not match custodial wallet address.')
-          return
-        }
-      })
-      .then(() => {
-        tx.signAsync(spannerAccount)
-          .then(() => {
-            tx.send(({ status }) => {
-              handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
-            })
+  // Use signing server. They use a different key derivation.
+  signAndVerify(custodialProvider, message)
+    .then((custodialPayload) => {
+      if (custodialPayload) {
+        postSignature(custodialPayload)
+          .then((txSignature) => {
+            if (!api) return
+            const submittableTx = api.createType('Extrinsic', txSignature.data)
+            // Start watching for event first
+            api.rpc.author
+              .submitAndWatchExtrinsic(submittableTx, (status) =>
+                handleTxStatus({ api, txInfo, status, setPendingMsg, setHash, setErrorMsg, toastDispatch })
+              )
+              .catch((err) => {
+                console.log(err)
+                setErrorMsg(err.message)
+              })
           })
           .catch((err) => {
-            setPendingMsg(undefined)
-            setHash(undefined)
-            setErrorMsg(`Transaction failed: ${err}`)
-            console.log('Transaction failed ', err)
+            console.log(err)
+            setErrorMsg(err.message)
           })
-      })
-  } else {
-    // Use signing server. They use a different key derivation.
-    signAndVerify(custodialProvider, message).then((custodialPayload) => {
-      // console.log('custodial payload', JSON.stringify(custodialPayload))
-      postSignature(custodialPayload).then((txSignature) => {
-        if (!api) return
-        console.log(txSignature.data)
-        const submittableTx = api.createType('Extrinsic', txSignature.data)
-        api.rpc.author.submitAndWatchExtrinsic(submittableTx, (status) =>
-          handleTxStatus({ status, setPendingMsg, setHash, setErrorMsg })
-        )
-      })
+      }
     })
-  }
+    .catch((err) => {
+      console.log(err)
+      setErrorMsg(err.message)
+    })
 }
 
-export default function signAndSendTx(params: SignAndSendTxParams) {
-  const { api, tx, wallet, txInfo, queueTransaction, setErrorMsg, setHash, setPendingMsg } = params
+export default function signAndSendTx({
+  api,
+  tx,
+  wallet,
+  txInfo,
+  setErrorMsg,
+  setHash,
+  setPendingMsg,
+  toastDispatch,
+}: SignAndSendTxParams) {
   if (!wallet || !wallet.address) {
     setErrorMsg('No wallet detected. Please connect to a wallet and try again.')
     return
@@ -200,16 +285,19 @@ export default function signAndSendTx(params: SignAndSendTxParams) {
       setErrorMsg,
       setHash,
       setPendingMsg,
+      toastDispatch,
     })
   } else {
     signAndSend({
+      api,
       tx,
+      txInfo,
       address: wallet.address,
       signer: wallet.injector?.signer,
-      queueTransaction,
       setErrorMsg,
       setHash,
       setPendingMsg,
+      toastDispatch,
     })
   }
 }

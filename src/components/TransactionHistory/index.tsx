@@ -1,26 +1,26 @@
-import { FlatCardPlate } from 'components/Card'
+import { encodeAddress } from '@polkadot/keyring'
+import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
 import TabBar, { TabMetaData } from 'components/TabBar'
-import { HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
-import { FeeWrapper, Section, SectionContainer, SpacedSection } from 'components/Wrapper'
+import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
+import { Section, SectionContainer, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
-import { postTxHistory, postTransfers } from 'queries'
+import { postTransfers, postTransfersTokens, postTxHistory } from 'queries'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
-import { formatToUnit } from 'utils/formatUnit'
-import truncateString from 'utils/truncateString'
-import { encodeAddress } from '@polkadot/keyring'
+import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
+import truncateString, { shortenAddr } from 'utils/truncateString'
 
 const TxRow = styled.div`
   display: grid;
-  grid-template-columns: min(320px) auto min(160px);
+  grid-template-columns: min(260px) auto min(160px);
   grid-column-gap: 40px;
   border-bottom: 1px solid ${({ theme }) => theme.text5};
   transition: background-color 0.3s ease-in;
@@ -73,39 +73,47 @@ function TransferRow({ event }: EventRowProps) {
         <TxRow>
           <TxCell>
             <RowBetween>
-              <StandardText color={'#3498db'}>{truncateString(event.extrinsic_hash, 36)}</StandardText>
+              <StandardText fontSize="12px" color={'#3498db'}>
+                {truncateString(event.extrinsic_hash, 26)}
+              </StandardText>
               <CopyHelper toCopy={`${event.extrinsic_hash}`} />
             </RowBetween>
-            <SmallText>
+            <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
-            </SmallText>
+            </ItalicText>
           </TxCell>
           <TxCell>
             {wallet.address === sender ? (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`To`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(receiver)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    receiver,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             ) : (
               <>
                 <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="14">{t(`From`)}:</HeavyText>
-                  <StandardText style={{ marginLeft: '0.5rem' }}>{` ${truncateString(sender)}`}</StandardText>
+                  <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    sender,
+                    6
+                  )}`}</StandardText>
                 </div>
               </>
             )}
           </TxCell>
           <TxCell>
             {wallet.address === sender ? (
-              <FeeWrapper color="#fff" background="#EC3D3D">
+              <TransferWrapper color="#fff" background="#EC3D3D">
                 {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
-              </FeeWrapper>
+              </TransferWrapper>
             ) : (
-              <FeeWrapper color="#fff" background="#5BC85B">
+              <TransferWrapper color="#fff" background="#5BC85B">
                 {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
-              </FeeWrapper>
+              </TransferWrapper>
             )}
           </TxCell>
         </TxRow>
@@ -156,20 +164,123 @@ function TransactionRow({ tx }: TransactionRowProps) {
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StandardText color={'#3498db'}>{truncateString(tx.extrinsic_hash, 36)}</StandardText>
+          <StandardText fontSize="12px" color={'#3498db'}>
+            {truncateString(tx.extrinsic_hash, 26)}
+          </StandardText>
           <CopyHelper toCopy={`${tx.extrinsic_hash}`} />
         </RowBetween>
-        <SmallText>
+        <ItalicText fontSize="11px">
           {tsToRelative(tx.block_timestamp)} - {tsToDateTimeHuman(tx.block_timestamp)}
-        </SmallText>
+        </ItalicText>
       </TxCell>
       <TxCell>
-        <HeavyText fontSize="14">{`${tx.call_module_function} (${tx.call_module})`}</HeavyText>
+        <HeavyText fontSize="12px">{`${tx.call_module_function} (${tx.call_module})`}</HeavyText>
       </TxCell>
       <TxCell>
-        <FeeWrapper>{formatToUnit(tx.fee, chainDecimals, 2)} BOLT</FeeWrapper>
+        <TransferWrapper>{formatToUnit(tx.fee, chainDecimals, 2)} BOLT</TransferWrapper>
       </TxCell>
     </TxRow>
+  )
+}
+function TransferTokenRow({ event }: EventRowProps) {
+  const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
+  const wallet = useWallet()
+
+  const token = event.params_json[0].value.Token
+  const sender = encodeAddress('0x' + event.params_json[1].value, 42)
+  const receiver = encodeAddress('0x' + event.params_json[2].value, 42)
+  const amount = formatToHumanFromUnit(event.params_json[3].value, chainDecimals)
+
+  return (
+    <>
+      {wallet && wallet.address && (
+        <TxRow>
+          <TxCell>
+            <RowBetween>
+              <StandardText fontSize="12px" color={'#3498db'}>
+                {truncateString(event.extrinsic_hash, 26)}
+              </StandardText>
+              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
+            </RowBetween>
+            <ItalicText fontSize="11px">
+              {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
+            </ItalicText>
+          </TxCell>
+          <TxCell>
+            {wallet.address === sender ? (
+              <>
+                <div style={{ display: 'inline-flex' }}>
+                  <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    receiver,
+                    6
+                  )}`}</StandardText>
+                </div>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'inline-flex' }}>
+                  <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                    sender,
+                    6
+                  )}`}</StandardText>
+                </div>
+              </>
+            )}
+          </TxCell>
+          <TxCell>
+            {wallet.address === sender ? (
+              <TransferWrapper color="#fff" background="#EC3D3D">
+                {amount} {token}
+              </TransferWrapper>
+            ) : (
+              <TransferWrapper color="#fff" background="#5BC85B">
+                {amount} {token}
+              </TransferWrapper>
+            )}
+          </TxCell>
+        </TxRow>
+      )}
+    </>
+  )
+}
+
+function TransfersTokens() {
+  const { t } = useTranslation()
+  const wallet = useWallet()
+  const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
+  const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
+  const [page, setPage] = useState(0)
+
+  useEffect(() => {
+    if (!wallet || !wallet.address) return
+    postTransfersTokens({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
+  }, [wallet, page])
+
+  return (
+    <>
+      <Section style={{ marginBottom: '1rem', padding: '0' }}>
+        <div style={{ display: 'flex' }}>
+          <SectionHeading>{t(`Transfers`)}</SectionHeading>
+          <QuestionHelper
+            size={14}
+            backgroundColor={'transparent'}
+            text={t(
+              `Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.`
+            )}
+          />
+        </div>
+      </Section>
+      <SpacedSection>
+        {transactions.length > 0 &&
+          transactions.map((transaction, index) => (
+            <TransferTokenRow key={index} event={transaction}></TransferTokenRow>
+          ))}
+      </SpacedSection>
+      <Pagination currentPage={setPage} maxPage={Math.ceil(meta.count / 10) - 1} />
+    </>
   )
 }
 
@@ -228,49 +339,45 @@ export function LatestTransactions() {
 
 const tabData: Array<TabMetaData> = [
   {
-    id: 'tab-latest-transactions',
-    className: 'tab latest-transactions-container',
-    label: 'Latest Transactions',
+    id: 'latest-transactions',
+    label: 'Transactions',
   },
   {
-    id: 'tab-transfers',
-    className: 'tab transfers-container',
-    label: 'Transfers',
+    id: 'transfers',
+    label: 'Transfers (BOLT)',
+  },
+  {
+    id: 'transfers-tokens',
+    label: 'Transfers (Tokens)',
   },
 ]
 
-const tabOptions = ['latest-transactions', 'transfers']
-
 export default function TransactionHistory() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
-  const [activeTab, setActiveTab] = useState<string>('balances')
+  const [activeTab, setActiveTab] = useState<string>('latest-transactions')
 
-  const handleTabSelect = (indexClicked: number) => {
-    setActiveTabIndex(indexClicked)
+  const handleTabSelect = (tab: string) => {
+    setActiveTab(tab)
   }
-
-  useEffect(() => {
-    const tabName = tabOptions[activeTabIndex]
-    setActiveTab(tabName)
-  }, [activeTabIndex])
 
   return (
     <>
-      <FlatCardPlate>
+      <FlatCard>
         <SectionContainer>
           <TabBar
-            id={'tabbar-transaction-history'}
-            className={'tabbar-container'}
+            activeTab={activeTab}
             tabs={tabData}
             onClick={handleTabSelect}
             margin="0"
+            fontSize="18px"
+            mobileFontSize="12px"
           />
         </SectionContainer>
         <SectionContainer style={{ marginTop: '0' }}>
           {activeTab === 'latest-transactions' && <LatestTransactions />}
           {activeTab === 'transfers' && <Transfers />}
+          {activeTab === 'transfers-tokens' && <TransfersTokens />}
         </SectionContainer>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }

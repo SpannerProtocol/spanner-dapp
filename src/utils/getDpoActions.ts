@@ -22,11 +22,13 @@ export interface DpoAction {
 
 interface GetDpoActionsParams {
   dpoInfo: DpoInfo
+  isMember: boolean
   lastBlock: BlockNumber
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
   targetDpo?: DpoInfo
+  dpoIsMemberOfTargetDpo?: boolean
   walletInfo: WalletInfo
 }
 
@@ -47,9 +49,15 @@ interface GetDpoActionsParams {
  * COMPLETED
  * - Someone needs to withdarw from the target
  */
-export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAction> | undefined {
-  const { dpoInfo, lastBlock, targetTravelCabin, targetTravelCabinInventory, targetDpo } = params
-
+export default function getDpoActions({
+  dpoInfo,
+  isMember,
+  lastBlock,
+  targetTravelCabin,
+  targetTravelCabinInventory,
+  targetDpo,
+  dpoIsMemberOfTargetDpo,
+}: GetDpoActionsParams): Array<DpoAction> | undefined {
   // const userIsManager = walletInfo.address === manager.buyer.asIndividual.toString()
 
   const actions: Array<DpoAction> = []
@@ -57,7 +65,7 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
   if (dpoInfo.state.toString() === 'CREATED') {
     // If expired then anyone can withdraw from target [Verified]
     if (lastBlock.gte(dpoInfo.expiry_blk)) {
-      if (!dpoInfo.vault_bonus.isZero()) {
+      if (!dpoInfo.vault_deposit.isZero()) {
         actions.push({ role: 'any', hasGracePeriod: false, action: 'releaseFareFromDpo', dpoIndex: dpoInfo.index })
       }
     }
@@ -69,40 +77,20 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
 
     if (dpoInfo.target.isTravelCabin) {
       // Buy TravelCabin
+
       if (!targetTravelCabin || !targetTravelCabinInventory) return
       // Check if there is available supply. If full then user needs to select another TravelCabin.
-      if (targetTravelCabinInventory[0] === targetTravelCabinInventory[1]) {
-        // Within Grace Period
-        if (lastBlock.toBn().lte(gracePeriodEnd)) {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: true,
-            action: 'dpoBuyTravelCabin',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetTravelCabinHasNoSupply',
-          })
-        } else {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: false,
-            action: 'dpoBuyTravelCabin',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetTravelCabinHasNoSupply',
-          })
-        }
-      } else {
-        if (dpoInfo.vault_bonus.isZero()) {
+      if (isMember) {
+        if (targetTravelCabinInventory[0] === targetTravelCabinInventory[1]) {
           // Within Grace Period
-          if (lastBlock.lte(gracePeriodEnd)) {
-            // If purchased there will be bonus instantly released to their vault
+          if (lastBlock.toBn().lte(gracePeriodEnd)) {
             actions.push({
               role: 'any',
               hasGracePeriod: true,
               inGracePeriod: true,
               action: 'dpoBuyTravelCabin',
               dpoIndex: dpoInfo.index,
+              conflict: 'targetTravelCabinHasNoSupply',
             })
           } else {
             actions.push({
@@ -111,7 +99,31 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
               inGracePeriod: false,
               action: 'dpoBuyTravelCabin',
               dpoIndex: dpoInfo.index,
+              conflict: 'targetTravelCabinHasNoSupply',
             })
+          }
+        } else {
+          // No supply available
+          if (dpoInfo.vault_bonus.isZero()) {
+            // Within Grace Period
+            if (lastBlock.lte(gracePeriodEnd)) {
+              // If purchased there will be bonus instantly released to their vault
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: true,
+                action: 'dpoBuyTravelCabin',
+                dpoIndex: dpoInfo.index,
+              })
+            } else {
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: false,
+                action: 'dpoBuyTravelCabin',
+                dpoIndex: dpoInfo.index,
+              })
+            }
           }
         }
       }
@@ -129,49 +141,52 @@ export default function getDpoActions(params: GetDpoActionsParams): Array<DpoAct
     // Buy DPO Seats
     if (dpoInfo.target.isDpo) {
       if (!targetDpo) return
-      const targetSeats = dpoInfo.target.asDpo[1]
-
-      // User needs to choose a new DPO if there aren't enough seats available. [Verified]
-      if (targetSeats.lt(targetDpo.empty_seats)) {
-        // Within Grace Period
-        if (lastBlock.lt(gracePeriodEnd)) {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: true,
-            action: 'dpoBuyDpoSeats',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetDpoInsufficientSeats',
-          })
-        } else {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: false,
-            action: 'dpoBuyDpoSeats',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetDpoInsufficientSeats',
-          })
-        }
-      } else {
-        // Within Grace Period
-        if (dpoInfo.vault_bonus.isZero()) {
-          if (dpoInfo.vault_bonus.isZero()) {
-            actions.push({
-              role: 'any',
-              hasGracePeriod: true,
-              inGracePeriod: true,
-              action: 'dpoBuyDpoSeats',
-              dpoIndex: dpoInfo.index,
-            })
+      if (isMember) {
+        if (!dpoIsMemberOfTargetDpo) {
+          const targetSeats = dpoInfo.target.asDpo[1]
+          // User needs to choose a new DPO if there aren't enough seats available. [Verified]
+          if (targetSeats.lt(targetDpo.empty_seats)) {
+            // Within Grace Period
+            if (lastBlock.lt(gracePeriodEnd)) {
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: true,
+                action: 'dpoBuyDpoSeats',
+                dpoIndex: dpoInfo.index,
+                conflict: 'targetDpoInsufficientSeats',
+              })
+            } else {
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: false,
+                action: 'dpoBuyDpoSeats',
+                dpoIndex: dpoInfo.index,
+                conflict: 'targetDpoInsufficientSeats',
+              })
+            }
           } else {
-            actions.push({
-              role: 'any',
-              hasGracePeriod: true,
-              inGracePeriod: false,
-              action: 'dpoBuyDpoSeats',
-              dpoIndex: dpoInfo.index,
-            })
+            // Within Grace Period
+            if (dpoInfo.vault_bonus.isZero()) {
+              if (dpoInfo.vault_bonus.isZero()) {
+                actions.push({
+                  role: 'any',
+                  hasGracePeriod: true,
+                  inGracePeriod: true,
+                  action: 'dpoBuyDpoSeats',
+                  dpoIndex: dpoInfo.index,
+                })
+              } else {
+                actions.push({
+                  role: 'any',
+                  hasGracePeriod: true,
+                  inGracePeriod: false,
+                  action: 'dpoBuyDpoSeats',
+                  dpoIndex: dpoInfo.index,
+                })
+              }
+            }
           }
         }
       }

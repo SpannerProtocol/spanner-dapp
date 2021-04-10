@@ -5,10 +5,15 @@ import { PortisConnector } from '@web3-react/portis-connector'
 
 import { NetworkConnector } from './NetworkConnector'
 
+import AWS from 'aws-sdk'
+
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 
 export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
+
+console.log(process.env.NODE_ENV)
+console.log(process.env.REACT_APP_NETWORK_URL)
 
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
@@ -40,3 +45,12 @@ export const portis = new PortisConnector({
   dAppId: PORTIS_ID ?? '',
   networks: [1],
 })
+
+// AWS client
+AWS.config.update({
+  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY_ID,
+  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY,
+})
+
+export const kvClient = new AWS.DynamoDB({ region: process.env.REACT_APP_AWS_REGION })
+export const kvDocClient = new AWS.DynamoDB.DocumentClient({ region: process.env.REACT_APP_AWS_REGION })

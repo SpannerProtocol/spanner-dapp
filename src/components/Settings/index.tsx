@@ -1,36 +1,23 @@
 import ProjectSettings from 'components/ProjectSettings'
-import React, { useContext, useRef, useState } from 'react'
-import { Settings, X } from 'react-feather'
+import { ProjectData } from 'hooks/useProject'
+import React, { useContext, useRef } from 'react'
+import { Settings } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
-import { Project } from 'state/project/actions'
 import { useSelectProject } from 'state/project/hooks'
 import styled, { ThemeContext } from 'styled-components'
+import { CloseIcon } from 'theme/components'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useToggleSettingsMenu } from '../../state/application/hooks'
-import { useDarkModeManager, useExpertModeManager } from '../../state/user/hooks'
+import { useDarkModeManager } from '../../state/user/hooks'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
-import Modal from '../Modal'
-import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
 import Toggle from '../Toggle'
 
 const StyledMenuIcon = styled(Settings)`
   height: 20px;
   width: 20px;
-
-  > * {
-    stroke: ${({ theme }) => theme.text1};
-  }
-`
-
-const StyledCloseIcon = styled(X)`
-  height: 20px;
-  width: 20px;
-  :hover {
-    cursor: pointer;
-  }
 
   > * {
     stroke: ${({ theme }) => theme.text1};
@@ -61,12 +48,6 @@ const StyledMenuButton = styled.button`
   svg {
     margin-top: 2px;
   }
-`
-const EmojiWrapper = styled.div`
-  position: absolute;
-  bottom: -6px;
-  right: 0px;
-  font-size: 14px;
 `
 
 const StyledMenu = styled.div`
@@ -104,21 +85,6 @@ const MenuFlyout = styled.span`
   `};
 `
 
-const Break = styled.div`
-  width: 100%;
-  height: 1px;
-  background-color: ${({ theme }) => theme.bg3};
-`
-
-const ModalContentWrapper = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem 0;
-  background-color: ${({ theme }) => theme.bg2};
-  border-radius: 20px;
-`
-
 export default function SettingsTab() {
   const node = useRef<HTMLDivElement>()
   const open = useModalOpen(ApplicationModal.SETTINGS)
@@ -128,58 +94,22 @@ export default function SettingsTab() {
 
   const theme = useContext(ThemeContext)
 
-  const [expertMode, toggleExpertMode] = useExpertModeManager()
-
   const [darkMode, toggleDarkMode] = useDarkModeManager()
 
-  // show confirmation view before turning on
-  const [showConfirmation, setShowConfirmation] = useState(false)
-
-  // useOnClickOutside(node, open ? toggle : undefined)
-
-  const handleSelectProject = (project: Project) => {
-    selectProject(project)
+  const handleSelectProject = (project: ProjectData) => {
+    selectProject({ project: project.name, token: project.token, totalIssuance: project.totalIssuance.toString() })
   }
 
   return (
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451
     <StyledMenu ref={node as any}>
-      <Modal isOpen={showConfirmation} onDismiss={() => setShowConfirmation(false)} maxHeight={100}>
-        <ModalContentWrapper>
-          <AutoColumn gap="lg">
-            <RowBetween style={{ padding: '0 2rem' }}>
-              <div />
-              <Text fontWeight={500} fontSize={20}>
-                Are you sure?
-              </Text>
-              <StyledCloseIcon onClick={() => setShowConfirmation(false)} />
-            </RowBetween>
-            <Break />
-            <AutoColumn gap="lg" style={{ padding: '0 2rem' }}>
-              <Text fontWeight={500} fontSize={20}>
-                Expert mode turns off the confirm transaction prompt and allows high slippage trades that often result
-                in bad rates and lost funds.
-              </Text>
-              <Text fontWeight={600} fontSize={20}>
-                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
-              </Text>
-            </AutoColumn>
-          </AutoColumn>
-        </ModalContentWrapper>
-      </Modal>
       <StyledMenuButton onClick={toggle} id="open-settings-dialog-button">
         <StyledMenuIcon />
-        {expertMode ? (
-          <EmojiWrapper>
-            <span role="img" aria-label="wizard-icon">
-              🧙
-            </span>
-          </EmojiWrapper>
-        ) : null}
       </StyledMenuButton>
       {open && (
         <MenuFlyout>
           <AutoColumn gap="md" style={{ padding: '1rem' }}>
+            <CloseIcon onClick={toggle} style={{ position: 'absolute', right: '10px', height: '18px' }} />
             <Text fontWeight={600} fontSize={14}>
               {t(`Project Settings`)}
             </Text>
@@ -187,29 +117,6 @@ export default function SettingsTab() {
             <Text fontWeight={600} fontSize={14}>
               {t(`Interface Settings`)}
             </Text>
-            <RowBetween>
-              <RowFixed>
-                <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-                  Toggle Expert Mode
-                </TYPE.black>
-                <QuestionHelper text="Bypasses confirmation modals and allows high slippage trades. Use at your own risk." />
-              </RowFixed>
-              <Toggle
-                id="toggle-expert-mode-button"
-                isActive={expertMode}
-                toggle={
-                  expertMode
-                    ? () => {
-                        toggleExpertMode()
-                        setShowConfirmation(false)
-                      }
-                    : () => {
-                        toggle()
-                        setShowConfirmation(true)
-                      }
-                }
-              />
-            </RowBetween>
             <RowBetween>
               <RowFixed>
                 <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>

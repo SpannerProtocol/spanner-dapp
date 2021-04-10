@@ -12,14 +12,14 @@ export const AlertWrapper = styled.div<{
   width: ${({ width }) => (width ? width : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '125px')};
-  justify-content: center;
-  align-items: middle;
-  text-align: center;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: left;
 `
 
 export const AlertIcon = styled.img`
   margin: 0.2rem;
-  height: 15px;
+  height: 20px;
   :hover {
     cursor: pointer;
   }

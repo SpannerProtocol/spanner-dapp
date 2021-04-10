@@ -4,13 +4,13 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
-import BlockIcon from '../../assets/svg/icon-block-white.svg'
-import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge.svg'
+import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
 import { useActiveWeb3React } from '../../hooks'
-import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
+import { MEDIA_WIDTHS, TYPE } from '../../theme'
 import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
@@ -248,46 +248,46 @@ const StyledNavLink = styled(NavLink).attrs({
 `};
 `
 
-const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName,
-})<{ isActive?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: #fff;
-  font-size: 16px;
-  width: fit-content;
-  margin: 1.1rem 1rem 1.1rem 1rem;
-  font-weight: 500;
+// const StyledExternalLink = styled(ExternalLink).attrs({
+//   activeClassName,
+// })<{ isActive?: boolean }>`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: left;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: #fff;
+//   font-size: 16px;
+//   width: fit-content;
+//   margin: 1.1rem 1rem 1.1rem 1rem;
+//   font-weight: 500;
 
-  &.${activeClassName} {
-    border-radius: 12px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.primary2};
-  }
+//   &.${activeClassName} {
+//     border-radius: 12px;
+//     font-weight: 600;
+//     color: ${({ theme }) => theme.primary2};
+//   }
 
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
 
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  display: flex;
-  color: ${({ theme }) => theme.text1}
-  font-size: 14px;
-  padding: 0;
-  justify-content: flex-end;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  `};
+//   ${({ theme }) => theme.mediaWidth.upToMedium`
+//   display: flex;
+//   color: ${({ theme }) => theme.text1}
+//   font-size: 14px;
+//   padding: 0;
+//   justify-content: flex-end;
+//   margin-left: 0.5rem;
+//   margin-right: 0.5rem;
+//   `};
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      display: none;
-  `}
-`
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//       display: none;
+//   `}
+// `
 
 const LogoText = styled.div`
   color: #fff;
@@ -337,22 +337,31 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          <StyledNavLink id={`launchpad-nav-link`} to={'/discover'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
-            {t(`Launchpad`)}
-          </StyledNavLink>
-          <StyledNavLink id={`catalogue-nav-link`} to={'/catalogue'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="catalogue" />}
-            {t(`BulletTrain`)}
+          <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
+            {t(`Bridge`)}
           </StyledNavLink>
           <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
             {t(`DEX`)}
           </StyledNavLink>
-          <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
+          <StyledNavLink id={`launchpad-nav-link`} to={'/launchpad'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
+            {t(`Launchpad`)}
+          </StyledNavLink>
+          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
+            {t(`BulletTrain`)}
+          </StyledNavLink>
+          {process.env.REACT_APP_DEBUG_MODE === 'true' && (
+            <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
+              {`Debug`}
+            </StyledNavLink>
+          )}
+          {/* <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
             {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
-          </StyledExternalLink>
+          </StyledExternalLink> */}
         </HeaderLinks>
       </HeaderRow>
     </HeaderFrame>

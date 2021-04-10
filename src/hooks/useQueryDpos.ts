@@ -1,4 +1,3 @@
-import { StorageKey } from '@polkadot/types'
 import { useEffect, useState } from 'react'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import { useApi } from './useApi'
@@ -6,57 +5,53 @@ import { useApi } from './useApi'
 /**
  * Get all dpos, optionally filter by project token
  */
-export function useQueryDposWithKeys(token?: string): Array<[StorageKey, DpoInfo]> {
-  const { api } = useApi()
-  const [dpoEntries, setDpoEntries] = useState<Array<[StorageKey, DpoInfo]>>([])
+export function useDposWithKeys(token?: string): [DpoIndex, DpoInfo][] {
+  const { api, connected } = useApi()
+  const [dpoEntries, setDpoEntries] = useState<[DpoIndex, DpoInfo][]>([])
 
   useEffect(() => {
-    if (!api) return
-    api?.query?.bulletTrain.dpos
+    if (!connected) return
+    setDpoEntries([])
+    api.query.bulletTrain.dpos
       .entries()
       .then((entries) => {
-        const unwrapped: Array<[StorageKey, DpoInfo]> = entries.map((entry) => {
-          return [entry[0], entry[1].unwrapOrDefault()]
+        entries.forEach((entry) => {
+          if (entry[1].isSome) {
+            const dpoInfo = entry[1].unwrapOrDefault()
+            // Filter for token
+            if (token) {
+              if (dpoInfo.token_id.eq(token)) {
+                setDpoEntries((prev) => [...prev, [entry[0].args[0], dpoInfo]])
+              }
+            } else {
+              setDpoEntries((prev) => [...prev, [entry[0].args[0], dpoInfo]])
+            }
+          }
         })
-        let filtered = unwrapped
-        if (token) {
-          filtered = unwrapped.filter((entry) => entry[1].token_id.eq({ Token: token }))
-        }
-        setDpoEntries(filtered)
       })
       .catch((err) => console.log(err))
-  }, [api, token])
+  }, [api, connected, token])
 
   return dpoEntries
 }
 
-export function useQueryDpos(): Array<DpoInfo> {
-  const dpoEntries = useQueryDposWithKeys()
-  const [dpos, setDpos] = useState<Array<DpoInfo>>([])
-
-  useEffect(() => {
-    if (!dpoEntries || dpoEntries.length === 0) return
-    const unwrappedDpos = dpoEntries.map((entry) => entry[1])
-    setDpos(unwrappedDpos)
-  }, [dpoEntries])
-
-  return dpos
-}
-
-export function useQuerySubscribeDpo(dpoIndex?: number | string): DpoInfo | undefined {
-  const { api } = useApi()
+export function useSubDpo(dpoIndex: number | string | DpoIndex): DpoInfo | undefined {
+  const { api, connected } = useApi()
   const [dpoInfo, setDpoInfo] = useState<DpoInfo | undefined>()
 
   useEffect(() => {
-    if (!api || !dpoIndex) return
-    api?.query?.bulletTrain.dpos(dpoIndex, (result) => {
-      if (result.isNone) {
-        setDpoInfo(undefined)
-      } else {
-        setDpoInfo(result.unwrap())
-      }
-    })
-  }, [api, dpoIndex])
+    if (!connected || !dpoIndex) return
+    let unsub: Unsub
+    ;(async () => {
+      unsub = await api.query.bulletTrain.dpos(dpoIndex, (result) => {
+        if (result.isSome) {
+          setDpoInfo(result.unwrapOrDefault())
+        }
+      })
+    })().catch(console.error)
+
+    return () => unsub()
+  }, [api, connected, dpoIndex])
 
   return dpoInfo
 }
@@ -72,7 +67,6 @@ export function useRpcUserDpos(address: string | null | undefined) {
     api?.rpc?.bulletTrain
       ?.getDposOfAccount(address)
       .then((result) => {
-        console.log('user dpos:', result.toHuman())
         setIndexes(result)
       })
       .catch((err) => console.log(err))

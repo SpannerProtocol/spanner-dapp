@@ -1,59 +1,63 @@
-import { FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
+import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
-import { Heading, StandardText } from 'components/Text'
+import { Heading, HeavyText, StandardText } from 'components/Text'
+import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import TabBar, { TabMetaData } from '../../components/TabBar'
-import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
-import truncateString from '../../utils/truncateString'
+import styled from 'styled-components'
+import { shortenAddress } from 'utils'
+import { useAccount } from 'utils/usePath'
+import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
+import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
+import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
 import Bridge from './Bridge'
 import Faucet from './Faucet'
 import Portfolio from './Portfolio'
 
-const tabData: Array<TabMetaData> = [
+const CopyWrapper = styled.div`
+  cursor: pointer;
+`
+
+const tabData: Array<RouteTabMetaData> = [
   {
-    id: 'tab-balances',
-    className: 'tab balances-container',
+    id: 'balances',
     label: 'Balances',
+    path: '/account/balances',
   },
   {
-    id: 'tab-portfolio',
-    className: 'tab portfolio-container',
+    id: 'portfolio',
     label: 'Portfolio',
+    path: '/account/portfolio',
   },
   {
-    id: 'tab-bridge',
-    className: 'tab bridge-container',
+    id: 'bridge',
     label: 'Bridge',
+    path: '/account/bridge',
   },
   {
-    id: 'tab-faucet',
-    className: 'tab faucet-container',
+    id: 'faucet',
     label: 'Faucet',
+    path: '/account/faucet',
   },
 ]
 
-const tabOptions = ['balances', 'portfolio', 'bridge', 'faucet']
-
 export default function Account() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<string>('balances')
+  const currentPath = useAccount()
   const wallet = useWallet()
   const { t } = useTranslation()
-
-  const handleClick = (indexClicked: number) => {
-    setActiveTabIndex(indexClicked)
-  }
+  const referrer = useReferrer()
 
   useEffect(() => {
-    const tabName = tabOptions[activeTabIndex]
-    setActiveTab(tabName)
-  }, [activeTabIndex])
+    if (!currentPath.item) return
+    setActiveTab(currentPath.item)
+  }, [currentPath.item])
 
   return (
-    <PageWrapper style={{ width: '100%', maxWidth: '960px', justifyContent: 'center', alignItems: 'center' }}>
+    <PageWrapper style={{ width: '100%', maxWidth: '700px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
         style={{
           display: 'flex',
@@ -62,39 +66,50 @@ export default function Account() {
           alignItems: 'center',
         }}
       >
-        <FlatCardPlate>
+        <FlatCard>
           <Section style={{ marginBottom: '1rem' }}>
             <Heading>{t(`Account`)}</Heading>
           </Section>
           {wallet && wallet.address && (
-            <SpacedSection>
+            <BorderedWrapper>
               <Section>
                 <RowBetween>
-                  <StandardText>{t(`Wallet Type`)}:</StandardText>
-                  <StandardText>{wallet.type}</StandardText>
+                  <HeavyText fontSize="14px">{t(`Wallet Type`)}</HeavyText>
+                  <StandardText fontSize="14px">{wallet.type}</StandardText>
                 </RowBetween>
                 {wallet.type === 'custodial' && wallet.ethereumAddress && (
                   <RowBetween>
-                    <StandardText>{t(`Ethereum Address`)}:</StandardText>
-                    <StandardText>{truncateString(wallet.ethereumAddress)}</StandardText>
+                    <HeavyText fontSize="14px">{t(`Ethereum Address`)}</HeavyText>
+                    <CopyWrapper style={{ display: 'flex' }}>
+                      <CopyHelper toCopy={`${wallet.ethereumAddress}`} childrenIsIcon={true}>
+                        <StandardText fontSize="14px">{shortenAddress(wallet.ethereumAddress, 8)}</StandardText>
+                      </CopyHelper>
+                    </CopyWrapper>
                   </RowBetween>
                 )}
                 <RowBetween>
-                  <StandardText>{t(`Address`)}:</StandardText>
-                  <StandardText>{truncateString(wallet.address)}</StandardText>
+                  <HeavyText fontSize="14px">{t(`Address`)}</HeavyText>
+                  <CopyWrapper style={{ display: 'flex' }}>
+                    <CopyHelper toCopy={`${wallet.address}`} childrenIsIcon={true}>
+                      <StandardText fontSize="14px">{shortenAddr(wallet.address, 8)}</StandardText>
+                    </CopyHelper>
+                  </CopyWrapper>
                 </RowBetween>
-                <Section></Section>
+                {referrer && (
+                  <RowBetween>
+                    <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
+                    <CopyWrapper style={{ display: 'flex' }}>
+                      <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
+                        <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
+                      </CopyHelper>
+                    </CopyWrapper>
+                  </RowBetween>
+                )}
               </Section>
-            </SpacedSection>
+            </BorderedWrapper>
           )}
-          <TabBar
-            id={'tabbar-account'}
-            className={'tabbar-container'}
-            tabs={tabData}
-            onClick={handleClick}
-            margin="0"
-          />
-        </FlatCardPlate>
+          <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
+        </FlatCard>
       </Wrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}

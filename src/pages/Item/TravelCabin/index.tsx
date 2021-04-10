@@ -1,30 +1,31 @@
 import { BN_HUNDRED } from '@polkadot/util'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import { FlatCard, FlatCardPlate } from 'components/Card'
+import { FlatCard } from 'components/Card'
 import { GridCell, GridRow } from 'components/Grid'
 import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { SectionHeading, SmallText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SectionHeading, SmallText, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubTravelCabin, useSubTravelCabinInventory, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
+import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useIsConnected } from 'hooks/useWallet'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
-import { useProjectManager } from 'state/project/hooks'
-import { useReferrerManager } from 'state/referrer/hooks'
+import { ThemeContext } from 'styled-components'
 import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
-import getCabinClass from '../../../utils/getCabinClass'
-import truncateString from '../../../utils/truncateString'
+import { getCabinClassImage } from '../../../utils/getCabinClass'
+import { shortenAddr } from '../../../utils/truncateString'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -47,14 +48,12 @@ interface TravelCabinJoinTxConfirmProps {
 function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
   const [managerSeats, setManagerSeats] = useState<string | null>('')
   const [dpoName, setDpoName] = useState<string | null>('')
+  const [baseFee, setBaseFee] = useState<number>(0)
+  const [directReferralRate, setDirectReferralRate] = useState<number>(0)
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
-  const { referrerState } = useReferrerManager()
-  const { projectState } = useProjectManager()
+  const referrer = useReferrer()
   const { t } = useTranslation()
-
-  const referrer = referrerState.referrer
-  const project = projectState.selectedProject
 
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -70,18 +69,19 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     setEnd(parseInt(value))
   }
 
-  const handleSubmit = () => onSubmit({ managerSeats, end, dpoName, referrer: referralCode })
+  const handleSubmit = () =>
+    onSubmit({ managerSeats, baseFee, directReferralRate, end, dpoName, referrer: referralCode })
 
   useEffect(() => {
-    if (!referralCode && referrer && project && referrer[project.token.toLowerCase()]) {
-      setReferralCode(referrer[project.token.toLowerCase()].referrer)
+    if (!referralCode && referrer) {
+      setReferralCode(referrer)
     }
-  }, [project, referralCode, referrer])
+  }, [referralCode, referrer])
 
   return (
     <>
       <Section>
-        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin's Join Requirement.`)}</StandardText>
+        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
       </Section>
       <SpacedSection>
         <Section>
@@ -90,7 +90,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               <StandardText>{t(`Seat Price`)}</StandardText>
               <QuestionHelper
                 text={t(
-                  `The cost of Ticket Fare is split equally by DPO seats. Your purchase price is equal to the number of seats you want to buy.`
+                  `The cost of Ticket Fare is split equally by DPO seats. Your total price is equal to the number of seats you want to buy.`
                 )}
                 size={12}
                 backgroundColor={'#fff'}
@@ -124,7 +124,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             <StandardText>{t(`Manager Seats in DPO`)}</StandardText>
             <QuestionHelper
               text={t(
-                `The # of Seats to buy for yourself as Manager from YOUR new DPO. More seats, more commission rate off your Member's yields.`
+                `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.`
               )}
               size={12}
               backgroundColor={'#fff'}
@@ -136,6 +136,44 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             type="string"
             placeholder="0"
             onChange={(e) => setManagerSeats(e.target.value)}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>{t(`Base Fee`)}</StandardText>
+            <QuestionHelper
+              text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-base-fee"
+            type="number"
+            placeholder="0 - 5"
+            onChange={(e) => setBaseFee(parseInt(e.target.value))}
+            style={{ alignItems: 'flex-end', width: '100%' }}
+          />
+        </Section>
+        <Section>
+          <RowFixed>
+            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+            <QuestionHelper
+              text={t(`The referral bonus rate given to the Direct Referrer.`)}
+              size={12}
+              backgroundColor={'#fff'}
+            ></QuestionHelper>
+          </RowFixed>
+          <BorderedInput
+            required
+            id="dpo-direct-referral-rate"
+            type="number"
+            min="0"
+            max="100"
+            placeholder="0 - 100"
+            onChange={(e) => setDirectReferralRate(parseInt(e.target.value))}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
@@ -159,29 +197,16 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <QuestionHelper
-              text={t(
-                `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
-              )}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          {referralCode && referrer && project && referrer[project.token.toLowerCase()] ? (
-            <BorderedInput
-              required
-              id="dpo-referrer"
-              type="string"
-              placeholder="e.g. 5F3A9CA..."
-              defaultValue={referralCode}
-              onChange={(e) => handleReferralCode(e)}
-              style={{ alignItems: 'flex-end', width: '100%' }}
-              disabled
-            />
-          ) : (
+        {!referralCode && (
+          <Section>
+            <RowFixed>
+              <StandardText>{t(`Referral Code`)}</StandardText>
+              <QuestionHelper
+                text={t(`Enter the referrer (the referral code) that introduced you to this project.`)}
+                size={12}
+                backgroundColor={'#fff'}
+              ></QuestionHelper>
+            </RowFixed>
             <BorderedInput
               required
               id="dpo-referrer"
@@ -190,8 +215,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               onChange={(e) => handleReferralCode(e)}
               style={{ alignItems: 'flex-end', width: '100%' }}
             />
-          )}
-        </Section>
+          </Section>
+        )}
       </SpacedSection>
       <SpacedSection style={{ marginTop: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
@@ -201,12 +226,14 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
 }
 
 interface TravelCabinCrowdfundTxConfirmProps {
-  deposit: string
-  dpoName: string
-  managerSeats: string
-  end: number
-  referrer: string | null
-  token: string
+  deposit?: string
+  dpoName?: string
+  managerSeats?: string
+  baseFee?: number
+  directReferralRate?: number
+  end?: number
+  referrer?: string | null
+  token?: string
   errorMsg?: string
   estimatedFee?: string
 }
@@ -215,8 +242,9 @@ function TravelCabinCrowdfundTxConfirm({
   deposit,
   dpoName,
   managerSeats,
+  baseFee,
+  directReferralRate,
   end,
-  referrer,
   token,
   errorMsg,
   estimatedFee,
@@ -239,21 +267,19 @@ function TravelCabinCrowdfundTxConfirm({
             {deposit} {token}
           </StandardText>
         </RowBetween>
+        {managerSeats && baseFee && (
+          <RowBetween>
+            <StandardText>{t(`Manager Fee`)}</StandardText>
+            <StandardText>{Math.round(parseFloat(managerSeats) + baseFee).toString()} %</StandardText>
+          </RowBetween>
+        )}
         <RowBetween>
-          <StandardText>{t(`Manager Seats`)}</StandardText>
-          <StandardText>{managerSeats}</StandardText>
+          <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+          <StandardText>{directReferralRate} %</StandardText>
         </RowBetween>
         <RowBetween>
           <StandardText>{t(`End Block`)}</StandardText>
           <StandardText>{end}</StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Referral Code`)}</StandardText>
-          {referrer ? (
-            <StandardText>{truncateString(referrer)}</StandardText>
-          ) : (
-            <StandardText>{t(`None`)}</StandardText>
-          )}
         </RowBetween>
       </Section>
       <TxFee fee={estimatedFee} />
@@ -271,7 +297,7 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: Tr
       {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
       <SpacedSection>
         <RowBetween>
-          <StandardText>{t(`Deposit Required`)}</StandardText>
+          <StandardText>{t(`Ticket Fare (deposit)`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
@@ -280,6 +306,16 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: Tr
       <TxFee fee={estimatedFee} />
     </>
   )
+}
+
+interface CrowdfundData {
+  dpoName?: string
+  targetSeats?: string
+  managerSeats?: string
+  baseFee?: number
+  directReferralRate?: number
+  end?: number
+  referrer?: string | null
 }
 
 function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
@@ -293,15 +329,14 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const [userDpoName, setUserDpoName] = useState<string>('')
-  const [userManagerSeats, setUserManagerSeats] = useState<string>('')
-  const [userEnd, setUserEnd] = useState<number>(0)
-  const [userReferrer, setUserReferrer] = useState<string>('')
+  const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
   const { expectedBlockTime } = useBlockManager()
   // const { queueTransaction } = useTransactionMsg()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
+  const isConnected = useIsConnected()
+  const theme = useContext(ThemeContext)
 
   const openJoinTxModal = () => {
     setCrowdfundFormModalOpen(false)
@@ -326,25 +361,34 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const handleCrowdfundFormCallback = ({
     dpoName,
     managerSeats,
+    baseFee,
+    directReferralRate,
     end,
     referrer,
   }: {
     dpoName: string
     managerSeats: string
+    baseFee: number
+    directReferralRate: number
     end: number
     referrer: string
   }) => {
-    setUserDpoName(dpoName)
-    setUserManagerSeats(managerSeats)
-    setUserEnd(end)
-    setUserReferrer(referrer)
+    setCrowdfundData({ dpoName, managerSeats, baseFee, directReferralRate, end, referrer })
     if (!travelCabinIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
     const txData = createTx({
       section: 'bulletTrain',
       method: 'createDpo',
-      params: { name: dpoName, target: { TravelCabin: travelCabinIndex }, managerSeats, end, referrer },
+      params: {
+        name: dpoName,
+        target: { TravelCabin: travelCabinIndex },
+        managerSeats,
+        baseFee: baseFee * 10,
+        directReferralRate: baseFee * 10,
+        end,
+        referrer,
+      },
     })
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
@@ -408,35 +452,49 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       >
         <TravelCabinCrowdfundTxConfirm
           deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
-          dpoName={userDpoName}
-          managerSeats={userManagerSeats}
-          end={userEnd}
-          referrer={userReferrer}
+          dpoName={crowdfundData.dpoName}
+          managerSeats={crowdfundData.managerSeats}
+          baseFee={crowdfundData.baseFee}
+          directReferralRate={crowdfundData.directReferralRate}
+          end={crowdfundData.end}
+          referrer={crowdfundData.referrer}
           token={token}
           estimatedFee={txInfo?.estimatedFee}
         />
       </TxModal>
-      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <RowBetween>
-            <SectionHeading>
-              {t(`TravelCabin:`)}
-              {getCabinClass(travelCabinInfo.index.toString())}
-            </SectionHeading>
-            <CollapseWrapper>
-              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
-                  {t(`Buy`)}
-                </ButtonPrimary>
-              </ButtonWrapper>
-              <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                  {t(`Crowdfund`)}
-                </ButtonSecondary>
-              </ButtonWrapper>
-            </CollapseWrapper>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ display: 'flex', maxWidth: '25px', maxHeight: '25px', paddingRight: '0.5rem' }}>
+                {getCabinClassImage(travelCabinInfo.name.toString())}
+              </div>
+              <SectionHeading style={{ display: 'flex', margin: '0' }}>
+                {t(`TravelCabin`)} {travelCabinInfo.name.toString()}
+              </SectionHeading>
+            </div>
+            {isConnected ? (
+              <CollapseWrapper>
+                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                  <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
+                    {t(`Buy`)}
+                  </ButtonPrimary>
+                </ButtonWrapper>
+                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                  <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                    {t(`Crowdfund`)}
+                  </ButtonSecondary>
+                </ButtonWrapper>
+              </CollapseWrapper>
+            ) : (
+              <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
+                <HeavyText fontSize={'12px'} color={theme.primary1}>
+                  {t(`Login for more`)}
+                </HeavyText>
+              </BorderedWrapper>
+            )}
           </RowBetween>
-          <FlatCard style={{ width: '100%', marginTop: '1rem' }}>
+          <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
             <SmallText>{t(`General Information`)}</SmallText>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
@@ -446,7 +504,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 </RowBetween>
                 <RowBetween>
                   <StandardText>{t(`Travel Class`)}</StandardText>
-                  <StandardText>{getCabinClass(travelCabinInfo.index.toString())}</StandardText>
+                  <StandardText>{travelCabinInfo.name.toString()}</StandardText>
                 </RowBetween>
                 <RowBetween>
                   <StandardText>{t(`Ticket Fare`)}</StandardText>
@@ -471,7 +529,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 <BorderedWrapper style={{ marginTop: '0' }}>
                   <Section>
                     <RowBetween>
-                      <StandardText>{t(`Stock`)}</StandardText>
+                      <StandardText>{t(`Inventory`)}</StandardText>
                       <StandardText>
                         {inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/{inventoryCount[1].toNumber()}
                       </StandardText>
@@ -507,9 +565,9 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 )}
               </Section>
             </BorderedWrapper>
-          </FlatCard>
+          </SpacedSection>
         </Section>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }
@@ -519,9 +577,11 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
   const { expectedBlockTime, genesisTs } = useBlockManager()
   const { t } = useTranslation()
 
+  const sortedBuyers = useMemo(() => buyers.sort((b1, b2) => b2[0][1].toNumber() - b1[0][1].toNumber()), [buyers])
+
   return (
     <>
-      <FlatCardPlate style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <div style={{ display: 'flex' }}>
             <SectionHeading>{t(`Sold to`)}</SectionHeading>
@@ -532,10 +592,10 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
             />
           </div>
         </Section>
-        <SpacedSection>
+        <SpacedSection style={{ marginTop: '0' }}>
           {genesisTs &&
             expectedBlockTime &&
-            buyers.map((buyer, index) => {
+            sortedBuyers.map((buyer, index) => {
               return (
                 <Link
                   key={index}
@@ -544,24 +604,24 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
                 >
                   <GridRow>
                     <GridCell>
-                      <StandardText>
+                      <HeavyText fontSize="14px">
                         {t(`Inventory`)} #{buyer[0][1].toString()}
-                      </StandardText>
-                      <StandardText>
+                      </HeavyText>
+                      <ItalicText fontSize="12px">
                         {tsToRelative(
                           blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
                         )}
-                      </StandardText>
+                      </ItalicText>
                     </GridCell>
                     <GridCell>
                       {buyer[1].buyer.isPassenger && (
-                        <StandardText>
-                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asPassenger.toString())} ({t(`Passenger`)})
+                        <StandardText fontSize="12px">
+                          {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
                         </StandardText>
                       )}
                       {buyer[1].buyer.isDpo && (
-                        <StandardText>
-                          {t(`Buyer`)}: {truncateString(buyer[1].buyer.asDpo.toString())} ({t(`DPO`)})
+                        <StandardText fontSize="12px">
+                          {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
                         </StandardText>
                       )}
                     </GridCell>
@@ -570,7 +630,7 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
               )
             })}
         </SpacedSection>
-      </FlatCardPlate>
+      </FlatCard>
     </>
   )
 }

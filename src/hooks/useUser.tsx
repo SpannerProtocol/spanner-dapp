@@ -97,12 +97,15 @@ export function useUserItems(address: string | null | undefined) {
   return { userDpos, userTravelCabins }
 }
 
-export function useUserIsDpoMember(dpoIndex: number | string | DpoIndex, address: string | null | undefined) {
+export function useUserIsDpoMember(
+  dpoIndex: number | string | DpoIndex | undefined,
+  address: string | null | undefined
+) {
   const { api, connected } = useApi()
   const [isMember, setIsMember] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!address || !connected) return
+    if (!address || !connected || !dpoIndex) return
     api.query.bulletTrain.dpoMembers.entries(dpoIndex).then((result) => {
       result.forEach((member) => {
         if (member[1].isNone) return

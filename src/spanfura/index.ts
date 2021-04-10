@@ -100,3 +100,26 @@ export function postScanEvents(params: SpanfuraParams) {
     httpAgent,
   })
 }
+
+export interface PriceParams {
+  token_1: string
+  token_2: string
+  from: number
+  interval: number
+}
+
+export interface PriceData {
+  timestamp: number
+  price: number
+}
+
+export interface SpanfuraPriceResponse extends SpanfuraResponseCore {
+  data: Array<PriceData>
+}
+
+// Ethereum to Spanner deposit check
+export function postPriceData(params: PriceParams) {
+  return axios.post(`${spanfuraHost}/scan/price`, params, {
+    httpAgent,
+  })
+}
