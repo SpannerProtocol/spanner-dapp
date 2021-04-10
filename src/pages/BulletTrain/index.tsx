@@ -5,25 +5,28 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectManager } from 'state/project/hooks'
 import { useBulletTrain } from 'utils/usePath'
-import TabBar, { TabMetaData } from '../../components/TabBar'
+import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import BulletTrainInstructions from './BulletTrainInstructions'
 import DpoCatalogue from './Dpo'
 import Milestones from './Milestones'
 import TravelCabinCatalogue from './TravelCabin'
 
-const tabData: Array<TabMetaData> = [
+const tabData: Array<RouteTabMetaData> = [
   {
     id: 'instructions',
     label: 'Instructions',
+    path: '/bullettrain/instructions',
   },
   {
     id: 'travelcabins',
     label: 'TravelCabins',
+    path: '/bullettrain/travelcabins',
   },
   {
     id: 'dpos',
     label: 'DPOs',
+    path: '/bullettrain/dpos',
   },
 ]
 
@@ -31,18 +34,14 @@ export default function BulletTrain() {
   const selectedPath = useBulletTrain()
   const [activeTab, setActiveTab] = useState<string>('instructions')
   const { projectState } = useProjectManager()
-  // Using this to check if a project has a bullettrain campaign started
-  const travelCabins = useTravelCabins(projectState.selectedProject?.token)
   const [hasBulletTrain, setHasBulletTrain] = useState<boolean>(false)
   const { t } = useTranslation()
 
-  const handleTabSelect = (tab: string) => {
-    setActiveTab(tab)
-  }
+  // Using this to check if a project has a bullettrain campaign started
+  const travelCabins = useTravelCabins(projectState.selectedProject?.token)
 
   useEffect(() => {
     if (!selectedPath.item) return
-    console.log('path changed: ', selectedPath.item)
     setActiveTab(selectedPath.item)
   }, [selectedPath.item])
 
@@ -75,14 +74,7 @@ export default function BulletTrain() {
                   <Milestones />
                 </Section>
               )}
-              <TabBar
-                margin="0px"
-                id={'tabbar-catalogue'}
-                className={'tabbar-container'}
-                activeTab={activeTab}
-                tabs={tabData}
-                onClick={handleTabSelect}
-              />
+              <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0px" />
             </FlatCard>
           </Wrapper>
 
