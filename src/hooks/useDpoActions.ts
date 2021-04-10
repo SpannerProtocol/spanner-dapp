@@ -15,6 +15,7 @@ import { useApi } from './useApi'
 import { useBlockManager } from './useBlocks'
 import useWallet from './useWallet'
 import type { BlockNumber } from '@polkadot/types/interfaces'
+import { useUserIsDpoMember } from './useUser'
 
 interface ActionReq {
   dpoInfo?: DpoInfo
@@ -44,6 +45,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
   const { api, connected } = useApi()
   const { lastBlock } = useBlockManager()
   const wallet = useWallet()
+  const isMember = useUserIsDpoMember(dpoInfo?.index, wallet?.address)
   const [actionsReq, setActionsReq] = useState<ActionReq>()
   const [dpoActions, setDpoActions] = useState<DpoAction[]>()
 
@@ -101,11 +103,12 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         dpoInfo,
         lastBlock,
         walletInfo: wallet,
+        isMember,
         ...actionsReq,
       })
       setDpoActions(allActions)
     }
-  }, [lastBlock, wallet, actionsReq, dpoInfo])
+  }, [lastBlock, wallet, actionsReq, dpoInfo, isMember])
 
   return {
     dpoActions,
