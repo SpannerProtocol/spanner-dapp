@@ -5,12 +5,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import StandardText, { Heading } from '../../components/Text'
-const SectionTitle = styled.h3`
-  font-weight: 700;
-  margin-top: 0.45rem;
-  margin-bottom: 0.45rem;
-`
+import StandardText, { Heading, SectionTitle } from '../../components/Text'
 
 const HomePageTitle = styled.h1`
   margin: 0;
