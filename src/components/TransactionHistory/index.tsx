@@ -364,8 +364,6 @@ export default function TransactionHistory() {
       <FlatCard>
         <SectionContainer>
           <TabBar
-            id={'tabbar-transaction-history'}
-            className={'tabbar-container'}
             activeTab={activeTab}
             tabs={tabData}
             onClick={handleTabSelect}

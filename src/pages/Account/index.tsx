@@ -4,11 +4,12 @@ import { RowBetween } from 'components/Row'
 import { Heading, HeavyText, StandardText } from 'components/Text'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { shortenAddress } from 'utils'
-import TabBar, { TabMetaData } from '../../components/TabBar'
+import { useAccount } from 'utils/usePath'
+import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
 import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
@@ -20,34 +21,40 @@ const CopyWrapper = styled.div`
   cursor: pointer;
 `
 
-const tabData: Array<TabMetaData> = [
+const tabData: Array<RouteTabMetaData> = [
   {
     id: 'balances',
     label: 'Balances',
+    path: '/account/balances',
   },
   {
     id: 'portfolio',
     label: 'Portfolio',
+    path: '/account/portfolio',
   },
   {
     id: 'bridge',
     label: 'Bridge',
+    path: '/account/bridge',
   },
   {
     id: 'faucet',
     label: 'Faucet',
+    path: '/account/faucet',
   },
 ]
 
 export default function Account() {
   const [activeTab, setActiveTab] = useState<string>('balances')
+  const currentPath = useAccount()
   const wallet = useWallet()
   const { t } = useTranslation()
   const referrer = useReferrer()
 
-  const handleTabSelect = (tab: string) => {
-    setActiveTab(tab)
-  }
+  useEffect(() => {
+    if (!currentPath) return
+    setActiveTab(currentPath.item)
+  }, [currentPath])
 
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '720px', justifyContent: 'center', alignItems: 'center' }}>
@@ -101,14 +108,7 @@ export default function Account() {
               </Section>
             </BorderedWrapper>
           )}
-          <TabBar
-            id={'tabbar-account'}
-            className={'tabbar-container'}
-            activeTab={activeTab}
-            tabs={tabData}
-            onClick={handleTabSelect}
-            margin="0"
-          />
+          <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
         </FlatCard>
       </Wrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
