@@ -209,7 +209,7 @@ export default function Project(): JSX.Element {
                                 style={{ marginTop: '0.25rem', marginBottom: '0.25rem' }}
                               >
                                 <RowBetween>
-                                  <HeavyText style={{ width: '100%'}}>{pair}</HeavyText>
+                                  <HeavyText style={{ width: '100%' }}>{pair}</HeavyText>
                                   <div style={{ display: 'grid' }}>
                                     <TokenGrid>
                                       <StandardText style={{ textAlign: 'right', width: '100%' }}>
@@ -219,7 +219,7 @@ export default function Project(): JSX.Element {
                                     </TokenGrid>
                                     <div style={{ display: 'grid' }}>
                                       <TokenGrid>
-                                        <StandardText style={{ textAlign: 'right', width: '100%'  }}>
+                                        <StandardText style={{ textAlign: 'right', width: '100%' }}>
                                           {formatToUnit(pool[1][1], chainDecimals, 2)}
                                         </StandardText>
                                         <StandardText style={{ textAlign: 'right' }}>{tokenB}</StandardText>
