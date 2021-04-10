@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import styled, { ThemeContext } from 'styled-components'
 
 const TabBarWrapper = styled.div<{ margin?: string }>`
@@ -31,27 +32,33 @@ const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
   `}
 `
 
-interface TabBarProps {
-  id?: string
-  className?: string
+interface TabBarCoreProps {
   activeTab: string
-  tabs: Array<TabMetaData>
   activeColor?: string
   fontSize?: string
   mobileFontSize?: string
-  onClick: (tabId: string) => void
   margin?: string
 }
 
+interface TabBarProps extends TabBarCoreProps {
+  tabs: Array<TabMetaData>
+  onClick: (tabId: string) => void
+}
+
+interface RouteTabBarProps extends TabBarCoreProps {
+  tabs: RouteTabMetaData[]
+}
 export interface TabMetaData {
   id: string
   label: string
   onClick?: (e: React.MouseEvent) => any
 }
 
+export interface RouteTabMetaData extends TabMetaData {
+  path: string
+}
+
 export default function TabBar({
-  id,
-  className,
   activeTab,
   tabs,
   onClick,
@@ -73,7 +80,7 @@ export default function TabBar({
   }, [activeTab, onClick])
 
   return (
-    <TabBarWrapper id={id} className={className} margin={margin}>
+    <TabBarWrapper margin={margin}>
       {tabs &&
         tabs.map((tab, index) => {
           const active = tabs.findIndex((tab) => tab.id === activeTab) === index
@@ -92,6 +99,49 @@ export default function TabBar({
                   {t(tab.label)}
                 </TabText>
               </Tab>
+            </TabWrapper>
+          )
+        })}
+    </TabBarWrapper>
+  )
+}
+
+/**
+ * RouteTabBars are meant to use paths passed to react-router-dom's Link component
+ * to change the pathname. The parent component should detect changes to path to
+ * decide the activeTab. Pass the activeTab to RouteTabBar to change the activeTab visually.
+ */
+export function RouteTabBar({ tabs, activeTab, margin, fontSize, mobileFontSize }: RouteTabBarProps): JSX.Element {
+  const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
+
+  // Parent check path
+  // Path updates activeTab
+  // ActiveTab gets updated in this component
+  // If new tab gets clicked, changes path
+
+  return (
+    <TabBarWrapper margin={margin}>
+      {tabs &&
+        tabs.map((tab, index) => {
+          const active = tabs.findIndex((tab) => tab.id === activeTab) === index
+          return (
+            <TabWrapper key={index}>
+              <Link to={{ pathname: tab.path }} style={{ textDecoration: 'none' }}>
+                <Tab>
+                  <TabText
+                    fontSize={fontSize}
+                    mobileFontSize={mobileFontSize}
+                    style={{
+                      color: active ? `${theme.black}` : `${theme.text3}`,
+                      borderBottom: active ? `3px solid ${theme.primary1}` : `none`,
+                      fontWeight: active ? 700 : 500,
+                    }}
+                  >
+                    {t(tab.label)}
+                  </TabText>
+                </Tab>
+              </Link>
             </TabWrapper>
           )
         })}
