@@ -270,7 +270,7 @@ function TravelCabinCrowdfundTxConfirm({
         {managerSeats && baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>{managerSeats + baseFee} %</StandardText>
+            <StandardText>{Math.round(parseFloat(managerSeats) + baseFee).toString()} %</StandardText>
           </RowBetween>
         )}
         <RowBetween>

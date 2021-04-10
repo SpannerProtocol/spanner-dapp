@@ -1,4 +1,4 @@
-import BigNumber from 'bignumber.js'
+import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import TxModal from 'components/Modal/TxModal'
 import { ModalText, StandardText } from 'components/Text'
@@ -62,9 +62,9 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
   const { dexShare, pair } = props
   const { pool } = useSubscribePool(pair[0].asToken.toString(), pair[1].asToken.toString(), 50)
   const { chainDecimals } = useSubstrate()
-  const [amountA, setAmountA] = useState<BigNumber>(new BigNumber(0))
-  const [amountB, setAmountB] = useState<BigNumber>(new BigNumber(0))
-  const [amountLp, setAmountLp] = useState<BigNumber>(new BigNumber(0))
+  const [amountA, setAmountA] = useState<BN>(new BN(0))
+  const [amountB, setAmountB] = useState<BN>(new BN(0))
+  const [amountLp, setAmountLp] = useState<BN>(new BN(0))
   const [removeAmount, setRemoveAmount] = useState<number>(0)
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
@@ -76,10 +76,9 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
 
   useEffect(() => {
     if (!pool) return
-    // const decimalScale = new BigNumber(10 ** chainDecimals)
-    const lpUnit = new BigNumber(dexShare.balance.free.toString())
-    const amountAUnit = new BigNumber(pool[0].toString())
-    const amountBUnit = new BigNumber(pool[1].toString())
+    const lpUnit = new BN(dexShare.balance.free.toString())
+    const amountAUnit = new BN(pool[0].toString())
+    const amountBUnit = new BN(pool[1].toString())
     setAmountLp(lpUnit)
     setAmountA(amountAUnit)
     setAmountB(amountBUnit)

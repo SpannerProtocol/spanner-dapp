@@ -139,12 +139,12 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           </StateWrapper>
                         </>
                       ) : (
-                        <>
+                        <div style={{ display: 'flex', marginRight: '0.5rem' }}>
                           <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
                           <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
                             `Blocks`
                           )}`}</StandardText>
-                        </>
+                        </div>
                       )}
                     </InlineSection>
                   )}
@@ -260,15 +260,15 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                               <StandardText color="#fff" fontSize="9px">
                                 {t(`EXPIRED`)}
                               </StandardText>
-                            </StateWrapper>{' '}
+                            </StateWrapper>
                           </>
                         ) : (
-                          <>
+                          <div style={{ display: 'flex', marginRight: '0.5rem' }}>
                             <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
                             <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
                               `Blocks`
                             )}`}</StandardText>
-                          </>
+                          </div>
                         )}
                       </InlineSection>
                     )}

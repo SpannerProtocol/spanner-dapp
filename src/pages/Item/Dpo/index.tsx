@@ -40,6 +40,7 @@ import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
+import { shortenAddr } from 'utils/truncateString'
 import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
@@ -337,7 +338,7 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
   return (
     <>
       <Section>
-        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
+        <StandardText>{t(`Create a DPO to Crowdfund for this DPO.`)}</StandardText>
       </Section>
       <SpacedSection>
         <RowBetween>
@@ -357,13 +358,15 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
         {props.managerSeats && props.baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>{props.managerSeats + props.baseFee} %</StandardText>
+            <StandardText>{Math.round(parseFloat(props.managerSeats) + props.baseFee).toString()} %</StandardText>
           </RowBetween>
         )}
-        <RowBetween>
-          <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-          <StandardText>{props.directReferralRate}</StandardText>
-        </RowBetween>
+        {props.directReferralRate && (
+          <RowBetween>
+            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+            <StandardText>{props.directReferralRate.toString()} %</StandardText>
+          </RowBetween>
+        )}
         <RowBetween>
           <StandardText>{t(`End Block`)}</StandardText>
           <StandardText>{props.end}</StandardText>
@@ -968,26 +971,38 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <SmallText>{t(`Members`)}</SmallText>
           <ExpandCard title={t(`Members List`)} defaultExpanded={false} borderColor="#e6ebf2">
             <Section>
-              <RowBetween style={{ display: 'block' }}>
-                <StandardText>{t(`Manager`)}</StandardText>
-                <SmallText>{dpoInfo.manager.toString()}</SmallText>
+              <HeavyText fontSize="14px">{t(`Manager`)}</HeavyText>
+              <RowBetween>
+                <SmallText>{`${t(`Passenger`)}: `}</SmallText>
+                <SmallText>{shortenAddr(dpoInfo.manager.toString(), 14)}</SmallText>
               </RowBetween>
             </Section>
             <Section>
-              <RowBetween style={{ display: 'block' }}>
-                <StandardText>{t(`Members`)}</StandardText>
-                {dpoMembers.map((entry, index) => (
-                  <div key={index}>
-                    {entry[1].buyer.isPassenger && (
-                      <>
-                        {!entry[1].buyer.asPassenger.eq(dpoInfo.manager.toString()) && (
-                          <SmallText key={index}>{entry[1].buyer.asPassenger.toString()}</SmallText>
-                        )}
-                      </>
-                    )}
-                  </div>
-                ))}
-              </RowBetween>
+              <HeavyText fontSize="14px">{t(`Members`)}</HeavyText>
+              {dpoMembers.map((entry, index) => (
+                <div key={index}>
+                  {entry[1].buyer.isPassenger && (
+                    <>
+                      {!entry[1].buyer.asPassenger.eq(dpoInfo.manager.toString()) && (
+                        <RowBetween key={index}>
+                          <SmallText>{`${t(`Passenger`)}: `}</SmallText>
+                          <CopyHelper toCopy={`${entry[1].buyer.asPassenger.toString()}`} childrenIsIcon={true}>
+                            <SmallText>{shortenAddr(entry[1].buyer.asPassenger.toString(), 14)}</SmallText>
+                          </CopyHelper>
+                        </RowBetween>
+                      )}
+                    </>
+                  )}
+                  {entry[1].buyer.isDpo && (
+                    <RowBetween key={index}>
+                      <SmallText>DPO:</SmallText>
+                      <CopyHelper toCopy={`${entry[1].buyer.asDpo.toString()}`} childrenIsIcon={true}>
+                        <SmallText>{(entry[1].buyer.asDpo.toString(), 14)}</SmallText>
+                      </CopyHelper>
+                    </RowBetween>
+                  )}
+                </div>
+              ))}
             </Section>
           </ExpandCard>
         </FlatCard>

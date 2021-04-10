@@ -22,7 +22,7 @@ const ActionIconWrapper = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   padding: 0.25rem;
-  height: 55px;
+  height: 40px;
 `};
 `
 
@@ -36,6 +36,7 @@ const ActionCard = styled.div<{ borderColor?: string }>`
   border: 1.5px solid ${({ theme, borderColor }) => (borderColor ? borderColor : theme.text3)};
   border-radius: 8px;
   padding: 0.5rem;
+  margin-bottom: 0.5rem;
   align-items: center;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -43,7 +44,7 @@ const ActionCard = styled.div<{ borderColor?: string }>`
   `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  grid-template-columns: minmax(40px, 60px) auto;
+  grid-template-columns: minmax(20px, 40px) auto;
   grid-column-gap: 4px;
   `};
 `

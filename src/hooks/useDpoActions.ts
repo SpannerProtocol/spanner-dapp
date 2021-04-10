@@ -15,6 +15,8 @@ import { useApi } from './useApi'
 import { useBlockManager } from './useBlocks'
 import useWallet from './useWallet'
 import type { BlockNumber } from '@polkadot/types/interfaces'
+import { useUserIsDpoMember } from './useUser'
+import { getDpoMembers } from 'utils/getDpoMembers'
 
 interface ActionReq {
   dpoInfo?: DpoInfo
@@ -23,6 +25,7 @@ interface ActionReq {
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
   targetDpo?: DpoInfo
+  dpoIsMemberOfTargetDpo?: boolean
   walletInfo?: WalletInfo
 }
 
@@ -34,6 +37,7 @@ interface NewActionReq {
     | TravelCabinInfo
     | [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
     | [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
+    | boolean
 }
 
 // targetTravelCabin and targetTravelCabinInventory are mandatory for all cabin target related actions
@@ -44,6 +48,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
   const { api, connected } = useApi()
   const { lastBlock } = useBlockManager()
   const wallet = useWallet()
+  const isMember = useUserIsDpoMember(dpoInfo?.index, wallet?.address)
   const [actionsReq, setActionsReq] = useState<ActionReq>()
   const [dpoActions, setDpoActions] = useState<DpoAction[]>()
 
@@ -60,6 +65,17 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         if (result.isSome) {
           addActionReq({ targetDpo: result.unwrapOrDefault() })
         }
+      })
+      // Get Target DPO's members to check if dpo is a member already
+      getDpoMembers(api, dpoInfo.target.asDpo[0]).then((results) => {
+        results.forEach((result) => {
+          if (result[1].isSome) {
+            const dpoMember = result[1].unwrapOrDefault()
+            if (dpoMember.buyer.isDpo) {
+              dpoMember.buyer.asDpo.eq(dpoInfo.index) && addActionReq({ dpoIsMemberOfTargetDpo: true })
+            }
+          }
+        })
       })
     } else {
       getTargetTravelCabin(api, wallet, dpoInfo).then((result) => {
@@ -101,11 +117,12 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         dpoInfo,
         lastBlock,
         walletInfo: wallet,
+        isMember,
         ...actionsReq,
       })
       setDpoActions(allActions)
     }
-  }, [lastBlock, wallet, actionsReq, dpoInfo])
+  }, [lastBlock, wallet, actionsReq, dpoInfo, isMember])
 
   return {
     dpoActions,

@@ -1,25 +1,42 @@
 import { formatBalance } from '@polkadot/util'
-import { Balance } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
-import BigNumber from 'bignumber.js'
-import { toHumanNumber } from './formatLargeNumbers'
+import { bnToHumanNumber, toHumanNumber } from './formatLargeNumbers'
 
-export function formatToUnit(
-  balance: number | BN | BigNumber | string | Balance,
-  decimals: number,
-  precision?: number,
-  unformatted?: boolean
-): string {
-  let balanceStr = formatBalance(balance.toString(), { withSi: false, forceUnit: '-' }, decimals)
+/**
+ * Typeguard for BN
+ * @param num number, BN or string
+ * @returns boolean
+ */
+function isBN(num: number | BN | string): num is BN {
+  return BN.isBN(num)
+}
+
+/**
+ * General function for format a number with thousands separators given chainDecimals.
+ * @param num any number, BN or string
+ * @param cd chainDecimals
+ * @param precision decimal place precision
+ * @param toHuman thousands abbreviation
+ * @returns formatted number as string
+ */
+export function formatToUnit(num: number | BN | string, cd: number, precision = 0, toHuman = false): string {
+  if (toHuman) {
+    if (isBN(num)) {
+      const inUnit = num.div(new BN(10).pow(new BN(cd)))
+      return bnToHumanNumber(inUnit, precision)
+    } else if (typeof num === 'string') {
+      toHumanNumber(parseFloat(num), precision)
+    } else {
+      toHumanNumber(num, precision)
+    }
+  }
+  let numStr = formatBalance(num.toString(), { withSi: false, forceUnit: '-' }, cd)
   if (precision) {
-    balanceStr = parseFloat(balanceStr.replaceAll(',', '')).toLocaleString(undefined, {
+    numStr = parseFloat(numStr.replaceAll(',', '')).toLocaleString(undefined, {
       maximumFractionDigits: precision,
     })
   }
-  if (unformatted) {
-    balanceStr = balanceStr.toString().replaceAll(',', '').split('.')[0]
-  }
-  return balanceStr
+  return numStr
 }
 
 /**
@@ -28,7 +45,7 @@ export function formatToUnit(
  * @param chainDecimals chain decimals
  * @returns BN
  */
-export function numberToBnUnit(amount: number, cd: number) {
+export function numberToBn(amount: number | string, cd = 0) {
   const [integer, decimal] = amount.toString().split('.')
   return new BN(parseFloat('0.' + decimal) * 10 ** cd).add(new BN(integer).mul(new BN(10).pow(new BN(cd))))
 }
@@ -83,25 +100,14 @@ export function bnToUnit(num: BN, chainDecimals: number, precisionOffset = 0, cl
   }
 }
 
-export function formatToHumanFromUnit(balance: number | BN | BigNumber | string, decimals: number) {
+export function formatToHumanFromUnit(balance: number | BN | string, decimals: number) {
   const strippedBalance = formatToUnit(balance, decimals, 0, true)
   return toHumanNumber(parseInt(strippedBalance), 0)
 }
 
-export function unitToNumber(balance: number, decimals: number): number {
-  return (balance as number) * 10 ** decimals
-}
-
-export function unitToBn(balance: number | BN | string, decimals: number): BN {
-  if (typeof balance === 'number' || typeof balance === 'string') {
-    return new BN(balance).mul(new BN(10 ** decimals))
+export function unitToBn(num: number | BN | string, cd: number): BN {
+  if (typeof num === 'number' || typeof num === 'string') {
+    return new BN(num).mul(new BN(10).pow(new BN(cd)))
   }
-  return balance.mul(new BN(10 ** decimals))
-}
-
-export function unitToBigNumber(balance: number | BigNumber | string, decimals: number): BigNumber {
-  if (typeof balance === 'number' || typeof balance === 'string') {
-    return new BigNumber(balance).multipliedBy(new BigNumber(10 ** decimals))
-  }
-  return balance.multipliedBy(new BigNumber(10 ** decimals))
+  return num.mul(new BN(10).pow(new BN(cd)))
 }

@@ -11,9 +11,10 @@ import { useSubDpo } from 'hooks/useQueryDpos'
 import { useDPOTravelCabinInventoryIndex } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import { formatToUnit } from 'utils/formatUnit'
-import getCabinClass from 'utils/getCabinClass'
+import { getCabinClassByIndex } from 'utils/getCabinClass'
 import { DpoAction } from 'utils/getDpoActions'
 import { isDpoAvailable, isTravelCabinAvailable } from 'utils/isTargetAvailable'
 import { ACTION_ICONS } from '../../../../constants'
@@ -37,6 +38,8 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { chainDecimals } = useSubstrate()
 
+  const { t } = useTranslation()
+
   // Conditional action states for callbacks
   const [seatsToBuy, setSeatsToBuy] = useState<string>()
   const [newTargetIndex, setNewTargetIndex] = useState<string>()
@@ -51,16 +54,17 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
             txContent={
               <>
                 <StandardText>
-                  {`Confirm Release Deposit from DPO`}: {dpoInfo.index.toString()}`
+                  {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.index.toString()}`
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Release Deposit'}
-            tip={`Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.`}
-            actionDesc={<StandardText>{`Release Deposit from DPO Deposit Vault to all Members`}</StandardText>}
+            actionName={t('Release Deposit')}
+            tip={t(
+              `Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.`
+            )}
             icon={ACTION_ICONS[dpoAction.action]}
-            buttonText={'Release'}
+            buttonText={t('Release')}
             transaction={{
               section: 'bulletTrain',
               method: 'releaseFareFromDpo',
@@ -77,14 +81,14 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
             txContent={
               <>
                 <StandardText>
-                  {`Confirm Withdraw Ticket Fare from TravelCabin: `} {dpoInfo.target.asTravelCabin.toString()}`
+                  {`${t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: ${dpoInfo.target.asTravelCabin.toString()}`}
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Withdraw Ticket Fare'}
-            actionDesc={<StandardText>{`Release Ticket Fare from Target TravelCabin.`}</StandardText>}
-            buttonText={'Withdraw'}
+            actionName={t(`Withdraw Ticket Fare`)}
+            tip={t(`Withdraw Ticket Fare from Target TravelCabin.`)}
+            buttonText={t(`Withdraw`)}
             icon={ACTION_ICONS[dpoAction.action]}
             transaction={{
               section: 'bulletTrain',
@@ -106,25 +110,25 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                 txContent={
                   <>
                     <SpacedSection>
-                      <StandardText>{`Confirm purchase of TravelCabin.`}</StandardText>
+                      <StandardText>{t(`Confirm purchase of TravelCabin.`)}</StandardText>
                     </SpacedSection>
                     <SpacedSection>
                       <RowBetween>
-                        <StandardText>{`Travel Class`}</StandardText>
-                        <StandardText>{getCabinClass(dpoInfo.target.asTravelCabin.toString())}</StandardText>
+                        <StandardText>{t(`Travel Class`)}</StandardText>
+                        <StandardText>{getCabinClassByIndex(dpoInfo.target.asTravelCabin.toString())}</StandardText>
                       </RowBetween>
                       <RowBetween>
-                        <StandardText>{`TravelCabin Id`}</StandardText>
+                        <StandardText>{t(`TravelCabin Id`)}</StandardText>
                         <StandardText>{dpoInfo.target.asTravelCabin.toString()}</StandardText>
                       </RowBetween>
                     </SpacedSection>
                     <TxFee fee={estimatedFee} />
                   </>
                 }
-                actionName={'Buy TravelCabin'}
-                actionDesc={<StandardText>{`Use DPO's crowdfund to buy this TravelCabin.`}</StandardText>}
-                buttonText={'Buy'}
+                actionName={t('Buy TravelCabin')}
+                buttonText={t('Buy')}
                 icon={ACTION_ICONS[dpoAction.action]}
+                tip={t(`Use DPO's crowdfund to buy this TravelCabin.`)}
                 transaction={{
                   section: 'bulletTrain',
                   method: 'dpoBuyTravelCabin',
@@ -142,15 +146,15 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     {newTargetIndex && (
                       <>
                         <SpacedSection>
-                          <StandardText>{`Confirm purchase of TravelCabin.`}</StandardText>
+                          <StandardText>{t(`Confirm purchase of TravelCabin.`)}</StandardText>
                         </SpacedSection>
                         <SpacedSection>
                           <RowBetween>
-                            <StandardText>{`Travel Class`}</StandardText>
-                            <StandardText>{getCabinClass(newTargetIndex)}</StandardText>
+                            <StandardText>{t(`Travel Class`)}</StandardText>
+                            <StandardText>{getCabinClassByIndex(newTargetIndex)}</StandardText>
                           </RowBetween>
                           <RowBetween>
-                            <StandardText>{`TravelCabin Id`}</StandardText>
+                            <StandardText>{t(`TravelCabin Id`)}</StandardText>
                             <StandardText>{newTargetIndex}</StandardText>
                           </RowBetween>
                         </SpacedSection>
@@ -159,13 +163,13 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     )}
                   </>
                 }
-                actionName={'Buy TravelCabin'}
+                actionName={t('Buy TravelCabin')}
                 form={
                   <>
                     <StandardText>
-                      {`TravelCabin: `}
-                      {getCabinClass(dpoInfo.target.asTravelCabin.toString())}
-                      {` is no longer available. Please enter a new TravelCabin Id to purchase.`}
+                      {`${`TravelCabin`}: 
+                      ${getCabinClassByIndex(dpoInfo.target.asTravelCabin.toString())} 
+                      ${`is no longer available. Please enter a new TravelCabin Id to purchase.`}`}
                     </StandardText>
                     <SpacedSection>
                       <BorderedInput
@@ -179,10 +183,10 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     </SpacedSection>
                   </>
                 }
-                formTitle={'Change TravelCabin Target'}
-                buttonText={'Buy'}
+                formTitle={t('Change TravelCabin Target')}
+                buttonText={t('Buy')}
                 icon={ACTION_ICONS[dpoAction.action]}
-                tip={`Use DPO's Crowdfunded Amount to buy this TravelCabin. Leftover amount will remain in Vault`}
+                tip={t(`Use DPO's Crowdfunded Amount to buy this TravelCabin. Leftover amount will remain in Vault`)}
                 transaction={{
                   section: 'bulletTrain',
                   method: 'dpoBuyTravelCabin',
@@ -201,27 +205,25 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
         // If not available, user needs to enter index of cabin that is
         return (
           <>
-            {!isDpoAvailable(dpoInfo, targetDpo) ? (
+            {isDpoAvailable(dpoInfo, targetDpo) ? (
               <Action
                 txContent={
                   <>
                     <SpacedSection>
-                      <StandardText>{`Confirm Purchase of DPO Seats`}</StandardText>
+                      <StandardText>{t(`Confirm Purchase of DPO Seats`)}</StandardText>
                     </SpacedSection>
                     <SpacedSection>
                       <RowBetween>
-                        <StandardText>{`DPO Id`}</StandardText>
+                        <StandardText>{t(`DPO Id`)}</StandardText>
                         <StandardText>{dpoInfo.target.asDpo[0].toString()}</StandardText>
                       </RowBetween>
                     </SpacedSection>
                     <TxFee fee={estimatedFee} />
                   </>
                 }
-                actionName={'Buy DPO Seats'}
-                actionDesc={
-                  <StandardText>{`Use DPO's crowdfund to buy DPO ${dpoInfo.target.asDpo[0].toString()}'s Seats.`}</StandardText>
-                }
-                buttonText={'Buy'}
+                actionName={t('Buy DPO Seats')}
+                tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+                buttonText={t(`Buy`)}
                 icon={ACTION_ICONS[dpoAction.action]}
                 transaction={{
                   section: 'bulletTrain',
@@ -241,11 +243,11 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     {newTargetIndex && (
                       <>
                         <SpacedSection>
-                          <StandardText>{`Confirm Purchase of DPO Seats`}</StandardText>
+                          <StandardText>{t(`Confirm Purchase of DPO Seats`)}</StandardText>
                         </SpacedSection>
                         <SpacedSection>
                           <RowBetween>
-                            <StandardText>{`DPO Id`}</StandardText>
+                            <StandardText>{t(`DPO Id`)}</StandardText>
                             <StandardText>{newTargetIndex}</StandardText>
                           </RowBetween>
                         </SpacedSection>
@@ -254,34 +256,41 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     )}
                   </>
                 }
-                actionName={'Buy DPO Seats'}
-                actionDesc={
+                actionName={t('Buy DPO Seats')}
+                tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+                form={
                   <>
+                    <StandardText>
+                      {`${`DPO ${dpoInfo.target.asDpo[0].toString()}`} 
+                        ${t(`is no longer available. Please enter a new DPO Id to purchase.`)}`}
+                    </StandardText>
                     <SpacedSection>
-                      <StandardText>
-                        {`DPO ${dpoInfo.target.asDpo[0].toString()}`}
-                        {` is no longer available. Please enter a new DPO Id to purchase.`}
-                      </StandardText>
-                    </SpacedSection>
-                    <BorderedInput
-                      required
-                      id="dpo-index"
-                      type="number"
-                      placeholder="0"
-                      onChange={(e) => setNewTargetIndex(e.target.value)}
-                      style={{ alignItems: 'flex-end', width: '100%' }}
-                    />
-                    <SpacedSection>
-                      <StandardText>
-                        {`Please enter the number of seats from new DPO you want to purchase.`}
-                      </StandardText>
+                      <RowFixed>
+                        <StandardText>{t(`New DPO Id`)}</StandardText>
+                        <QuestionHelper
+                          text={t(
+                            `The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.`
+                          )}
+                          size={12}
+                          backgroundColor={'#fff'}
+                        ></QuestionHelper>
+                      </RowFixed>
+                      <BorderedInput
+                        required
+                        id="dpo-index"
+                        type="number"
+                        placeholder={`0`}
+                        onChange={(e) => setNewTargetIndex(e.target.value)}
+                        style={{ alignItems: 'flex-end', width: '100%' }}
+                      />
                     </SpacedSection>
                     <Section>
                       <RowFixed>
-                        <StandardText>{`Seats to Buy`}</StandardText>
+                        <StandardText>{t(`Seats to Buy`)}</StandardText>
                         <QuestionHelper
-                          text={`The # of Seats you wish to buy from THIS DPO will determine the crowdfunding target of YOUR new DPO.
-            The crowdfunding target will be split equally to 100 seats for your DPO members.`}
+                          text={t(
+                            `The # of Seats you wish to buy from THIS DPO will determine the crowdfunding target of YOUR new DPO. The crowdfunding target will be split equally to 100 seats for your DPO members.`
+                          )}
                           size={12}
                           backgroundColor={'#fff'}
                         ></QuestionHelper>
@@ -297,7 +306,8 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     </Section>
                   </>
                 }
-                buttonText={'Buy'}
+                formTitle={t('Change DPO Target')}
+                buttonText={t('Buy')}
                 icon={ACTION_ICONS[dpoAction.action]}
                 transaction={{
                   section: 'bulletTrain',
@@ -320,18 +330,13 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
           <Action
             txContent={
               <>
-                <StandardText>{`Withdraw Yield from Cabin`}</StandardText>
+                <StandardText>{t(`Withdraw Yield from Cabin`)}</StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Withdraw Yield from Cabin'}
-            tip={`Withdraw accumulated Yield from TravelCabin to DPO vault.`}
-            actionDesc={
-              <>
-                <StandardText>{`Withdraw accumulated Yield from TravelCabin to DPO vault.`}</StandardText>
-              </>
-            }
-            buttonText={'Withdraw'}
+            actionName={t('Withdraw Yield from Cabin')}
+            tip={t(`Withdraw accumulated Yield from TravelCabin to DPO vault.`)}
+            buttonText={t('Withdraw')}
             icon={ACTION_ICONS[dpoAction.action]}
             transaction={{
               section: 'bulletTrain',
@@ -349,10 +354,10 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
           <Action
             txContent={
               <>
-                <StandardText>{`Confirm Release Yield rewards to Members of DPO.`}</StandardText>
+                <StandardText>{t(`Confirm Release Yield rewards to Members of DPO.`)}</StandardText>
                 <SpacedSection>
                   <RowBetween>
-                    <StandardText>{`Total Release Amount`}</StandardText>
+                    <StandardText>{t(`Total Release Amount`)}</StandardText>
                     <StandardText>
                       {formatToUnit(dpoInfo.vault_yield, chainDecimals, 2)} {dpoInfo.token_id.asToken.toString()}
                     </StandardText>
@@ -361,9 +366,9 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Release Yield to Members'}
-            tip={`Release Yield Rewards from DPO Vault to Members.`}
-            buttonText={'Release'}
+            actionName={t(`Release Yield Reward`)}
+            tip={t(`Release Yield Rewards from DPO Vault to Members.`)}
+            buttonText={t('Release')}
             icon={ACTION_ICONS[dpoAction.action]}
             transaction={{
               section: 'bulletTrain',
@@ -380,13 +385,13 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
           <Action
             txContent={
               <>
-                <StandardText>{`Release Drop Rewards`}</StandardText>
+                <StandardText>{t(`Release Bonus Rewards`)}</StandardText>
                 <TxFee fee={estimatedFee} />
               </>
             }
-            actionName={'Release Bonus Reward'}
-            actionDesc={<StandardText>{`Release Bonus Reward from Bonus Vault to Members of DPO.`}</StandardText>}
-            buttonText={'Release'}
+            actionName={t('Release Bonus Reward')}
+            tip={t(`Release Bonus Reward from Bonus Vault to Members of DPO.`)}
+            buttonText={t('Release')}
             icon={ACTION_ICONS[dpoAction.action]}
             transaction={{
               section: 'bulletTrain',
@@ -421,6 +426,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
     seatsToBuy,
     estimatedFee,
     chainDecimals,
+    t,
   ])
 
   return (
@@ -440,12 +446,13 @@ interface DpoActionsProps {
 export default function DpoActions(props: DpoActionsProps) {
   const { dpoIndex } = props
   const dpoInfo = useSubDpo(dpoIndex)
+  const { t } = useTranslation()
   const { dpoActions } = useDpoActions(dpoInfo)
   return (
     <>
       {dpoActions && dpoActions.length > 0 && (
         <FlatCard margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-          <SectionHeading>Actions</SectionHeading>
+          <SectionHeading>{t(`Actions`)}</SectionHeading>
           {dpoInfo && dpoIndex && <ActionProvider dpoInfo={dpoInfo} dpoIndex={dpoIndex} dpoActions={dpoActions} />}
         </FlatCard>
       )}

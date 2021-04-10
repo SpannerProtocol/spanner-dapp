@@ -8,7 +8,8 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { shortenAddress } from 'utils'
-import TabBar, { TabMetaData } from '../../components/TabBar'
+import { useAccount } from 'utils/usePath'
+import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
 import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
@@ -20,46 +21,40 @@ const CopyWrapper = styled.div`
   cursor: pointer;
 `
 
-const tabData: Array<TabMetaData> = [
+const tabData: Array<RouteTabMetaData> = [
   {
-    id: 'tab-balances',
-    className: 'tab balances-container',
+    id: 'balances',
     label: 'Balances',
+    path: '/account/balances',
   },
   {
-    id: 'tab-portfolio',
-    className: 'tab portfolio-container',
+    id: 'portfolio',
     label: 'Portfolio',
+    path: '/account/portfolio',
   },
   {
-    id: 'tab-bridge',
-    className: 'tab bridge-container',
+    id: 'bridge',
     label: 'Bridge',
+    path: '/account/bridge',
   },
   {
-    id: 'tab-faucet',
-    className: 'tab faucet-container',
+    id: 'faucet',
     label: 'Faucet',
+    path: '/account/faucet',
   },
 ]
 
-const tabOptions = ['balances', 'portfolio', 'bridge', 'faucet']
-
 export default function Account() {
-  const [activeTabIndex, setActiveTabIndex] = useState<number>(0)
   const [activeTab, setActiveTab] = useState<string>('balances')
+  const currentPath = useAccount()
   const wallet = useWallet()
   const { t } = useTranslation()
   const referrer = useReferrer()
 
-  const handleClick = (indexClicked: number) => {
-    setActiveTabIndex(indexClicked)
-  }
-
   useEffect(() => {
-    const tabName = tabOptions[activeTabIndex]
-    setActiveTab(tabName)
-  }, [activeTabIndex])
+    if (!currentPath) return
+    setActiveTab(currentPath.item)
+  }, [currentPath])
 
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '720px', justifyContent: 'center', alignItems: 'center' }}>
@@ -113,13 +108,7 @@ export default function Account() {
               </Section>
             </BorderedWrapper>
           )}
-          <TabBar
-            id={'tabbar-account'}
-            className={'tabbar-container'}
-            tabs={tabData}
-            onClick={handleClick}
-            margin="0"
-          />
+          <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
         </FlatCard>
       </Wrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
