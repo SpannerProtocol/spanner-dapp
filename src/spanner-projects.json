@@ -3,7 +3,7 @@
     "name": "Spanner",
     "token": "bolt",
     "icon": "spanner-bolt.svg",
-    "description": "Blockchain Component Marketplace with Launchpad."
+    "description": "A Blockchain for Decentralized Programmable Organizations."
   },
   "ncat": {
     "name": "Nyan Cats",

@@ -52,12 +52,12 @@ export default function Account() {
   const referrer = useReferrer()
 
   useEffect(() => {
-    if (!currentPath) return
+    if (!currentPath.item) return
     setActiveTab(currentPath.item)
-  }, [currentPath])
+  }, [currentPath.item])
 
   return (
-    <PageWrapper style={{ width: '100%', maxWidth: '720px', justifyContent: 'center', alignItems: 'center' }}>
+    <PageWrapper style={{ width: '100%', maxWidth: '700px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
         style={{
           display: 'flex',
