@@ -205,7 +205,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
         // If not available, user needs to enter index of cabin that is
         return (
           <>
-            {!isDpoAvailable(dpoInfo, targetDpo) ? (
+            {isDpoAvailable(dpoInfo, targetDpo) ? (
               <Action
                 txContent={
                   <>
@@ -257,27 +257,32 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                   </>
                 }
                 actionName={t('Buy DPO Seats')}
-                actionDesc={
+                tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+                form={
                   <>
-                    <SpacedSection>
-                      <StandardText>
-                        {`
-                        ${`DPO ${dpoInfo.target.asDpo[0].toString()}`} 
+                    <StandardText>
+                      {`${`DPO ${dpoInfo.target.asDpo[0].toString()}`} 
                         ${t(`is no longer available. Please enter a new DPO Id to purchase.`)}`}
-                      </StandardText>
-                    </SpacedSection>
-                    <BorderedInput
-                      required
-                      id="dpo-index"
-                      type="number"
-                      placeholder="0"
-                      onChange={(e) => setNewTargetIndex(e.target.value)}
-                      style={{ alignItems: 'flex-end', width: '100%' }}
-                    />
+                    </StandardText>
                     <SpacedSection>
-                      <StandardText>
-                        {t(`Please enter the number of seats from new DPO you want to purchase.`)}
-                      </StandardText>
+                      <RowFixed>
+                        <StandardText>{t(`New DPO Id`)}</StandardText>
+                        <QuestionHelper
+                          text={t(
+                            `The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.`
+                          )}
+                          size={12}
+                          backgroundColor={'#fff'}
+                        ></QuestionHelper>
+                      </RowFixed>
+                      <BorderedInput
+                        required
+                        id="dpo-index"
+                        type="number"
+                        placeholder={`0`}
+                        onChange={(e) => setNewTargetIndex(e.target.value)}
+                        style={{ alignItems: 'flex-end', width: '100%' }}
+                      />
                     </SpacedSection>
                     <Section>
                       <RowFixed>
@@ -301,6 +306,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                     </Section>
                   </>
                 }
+                formTitle={t('Change DPO Target')}
                 buttonText={t('Buy')}
                 icon={ACTION_ICONS[dpoAction.action]}
                 transaction={{
