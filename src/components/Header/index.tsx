@@ -6,7 +6,7 @@ import { Link, NavLink } from 'react-router-dom'
 import styled from 'styled-components'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
-// import BlockIcon from '../../assets/svg/icon-block-white.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
 import { useActiveWeb3React } from '../../hooks'
@@ -337,6 +337,10 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
+          <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
+            {t(`Bridge`)}
+          </StyledNavLink>
           <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
             {t(`DEX`)}
@@ -351,7 +355,7 @@ export default function Header(props: HeaderProps) {
           </StyledNavLink>
           {process.env.REACT_APP_DEBUG_MODE === 'true' && (
             <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
-              {`Diagnostics`}
+              {`Debug`}
             </StyledNavLink>
           )}
           {/* <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
