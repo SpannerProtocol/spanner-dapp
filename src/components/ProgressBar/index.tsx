@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { Progress } from 'antd'
+import './progress.css'
 
 const BarContainer = styled.div`
   height: 30px;
@@ -43,3 +45,5 @@ export function ProgressBar(props: ProgressBarProps): JSX.Element {
     </BarContainer>
   )
 }
+
+export const ProgressBar2 = styled(Progress)``

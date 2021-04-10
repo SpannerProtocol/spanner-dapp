@@ -1,41 +1,13 @@
-import Card, { FlatCard } from 'components/Card'
+import { FlatCard } from 'components/Card'
+import { Step, StepNumber } from 'components/InstructionSteps'
 import ImageLightBox from 'components/LightBox'
-import { AnyQuestionHelper } from 'components/QuestionHelper'
+import QuestionHelper from 'components/QuestionHelper'
 import { SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
+import { Link } from 'react-router-dom'
 import BulletTrainDiagram from '../../assets/images/bullettrain-rules.png'
 import { HeavyText, SectionHeading, SectionTitle, StandardText } from '../../components/Text'
-
-export const Step = styled(Card)<{ background?: string; maxWidth?: string; margin?: string }>`
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  padding: 1rem;
-  width: 100%;
-  text-align: center;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  background: ${({ background, theme }) => (background ? background : theme.primary1)};
-  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '360px')};
-  margin: ${({ margin }) => (margin ? margin : '0')};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
-    font-size: 12px;
-  `};
-`
-
-const StepNumber = styled.div`
-  background: ${({ theme }) => theme.text4};
-  color: #fff;
-  width: 25px;
-  height: 25px;
-  border-radius: 50%;
-  display: flex; /* or inline-flex */
-  align-items: center;
-  justify-content: center;
-  margin-right: 0.5rem;
-`
 
 export default function BulletTrainInstructions() {
   const { t } = useTranslation()
@@ -49,50 +21,76 @@ export default function BulletTrainInstructions() {
       }}
     >
       <FlatCard style={{ textAlign: 'left' }}>
-        <SectionHeading>{t(`BulletTrain`)}</SectionHeading>
         <SpacedSection>
-          <StandardText>
-            {t(`BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects can use to
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <SectionHeading style={{ marginBottom: '0' }}>{t(`BulletTrain`)}</SectionHeading>
+            <QuestionHelper
+              text={t(`BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects can use to
             grow their communities.`)}
-          </StandardText>
+              size={12}
+              backgroundColor={'transparent'}
+            />
+          </div>
+          <StandardText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</StandardText>
         </SpacedSection>
-        <SpacedSection style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
+        <SpacedSection>
           <SectionTitle>{t(`How to Participate?`)}</SectionTitle>
-          <SpacedSection>{t(`Click on following buttons for tips and directions!`)}</SpacedSection>
-          <div style={{ justifyContent: 'left', textAlign: 'left' }}>
+          <StandardText>{t(`Click on following buttons for tips and directions.`)}</StandardText>
+          <div style={{ justifyContent: 'center', textAlign: 'center' }}>
             <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>1</StepNumber>
                 <HeavyText>{t(`Before Boarding`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(
+                    `Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.`
+                  )}
+                />
               </div>
-
-              <AnyQuestionHelper
-                text={t(
-                  `Purchase a Cabin or Create a DPO to crowdfund for it. The Ticket Fare spent will be returned to you when your train ride ends.`
-                )}
+              <Link
+                to={{ pathname: '/bullettrain/travelcabins' }}
+                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
               >
                 <Step>{t(`Buy a Cabin with Ticket Fare`)}</Step>
-              </AnyQuestionHelper>
+              </Link>
             </SpacedSection>
             <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>2</StepNumber>
-                <HeavyText>Boarded</HeavyText>
+                <HeavyText>{t(`Boarded`)}</HeavyText>
+                <QuestionHelper
+                  text={t(
+                    `Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.`
+                  )}
+                  size={12}
+                  backgroundColor={'transparent'}
+                />
               </div>
-              <AnyQuestionHelper
-                text={t(`Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.`)}
+              <Link
+                to={{ pathname: '/account/portfolio' }}
+                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
               >
                 <Step>{t(`Claim your Rewards`)}</Step>
-              </AnyQuestionHelper>
+              </Link>
             </SpacedSection>
             <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '0.5rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>3</StepNumber>
-                <HeavyText>Journey Ends</HeavyText>
+                <HeavyText>{t(`Journey Ends`)}</HeavyText>
+                <QuestionHelper
+                  text={t(`The ride is over, withdraw your Ticket Fare back.`)}
+                  size={12}
+                  backgroundColor={'transparent'}
+                />
               </div>
-              <AnyQuestionHelper text={t(`The ride is over, withdraw your Ticket Fare back.`)}>
+              <Link
+                to={{ pathname: '/account/portfolio' }}
+                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
+              >
                 <Step>{t(`Withdraw Ticket Fare`)}</Step>
-              </AnyQuestionHelper>
+              </Link>
             </SpacedSection>
           </div>
         </SpacedSection>

@@ -56,7 +56,6 @@ export function postTransfers({ row, page, address, success = 'true', setData, s
   // Filter for the users address as a hex
   let addressHex = getUserPublicKey(address)
   addressHex = addressHex.slice(2, addressHex.length)
-  console.log(addressHex)
   postScanEvents({
     row,
     page,
@@ -96,7 +95,6 @@ export function postTransfersTokens({ row, page, address, success = 'true', setD
     param_match: `%${addressHex}%`,
     success,
   }).then((response: AxiosResponse<SpanfuraEventsResponse>) => {
-    console.log(response.data.data.events)
     if (!response.data.data.events) {
       setData([])
       return

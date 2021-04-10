@@ -1,6 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import React, { useContext, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
+import styled, { ThemeContext } from 'styled-components'
 
 const TabBarWrapper = styled.div<{ margin?: string }>`
   display: flex;
@@ -31,60 +32,61 @@ const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
   `}
 `
 
-interface TabBarProps {
-  id?: string
-  className?: string
-  tabs: Array<TabMetaData>
+interface TabBarCoreProps {
+  activeTab: string
   activeColor?: string
   fontSize?: string
   mobileFontSize?: string
-  onClick?: (index: number) => void
   margin?: string
 }
 
+interface TabBarProps extends TabBarCoreProps {
+  tabs: Array<TabMetaData>
+  onClick: (tabId: string) => void
+}
+
+interface RouteTabBarProps extends TabBarCoreProps {
+  tabs: RouteTabMetaData[]
+}
 export interface TabMetaData {
-  id?: string
-  className?: string
+  id: string
   label: string
-  callback?: () => any
   onClick?: (e: React.MouseEvent) => any
 }
 
-// TabBar component takes an array of TabMetaData. If passed a click handler as a callback,
-// it will return the index of the tab clicked.
+export interface RouteTabMetaData extends TabMetaData {
+  path: string
+}
+
 export default function TabBar({
-  id,
-  className,
+  activeTab,
   tabs,
   onClick,
   margin,
   fontSize,
   mobileFontSize,
 }: TabBarProps): JSX.Element {
-  const [activeIndex, setActiveIndex] = useState<number>(0)
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
 
-  const handleClick = (event: React.MouseEvent, indexClicked: number) => {
-    setActiveIndex(indexClicked)
-    const activeTab = tabs[indexClicked]
-    if (!activeTab.callback) return
-    activeTab.callback()
+  const handleClick = (indexClicked: number) => {
+    const selectedTab = tabs[indexClicked]
+    onClick(selectedTab.id)
   }
 
   useEffect(() => {
-    if (!onClick) return
-    return onClick(activeIndex)
-  }, [activeIndex, onClick])
+    if (!onClick || !activeTab) return
+    return onClick(activeTab)
+  }, [activeTab, onClick])
 
   return (
-    <TabBarWrapper id={id} className={className} margin={margin}>
+    <TabBarWrapper margin={margin}>
       {tabs &&
         tabs.map((tab, index) => {
-          const active = activeIndex === index
+          const active = tabs.findIndex((tab) => tab.id === activeTab) === index
           return (
             <TabWrapper key={index}>
-              <Tab key={index} id={tab.id} className={tab.className} onClick={(event) => handleClick(event, index)}>
+              <Tab key={index} onClick={() => handleClick(index)}>
                 <TabText
                   fontSize={fontSize}
                   mobileFontSize={mobileFontSize}
@@ -97,6 +99,49 @@ export default function TabBar({
                   {t(tab.label)}
                 </TabText>
               </Tab>
+            </TabWrapper>
+          )
+        })}
+    </TabBarWrapper>
+  )
+}
+
+/**
+ * RouteTabBars are meant to use paths passed to react-router-dom's Link component
+ * to change the pathname. The parent component should detect changes to path to
+ * decide the activeTab. Pass the activeTab to RouteTabBar to change the activeTab visually.
+ */
+export function RouteTabBar({ tabs, activeTab, margin, fontSize, mobileFontSize }: RouteTabBarProps): JSX.Element {
+  const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
+
+  // Parent check path
+  // Path updates activeTab
+  // ActiveTab gets updated in this component
+  // If new tab gets clicked, changes path
+
+  return (
+    <TabBarWrapper margin={margin}>
+      {tabs &&
+        tabs.map((tab, index) => {
+          const active = tabs.findIndex((tab) => tab.id === activeTab) === index
+          return (
+            <TabWrapper key={index}>
+              <Link to={{ pathname: tab.path }} style={{ textDecoration: 'none' }}>
+                <Tab>
+                  <TabText
+                    fontSize={fontSize}
+                    mobileFontSize={mobileFontSize}
+                    style={{
+                      color: active ? `${theme.black}` : `${theme.text3}`,
+                      borderBottom: active ? `3px solid ${theme.primary1}` : `none`,
+                      fontWeight: active ? 700 : 500,
+                    }}
+                  >
+                    {t(tab.label)}
+                  </TabText>
+                </Tab>
+              </Link>
             </TabWrapper>
           )
         })}
