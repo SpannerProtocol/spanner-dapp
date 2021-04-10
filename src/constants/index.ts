@@ -75,11 +75,11 @@ export const DPO_STATE_TOOLTIPS: { [index: string]: any } = {
 }
 
 export const DPO_STATE_COLORS: { [index: string]: any } = {
-  CREATED: `#FFBD14`,
-  ACTIVE: `#FFBD14`,
-  RUNNING: `#5BC85B`,
+  CREATED: `#FF9E04`,
+  ACTIVE: `#FFBE2E`,
+  RUNNING: `#8CD88C`,
   COMPLETED: `#5BC85B`,
-  FAILED: `#EC3D3D`,
+  FAILED: `#C3C5CB`,
 }
 
 export interface WalletInfo {
