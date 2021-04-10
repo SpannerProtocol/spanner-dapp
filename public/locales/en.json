@@ -333,6 +333,8 @@
   "Release": "Release",
   "Release Bonus Rewards": "Release Bonus Rewards",
   "Release Bonus Reward from Bonus Vault to Members of DPO.": "Release Bonus Reward from Bonus Vault to Members of DPO.",
-  
-
+  "Change DPO Target": "Change DPO Target",
+  "New DPO Id e.g. 3": "New DPO Id e.g. 3",
+  "Create a DPO to Crowdfund for this DPO": "Create a DPO to Crowdfund for this DPO",
+  "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.": "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page."
 }
