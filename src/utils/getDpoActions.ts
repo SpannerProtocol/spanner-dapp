@@ -139,40 +139,19 @@ export default function getDpoActions({
     // Buy DPO Seats
     if (dpoInfo.target.isDpo) {
       if (!targetDpo) return
-      const targetSeats = dpoInfo.target.asDpo[1]
-
-      // User needs to choose a new DPO if there aren't enough seats available. [Verified]
-      if (targetSeats.lt(targetDpo.empty_seats)) {
-        // Within Grace Period
-        if (lastBlock.lt(gracePeriodEnd)) {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: true,
-            action: 'dpoBuyDpoSeats',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetDpoInsufficientSeats',
-          })
-        } else {
-          actions.push({
-            role: 'any',
-            hasGracePeriod: true,
-            inGracePeriod: false,
-            action: 'dpoBuyDpoSeats',
-            dpoIndex: dpoInfo.index,
-            conflict: 'targetDpoInsufficientSeats',
-          })
-        }
-      } else {
-        // Within Grace Period
-        if (dpoInfo.vault_bonus.isZero()) {
-          if (dpoInfo.vault_bonus.isZero()) {
+      if (isMember) {
+        const targetSeats = dpoInfo.target.asDpo[1]
+        // User needs to choose a new DPO if there aren't enough seats available. [Verified]
+        if (targetSeats.lt(targetDpo.empty_seats)) {
+          // Within Grace Period
+          if (lastBlock.lt(gracePeriodEnd)) {
             actions.push({
               role: 'any',
               hasGracePeriod: true,
               inGracePeriod: true,
               action: 'dpoBuyDpoSeats',
               dpoIndex: dpoInfo.index,
+              conflict: 'targetDpoInsufficientSeats',
             })
           } else {
             actions.push({
@@ -181,7 +160,29 @@ export default function getDpoActions({
               inGracePeriod: false,
               action: 'dpoBuyDpoSeats',
               dpoIndex: dpoInfo.index,
+              conflict: 'targetDpoInsufficientSeats',
             })
+          }
+        } else {
+          // Within Grace Period
+          if (dpoInfo.vault_bonus.isZero()) {
+            if (dpoInfo.vault_bonus.isZero()) {
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: true,
+                action: 'dpoBuyDpoSeats',
+                dpoIndex: dpoInfo.index,
+              })
+            } else {
+              actions.push({
+                role: 'any',
+                hasGracePeriod: true,
+                inGracePeriod: false,
+                action: 'dpoBuyDpoSeats',
+                dpoIndex: dpoInfo.index,
+              })
+            }
           }
         }
       }
