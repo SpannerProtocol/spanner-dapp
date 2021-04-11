@@ -1,16 +1,24 @@
 import { FlatCard } from 'components/Card'
-import { PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
+import CopyHelper from 'components/Copy/Copy'
+import { Step, StepNumber } from 'components/InstructionSteps'
+import QuestionHelper from 'components/QuestionHelper'
+import { RowBetween } from 'components/Row'
+import Web3Status from 'components/Web3Status/Web3Substrate'
+import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import StandardText, { Heading, SectionTitle } from '../../components/Text'
+import truncateString from 'utils/truncateString'
+import { StandardText, Heading, HeavyText, SectionTitle } from '../../components/Text'
 
 const HomePageTitle = styled.h1`
   margin: 0;
-  font-size: 40px;
+  font-size: 20px;
   font-weight: bold;
+  padding-bottom: 0.5rem;
   color: ${({ theme }) => theme.black};
 `
 
@@ -19,9 +27,7 @@ export default function Home() {
   const { chain, genesis } = useSubstrate()
   const { t } = useTranslation()
   return (
-    <PageWrapper
-      style={{ width: '100%', padding: '0.5rem', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}
-    >
+    <PageWrapper style={{ width: '100%', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
         style={{
           width: '100%',
@@ -31,51 +37,123 @@ export default function Home() {
       >
         <FlatCard>
           <Section style={{ marginBottom: '1rem' }}>
-            <HomePageTitle>{t(`Spanner`)}</HomePageTitle>
-            <Heading>{t(`The Blockchain Component Marketplace`)}</Heading>{' '}
+            <HomePageTitle>{t(`Spanner Dapp`)}</HomePageTitle>
+            <Heading>{t(`Dapp for Decentralized Collaboration`)}</Heading>
           </Section>
-        </FlatCard>
-        <SpacedSection>
-          {lastBlock && (
-            <Heading>
-              {t(`Last Block`)}: #{lastBlock.toString()}
-            </Heading>
-          )}
-        </SpacedSection>
-        <SpacedSection>
-          <FlatCard style={{ textAlign: 'left' }}>
-            <SpacedSection style={{ wordBreak: 'break-word' }}>
-              <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
-              <StandardText>
-                {t(`Connected to`)}: {chain}
-              </StandardText>
-              <StandardText>
-                {t(`Genesis Hash`)}: {genesis}
-              </StandardText>
-              {expectedBlockTime && (
-                <StandardText>
-                  {t(`Estimated Time per Block`)}: {expectedBlockTime.toNumber() / 1000}s
-                </StandardText>
+          <SpacedSection style={{ wordBreak: 'break-word' }}>
+            <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
+            <BorderedWrapper style={{ marginTop: '0' }}>
+              <RowBetween>
+                <HeavyText fontSize="14px">{t(`Connected to`)}:</HeavyText>
+                <StandardText>{chain}</StandardText>
+              </RowBetween>
+              {genesis && (
+                <RowBetween>
+                  <HeavyText fontSize="14px">{t(`Genesis Hash`)}:</HeavyText>
+                  <CopyHelper toCopy={genesis} childrenIsIcon={true}>
+                    <StandardText color="#565A69">{truncateString(genesis)}</StandardText>
+                  </CopyHelper>
+                </RowBetween>
               )}
-            </SpacedSection>
-          </FlatCard>
-        </SpacedSection>
-        <SpacedSection style={{ marginBottom: '2rem' }}>
+              {expectedBlockTime && (
+                <RowBetween>
+                  <HeavyText fontSize="14px">{t(`Estimated Time per Block`)}:</HeavyText>
+                  <StandardText>{`${expectedBlockTime.toNumber() / 1000} ${t(`seconds`)}`}</StandardText>
+                </RowBetween>
+              )}
+            </BorderedWrapper>
+          </SpacedSection>
+          <SpacedSection>
+            {lastBlock && (
+              <div style={{ display: 'block', width: '100%', justifyContent: 'center', textAlign: 'center' }}>
+                <HeavyText style={{ width: '100%' }}>{t(`# of Blocks Finalized`)}</HeavyText>
+                <Heading style={{ fontSize: '28px' }}>{lastBlock.toString()}</Heading>
+              </div>
+            )}
+          </SpacedSection>
+        </FlatCard>
+        <ContentWrapper>
           <FlatCard style={{ textAlign: 'left' }}>
-            {/* <SpacedSection>
-              <AnyQuestionHelper text={t(``)}>
-                <Step>{t(`Connect to a Wallet`)}</Step>
-              </AnyQuestionHelper>
-            </SpacedSection> */}
-            <SpacedSection>
+            <div
+              style={{
+                display: 'block',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+                paddingBottom: '0.5rem',
+              }}
+            >
               <SectionTitle>{t(`Get Started`)}</SectionTitle>
-              <StandardText>{t(`1) Connect to a Wallet`)}</StandardText>
-              <StandardText>{t(`2) Go to Account > Bridge and transfer tokens over to Spanner`)}</StandardText>
-              <StandardText>{t(`3) Go to DEX and swap for BOLT`)}</StandardText>
-              <StandardText>{t(`4) Participate in a BulletTrain Campaign`)}</StandardText>
+              <StandardText>
+                {t(`Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.`)}
+              </StandardText>
+            </div>
+            <SpacedSection>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
+                <StepNumber>1</StepNumber>
+                <HeavyText fontSize="12px">{t(`Connect to a Wallet`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(
+                    `Press Connect to a Wallet next to the Account button. If you see a wallet address (e.g. 5JEJ3...i6NwF) then you are already connected.`
+                  )}
+                />
+              </div>
+              <div style={{ width: 'fit-content', margin: 'auto' }}>
+                <Web3Status />
+              </div>
+            </SpacedSection>
+            <SpacedSection>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
+                <StepNumber>2</StepNumber>
+                <HeavyText fontSize="12px">{t(`Deposit tokens to Spanner`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(`Use our Ethereum Bridge to exchange Ethereum USDT for Spanner WUSD.`)}
+                />
+              </div>
+              <Link
+                to={{ pathname: '/account/bridge' }}
+                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
+              >
+                <Step>{t(`Use Bridge to deposit`)}</Step>
+              </Link>
+            </SpacedSection>
+            <SpacedSection>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
+                <StepNumber>3</StepNumber>
+                <HeavyText fontSize="12px">{t(`Swap WUSD for BOLT`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(`Swap WUSD for BOLT at our Decentralized Exchange (DEX).`)}
+                />
+              </div>
+              <Link to={{ pathname: '/dex' }} style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}>
+                <Step>{t(`Get BOLT at DEX`)}</Step>
+              </Link>
+            </SpacedSection>
+            <SpacedSection>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
+                <StepNumber>4</StepNumber>
+                <HeavyText fontSize="12px">{t(`Board our BulletTrain and get rewarded!`)}</HeavyText>
+                <QuestionHelper
+                  size={12}
+                  backgroundColor={'transparent'}
+                  text={t(`Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!`)}
+                />
+              </div>
+              <Link
+                to={{ pathname: '/bullettrain' }}
+                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
+              >
+                <Step>{t(`Get aboard Spanner's BulletTrain`)}</Step>
+              </Link>
             </SpacedSection>
           </FlatCard>
-        </SpacedSection>
+        </ContentWrapper>
       </Wrapper>
     </PageWrapper>
   )
