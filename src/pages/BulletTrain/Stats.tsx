@@ -5,7 +5,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
-import { formatToHumanFromUnit } from 'utils/formatUnit'
+import { formatToUnit } from 'utils/formatUnit'
 
 const StatValue = styled.div`
   font-size: 22px;
@@ -75,14 +75,14 @@ export default function BulletTrainStats({ token, small }: { token: string; smal
         </ThinShadowCard>
         <ThinShadowCard background={background}>
           <StatValue>
-            {formatToHumanFromUnit(stats.totalYieldWithdrawn, chainDecimals)}{' '}
+            {formatToUnit(stats.totalYieldWithdrawn, chainDecimals, 0, true)}{' '}
             <DataTokenName color="white">{token}</DataTokenName>
           </StatValue>
           <StatText>{t(`Yield Distributed`)}</StatText>
         </ThinShadowCard>
         <ThinShadowCard background={background}>
           <StatValue>
-            {formatToHumanFromUnit(stats.totalValueLocked, chainDecimals)}{' '}
+            {formatToUnit(stats.totalValueLocked, chainDecimals, 0, true)}{' '}
             <DataTokenName color="white">{token}</DataTokenName>
           </StatValue>
           <StatText>{t(`Ticket Fares Stored`)}</StatText>
