@@ -174,7 +174,7 @@ export default function Bridge(): JSX.Element {
                 <SectionHeading>{t(`Deposit to Spanner`)}</SectionHeading>
                 <StandardText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</StandardText>
               </Section>
-              <SpacedSection>
+              <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <div
                   style={{
                     display: 'flex',
@@ -196,7 +196,7 @@ export default function Bridge(): JSX.Element {
                 <StandardText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</StandardText>
                 <BorderedWrapper style={{ margin: '0' }}>{ethDepositAddr}</BorderedWrapper>
               </SpacedSection>
-              <SpacedSection>
+              <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <div
                   style={{
                     display: 'flex',
@@ -215,7 +215,7 @@ export default function Bridge(): JSX.Element {
               <SectionHeading>{t(`Withdraw to Ethereum`)}</SectionHeading>
               <StandardText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</StandardText>
             </Section>
-            <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
+            <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
               <div
                 style={{
                   display: 'flex',
@@ -238,7 +238,7 @@ export default function Bridge(): JSX.Element {
                 style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
               />
             </SpacedSection>
-            <SpacedSection>
+            <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
               <div
                 style={{
                   display: 'flex',
