@@ -336,5 +336,18 @@
   "Change DPO Target": "Change DPO Target",
   "New DPO Id e.g. 3": "New DPO Id e.g. 3",
   "Create a DPO to Crowdfund for this DPO": "Create a DPO to Crowdfund for this DPO",
-  "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.": "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page."
+  "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.": "The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.",
+  "seconds": "seconds",
+  "Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.": "Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.",
+  "Connect to a Wallet": "Connect to a Wallet",
+  "Press Connect to a Wallet next to the Account button. If you see a wallet address (e.g. 5JEJ3...i6NwF) then you are already connected.": "Press Connect to a Wallet next to the Account button. If you see a wallet address (e.g. 5JEJ3...i6NwF) then you are already connected.",
+  "Deposit tokens to Spanner": "Deposit tokens to Spanner",
+  "Use our Ethereum Bridge to exchange Ethereum USDT for Spanner WUSD.": "Use our Ethereum Bridge to exchange Ethereum USDT for Spanner WUSD.",
+  "Use Bridge to deposit": "Use Bridge to deposit",
+  "Swap WUSD for BOLT": "Swap WUSD for BOLT",
+  "Swap WUSD for BOLT at our Decentralized Exchange (DEX).": "Swap WUSD for BOLT at our Decentralized Exchange (DEX).",
+  "Get BOLT at DEX": "Get BOLT at DEX",
+  "Board our BulletTrain and get rewarded!": "Board our BulletTrain and get rewarded!",
+  "Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!": "Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!",
+  "Get aboard Spanner's BulletTrain": "Get aboard Spanner's BulletTrain"
 }

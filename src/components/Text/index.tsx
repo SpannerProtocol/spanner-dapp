@@ -64,11 +64,11 @@ export const DisclaimerText = styled(Text)`
 
 export const Heading = styled.h2`
   margin: 0;
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 500;
   color: ${({ theme }) => theme.text2};
   ${({ theme }) => theme.mediaWidth.upToSmall`
-    font-size: 20px;
+    font-size: 16px;
  `};
 `
 
@@ -92,8 +92,9 @@ export const StandardText = styled.div<{
   color?: string
   fontWeight?: string
   paddingLeft?: string
+  width?: string
 }>`
-  width: fit-content;
+  width: ${({ width }) => (width ? width : 'fit-content')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '500')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
