@@ -192,6 +192,8 @@ function TransferTokenRow({ event }: EventRowProps) {
   const receiver = encodeAddress('0x' + event.params_json[2].value, 42)
   const amount = formatToHumanFromUnit(event.params_json[3].value, chainDecimals)
 
+  console.log(sender, receiver, amount)
+
   return (
     <>
       {wallet && wallet.address && (
