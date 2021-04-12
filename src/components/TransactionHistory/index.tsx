@@ -49,6 +49,7 @@ const TxCell = styled.div`
   padding: 0.25rem;
 `};
 `
+
 interface TransactionRowProps {
   tx: SpanfuraDataExtrinsic
   index?: number
