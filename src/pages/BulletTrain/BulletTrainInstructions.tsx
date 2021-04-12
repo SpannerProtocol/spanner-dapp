@@ -55,7 +55,7 @@ export default function BulletTrainInstructions() {
                 to={{ pathname: '/bullettrain/travelcabins' }}
                 style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
               >
-                <Step>{t(`Buy a Cabin with Ticket Fare`)}</Step>
+                <Step>{t(`Buy a Cabin`)}</Step>
               </Link>
             </SpacedSection>
             <SpacedSection>
