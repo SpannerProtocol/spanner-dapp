@@ -56,7 +56,7 @@ export const ToastProvider = (props: ToastProviderProps) => {
     if (toast.length === 0) return
     const interval = setInterval(() => {
       if (toast.length) {
-        toastDispatch({ type: 'REMOVE', payload: { id: toast[0].id }})
+        toastDispatch({ type: 'REMOVE', payload: { id: toast[0].id } })
       }
     }, 3000)
 
