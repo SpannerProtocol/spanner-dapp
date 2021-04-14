@@ -1,7 +1,8 @@
-import { useCallback } from 'react'
+import { HAMMER_EXPLORER, SPANNER_EXPLORER } from '../../constants'
+import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from '../index'
-import { addBridgeServer } from './actions'
+import { addBridgeServer, addChain } from './actions'
 import { ConnectionsState } from './reducer'
 
 export function useConnectionsState(): ConnectionsState | undefined {
@@ -17,4 +18,28 @@ export function useAddBridgeServer() {
     [dispatch]
   )
   return setBridgeServerOn
+}
+
+export function useAddChain() {
+  const dispatch = useDispatch<AppDispatch>()
+  const setChain = useCallback(
+    (chain: 'Hammer' | 'Spanner') => {
+      dispatch(addChain(chain))
+    },
+    [dispatch]
+  )
+  return setChain
+}
+
+export function useChainState() {
+  const connections = useConnectionsState()
+  const chain = useMemo(() => {
+    if (connections) {
+      return {
+        chain: connections.chain,
+        url: connections.chain === 'Spanner' ? SPANNER_EXPLORER : HAMMER_EXPLORER,
+      }
+    }
+  }, [connections])
+  return chain
 }

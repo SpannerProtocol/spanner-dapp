@@ -3,14 +3,16 @@ import { darken } from 'polished'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
+import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
+import BridgeIcon from '../../assets/svg/icon-bridge.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
-import BridgeIcon from '../../assets/svg/icon-bridge.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
-import Logo from '../../assets/svg/logo-spanner-white.svg'
+import Logo from '../../assets/svg/logo-spanner-white2.svg'
+import BlockIcon from '../../assets/svg/icon-block-white.svg'
 import { useActiveWeb3React } from '../../hooks'
-import { MEDIA_WIDTHS, TYPE } from '../../theme'
+import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
 import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
@@ -248,46 +250,46 @@ const StyledNavLink = styled(NavLink).attrs({
 `};
 `
 
-// const StyledExternalLink = styled(ExternalLink).attrs({
-//   activeClassName,
-// })<{ isActive?: boolean }>`
-//   ${({ theme }) => theme.flexRowNoWrap}
-//   align-items: left;
-//   border-radius: 3rem;
-//   outline: none;
-//   cursor: pointer;
-//   text-decoration: none;
-//   color: #fff;
-//   font-size: 16px;
-//   width: fit-content;
-//   margin: 1.1rem 1rem 1.1rem 1rem;
-//   font-weight: 500;
+const StyledExternalLink = styled(ExternalLink).attrs({
+  activeClassName,
+})<{ isActive?: boolean }>`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: left;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: #fff;
+  font-size: 16px;
+  width: fit-content;
+  margin: 1.1rem 1rem 1.1rem 1rem;
+  font-weight: 500;
 
-//   &.${activeClassName} {
-//     border-radius: 12px;
-//     font-weight: 600;
-//     color: ${({ theme }) => theme.primary2};
-//   }
+  &.${activeClassName} {
+    border-radius: 12px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.primary2};
+  }
 
-//   :hover,
-//   :focus {
-//     color: ${({ theme }) => darken(0.1, theme.text1)};
-//   }
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
 
-//   ${({ theme }) => theme.mediaWidth.upToMedium`
-//   display: flex;
-//   color: ${({ theme }) => theme.text1}
-//   font-size: 14px;
-//   padding: 0;
-//   justify-content: flex-end;
-//   margin-left: 0.5rem;
-//   margin-right: 0.5rem;
-//   `};
+  ${({ theme }) => theme.mediaWidth.upToMedium`
+  display: flex;
+  color: ${({ theme }) => theme.text1}
+  font-size: 14px;
+  padding: 0;
+  justify-content: flex-end;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  `};
 
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//       display: none;
-//   `}
-// `
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+      display: none;
+  `}
+`
 
 const LogoText = styled.div`
   color: #fff;
@@ -311,6 +313,7 @@ export default function Header(props: HeaderProps) {
 
   const [icons, setIcons] = useState<boolean>(false)
   const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
+  const chainInfo = useChainState()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -358,10 +361,12 @@ export default function Header(props: HeaderProps) {
               {`Debug`}
             </StyledNavLink>
           )}
-          {/* <StyledExternalLink id={`scan-nav-link`} href={'https://polkascan.io'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
-            {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
-          </StyledExternalLink> */}
+          {chainInfo && chainInfo.url && (
+            <StyledExternalLink id={`scan-nav-link`} href={chainInfo.url}>
+              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
+              {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
+            </StyledExternalLink>
+          )}
         </HeaderLinks>
       </HeaderRow>
     </HeaderFrame>

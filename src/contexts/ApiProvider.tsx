@@ -3,6 +3,7 @@ import React, { createContext, useEffect, useState, useMemo, useCallback } from 
 import * as definitions from '../spanner-interfaces/definitions'
 import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
+import { useAddChain } from 'state/connections/hooks'
 
 const getEnvVars = () => {
   const APP_NAME = process.env.REACT_APP_APP_NAME
@@ -40,6 +41,7 @@ export function ApiProvider({ children }: any): JSX.Element {
   const [loading, setLoading] = useState<boolean>(false)
   const [selectedChain, setSelectedChain] = useState<string>('')
   const [renderLoading, setRenderLoading] = useState<boolean>(false)
+  const setChain = useAddChain()
 
   const config = useMemo(getEnvVars, [])
   const supportedChains = useMemo(() => {
@@ -79,6 +81,7 @@ export function ApiProvider({ children }: any): JSX.Element {
     const chainInfo = SPANNER_SUPPORTED_CHAINS.reduce((supportedChains) =>
       supportedChains.chain === selectedChain ? supportedChains : SPANNER_SUPPORTED_CHAINS[1]
     )
+    chainInfo.chain === 'Hammer Testnet' ? setChain('Hammer') : setChain('Spanner')
     const provider = new WsProvider(chainInfo.providerSocket)
     const apiPromise = new ApiPromise({
       provider,
@@ -108,7 +111,7 @@ export function ApiProvider({ children }: any): JSX.Element {
       setConnected(true)
       setError(false)
     })
-  }, [config, selectedChain])
+  }, [config, selectedChain, setChain])
 
   useEffect(() => {
     if (loading) {
