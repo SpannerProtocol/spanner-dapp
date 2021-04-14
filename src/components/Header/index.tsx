@@ -9,7 +9,7 @@ import BridgeIcon from '../../assets/svg/icon-bridge.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
-import Logo from '../../assets/svg/logo-spanner-white2.svg'
+import Logo from '../../assets/svg/logo-spanner-white.svg'
 import BlockIcon from '../../assets/svg/icon-block-white.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
@@ -268,17 +268,17 @@ const StyledExternalLink = styled(ExternalLink).attrs({
   &.${activeClassName} {
     border-radius: 12px;
     font-weight: 600;
-    color: ${({ theme }) => theme.primary2};
+    color: ${({ theme }) => theme.white};
   }
 
   :hover,
   :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
+    color: ${({ theme }) => darken(0.1, theme.white)};
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
   display: flex;
-  color: ${({ theme }) => theme.text1}
+  color: ${({ theme }) => theme.white}
   font-size: 14px;
   padding: 0;
   justify-content: flex-end;

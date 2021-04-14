@@ -1,6 +1,5 @@
 import { encodeAddress } from '@polkadot/keyring'
 import { FlatCard } from 'components/Card'
-import CopyHelper from 'components/Copy/Copy'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
@@ -66,6 +65,7 @@ function TransferRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
+  const chainInfo = useChainState()
 
   const sender = encodeAddress('0x' + event.params_json[0].value, 42)
   const receiver = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -75,12 +75,13 @@ function TransferRow({ event }: EventRowProps) {
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <RowBetween>
-              <StandardText fontSize="12px" color={'#3498db'}>
-                {truncateString(event.extrinsic_hash, 26)}
-              </StandardText>
-              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
-            </RowBetween>
+            <StyledExternalLink
+              fontSize="12px"
+              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+            >
+              {' '}
+              {truncateString(event.extrinsic_hash, 26)}
+            </StyledExternalLink>
             <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
             </ItalicText>
@@ -192,6 +193,7 @@ function TransferTokenRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
+  const chainInfo = useChainState()
 
   const token = event.params_json[0].value.Token
   const sender = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -205,12 +207,12 @@ function TransferTokenRow({ event }: EventRowProps) {
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <RowBetween>
-              <StandardText fontSize="12px" color={'#3498db'}>
-                {truncateString(event.extrinsic_hash, 26)}
-              </StandardText>
-              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
-            </RowBetween>
+            <StyledExternalLink
+              fontSize="12px"
+              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+            >
+              {truncateString(event.extrinsic_hash, 26)}
+            </StyledExternalLink>
             <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
             </ItalicText>
