@@ -1,6 +1,7 @@
 import { encodeAddress } from '@polkadot/keyring'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
+import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
@@ -13,6 +14,7 @@ import { postTransfers, postTransfersTokens, postTxHistory } from 'queries'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
+import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
@@ -20,8 +22,8 @@ import truncateString, { shortenAddr } from 'utils/truncateString'
 
 const TxRow = styled.div`
   display: grid;
-  grid-template-columns: min(260px) auto min(160px);
-  grid-column-gap: 40px;
+  grid-template-columns: min(240px) auto min(100px);
+  grid-column-gap: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.text5};
   transition: background-color 0.3s ease-in;
   &:hover {
@@ -160,14 +162,17 @@ function Transfers() {
 // Tx Hash | Extrinsic Info
 function TransactionRow({ tx }: TransactionRowProps) {
   const { chainDecimals } = useSubstrate()
+  const chainInfo = useChainState()
   return (
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StandardText fontSize="12px" color={'#3498db'}>
+          <StyledExternalLink
+            fontSize="12px"
+            href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${tx.block_num}` : ''}
+          >
             {truncateString(tx.extrinsic_hash, 26)}
-          </StandardText>
-          <CopyHelper toCopy={`${tx.extrinsic_hash}`} />
+          </StyledExternalLink>
         </RowBetween>
         <ItalicText fontSize="11px">
           {tsToRelative(tx.block_timestamp)} - {tsToDateTimeHuman(tx.block_timestamp)}
