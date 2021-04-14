@@ -1,6 +1,7 @@
 import { FlatCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import { HeavyText, SectionTitle, StandardText } from 'components/Text'
+import TransactionHistory from 'components/TransactionHistory'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -36,81 +37,6 @@ function structureBalanceData(data: BalanceDataProps) {
   return balanceRows
 }
 
-// export default function Balances(): JSX.Element {
-//   const { chainDecimals } = useSubstrate()
-//   const balances = useAllBalances()
-//   const { t } = useTranslation()
-
-//   const columns = React.useMemo(
-//     () => [
-//       {
-//         Header: '',
-//         accessor: 'tokenImg',
-//         // eslint-disable-next-line react/display-name
-//         Cell: (props: any) => {
-//           // eslint-disable-next-line @typescript-eslint/no-var-requires
-//           const image = require(`assets/tokens/${props.cell.value}`)
-//           return (
-//             <div style={{ padding: '0.5rem', textAlign: 'center' }}>
-//               <img height={34} src={image} alt="token icon" />
-//             </div>
-//           )
-//         },
-//         id: 'status',
-//       },
-//       {
-//         Header: 'Asset',
-//         accessor: 'asset',
-//       },
-//       {
-//         Header: 'Type',
-//         accessor: 'type',
-//       },
-//       {
-//         Header: 'Locked (Fee)',
-//         accessor: 'fee',
-//       },
-//       {
-//         Header: 'Locked (Misc)',
-//         accessor: 'misc',
-//       },
-//       {
-//         Header: 'Free',
-//         accessor: 'free',
-//       },
-//     ],
-//     []
-//   )
-//   const data = React.useMemo(() => structureBalanceData({ balances, decimals: chainDecimals }), [
-//     balances,
-//     chainDecimals,
-//   ])
-
-//   if (!data) {
-//     return (
-//       <>
-//         <FlatCard
-//           style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
-//         >
-//           <StandardText>{t(`Connect to your wallet to view your Balances`)}</StandardText>
-//         </FlatCard>
-//       </>
-//     )
-//   }
-//   return (
-//     <>
-//       <TableCard>
-//         <Section>
-//           <CenteredRow>
-//             <MainTable columns={columns} data={data} />
-//           </CenteredRow>
-//         </Section>
-//       </TableCard>
-//       <TransactionHistory />
-//     </>
-//   )
-// }
-
 const BalanceRow = styled.div`
   display: grid;
   grid-template-columns: minmax(40px, 120px) auto min(160px);
@@ -126,7 +52,7 @@ const BalanceRow = styled.div`
   `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  grid-template-columns: minmax(40px, 60px) auto min(160px);
+  grid-template-columns: minmax(40px, 80px) auto min(160px);
   grid-column-gap: 0.5rem;
 `};
 `
@@ -154,7 +80,6 @@ export const IconWrapper = styled.div`
 `
 
 function Balance({ icon, token, type, balance }: BalanceRowProps) {
-  console.log('icon', icon)
   return (
     <BalanceRow>
       <BalanceCell style={{ display: 'flex', justifyContent: 'center' }}>
@@ -208,6 +133,7 @@ export default function Balances() {
             />
           ))}
       </FlatCard>
+      <TransactionHistory />
     </>
   )
 }
