@@ -43,6 +43,9 @@ export const SPANNER_SUPPORTED_CHAINS = [
     providerSocket: HAMMER_PROVIDER_SOCKET,
   },
 ]
+// Spanner Block Explorers
+export const SPANNER_EXPLORER = process.env.REACT_APP_SPANNER_EXPLORER_URL
+export const HAMMER_EXPLORER = process.env.REACT_APP_HAMMER_EXPLORER_URL
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {

@@ -10,6 +10,8 @@ import Modal from '.'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle } from 'react-feather'
+import { useChainState } from 'state/connections/hooks'
+import { StyledExternalLink } from 'components/Link'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -71,6 +73,7 @@ export default function TxModal({
 }: TxModalProps) {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
+  const chainInfo = useChainState()
 
   if (txError) {
     return (
@@ -148,7 +151,13 @@ export default function TxModal({
               <StandardText style={{ margin: 'auto' }}>{t(`Transaction submitted to block at`)} </StandardText>
               <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
             </CenteredRow>
-            <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>View on Polkascan</CenteredRow>
+            {chainInfo && chainInfo.url && (
+              <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                <StyledExternalLink href={`${chainInfo.url}/query/${txHash}`} style={{ textDecoration: 'none' }}>
+                  {t(`View on Block Explorer`)}
+                </StyledExternalLink>
+              </CenteredRow>
+            )}
           </Section>
           <Section>
             <RowBetween>
