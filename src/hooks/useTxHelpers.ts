@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import signAndSendTx from 'utils/signAndSendTx'
 import { useApi } from './useApi'
 import useWallet from './useWallet'
@@ -62,28 +62,36 @@ export default function useTxHelpers() {
   }
 
   // Use signAndSend and output any errors
-  const submitTx = ({ setTxErrorMsg, setTxHash, setTxPendingMsg }: SubmitTxParams) => {
-    if (!connected || !wallet || !wallet.address || !txMeta) {
-      setTxErrorMsg(t(`There was an error creating the transaction. Please try again.`))
-      return
-    }
-    signAndSendTx({
-      api: api,
-      tx: txMeta.unsignedTx,
-      wallet: wallet,
-      signer: wallet.injector?.signer,
-      setErrorMsg: setTxErrorMsg,
-      setHash: setTxHash,
-      setPendingMsg: setTxPendingMsg,
-      toastDispatch: toastDispatch,
-      walletType: wallet.type,
-      custodialProvider: wallet.custodialProvider,
-      txInfo: {
-        section: txMeta.section,
-        method: txMeta.method,
-      },
-    })
-  }
+  const submitTx = useCallback(
+    ({ setTxErrorMsg, setTxHash, setTxPendingMsg }: SubmitTxParams) => {
+      if (!connected) return
+      if (!wallet || !wallet.address) {
+        setTxErrorMsg(t(`No wallet connection detected.`))
+        return
+      }
+      if (!txMeta) {
+        setTxErrorMsg(t(`There was an error creating the transaction. Please try again.`))
+      } else {
+        signAndSendTx({
+          api: api,
+          tx: txMeta.unsignedTx,
+          wallet: wallet,
+          signer: wallet.injector?.signer,
+          setErrorMsg: setTxErrorMsg,
+          setHash: setTxHash,
+          setPendingMsg: setTxPendingMsg,
+          toastDispatch: toastDispatch,
+          walletType: wallet.type,
+          custodialProvider: wallet.custodialProvider,
+          txInfo: {
+            section: txMeta.section,
+            method: txMeta.method,
+          },
+        })
+      }
+    },
+    [api, connected, t, toastDispatch, txMeta, wallet]
+  )
 
   return { createTx, submitTx }
 }

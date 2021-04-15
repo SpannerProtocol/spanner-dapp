@@ -36,7 +36,7 @@ interface SignAndSendCustodialParams extends SignAndSendCoreParams {
   custodialProvider?: Web3Provider
 }
 
-interface SignAndSendTxParams extends SignAndSendParams {
+export interface SignAndSendTxParams extends SignAndSendParams {
   walletType?: string
   signer?: Signer
   custodialProvider?: Web3Provider
