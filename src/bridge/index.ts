@@ -96,3 +96,13 @@ export function postSignature(payload: CustodialSigningPayload) {
 export function getHealth() {
   return axios.get(`${bridgeHost}/health`)
 }
+
+// Get the deposit address
+export function getBridgeFee() {
+  return axios.get<{
+    fee_bps: string
+    fee_min: string
+  }>(`${bridgeHost}/fee`, {
+    httpAgent,
+  })
+}

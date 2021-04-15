@@ -1,4 +1,3 @@
-import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
@@ -6,52 +5,99 @@ import { StepNumber } from 'components/InstructionSteps'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, SectionHeading, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
+import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
-import { useToastContext } from 'contexts/ToastContext'
 import { useApi } from 'hooks/useApi'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
+import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import useWallet from 'hooks/useWallet'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
-import { formatToUnit } from 'utils/formatUnit'
-import signAndSendTx from 'utils/signAndSendTx'
-import { getBurnAddr, getEthDepositAddr } from '../../bridge'
+import { shortenAddress } from 'utils'
+import { formatToUnit, numberToBn } from 'utils/formatUnit'
+import { getBridgeFee, getBurnAddr, getEthDepositAddr } from '../../bridge'
 
 function BridgeTxConfirm({
   withdrawAmount,
   withdrawAddress,
   errorMsg,
+  estimatedFee,
+  feeData,
+  bridgeFee,
 }: {
-  withdrawAmount: number | undefined
-  withdrawAddress: string | undefined
+  withdrawAmount: number
+  withdrawAddress: string
   errorMsg: string | undefined
+  estimatedFee?: string
+  feeData?: { feeMin: number; feeBps: number }
+  bridgeFee?: string
 }) {
   const { t } = useTranslation()
   return (
     <>
       <Section>
-        <StandardText>{t(`Bridge Spanner WUSD to Ethereum USDT`)}</StandardText>
+        <StandardText>
+          {t(`Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.`)}
+        </StandardText>
       </Section>
+      <SpacedSection>
+        <ItalicText fontSize="12px">
+          {t(`Please ensure Wtihdrawal Address is correct. Withdrawals to incorrect addresses cannot be returned.`)}
+        </ItalicText>
+      </SpacedSection>
       {errorMsg ? (
         <Section>{errorMsg}</Section>
       ) : (
         <>
-          <Section>
-            <StandardText>{t(`Confirm the details below.`)}</StandardText>
-          </Section>
-          <Section style={{ marginTop: '1rem' }}>
+          <BorderedWrapper>
+            {withdrawAddress && (
+              <RowBetween>
+                <StandardText>{t(`Withdraw Address`)}</StandardText>
+                <StandardText>{shortenAddress(withdrawAddress, 10)}</StandardText>
+              </RowBetween>
+            )}
             <RowBetween>
               <StandardText>{t(`Withdraw Amount`)}</StandardText>
               <StandardText>{withdrawAmount} WUSD</StandardText>
             </RowBetween>
-            <RowBetween>
-              <StandardText>{t(`Transfer to`)}</StandardText>
-              <StandardText>{withdrawAddress}</StandardText>
-            </RowBetween>
-          </Section>
+            {feeData && bridgeFee && (
+              <>
+                <RowBetween>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <StandardText>{t(`Bridge Fee`)}</StandardText>
+                    <QuestionHelper
+                      size={12}
+                      backgroundColor={'transparent'}
+                      text={`${(feeData.feeBps * 0.01).toFixed(2)}%, ${t(`Minimum of`)} ${feeData.feeMin} USDT`}
+                    />
+                  </div>
+                  <StandardText>{bridgeFee} USDT</StandardText>
+                </RowBetween>
+                <RowBetween>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <StandardText>{t(`Net Amount (est)`)}</StandardText>
+                    <QuestionHelper
+                      size={12}
+                      backgroundColor={'transparent'}
+                      text={t(`Estimated USDT transferred to provided Ethereum address after fees.`)}
+                    />
+                  </div>
+                  <StandardText>{(withdrawAmount - parseFloat(bridgeFee)).toFixed(4)} USDT</StandardText>
+                </RowBetween>
+              </>
+            )}
+          </BorderedWrapper>
+          {bridgeFee && <TxFee fee={estimatedFee} />}
+          {!bridgeFee && feeData && (
+            <BorderedWrapper background="#F82D3A">
+              <StandardText color="#fff">
+                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {feeData.feeMin} USDT
+              </StandardText>
+            </BorderedWrapper>
+          )}
         </>
       )}
     </>
@@ -62,23 +108,56 @@ export default function Bridge(): JSX.Element {
   const wallet = useWallet()
   const { api } = useApi()
   const [ethDepositAddr, setEthDepositAddr] = useState<string>()
-  const [ethWithdrawAddr, setEthWithdrawAddr] = useState<string>(wallet?.ethereumAddress as string)
+  const [ethWithdrawAddr, setEthWithdrawAddr] = useState<string>(wallet && wallet.address ? wallet.address : '')
   const [ethWithdrawAmount, setEthWithdrawAmount] = useState<number>(0)
-  const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txError, setTxErrorMsg] = useState<string | undefined>()
   const wusdBalance = useSubscribeBalance('WUSD')
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
-  const { toastDispatch } = useToastContext()
+  const { createTx, submitTx } = useTxHelpers()
+  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
+  const [txInfo, setTxInfo] = useState<TxInfo>()
+  const [feeData, setFeeData] = useState<{ feeMin: number; feeBps: number }>()
 
   useEffect(() => {
     if (!wallet || !wallet.address) return
     getEthDepositAddr(wallet.address)
       .then((response) => setEthDepositAddr(response.data))
       .catch((err) => console.log(err))
+    getBridgeFee().then(
+      (response) =>
+        response.data &&
+        setFeeData({
+          feeMin: parseInt(response.data.fee_min),
+          feeBps: parseInt(response.data.fee_bps),
+        })
+    )
   }, [wallet])
+
+  const calcBridgeFee = useCallback(() => {
+    if (!feeData) return
+    const feeMin = feeData.feeMin
+    // Amount has to be greater than feeMin or user gets nothing
+    if (ethWithdrawAmount < feeMin) return
+    const feeBps = feeData.feeBps * 0.0001
+    const fee = ethWithdrawAmount * feeBps
+    if (fee < feeMin) {
+      return feeMin.toFixed(4)
+    } else {
+      return fee.toFixed(4)
+    }
+  }, [ethWithdrawAmount, feeData])
+
+  const isTxDisabled = useCallback(() => {
+    if (!feeData) return
+    const feeMin = feeData.feeMin
+    if (ethWithdrawAmount < feeMin) {
+      return true
+    }
+    return false
+  }, [ethWithdrawAmount, feeData])
 
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
@@ -90,44 +169,50 @@ export default function Bridge(): JSX.Element {
         setTxErrorMsg(t(`Please review your withdrawal inputs.`))
         return
       }
-      getBurnAddr(ethWithdrawAddress).then((response) => {
-        const burnAddress = response.data
-        const currencyId: CurrencyId = api.createType('CurrencyId', { Token: 'WUSD' })
-        const withdrawAmount = new BN(ethWithdrawAmount).mul(new BN(10 ** chainDecimals))
-        const tx = api.tx.currencies.transfer(burnAddress, currencyId, withdrawAmount)
-        signAndSendTx({
-          tx,
-          wallet: wallet,
-          setErrorMsg: setTxErrorMsg,
-          setHash: setTxHash,
-          setPendingMsg: setTxPendingMsg,
-          toastDispatch,
-          custodialProvider: wallet.custodialProvider,
-          txInfo: { section: 'currencies', method: 'transfer' },
+      getBurnAddr(ethWithdrawAddress)
+        .then((response) => {
+          const burnAddress = response.data
+          const currencyId: CurrencyId = api.createType('CurrencyId', { Token: 'WUSD' })
+          const withdrawAmount = numberToBn(ethWithdrawAmount, chainDecimals)
+          // const tx = api.tx.currencies.transfer(burnAddress, currencyId, withdrawAmount)
+          const txData = createTx({
+            section: 'currencies',
+            method: 'transfer',
+            params: { dest: burnAddress, currencyId: currencyId, amount: withdrawAmount },
+          })
+          txData && txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
         })
-      })
+        .then(() => setConfirmModalOpen(true))
     },
-    [wallet, t, api, chainDecimals, toastDispatch]
+    [wallet, t, api, chainDecimals, createTx]
   )
 
   const dismissModal = () => {
-    setModalOpen(false)
+    setConfirmModalOpen(false)
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }
 
   return (
     <>
       <TxModal
-        isOpen={modalOpen}
+        isOpen={confirmModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => withdrawToEthereum(ethWithdrawAddr, ethWithdrawAmount)}
-        title={t(`Bridge to Ethereum (USDT)`)}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        title={t(`Withdraw to Ethereum (USDT)`)}
         buttonText={t(`Confirm`)}
         txError={txError}
         txHash={txHash}
         txPending={txPendingMsg}
+        isDisabled={isTxDisabled()}
       >
-        <BridgeTxConfirm withdrawAmount={ethWithdrawAmount} withdrawAddress={ethWithdrawAddr} errorMsg={txError} />
+        <BridgeTxConfirm
+          withdrawAmount={ethWithdrawAmount}
+          withdrawAddress={ethWithdrawAddr}
+          errorMsg={txError}
+          estimatedFee={txInfo?.estimatedFee}
+          feeData={feeData}
+          bridgeFee={calcBridgeFee()}
+        />
       </TxModal>
       {!wallet ? (
         <>
@@ -173,6 +258,12 @@ export default function Bridge(): JSX.Element {
               <Section>
                 <SectionHeading>{t(`Deposit to Spanner`)}</SectionHeading>
                 <StandardText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</StandardText>
+                <BorderedWrapper background="#8CD88C" borderColor="transparent">
+                  <HeavyText color="#fff">{t(`Early Bird Landing Bonus`)}</HeavyText>
+                  <StandardText color="#fff">
+                    {t(`10 BOLT giveaway for first time deposits of at least 100 USDT.`)}
+                  </StandardText>
+                </BorderedWrapper>
               </Section>
               <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <div
@@ -232,7 +323,7 @@ export default function Bridge(): JSX.Element {
                 required
                 id="eth-withdraw-amount-input"
                 type="number"
-                value={ethWithdrawAmount}
+                value={Number.isNaN(ethWithdrawAmount) ? '' : ethWithdrawAmount}
                 placeholder="0.0"
                 onChange={(e) => setEthWithdrawAmount(parseFloat(e.target.value))}
                 style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
@@ -269,7 +360,11 @@ export default function Bridge(): JSX.Element {
               />
             </SpacedSection>
             <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-              <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={() => setModalOpen(true)}>
+              <ButtonPrimary
+                padding="0.45rem"
+                fontSize="12px"
+                onClick={() => withdrawToEthereum(ethWithdrawAddr, ethWithdrawAmount)}
+              >
                 {t(`Withdraw`)}
               </ButtonPrimary>
             </ButtonWrapper>
