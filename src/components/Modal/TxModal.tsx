@@ -54,6 +54,7 @@ interface TxModalProps {
   onDismiss: () => void
   title: string
   buttonText: string
+  isDisabled?: boolean
   txPending?: string | undefined
   txHash?: string
   txError?: string | undefined
@@ -62,6 +63,7 @@ interface TxModalProps {
 
 export default function TxModal({
   isOpen,
+  isDisabled,
   onDismiss,
   onConfirm,
   title,
@@ -180,7 +182,13 @@ export default function TxModal({
         {children}
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <RowBetween>
-            <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            {isDisabled ? (
+              <ButtonPrimary onClick={onConfirm} disabled>
+                {buttonText}
+              </ButtonPrimary>
+            ) : (
+              <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            )}
           </RowBetween>
         </Section>
       </ModalWrapper>

@@ -350,5 +350,19 @@
   "Board our BulletTrain and get rewarded!": "Board our BulletTrain and get rewarded!",
   "Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!": "Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!",
   "Get aboard Spanner's BulletTrain": "Get aboard Spanner's BulletTrain",
-  "View on Block Explorer": "View on Block Explorer"
+  "View on Block Explorer": "View on Block Explorer",
+  "Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.": "Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.",
+  "Important: Your Withdraw Amount must be greater than the Bridge Fee.": "Important: Your Withdraw Amount must be greater than the Bridge Fee.",
+  "Withdraw Address": "Withdraw Address",
+  "Bridge Fee": "Bridge Fee",
+  "Net Amount (est)": "Net Amount (est)",
+  "Estimated USDT transferred to provided Ethereum address after fees.": "Estimated USDT transferred to provided Ethereum address after fees.",
+  "Withdraw to Ethereum (USDT)": "Withdraw to Ethereum (USDT)",
+  "Landing Bonus": "Landing Bonus",
+  "We're giving away 10 BOLT for first time deposits of at least 100 USDT.": "We're giving away 10 BOLT for first time deposits of at least 100 USDT.",
+  "Please ensure Wtihdrawal Address is correct. Withdrawals to incorrect addresses cannot be returned.": "Please ensure Wtihdrawal Address is correct. Withdrawals to incorrect addresses cannot be returned.",
+  "Minimum of": "Minimum of",
+  "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee": "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee",
+  "Early Bird Landing Bonus": "Early Bird Landing Bonus"
+
 }
