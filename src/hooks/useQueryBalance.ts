@@ -13,25 +13,54 @@ export default function useSubscribeBalance(token: string): BN {
   const [balance, setBalance] = useState<BN>(BN_ZERO)
   const wallet = useWallet()
 
+  const address = wallet && wallet.address
+
   useEffect(() => {
-    if (!connected || !wallet || !wallet.address) return
-    try {
-      const currencyId: CurrencyId = api.createType('CurrencyId', { Token: token })
-      if (currencyId.isToken && currencyId.asToken.toString().toLowerCase() === 'bolt') {
+    if (!connected || !address) return
+    const currencyId: CurrencyId = api.createType('CurrencyId', { Token: token })
+    if (currencyId.isToken) {
+      if (currencyId.asToken.eq('BOLT')) {
         api.query.system
-          .account(wallet.address, (result: AccountInfo) => setBalance(result.data.free.toBn()))
+          .account(address, (result: AccountInfo) => {
+            setBalance(result.data.free.toBn())
+          })
           .catch(console.error)
-      } else {
+      } else if (currencyId.asToken.eq(token)) {
         api.query.tokens
-          .accounts(wallet.address, currencyId, (result: AccountData) => setBalance(result.free.toBn()))
+          .accounts(address, currencyId, (result: AccountData) => {
+            setBalance(result.free.toBn())
+          })
           .catch(console.error)
       }
-    } catch (err) {
-      throw err
     }
-  }, [api, connected, token, wallet])
+  }, [api, connected, token, address, balance])
 
   return balance
+}
+
+export function useSubscribeBalances(tokens: string[]): BN[] {
+  const { api, connected } = useApi()
+  const [balances, setBalances] = useState<BN[]>([...tokens.map(() => BN_ZERO)])
+  const wallet = useWallet()
+
+  useEffect(() => {
+    if (!connected || !wallet || !wallet.address) return
+    const balancesList: BN[] = []
+    tokens.forEach((token) => {
+      const currencyId: CurrencyId = api.createType('CurrencyId', { Token: token })
+      if (currencyId.asToken.eq('BOLT')) {
+        api.query.system.account(wallet.address, (result: AccountInfo) => {
+          balancesList.push(result.data.free.toBn())
+        })
+      } else if (currencyId.asToken.eq(token)) {
+        api.query.tokens.accounts(wallet.address, currencyId, (result: AccountData) => {
+          balancesList.push(result.free.toBn())
+        })
+      }
+    })
+    setBalances(balancesList)
+  }, [api, connected, tokens, wallet])
+  return balances
 }
 
 export function useAllTokenBalances(): Array<[StorageKey, AccountData]> | undefined {
