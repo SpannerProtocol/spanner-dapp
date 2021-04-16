@@ -22,14 +22,12 @@ export default function useSubscribeBalance(token: string): BN {
       if (currencyId.asToken.eq('BOLT')) {
         api.query.system
           .account(address, (result: AccountInfo) => {
-            console.log('token:', token, 'balance:', result.data.free.toBn().toString())
             setBalance(result.data.free.toBn())
           })
           .catch(console.error)
       } else if (currencyId.asToken.eq(token)) {
         api.query.tokens
           .accounts(address, currencyId, (result: AccountData) => {
-            console.log('token:', token, 'balance:', result.free.toBn().toString())
             setBalance(result.free.toBn())
           })
           .catch(console.error)
