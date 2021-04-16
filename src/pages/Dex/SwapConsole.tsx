@@ -101,6 +101,7 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
 }
 
 export default function SwapConsole(): JSX.Element {
+  // const { api, connected } = useApi()
   const [slippage, setSlippage] = useUserSlippageTolerance()
   const { chainDecimals } = useSubstrate()
   const [tokenA, setTokenA] = useState<string>('BOLT')
@@ -126,9 +127,31 @@ export default function SwapConsole(): JSX.Element {
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
+  // const wallet = useWallet()
+  // const [balanceA, setBalanceA] = useState<BN>(new BN(0))
+  // const [balanceB, setBalanceB] = useState<BN>(new BN(0))
 
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
+
+  // const balances = useSubscribeBalances([tokenA, tokenB])
+  // useEffect(() => {
+  //   if (balances.length === 0) return
+  //   setBalanceA(balances[0])
+  //   setBalanceB(balances[1])
+  // }, [balancesStr, balances])
+
+  // useEffect(() => {
+  //   if (!tokenA || !connected || !wallet || !wallet.address) return
+  //   console.log('tokenA:', tokenA)
+  //   getBalance({ api, wallet, token: tokenA, setData: setBalanceA })
+  // }, [api, connected, tokenA, wallet])
+
+  // useEffect(() => {
+  //   if (!tokenB || !connected || !wallet || !wallet.address) return
+  //   console.log('tokenB:', tokenB)
+  //   getBalance({ api, wallet, token: tokenB, setData: setBalanceB })
+  // }, [api, connected, tokenB, wallet])
 
   const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
     tokenA,
@@ -288,7 +311,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
     }
-  }, [isOnA, amountA, balanceA, amountB, pool, fee, chainDecimals])
+  }, [isOnA, amountA, balanceA, balanceB, amountB, pool, fee, chainDecimals])
 
   const dismissModal = () => {
     setModalOpen(false)
@@ -344,7 +367,12 @@ export default function SwapConsole(): JSX.Element {
                   value={Number.isNaN(amountA) ? '' : amountA}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <TokenSelector defaultToken={'BOLT'} selectToken={(token) => setTokenA(token)} />
+                <TokenSelector
+                  defaultToken={'BOLT'}
+                  selectToken={(token) => {
+                    setTokenA(token)
+                  }}
+                />
               </TokenInputWrapper>
               {supplyAmount.gt(balanceA) && <ErrorMsg>{t(`Insufficient Balance`)}</ErrorMsg>}
               {unsafeInteger && isOnA && <ErrorMsg>{t(`Amount is too high`)}</ErrorMsg>}
@@ -374,7 +402,12 @@ export default function SwapConsole(): JSX.Element {
                   value={Number.isNaN(amountB) ? '' : amountB}
                   style={{ alignItems: 'flex-start', width: '100%' }}
                 />
-                <TokenSelector defaultToken={'WUSD'} selectToken={(token) => setTokenB(token)} />
+                <TokenSelector
+                  defaultToken={'WUSD'}
+                  selectToken={(token) => {
+                    setTokenB(token)
+                  }}
+                />
               </TokenInputWrapper>
               <div style={{ display: 'block' }}>
                 {unsafeInteger && !isOnA && (
