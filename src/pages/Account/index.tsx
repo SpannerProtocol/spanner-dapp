@@ -4,8 +4,9 @@ import { RowBetween } from 'components/Row'
 import { Heading, HeavyText, StandardText } from 'components/Text'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import { shortenAddress } from 'utils'
 import { useAccount } from 'utils/usePath'
@@ -21,35 +22,54 @@ const CopyWrapper = styled.div`
   cursor: pointer;
 `
 
-const tabData: Array<RouteTabMetaData> = [
-  {
-    id: 'balances',
-    label: 'Balances',
-    path: '/account/balances',
-  },
-  {
-    id: 'portfolio',
-    label: 'Portfolio',
-    path: '/account/portfolio',
-  },
-  {
-    id: 'bridge',
-    label: 'Bridge',
-    path: '/account/bridge',
-  },
-  {
-    id: 'faucet',
-    label: 'Faucet',
-    path: '/account/faucet',
-  },
-]
-
 export default function Account() {
   const [activeTab, setActiveTab] = useState<string>('balances')
   const currentPath = useAccount()
   const wallet = useWallet()
   const { t } = useTranslation()
   const referrer = useReferrer()
+  const connectionState = useConnectionsState()
+
+  const currentChain = connectionState && connectionState.chain
+
+  const tabData = useMemo(() => {
+    const tabs: Array<RouteTabMetaData> = []
+    const allChains = [
+      {
+        id: 'balances',
+        label: 'Balances',
+        path: '/account/balances',
+      },
+      {
+        id: 'portfolio',
+        label: 'Portfolio',
+        path: '/account/portfolio',
+      },
+    ]
+    const hammerOnly = [
+      {
+        id: 'faucet',
+        label: 'Faucet',
+        path: '/account/faucet',
+      },
+    ]
+    const spannerOnly = [
+      {
+        id: 'bridge',
+        label: 'Bridge',
+        path: '/account/bridge',
+      },
+    ]
+    tabs.push(...allChains)
+    if (currentChain) {
+      if (currentChain === 'Spanner') {
+        tabs.push(...spannerOnly)
+      } else if (currentChain === 'Hammer') {
+        tabs.push(...hammerOnly)
+      }
+    }
+    return tabs
+  }, [currentChain])
 
   useEffect(() => {
     if (!currentPath.item) return
@@ -114,8 +134,8 @@ export default function Account() {
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}
-        {activeTab === 'bridge' && <Bridge />}
-        {activeTab === 'faucet' && <Faucet />}
+        {currentChain === 'Spanner' && activeTab === 'bridge' && <Bridge />}
+        {currentChain === 'Hammer' && activeTab === 'faucet' && <Faucet />}
       </SectionContainer>
     </PageWrapper>
   )
