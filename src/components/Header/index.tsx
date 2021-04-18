@@ -340,10 +340,12 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
-            {t(`Bridge`)}
-          </StyledNavLink>
+          {chainInfo && chainInfo.chain === 'Spanner' && (
+            <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
+              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
+              {t(`Bridge`)}
+            </StyledNavLink>
+          )}
           <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
             {t(`DEX`)}

@@ -17,6 +17,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 function getHost(chain: string) {
+  console.log('chain:', chain)
   if (chain === 'Hammer') {
     return bridgeHammerHost
   } else if (chain === 'Spanner') {

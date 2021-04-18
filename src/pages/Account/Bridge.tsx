@@ -1,3 +1,4 @@
+import CopyHelper from 'components/Copy/Copy'
 import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
@@ -288,7 +289,11 @@ export default function Bridge(): JSX.Element {
                   />
                 </div>
                 <StandardText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</StandardText>
-                <BorderedWrapper style={{ margin: '0' }}>{ethDepositAddr}</BorderedWrapper>
+                <BorderedWrapper style={{ margin: '0' }}>
+                  <CopyHelper toCopy={ethDepositAddr} childrenIsIcon={true}>
+                    <StandardText>{ethDepositAddr}</StandardText>
+                  </CopyHelper>
+                </BorderedWrapper>
               </SpacedSection>
               <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <div

@@ -1,7 +1,9 @@
+import { FakeButton } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
 import { Heading, HeavyText, StandardText } from 'components/Text'
+import { useSelectedProject } from 'hooks/useProject'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -11,7 +13,15 @@ import styled from 'styled-components'
 import { shortenAddress } from 'utils'
 import { useAccount } from 'utils/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
-import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
+import {
+  BorderedWrapper,
+  ButtonWrapper,
+  PageWrapper,
+  Section,
+  SectionContainer,
+  Wrapper
+} from '../../components/Wrapper'
+import { DAPP_HOST } from '../../constants'
 import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
 import Bridge from './Bridge'
@@ -29,6 +39,7 @@ export default function Account() {
   const { t } = useTranslation()
   const referrer = useReferrer()
   const connectionState = useConnectionsState()
+  const project = useSelectedProject()
 
   const currentChain = connectionState && connectionState.chain
 
@@ -88,7 +99,21 @@ export default function Account() {
       >
         <FlatCard>
           <Section style={{ marginBottom: '1rem' }}>
-            <Heading>{t(`Account`)}</Heading>
+            <RowBetween>
+              <Heading>{t(`Account`)}</Heading>
+              {wallet && wallet.address && project && (
+                <CopyHelper
+                  toCopy={`${DAPP_HOST}/#/?ref=${wallet.address}&project=${project.token}`}
+                  childrenIsIcon={true}
+                >
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <FakeButton padding="0.45rem" fontSize="10px">
+                      {t(`Your Referral Link`)}
+                    </FakeButton>
+                  </ButtonWrapper>
+                </CopyHelper>
+              )}
+            </RowBetween>
           </Section>
           {wallet && wallet.address && (
             <BorderedWrapper>
