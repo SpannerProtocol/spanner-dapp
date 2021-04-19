@@ -24,8 +24,10 @@ const HomePageTitle = styled.h1`
 
 export default function Home() {
   const { lastBlock, expectedBlockTime } = useBlockManager()
-  const { chain, genesis } = useSubstrate()
+  const constants = useSubstrate()
+  const { chain, genesis } = constants
   const { t } = useTranslation()
+
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
