@@ -509,7 +509,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 <RowBetween>
                   <StandardText>{t(`Ticket Fare`)}</StandardText>
                   <StandardText>
-                    {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
+                    {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} {token}
                   </StandardText>
                 </RowBetween>
                 {expectedBlockTime && (
@@ -525,14 +525,16 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
             </BorderedWrapper>
             {inventoryCount && (
               <>
-                <SmallText>{t(`Status`)}</SmallText>
+                <SmallText>{t(`Inventory`)}</SmallText>
                 <BorderedWrapper style={{ marginTop: '0' }}>
                   <Section>
                     <RowBetween>
-                      <StandardText>{t(`Inventory`)}</StandardText>
-                      <StandardText>
-                        {inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/{inventoryCount[1].toNumber()}
-                      </StandardText>
+                      <StandardText>{t(`Available`)}</StandardText>
+                      <StandardText>{inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}</StandardText>
+                    </RowBetween>
+                    <RowBetween>
+                      <StandardText>{t(`Total`)}</StandardText>
+                      <StandardText>{inventoryCount[1].toNumber()}</StandardText>
                     </RowBetween>
                   </Section>
                 </BorderedWrapper>
@@ -544,22 +546,20 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 <RowBetween>
                   <StandardText>{t(`Total Bonus`)}</StandardText>
                   <StandardText>
-                    {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals, 2)} {token}
+                    {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals)} {token}
                   </StandardText>
                 </RowBetween>
                 {expectedBlockTime && (
                   <RowBetween>
                     <StandardText>{t(`Total Yield`)}</StandardText>
                     <StandardText>
-                      {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)} ${token} (${`${getApy(
-                        {
-                          totalYield: travelCabinInfo.yield_total.toBn(),
-                          totalDeposit: travelCabinInfo.deposit_amount.toBn(),
-                          chainDecimals: chainDecimals,
-                          blocksInPeriod: expectedBlockTime,
-                          period: travelCabinInfo.maturity,
-                        }
-                      ).toString()}% APY`})`}
+                      {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals)} ${token} (${`${getApy({
+                        totalYield: travelCabinInfo.yield_total.toBn(),
+                        totalDeposit: travelCabinInfo.deposit_amount.toBn(),
+                        chainDecimals: chainDecimals,
+                        blocksInPeriod: expectedBlockTime,
+                        period: travelCabinInfo.maturity,
+                      }).toString()}% APY`})`}
                     </StandardText>
                   </RowBetween>
                 )}

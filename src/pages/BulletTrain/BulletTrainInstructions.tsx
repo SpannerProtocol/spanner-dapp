@@ -35,8 +35,8 @@ export default function BulletTrainInstructions() {
         </SpacedSection>
         <SpacedSection>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>
-          <SectionTitle>{t(`How to Participate?`)}</SectionTitle>
-          <StandardText width="100%">{t(`Click on following buttons for tips and directions.`)}</StandardText>
+            <SectionTitle>{t(`How to Participate?`)}</SectionTitle>
+            <StandardText width="100%">{t(`Click on following buttons for tips and directions.`)}</StandardText>
           </div>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>
             <SpacedSection>

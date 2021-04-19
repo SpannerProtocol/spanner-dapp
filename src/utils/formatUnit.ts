@@ -37,7 +37,7 @@ export function formatToUnit(num: number | BN | string, cd: number, precision = 
   if (decimals) {
     decimals = decimals.slice(0, precision)
   }
-  numStr = precision === 0 ? integer : `${integer}.${decimals}`
+  numStr = decimals ? `${integer}.${decimals}` : integer
   return numStr
 }
 
