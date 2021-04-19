@@ -1,16 +1,27 @@
+import { FakeButton } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
 import { Heading, HeavyText, StandardText } from 'components/Text'
+import { useSelectedProject } from 'hooks/useProject'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import { shortenAddress } from 'utils'
 import { useAccount } from 'utils/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
-import { BorderedWrapper, PageWrapper, Section, SectionContainer, Wrapper } from '../../components/Wrapper'
+import {
+  BorderedWrapper,
+  ButtonWrapper,
+  PageWrapper,
+  Section,
+  SectionContainer,
+  Wrapper,
+} from '../../components/Wrapper'
+import { DAPP_HOST } from '../../constants'
 import { shortenAddr } from '../../utils/truncateString'
 import Balances from './Balances'
 import Bridge from './Bridge'
@@ -21,35 +32,55 @@ const CopyWrapper = styled.div`
   cursor: pointer;
 `
 
-const tabData: Array<RouteTabMetaData> = [
-  {
-    id: 'balances',
-    label: 'Balances',
-    path: '/account/balances',
-  },
-  {
-    id: 'portfolio',
-    label: 'Portfolio',
-    path: '/account/portfolio',
-  },
-  {
-    id: 'bridge',
-    label: 'Bridge',
-    path: '/account/bridge',
-  },
-  {
-    id: 'faucet',
-    label: 'Faucet',
-    path: '/account/faucet',
-  },
-]
-
 export default function Account() {
   const [activeTab, setActiveTab] = useState<string>('balances')
   const currentPath = useAccount()
   const wallet = useWallet()
   const { t } = useTranslation()
   const referrer = useReferrer()
+  const connectionState = useConnectionsState()
+  const project = useSelectedProject()
+
+  const currentChain = connectionState && connectionState.chain
+
+  const tabData = useMemo(() => {
+    const tabs: Array<RouteTabMetaData> = []
+    const allChains = [
+      {
+        id: 'balances',
+        label: 'Balances',
+        path: '/account/balances',
+      },
+      {
+        id: 'portfolio',
+        label: 'Portfolio',
+        path: '/account/portfolio',
+      },
+    ]
+    const hammerOnly = [
+      {
+        id: 'faucet',
+        label: 'Faucet',
+        path: '/account/faucet',
+      },
+    ]
+    const spannerOnly = [
+      {
+        id: 'bridge',
+        label: 'Bridge',
+        path: '/account/bridge',
+      },
+    ]
+    tabs.push(...allChains)
+    if (currentChain) {
+      if (currentChain === 'Spanner') {
+        tabs.push(...spannerOnly)
+      } else if (currentChain === 'Hammer') {
+        tabs.push(...hammerOnly)
+      }
+    }
+    return tabs
+  }, [currentChain])
 
   useEffect(() => {
     if (!currentPath.item) return
@@ -68,7 +99,21 @@ export default function Account() {
       >
         <FlatCard>
           <Section style={{ marginBottom: '1rem' }}>
-            <Heading>{t(`Account`)}</Heading>
+            <RowBetween>
+              <Heading>{t(`Account`)}</Heading>
+              {wallet && wallet.address && project && (
+                <CopyHelper
+                  toCopy={`${DAPP_HOST}/#/?ref=${wallet.address}&project=${project.token}`}
+                  childrenIsIcon={true}
+                >
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <FakeButton padding="0.45rem" fontSize="10px">
+                      {t(`Your Referral Link`)}
+                    </FakeButton>
+                  </ButtonWrapper>
+                </CopyHelper>
+              )}
+            </RowBetween>
           </Section>
           {wallet && wallet.address && (
             <BorderedWrapper>
@@ -114,8 +159,8 @@ export default function Account() {
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}
-        {activeTab === 'bridge' && <Bridge />}
-        {activeTab === 'faucet' && <Faucet />}
+        {currentChain === 'Spanner' && activeTab === 'bridge' && <Bridge />}
+        {currentChain === 'Hammer' && activeTab === 'faucet' && <Faucet />}
       </SectionContainer>
     </PageWrapper>
   )

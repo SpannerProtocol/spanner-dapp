@@ -31,6 +31,10 @@ export const COMMON_CONTRACT_NAMES: { [address: string]: string } = {
 }
 
 // Spanner Chains
+export const DAPP_HOST =
+  process.env.NODE_ENV === 'development'
+    ? `${window.location.hostname}:${window.location.port}`
+    : process.env.REACT_APP_HOST_NAME
 export const SPANNER_PROVIDER_SOCKET = process.env.REACT_APP_SPANNER_PROVIDER_SOCKET
 export const HAMMER_PROVIDER_SOCKET = process.env.REACT_APP_HAMMER_PROVIDER_SOCKET
 export const SPANNER_SUPPORTED_CHAINS = [
@@ -43,6 +47,9 @@ export const SPANNER_SUPPORTED_CHAINS = [
     providerSocket: HAMMER_PROVIDER_SOCKET,
   },
 ]
+// Spanner Block Explorers
+export const SPANNER_EXPLORER = process.env.REACT_APP_SPANNER_EXPLORER_URL
+export const HAMMER_EXPLORER = process.env.REACT_APP_HAMMER_EXPLORER_URL
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {

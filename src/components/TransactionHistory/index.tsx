@@ -1,6 +1,6 @@
 import { encodeAddress } from '@polkadot/keyring'
 import { FlatCard } from 'components/Card'
-import CopyHelper from 'components/Copy/Copy'
+import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
@@ -13,6 +13,7 @@ import { postTransfers, postTransfersTokens, postTxHistory } from 'queries'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
+import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
@@ -20,8 +21,8 @@ import truncateString, { shortenAddr } from 'utils/truncateString'
 
 const TxRow = styled.div`
   display: grid;
-  grid-template-columns: min(260px) auto min(160px);
-  grid-column-gap: 40px;
+  grid-template-columns: min(240px) auto min(100px);
+  grid-column-gap: 1rem;
   border-bottom: 1px solid ${({ theme }) => theme.text5};
   transition: background-color 0.3s ease-in;
   &:hover {
@@ -49,6 +50,7 @@ const TxCell = styled.div`
   padding: 0.25rem;
 `};
 `
+
 interface TransactionRowProps {
   tx: SpanfuraDataExtrinsic
   index?: number
@@ -63,6 +65,7 @@ function TransferRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
+  const chainInfo = useChainState()
 
   const sender = encodeAddress('0x' + event.params_json[0].value, 42)
   const receiver = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -72,12 +75,13 @@ function TransferRow({ event }: EventRowProps) {
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <RowBetween>
-              <StandardText fontSize="12px" color={'#3498db'}>
-                {truncateString(event.extrinsic_hash, 26)}
-              </StandardText>
-              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
-            </RowBetween>
+            <StyledExternalLink
+              fontSize="12px"
+              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+            >
+              {' '}
+              {truncateString(event.extrinsic_hash, 26)}
+            </StyledExternalLink>
             <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
             </ItalicText>
@@ -128,11 +132,19 @@ function Transfers() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTransfers({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTransfers({
+      chain: chain.chain,
+      row: 10,
+      page: page,
+      address: wallet.address,
+      setData: setTransactions,
+      setMeta,
+    })
+  }, [wallet, page, chain])
 
   return (
     <>
@@ -160,14 +172,17 @@ function Transfers() {
 // Tx Hash | Extrinsic Info
 function TransactionRow({ tx }: TransactionRowProps) {
   const { chainDecimals } = useSubstrate()
+  const chainInfo = useChainState()
   return (
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StandardText fontSize="12px" color={'#3498db'}>
+          <StyledExternalLink
+            fontSize="12px"
+            href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${tx.block_num}` : ''}
+          >
             {truncateString(tx.extrinsic_hash, 26)}
-          </StandardText>
-          <CopyHelper toCopy={`${tx.extrinsic_hash}`} />
+          </StyledExternalLink>
         </RowBetween>
         <ItalicText fontSize="11px">
           {tsToRelative(tx.block_timestamp)} - {tsToDateTimeHuman(tx.block_timestamp)}
@@ -186,6 +201,7 @@ function TransferTokenRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
+  const chainInfo = useChainState()
 
   const token = event.params_json[0].value.Token
   const sender = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -197,12 +213,12 @@ function TransferTokenRow({ event }: EventRowProps) {
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <RowBetween>
-              <StandardText fontSize="12px" color={'#3498db'}>
-                {truncateString(event.extrinsic_hash, 26)}
-              </StandardText>
-              <CopyHelper toCopy={`${event.extrinsic_hash}`} />
-            </RowBetween>
+            <StyledExternalLink
+              fontSize="12px"
+              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+            >
+              {truncateString(event.extrinsic_hash, 26)}
+            </StyledExternalLink>
             <ItalicText fontSize="11px">
               {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
             </ItalicText>
@@ -253,11 +269,19 @@ function TransfersTokens() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTransfersTokens({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTransfersTokens({
+      chain: chain.chain,
+      row: 10,
+      page: page,
+      address: wallet.address,
+      setData: setTransactions,
+      setMeta,
+    })
+  }, [wallet, page, chain])
 
   return (
     <>
@@ -291,11 +315,12 @@ export function LatestTransactions() {
   const [page, setPage] = useState(0)
   const [hadTransactions, setHadTransactions] = useState<boolean>(false)
   const [lastPage, setLastPage] = useState<number>()
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTxHistory({ row: 10, page: page, address: wallet.address, setData: setTransactions })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTxHistory({ chain: chain.chain, row: 10, page: page, address: wallet.address, setData: setTransactions })
+  }, [wallet, page, chain])
 
   // A permenant flag to change the message for the next page if the user had transactions
   useEffect(() => {

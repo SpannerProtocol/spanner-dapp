@@ -10,6 +10,8 @@ import Modal from '.'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { useTranslation } from 'react-i18next'
 import { CheckCircle } from 'react-feather'
+import { useChainState } from 'state/connections/hooks'
+import { StyledExternalLink } from 'components/Link'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -52,6 +54,7 @@ interface TxModalProps {
   onDismiss: () => void
   title: string
   buttonText: string
+  isDisabled?: boolean
   txPending?: string | undefined
   txHash?: string
   txError?: string | undefined
@@ -60,6 +63,7 @@ interface TxModalProps {
 
 export default function TxModal({
   isOpen,
+  isDisabled,
   onDismiss,
   onConfirm,
   title,
@@ -71,6 +75,7 @@ export default function TxModal({
 }: TxModalProps) {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
+  const chainInfo = useChainState()
 
   if (txError) {
     return (
@@ -148,7 +153,13 @@ export default function TxModal({
               <StandardText style={{ margin: 'auto' }}>{t(`Transaction submitted to block at`)} </StandardText>
               <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
             </CenteredRow>
-            <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>View on Polkascan</CenteredRow>
+            {chainInfo && chainInfo.url && (
+              <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>
+                <StyledExternalLink href={`${chainInfo.url}/query/${txHash}`} style={{ textDecoration: 'none' }}>
+                  {t(`View on Block Explorer`)}
+                </StyledExternalLink>
+              </CenteredRow>
+            )}
           </Section>
           <Section>
             <RowBetween>
@@ -171,7 +182,13 @@ export default function TxModal({
         {children}
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <RowBetween>
-            <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            {isDisabled ? (
+              <ButtonPrimary onClick={onConfirm} disabled>
+                {buttonText}
+              </ButtonPrimary>
+            ) : (
+              <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            )}
           </RowBetween>
         </Section>
       </ModalWrapper>

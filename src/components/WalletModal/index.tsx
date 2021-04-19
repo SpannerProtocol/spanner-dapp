@@ -37,6 +37,7 @@ import PendingView, {
   StyledLoader,
 } from './PendingView'
 import { AxiosError } from 'axios'
+import { useChainState } from 'state/connections/hooks'
 
 export const CloseIcon = styled.div`
   position: absolute;
@@ -234,6 +235,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
   const { setWalletType, setDevelopmentKeyring } = useWalletManager()
 
   const [isCustodial, setIsCustodial] = useState<boolean | undefined>()
+  const chain = useChainState()
 
   const { t } = useTranslation()
 
@@ -295,6 +297,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
   }, [allAccounts])
 
   useEffect(() => {
+    if (!chain) return
     if (typeof isCustodial === 'undefined') return
     if (isCustodial) {
       if (!account) return
@@ -307,7 +310,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
         setDevelopmentKeyring()
       } else {
         // Get custodial address and set it in the wallet
-        getCustodialAddr(account)
+        getCustodialAddr(chain.chain, account)
           .then((response) => {
             setWalletType({
               type: 'custodial',
@@ -325,7 +328,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
       if (!activeAccount) return
       setWalletType({ type: 'non-custodial', address: activeAccount.address })
     }
-  }, [isCustodial, account, activeAccount, setWalletType, setDevelopmentKeyring])
+  }, [isCustodial, account, activeAccount, setWalletType, setDevelopmentKeyring, chain])
 
   const handleAccountSelection = () => {
     toggleWalletModal()

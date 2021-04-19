@@ -3,19 +3,15 @@ import styled from 'styled-components'
 
 export const Step = styled(Card)<{ background?: string; maxWidth?: string; margin?: string }>`
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  padding: 1rem;
+  padding: 0.5rem;
   width: 100%;
   text-align: center;
   color: #fff;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   background: ${({ background, theme }) => (background ? background : theme.primary1)};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '360px')};
   margin: ${({ margin }) => (margin ? margin : '0')};
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
-    font-size: 12px;
-  `};
 `
 
 export const StepNumber = styled.div<{ size?: string; fontSize?: string }>`

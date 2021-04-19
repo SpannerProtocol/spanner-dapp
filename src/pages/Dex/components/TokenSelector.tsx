@@ -34,7 +34,6 @@ export default function TokenSelector({
   selectToken,
 }: TokenSelectorProps) {
   const tokens = useTokens()
-  // const tokens = useTokenRegistry()
 
   const selectorOptions = useMemo(() => {
     const options = tokens.map((token) => ({

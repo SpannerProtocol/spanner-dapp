@@ -34,13 +34,15 @@ export default function BulletTrainInstructions() {
           <StandardText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</StandardText>
         </SpacedSection>
         <SpacedSection>
+          <div style={{ justifyContent: 'center', textAlign: 'center' }}>
           <SectionTitle>{t(`How to Participate?`)}</SectionTitle>
-          <StandardText>{t(`Click on following buttons for tips and directions.`)}</StandardText>
+          <StandardText width="100%">{t(`Click on following buttons for tips and directions.`)}</StandardText>
+          </div>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>1</StepNumber>
-                <HeavyText>{t(`Before Boarding`)}</HeavyText>
+                <HeavyText fontSize="14px">{t(`Before Boarding`)}</HeavyText>
                 <QuestionHelper
                   size={12}
                   backgroundColor={'transparent'}
@@ -53,13 +55,13 @@ export default function BulletTrainInstructions() {
                 to={{ pathname: '/bullettrain/travelcabins' }}
                 style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
               >
-                <Step>{t(`Buy a Cabin with Ticket Fare`)}</Step>
+                <Step>{t(`Buy a Cabin`)}</Step>
               </Link>
             </SpacedSection>
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>2</StepNumber>
-                <HeavyText>{t(`Boarded`)}</HeavyText>
+                <HeavyText fontSize="14px">{t(`Boarded`)}</HeavyText>
                 <QuestionHelper
                   text={t(
                     `Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.`
@@ -78,7 +80,7 @@ export default function BulletTrainInstructions() {
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>3</StepNumber>
-                <HeavyText>{t(`Journey Ends`)}</HeavyText>
+                <HeavyText fontSize="14px">{t(`Journey Ends`)}</HeavyText>
                 <QuestionHelper
                   text={t(`The ride is over, withdraw your Ticket Fare back.`)}
                   size={12}

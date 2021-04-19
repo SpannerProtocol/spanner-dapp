@@ -9,6 +9,7 @@ import { getPrice } from '../../queries'
 import { PriceData } from '../../spanfura'
 import { FlexWrapper } from '../Wrapper'
 import { Dispatcher } from 'types/dispatcher'
+import { useChainState } from 'state/connections/hooks'
 
 dayjs.extend(utc)
 
@@ -35,7 +36,7 @@ const LocalLoader = () => {
   return (
     <FlexWrapper>
       <AnimatedImg>
-        <img src={require('../../assets/svg/logo-spanner-yellow.svg')} alt="loading-icon" />
+        <img src={require('../../assets/svg/logo-spanner-gradient.svg')} alt="loading-icon" />
       </AnimatedImg>
     </FlexWrapper>
   )
@@ -61,10 +62,12 @@ export default function PriceChart({ token1, token2, from, interval, setUnavaila
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
+  const chain = useChainState()
 
   useEffect(() => {
-    getPrice({ token1, token2, from, interval, setData: setPriceData })
-  }, [token1, token2, from, interval, setPriceData])
+    if (!chain) return
+    getPrice({ chain: chain.chain, token1, token2, from, interval, setData: setPriceData })
+  }, [token1, token2, from, interval, setPriceData, chain])
 
   useEffect(() => {
     // undefined means still waiting for response from server.

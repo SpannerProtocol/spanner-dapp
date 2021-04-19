@@ -2,7 +2,7 @@
   "bolt": {
     "name": "Spanner",
     "token": "bolt",
-    "icon": "spanner-bolt.svg",
+    "icon": "logo-spanner-gradient.svg",
     "description": "A Blockchain for Decentralized Programmable Organizations."
   },
   "ncat": {

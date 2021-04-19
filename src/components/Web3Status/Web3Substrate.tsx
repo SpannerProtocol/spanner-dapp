@@ -1,7 +1,7 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import Identicon from 'components/Identicon'
-import SpannerLogo from '../../assets/svg/logo-spanner-yellow.svg'
+import SpannerLogo from '../../assets/svg/logo-spanner-gradient.svg'
 import WalletModal from 'components/WalletModal'
 import { injected, walletconnect } from 'connectors'
 import useWallet from 'hooks/useWallet'

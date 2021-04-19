@@ -41,7 +41,7 @@ import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
-import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
+import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
 import DpoActions from './actions'
@@ -753,7 +753,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             {/* Action Shortcuts */}
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
-                {lastBlock && dpoInfo.expiry_blk.lt(lastBlock) ? (
+                {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) ? (
                   <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
                     {t(`EXPIRED`)}
                   </StateWrapper>
@@ -773,9 +773,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             </div>
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${window.location.hostname}:${
-                  window.location.port
-                }/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
+                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
                   projectState.selectedProject.token
                 }`}
                 childrenIsIcon={true}
@@ -858,7 +856,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>{t(`DPO Name`)}</StandardText>
                 <StandardText>{dpoInfo.name}</StandardText>
               </RowBetween>
-              {dpoInfo.state.eq('CREATED') && (
+              {dpoInfo.state.isCreated && (
                 <RowBetween>
                   <StandardText>{t(`Ends`)}</StandardText>
                   <StandardText>
@@ -892,13 +890,13 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 </StandardText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Crowdfunding Amount`)}</StandardText>
+                <StandardText>{t(`Amount`)}</StandardText>
                 <StandardText>
                   {formatToUnit(dpoInfo.target_amount.toString(), chainDecimals, 2)} {token}
                 </StandardText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Target Maturity`)}</StandardText>
+                <StandardText>{t(`Maturity`)}</StandardText>
                 <StandardText>
                   {t(`Block`)} #{dpoInfo.target_maturity.toString()}
                 </StandardText>
@@ -930,11 +928,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               <RowBetween>
                 <StandardText>{t(`State`)}</StandardText>
-                <StandardText>
-                  {dpoInfo.state.toString()}
-                  {lastBlock && dpoInfo.expiry_blk.lt(lastBlock) && ` (${t(`EXPIRED`)})`}
-                </StandardText>
+                <StandardText>{dpoInfo.state.toString()}</StandardText>
               </RowBetween>
+              {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) && (
+                <RowBetween>
+                  <StandardText>{t(`Expiry`)}</StandardText>
+                  <StandardText>{t(`EXPIRED`)}</StandardText>
+                </RowBetween>
+              )}
             </Section>
             <Section>
               <StandardText>{t(`Seats Filled`)}</StandardText>

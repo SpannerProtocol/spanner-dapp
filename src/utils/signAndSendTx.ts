@@ -34,9 +34,11 @@ interface SignAndSendParams extends SignAndSendCoreParams {
 
 interface SignAndSendCustodialParams extends SignAndSendCoreParams {
   custodialProvider?: Web3Provider
+  chain: 'Hammer' | 'Spanner'
 }
 
-interface SignAndSendTxParams extends SignAndSendParams {
+export interface SignAndSendTxParams extends SignAndSendParams {
+  chain: 'Hammer' | 'Spanner'
   walletType?: string
   signer?: Signer
   custodialProvider?: Web3Provider
@@ -167,6 +169,7 @@ function signAndSend({
 
 function signAndSendCustodial({
   api,
+  chain,
   tx,
   wallet,
   address,
@@ -178,7 +181,7 @@ function signAndSendCustodial({
   toastDispatch,
 }: SignAndSendCustodialParams) {
   // Section and Method are used to reconstruct the @polkadot/api tx call server-side
-  if (!custodialProvider || !address || !txInfo || !wallet) {
+  if (!custodialProvider || !address || !txInfo || !wallet || !chain) {
     setErrorMsg('Unexpected Error with Custodial Signing operation.')
     return
   }
@@ -233,7 +236,7 @@ function signAndSendCustodial({
   signAndVerify(custodialProvider, message)
     .then((custodialPayload) => {
       if (custodialPayload) {
-        postSignature(custodialPayload)
+        postSignature(chain, custodialPayload)
           .then((txSignature) => {
             if (!api) return
             const submittableTx = api.createType('Extrinsic', txSignature.data)
@@ -261,6 +264,7 @@ function signAndSendCustodial({
 
 export default function signAndSendTx({
   api,
+  chain,
   tx,
   wallet,
   txInfo,
@@ -277,6 +281,7 @@ export default function signAndSendTx({
   if (wallet.type === 'custodial') {
     signAndSendCustodial({
       api,
+      chain,
       tx,
       wallet: wallet,
       address: wallet.ethereumAddress,
