@@ -31,7 +31,6 @@ export function formatToUnit(num: number | BN | string, cd: number, precision = 
     }
   }
   let numStr = formatBalance(num.toString(), { withSi: false, withUnit: false, forceUnit: '-', decimals: cd })
-  // converting to string because 0 is falsy
   const split = numStr.split('.')
   const integer = split[0]
   let decimals = split[1]
