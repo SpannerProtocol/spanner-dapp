@@ -41,7 +41,7 @@ import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
-import { DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
+import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import getCabinClass from '../../../utils/getCabinClass'
 import DpoActions from './actions'
@@ -773,9 +773,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             </div>
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${window.location.hostname}:${
-                  window.location.port
-                }/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
+                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
                   projectState.selectedProject.token
                 }`}
                 childrenIsIcon={true}

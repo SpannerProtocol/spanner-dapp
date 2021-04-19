@@ -2,7 +2,9 @@
 import axios from 'axios'
 import https from 'https'
 
-const bridgeHost = process.env.REACT_APP_BRIDGE_HOST
+const bridgeHammerHost = process.env.REACT_APP_HAMMER_BRIDGE_HOST
+const bridgeSpannerHost = process.env.REACT_APP_SPANNER_BRIDGE_HOST
+
 let httpAgent: https.Agent
 
 if (process.env.NODE_ENV === 'development') {
@@ -14,10 +16,20 @@ if (process.env.NODE_ENV === 'development') {
   httpAgent = new https.Agent()
 }
 
+function getHost(chain: string) {
+  console.log('chain:', chain)
+  if (chain === 'Hammer') {
+    return bridgeHammerHost
+  } else if (chain === 'Spanner') {
+    return bridgeSpannerHost
+  }
+}
+
 // All requests to bridge returns promises
 
 // Get the deposit address
-export function getEthDepositAddr(spannerAddress: string) {
+export function getEthDepositAddr(chain: 'Hammer' | 'Spanner', spannerAddress: string) {
+  const bridgeHost = getHost(chain)
   return axios.get<string>(`${bridgeHost}/eth_deposit_addr`, {
     httpAgent,
     params: {
@@ -27,7 +39,8 @@ export function getEthDepositAddr(spannerAddress: string) {
 }
 
 // Ethereum to Spanner deposit check
-export function postE2sCheck(spannerAddress: string) {
+export function postE2sCheck(chain: 'Hammer' | 'Spanner', spannerAddress: string) {
+  const bridgeHost = getHost(chain)
   return axios.post<Array<string>>(`${bridgeHost}/e2s_check`, null, {
     httpAgent,
     params: {
@@ -38,7 +51,8 @@ export function postE2sCheck(spannerAddress: string) {
 
 // Get Spanner burn address to send WUSD to
 // The server will handle the issuance of USDT to user's Ethereum address
-export function getBurnAddr(ethAddress: string) {
+export function getBurnAddr(chain: 'Hammer' | 'Spanner', ethAddress: string) {
+  const bridgeHost = getHost(chain)
   return axios.get<string>(`${bridgeHost}/burn_addr`, {
     httpAgent,
     params: {
@@ -49,7 +63,8 @@ export function getBurnAddr(ethAddress: string) {
 
 // Get Spanner burn address to send WUSD to
 // The server will handle the issuance of USDT to user's Ethereum address
-export function getFaucet(spannerAddress: string, tokens: string) {
+export function getFaucet(chain: 'Hammer' | 'Spanner', spannerAddress: string, tokens: string) {
+  const bridgeHost = getHost(chain)
   return axios.get<string>(`${bridgeHost}/faucet`, {
     httpAgent,
     params: {
@@ -63,7 +78,8 @@ export function getFaucet(spannerAddress: string, tokens: string) {
  * Get Spanner SS58 custodial address from a custodial address
  * @param ethereumAddress valid ethereum address (hex with 0x)
  */
-export function getCustodialAddr(ethereumAddress: string) {
+export function getCustodialAddr(chain: 'Hammer' | 'Spanner', ethereumAddress: string) {
+  const bridgeHost = getHost(chain)
   return axios.get<string>(`${bridgeHost}/custodial_addr`, {
     httpAgent,
     params: {
@@ -87,18 +103,21 @@ interface CustodialSigningPayload {
   ethAddress: string
 }
 
-export function postSignature(payload: CustodialSigningPayload) {
+export function postSignature(chain: 'Hammer' | 'Spanner', payload: CustodialSigningPayload) {
+  const bridgeHost = getHost(chain)
   return axios.post(`${bridgeHost}/sign`, payload, {
     httpAgent,
   })
 }
 
-export function getHealth() {
+export function getHealth(chain: 'Hammer' | 'Spanner') {
+  const bridgeHost = getHost(chain)
   return axios.get(`${bridgeHost}/health`)
 }
 
 // Get the deposit address
-export function getBridgeFee() {
+export function getBridgeFee(chain: 'Hammer' | 'Spanner') {
+  const bridgeHost = getHost(chain)
   return axios.get<{
     fee_bps: string
     fee_min: string

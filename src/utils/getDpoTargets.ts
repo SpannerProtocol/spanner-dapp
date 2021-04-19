@@ -13,12 +13,17 @@ export function getTargetDpo(api: ApiPromise, dpoInfo: DpoInfo) {
   return api.query.bulletTrain.dpos(dpoInfo.target.asDpo[0].toString())
 }
 
-export function getTargetTravelCabin(api: ApiPromise, wallet: WalletInfo, dpoInfo: DpoInfo) {
+export function getTargetTravelCabin(
+  chain: 'Hammer' | 'Spanner',
+  api: ApiPromise,
+  wallet: WalletInfo,
+  dpoInfo: DpoInfo
+) {
   const travelCabinInfoPromise = api.query.bulletTrain
     .travelCabins(dpoInfo.target.asTravelCabin.toString())
     .then((result) => result.unwrapOrDefault())
   // Get the TravelCabinInventoryIndex
-  const travelCabinInventoryPromise = postScanExtrinsics({
+  const travelCabinInventoryPromise = postScanExtrinsics(chain, {
     row: 100,
     page: 0,
     module: 'bullettrain',

@@ -1,3 +1,4 @@
+import CopyHelper from 'components/Copy/Copy'
 import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
@@ -16,6 +17,7 @@ import useWallet from 'hooks/useWallet'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
+import { useChainState } from 'state/connections/hooks'
 import { shortenAddress } from 'utils'
 import { formatToUnit, numberToBn } from 'utils/formatUnit'
 import { getBridgeFee, getBurnAddr, getEthDepositAddr } from '../../bridge'
@@ -120,13 +122,14 @@ export default function Bridge(): JSX.Element {
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const [feeData, setFeeData] = useState<{ feeMin: number; feeBps: number }>()
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    getEthDepositAddr(wallet.address)
+    if (!wallet || !wallet.address || !chain) return
+    getEthDepositAddr(chain.chain, wallet.address)
       .then((response) => setEthDepositAddr(response.data))
       .catch((err) => console.log(err))
-    getBridgeFee().then(
+    getBridgeFee(chain.chain).then(
       (response) =>
         response.data &&
         setFeeData({
@@ -134,7 +137,7 @@ export default function Bridge(): JSX.Element {
           feeBps: parseInt(response.data.fee_bps),
         })
     )
-  }, [wallet])
+  }, [wallet, chain])
 
   const calcBridgeFee = useCallback(() => {
     if (!feeData) return
@@ -161,6 +164,7 @@ export default function Bridge(): JSX.Element {
 
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
+      if (!chain) return
       if (!wallet) {
         setTxErrorMsg(t(`Please connect to a wallet.`))
         return
@@ -169,7 +173,7 @@ export default function Bridge(): JSX.Element {
         setTxErrorMsg(t(`Please review your withdrawal inputs.`))
         return
       }
-      getBurnAddr(ethWithdrawAddress)
+      getBurnAddr(chain.chain, ethWithdrawAddress)
         .then((response) => {
           const burnAddress = response.data
           const currencyId: CurrencyId = api.createType('CurrencyId', { Token: 'WUSD' })
@@ -184,7 +188,7 @@ export default function Bridge(): JSX.Element {
         })
         .then(() => setConfirmModalOpen(true))
     },
-    [wallet, t, api, chainDecimals, createTx]
+    [wallet, t, api, chainDecimals, createTx, chain]
   )
 
   const dismissModal = () => {
@@ -285,7 +289,11 @@ export default function Bridge(): JSX.Element {
                   />
                 </div>
                 <StandardText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</StandardText>
-                <BorderedWrapper style={{ margin: '0' }}>{ethDepositAddr}</BorderedWrapper>
+                <BorderedWrapper style={{ margin: '0' }}>
+                  <CopyHelper toCopy={ethDepositAddr} childrenIsIcon={true}>
+                    <StandardText>{ethDepositAddr}</StandardText>
+                  </CopyHelper>
+                </BorderedWrapper>
               </SpacedSection>
               <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                 <div

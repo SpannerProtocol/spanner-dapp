@@ -8,6 +8,7 @@ import {
   TravelCabinInfo,
   TravelCabinInventoryIndex,
 } from 'spanner-interfaces/bulletTrain'
+import { useChainState } from 'state/connections/hooks'
 import { getTargetDpo, getTargetTravelCabin, TravelCabinData } from 'utils/getDpoTargets'
 import { getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
 import getTravelCabinInventory from 'utils/getTravelCabinInventory'
@@ -41,9 +42,10 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
   const walletInfo = useWallet()
   const userDpos = useRpcUserDpos(address)
   const [data, setData] = useState<UserDposData>({})
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!userDpos || userDpos.length === 0 || !connected || !walletInfo || !walletInfo.address) return
+    if (!userDpos || userDpos.length === 0 || !connected || !walletInfo || !walletInfo.address || !chain) return
     const dpoData: UserDposData = {}
     userDpos.forEach(([dpoIndex, dpoInfo]) => {
       dpoData[dpoIndex.toString()] = {}
@@ -55,7 +57,7 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
           }
         })
       } else {
-        getTargetTravelCabin(api, walletInfo, dpoInfo).then((result) => {
+        getTargetTravelCabin(chain.chain, api, walletInfo, dpoInfo).then((result) => {
           dpoData[dpoIndex.toString()]['target'] = result
         })
         getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
@@ -82,7 +84,7 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
       }
     })
     setData(dpoData)
-  }, [api, connected, userDpos, walletInfo])
+  }, [api, connected, userDpos, walletInfo, chain])
 
   return data
 }

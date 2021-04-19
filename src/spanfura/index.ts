@@ -2,7 +2,8 @@
 import axios from 'axios'
 import https from 'https'
 
-const spanfuraHost = process.env.REACT_APP_SPANFURA_HOST
+const spanfuraHammerHost = process.env.REACT_APP_HAMMER_SPANFURA_HOST
+const spanfuraSpannerHost = process.env.REACT_APP_SPANNER_SPANFURA_HOST
 let httpAgent: https.Agent
 
 if (process.env.NODE_ENV === 'development') {
@@ -12,6 +13,14 @@ if (process.env.NODE_ENV === 'development') {
   })
 } else {
   httpAgent = new https.Agent()
+}
+
+function getHost(chain: string) {
+  if (chain === 'Hammer') {
+    return spanfuraHammerHost
+  } else if (chain === 'Spanner') {
+    return spanfuraSpannerHost
+  }
 }
 
 export interface SpanfuraParams {
@@ -28,7 +37,8 @@ export interface SpanfuraExtrinsicsParams extends SpanfuraParams {
 }
 
 // Get the deposit address
-export function postScanExtrinsics(params: SpanfuraExtrinsicsParams) {
+export function postScanExtrinsics(chain: 'Hammer' | 'Spanner', params: SpanfuraExtrinsicsParams) {
+  const spanfuraHost = getHost(chain)
   return axios.post(`${spanfuraHost}/scan/extrinsics`, params, {
     httpAgent,
   })
@@ -95,7 +105,8 @@ export interface SpanfuraEventsResponse extends SpanfuraResponseCore {
 }
 
 // Ethereum to Spanner deposit check
-export function postScanEvents(params: SpanfuraParams) {
+export function postScanEvents(chain: 'Hammer' | 'Spanner', params: SpanfuraParams) {
+  const spanfuraHost = getHost(chain)
   return axios.post(`${spanfuraHost}/scan/events`, params, {
     httpAgent,
   })
@@ -118,7 +129,8 @@ export interface SpanfuraPriceResponse extends SpanfuraResponseCore {
 }
 
 // Ethereum to Spanner deposit check
-export function postPriceData(params: PriceParams) {
+export function postPriceData(chain: 'Hammer' | 'Spanner', params: PriceParams) {
+  const spanfuraHost = getHost(chain)
   return axios.post(`${spanfuraHost}/scan/price`, params, {
     httpAgent,
   })

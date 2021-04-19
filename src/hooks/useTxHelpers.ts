@@ -8,6 +8,7 @@ import { useSubstrate } from './useSubstrate'
 import { useTranslation } from 'react-i18next'
 import { Dispatcher } from 'types/dispatcher'
 import { useToastContext } from 'contexts/ToastContext'
+import { useChainState } from 'state/connections/hooks'
 
 export interface CreateTxParams {
   section: string
@@ -42,6 +43,7 @@ export default function useTxHelpers() {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const { toastDispatch } = useToastContext()
+  const chain = useChainState()
 
   // Create both the transaction and get the estimated payment info
   const createTx = ({
@@ -64,7 +66,7 @@ export default function useTxHelpers() {
   // Use signAndSend and output any errors
   const submitTx = useCallback(
     ({ setTxErrorMsg, setTxHash, setTxPendingMsg }: SubmitTxParams) => {
-      if (!connected) return
+      if (!connected || !chain) return
       if (!wallet || !wallet.address) {
         setTxErrorMsg(t(`No wallet connection detected.`))
         return
@@ -74,6 +76,7 @@ export default function useTxHelpers() {
       } else {
         signAndSendTx({
           api: api,
+          chain: chain.chain,
           tx: txMeta.unsignedTx,
           wallet: wallet,
           signer: wallet.injector?.signer,
@@ -90,7 +93,7 @@ export default function useTxHelpers() {
         })
       }
     },
-    [api, connected, t, toastDispatch, txMeta, wallet]
+    [api, connected, t, toastDispatch, txMeta, wallet, chain]
   )
 
   return { createTx, submitTx }

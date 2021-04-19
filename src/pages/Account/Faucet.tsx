@@ -7,8 +7,9 @@ import { BorderedWrapper, ButtonWrapper, Section } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
-import React from 'react'
+import React, { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useChainState } from 'state/connections/hooks'
 import { formatToUnit } from 'utils/formatUnit'
 
 export default function Faucet(): JSX.Element {
@@ -18,16 +19,17 @@ export default function Faucet(): JSX.Element {
   const { t } = useTranslation()
 
   const { chainDecimals } = useSubstrate()
+  const chain = useChainState()
 
-  const handleFaucet = () => {
+  const handleFaucet = useCallback(() => {
     // global error
-    if (!wallet?.address) return
+    if (!wallet?.address || !chain) return
     try {
-      getFaucet(wallet.address, 'BOLT,WUSD')
+      getFaucet(chain.chain, wallet.address, 'BOLT,WUSD')
     } catch (err) {
       console.log('Faucet Error: ', err)
     }
-  }
+  }, [chain, wallet])
 
   return (
     <>
