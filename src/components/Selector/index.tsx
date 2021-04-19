@@ -112,7 +112,6 @@ export default function Selector(props: SelectorProps) {
     if (options.length <= 0) return
     if (activeOption) return
     const defaultSelectOption = options.find((option) => option.label === defaultOption.label)
-
     setActiveOption(defaultSelectOption)
   }, [activeOption, defaultOption, options])
 

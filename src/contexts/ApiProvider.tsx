@@ -71,17 +71,15 @@ export function ApiProvider({ children }: any): JSX.Element {
 
   useEffect(() => {
     if (!config || !rpcDefinitions) return
-    // const types = Object.values(definitions).reduce((res, { types }): object => ({ ...res, ...types }), {})
     const types = Object.values(definitions).reduce(
       (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
       {}
     )
     const rpc = rpcDefinitions.default.rpc
-    // Hammer is default
-    const chainInfo = SPANNER_SUPPORTED_CHAINS.reduce((supportedChains) =>
-      supportedChains.chain === selectedChain ? supportedChains : SPANNER_SUPPORTED_CHAINS[1]
-    )
-    chainInfo.chain === 'Hammer Testnet' ? setChain('Hammer') : setChain('Spanner')
+    // Spanner is default
+    let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === selectedChain)
+    chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
+    chainInfo.chain === 'Spanner Mainnet' ? setChain('Spanner') : setChain('Hammer')
     const provider = new WsProvider(chainInfo.providerSocket)
     const apiPromise = new ApiPromise({
       provider,
