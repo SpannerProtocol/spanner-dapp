@@ -40,7 +40,7 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
         <Selector
           title={'Select Network'}
           options={selectorOptions}
-          defaultOption={selectorOptions[1]}
+          defaultOption={selectorOptions[0]}
           collaspedTextPrefix={props.collaspedTextPrefix}
           color={props.color}
         />

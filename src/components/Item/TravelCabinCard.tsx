@@ -131,7 +131,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`Fare`)}:</HeavyText>
               <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals, 2)} {token}
+                {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals)} {token}
               </StandardText>
             </InlineSection>
             {expectedBlockTime && (
@@ -163,7 +163,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
               <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                {formatToUnit(travelCabinInfo.bonus_total.toBn(), chainDecimals, 2)} {token}
+                {formatToUnit(travelCabinInfo.bonus_total.toBn(), chainDecimals)} {token}
               </StandardText>
             </InlineSection>
           </CabinData2>

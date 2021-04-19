@@ -163,7 +163,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
+                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
                   </StandardText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
@@ -201,7 +201,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
+                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
                   </StandardText>
                 </InlineSection>
               </DpoData2>
@@ -306,7 +306,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals, 2)} {token}
+                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
                   </StandardText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
@@ -344,7 +344,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
+                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
                   </StandardText>
                 </InlineSection>
               </DpoData2>
