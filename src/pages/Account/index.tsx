@@ -19,7 +19,7 @@ import {
   PageWrapper,
   Section,
   SectionContainer,
-  Wrapper
+  Wrapper,
 } from '../../components/Wrapper'
 import { DAPP_HOST } from '../../constants'
 import { shortenAddr } from '../../utils/truncateString'
