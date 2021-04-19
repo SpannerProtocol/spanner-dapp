@@ -27,9 +27,9 @@ ReactDOM.render(
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ProviderNetwork getLibrary={getLibrary}>
         <Web3InjectedProvider>
-          <SubstrateProvider>
-            <Provider store={store}>
-              <ApiProvider>
+          <Provider store={store}>
+            <ApiProvider>
+              <SubstrateProvider>
                 <ThemeProvider>
                   <ThemedGlobalStyle />
                   <HashRouter>
@@ -38,9 +38,9 @@ ReactDOM.render(
                     </ToastProvider>
                   </HashRouter>
                 </ThemeProvider>
-              </ApiProvider>
-            </Provider>
-          </SubstrateProvider>
+              </SubstrateProvider>
+            </ApiProvider>
+          </Provider>
         </Web3InjectedProvider>
       </Web3ProviderNetwork>
     </Web3ReactProvider>
