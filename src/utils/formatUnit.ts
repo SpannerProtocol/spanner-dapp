@@ -25,17 +25,19 @@ export function formatToUnit(num: number | BN | string, cd: number, precision = 
       const inUnit = num.div(new BN(10).pow(new BN(cd)))
       return bnToHumanNumber(inUnit, precision)
     } else if (typeof num === 'string') {
-      toHumanNumber(parseFloat(num), precision)
+      return toHumanNumber(parseFloat(num), precision)
     } else {
-      toHumanNumber(num, precision)
+      return toHumanNumber(num, precision)
     }
   }
-  let numStr = formatBalance(num.toString(), { withSi: false, forceUnit: '-' }, cd)
-  if (precision) {
-    numStr = parseFloat(numStr.replaceAll(',', '')).toLocaleString(undefined, {
-      maximumFractionDigits: precision,
-    })
+  let numStr = formatBalance(num.toString(), { withSi: false, withUnit: false, forceUnit: '-', decimals: cd })
+  const split = numStr.split('.')
+  const integer = split[0]
+  let decimals = split[1]
+  if (decimals) {
+    decimals = decimals.slice(0, precision)
   }
+  numStr = precision === 0 ? integer : `${integer}.${decimals}`
   return numStr
 }
 

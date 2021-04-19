@@ -17,6 +17,7 @@ import useWallet from './useWallet'
 import type { BlockNumber } from '@polkadot/types/interfaces'
 import { useUserIsDpoMember } from './useUser'
 import { getDpoMembers } from 'utils/getDpoMembers'
+import { useChainState } from 'state/connections/hooks'
 
 interface ActionReq {
   dpoInfo?: DpoInfo
@@ -51,6 +52,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
   const isMember = useUserIsDpoMember(dpoInfo?.index, wallet?.address)
   const [actionsReq, setActionsReq] = useState<ActionReq>()
   const [dpoActions, setDpoActions] = useState<DpoAction[]>()
+  const chain = useChainState()
 
   const addActionReq = useCallback((newAction: NewActionReq) => {
     setActionsReq((prev) => {
@@ -59,7 +61,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
   }, [])
 
   useEffect(() => {
-    if (!connected || !wallet || !wallet.address || !dpoInfo) return
+    if (!connected || !wallet || !wallet.address || !dpoInfo || !chain) return
     if (dpoInfo.target.isDpo) {
       getTargetDpo(api, dpoInfo).then((result) => {
         if (result.isSome) {
@@ -78,7 +80,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         })
       })
     } else {
-      getTargetTravelCabin(api, wallet, dpoInfo).then((result) => {
+      getTargetTravelCabin(chain.chain, api, wallet, dpoInfo).then((result) => {
         if (result) {
           addActionReq({ targetTravelCabin: result[0] })
         }
@@ -102,7 +104,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         })
       })
     }
-  }, [addActionReq, api, connected, dpoInfo, wallet])
+  }, [addActionReq, api, connected, dpoInfo, wallet, chain])
 
   // Every block change causes a rerender might might be necessary if we want
   // the DPO State and Actions to update.

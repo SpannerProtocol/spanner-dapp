@@ -19,10 +19,12 @@ import { getUserPublicKey } from 'utils/getWalletInfo'
 type Dispatcher<S> = Dispatch<SetStateAction<S>>
 
 interface TxQueryParams extends SpanfuraExtrinsicsParams {
+  chain: 'Hammer' | 'Spanner'
   setData: Dispatcher<SpanfuraDataExtrinsic[]>
 }
 
 interface EventQueryParams extends SpanfuraExtrinsicsParams {
+  chain: 'Hammer' | 'Spanner'
   setData: Dispatcher<SpanfuraDataEvents[]>
   setMeta: Dispatcher<{ count: number }>
 }
@@ -30,8 +32,8 @@ interface EventQueryParams extends SpanfuraExtrinsicsParams {
 /**
  * Get Transactions for the provided address.
  */
-export function postTxHistory({ row, page, address, success = 'true', setData }: TxQueryParams) {
-  postScanExtrinsics({
+export function postTxHistory({ chain, row, page, address, success = 'true', setData }: TxQueryParams) {
+  postScanExtrinsics(chain, {
     row,
     page,
     address,
@@ -51,12 +53,12 @@ export function postTxHistory({ row, page, address, success = 'true', setData }:
  * Get balance.transfers from events api.
  * Addresses returned will be formatted in SS58.
  */
-export function postTransfers({ row, page, address, success = 'true', setData, setMeta }: EventQueryParams) {
+export function postTransfers({ chain, row, page, address, success = 'true', setData, setMeta }: EventQueryParams) {
   if (!address) return
   // Filter for the users address as a hex
   let addressHex = getUserPublicKey(address)
   addressHex = addressHex.slice(2, addressHex.length)
-  postScanEvents({
+  postScanEvents(chain, {
     row,
     page,
     module: 'balances',
@@ -82,12 +84,20 @@ export function postTransfers({ row, page, address, success = 'true', setData, s
  * Addresses returned will be formatted in SS58.
  * Filters out bolt because currencies.transfers includes some but not all bolt transfers
  */
-export function postTransfersTokens({ row, page, address, success = 'true', setData, setMeta }: EventQueryParams) {
+export function postTransfersTokens({
+  chain,
+  row,
+  page,
+  address,
+  success = 'true',
+  setData,
+  setMeta,
+}: EventQueryParams) {
   if (!address) return
   // Filter for the users address as a hex
   let addressHex = getUserPublicKey(address)
   addressHex = addressHex.slice(2, addressHex.length)
-  postScanEvents({
+  postScanEvents(chain, {
     row,
     page,
     module: 'currencies',
@@ -110,6 +120,7 @@ export function postTransfersTokens({ row, page, address, success = 'true', setD
 }
 
 export interface GetPriceParam {
+  chain: 'Hammer' | 'Spanner'
   token1: string
   token2: string
   from: number
@@ -117,8 +128,8 @@ export interface GetPriceParam {
   setData: Dispatcher<PriceData[] | undefined>
 }
 
-export function getPrice({ token1, token2, from, interval, setData }: GetPriceParam) {
-  postPriceData({ token_1: token1, token_2: token2, from, interval }).then(
+export function getPrice({ chain, token1, token2, from, interval, setData }: GetPriceParam) {
+  postPriceData(chain, { token_1: token1, token_2: token2, from, interval }).then(
     (resp: AxiosResponse<SpanfuraPriceResponse>) => {
       if (!resp.data.data) {
         setData([])

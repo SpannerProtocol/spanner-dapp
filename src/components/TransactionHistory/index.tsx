@@ -132,11 +132,19 @@ function Transfers() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTransfers({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTransfers({
+      chain: chain.chain,
+      row: 10,
+      page: page,
+      address: wallet.address,
+      setData: setTransactions,
+      setMeta,
+    })
+  }, [wallet, page, chain])
 
   return (
     <>
@@ -200,8 +208,6 @@ function TransferTokenRow({ event }: EventRowProps) {
   const receiver = encodeAddress('0x' + event.params_json[2].value, 42)
   const amount = formatToHumanFromUnit(event.params_json[3].value, chainDecimals)
 
-  console.log(sender, receiver, amount)
-
   return (
     <>
       {wallet && wallet.address && (
@@ -263,11 +269,19 @@ function TransfersTokens() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTransfersTokens({ row: 10, page: page, address: wallet.address, setData: setTransactions, setMeta })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTransfersTokens({
+      chain: chain.chain,
+      row: 10,
+      page: page,
+      address: wallet.address,
+      setData: setTransactions,
+      setMeta,
+    })
+  }, [wallet, page, chain])
 
   return (
     <>
@@ -301,11 +315,12 @@ export function LatestTransactions() {
   const [page, setPage] = useState(0)
   const [hadTransactions, setHadTransactions] = useState<boolean>(false)
   const [lastPage, setLastPage] = useState<number>()
+  const chain = useChainState()
 
   useEffect(() => {
-    if (!wallet || !wallet.address) return
-    postTxHistory({ row: 10, page: page, address: wallet.address, setData: setTransactions })
-  }, [wallet, page])
+    if (!wallet || !wallet.address || !chain) return
+    postTxHistory({ chain: chain.chain, row: 10, page: page, address: wallet.address, setData: setTransactions })
+  }, [wallet, page, chain])
 
   // A permenant flag to change the message for the next page if the user had transactions
   useEffect(() => {
