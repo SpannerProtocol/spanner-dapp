@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
-import { getCabinOrder } from 'utils/getCabinClass'
 import { useApi } from './useApi'
 
 export function useTravelCabins(token?: string): [TravelCabinIndex, TravelCabinInfo][] {
@@ -20,7 +19,7 @@ export function useTravelCabins(token?: string): [TravelCabinIndex, TravelCabinI
             if (token) {
               // Filtered for token
               if (cabinInfo.token_id.asToken.eq(token)) {
-                orderedCabins.splice(getCabinOrder(cabinInfo.name.toString()), 0, [cabinIndex, cabinInfo])
+                orderedCabins.push([cabinIndex, cabinInfo])
               }
             } else {
               // No token, just return all
