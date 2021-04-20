@@ -109,10 +109,16 @@ export default function Project(): JSX.Element {
                         <StandardText>
                           <b>{t(`Token`)}</b>: {projectInfo.token}
                         </StandardText>
-                        <StandardText>
-                          <b>{t(`Total Supply`)}</b>:{' '}
-                          {formatToUnit(projectInfo.totalIssuance.toString(), chainDecimals)}
-                        </StandardText>
+                        {projectRegistry.name === 'Spanner' ? (
+                          <StandardText>
+                            <b>{t(`Total Supply`)}</b>:{` ${'1,000,000,000'}`}
+                          </StandardText>
+                        ) : (
+                          <StandardText>
+                            <b>{t(`Total Supply`)}</b>:
+                            {` ${formatToUnit(projectInfo.totalIssuance.toString(), chainDecimals)}`}
+                          </StandardText>
+                        )}
                       </SpacedSection>
                     </SpacedSection>
                   </ContentWrapper>
