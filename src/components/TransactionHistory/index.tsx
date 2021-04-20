@@ -1,4 +1,5 @@
 import { encodeAddress } from '@polkadot/keyring'
+import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
@@ -16,7 +17,7 @@ import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
-import { formatToHumanFromUnit, formatToUnit } from 'utils/formatUnit'
+import { formatToUnit } from 'utils/formatUnit'
 import truncateString, { shortenAddr } from 'utils/truncateString'
 
 const TxRow = styled.div`
@@ -206,7 +207,7 @@ function TransferTokenRow({ event }: EventRowProps) {
   const token = event.params_json[0].value.Token
   const sender = encodeAddress('0x' + event.params_json[1].value, 42)
   const receiver = encodeAddress('0x' + event.params_json[2].value, 42)
-  const amount = formatToHumanFromUnit(event.params_json[3].value, chainDecimals)
+  const amount = formatToUnit(new BN(event.params_json[3].value), chainDecimals, 0, true)
 
   return (
     <>
@@ -299,9 +300,7 @@ function TransfersTokens() {
       </Section>
       <SpacedSection>
         {transactions.length > 0 &&
-          transactions.map((transaction, index) => (
-            <TransferTokenRow key={index} event={transaction}></TransferTokenRow>
-          ))}
+          transactions.map((transaction, index) => <TransferTokenRow key={index} event={transaction} />)}
       </SpacedSection>
       <Pagination currentPage={setPage} maxPage={Math.ceil(meta.count / 10) - 1} />
     </>
