@@ -952,7 +952,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
               <RowBetween>
-                <StandardText>{t(`Managerial Commission`)}</StandardText>
+                <StandardText>{t(`Management Fee`)}</StandardText>
                 <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
               </RowBetween>
               {dpoInfo.fee_slashed && (
