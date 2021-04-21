@@ -1,24 +1,45 @@
-import type { Moment, BlockNumber } from '@polkadot/types/interfaces'
-import { ApiPromise } from '@polkadot/api'
 import { u32 } from '@polkadot/types'
-import moment from 'moment'
+import type { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
+import moment from 'moment'
+import { formatPrecision } from './formatNumbers'
+import { isBN } from './formatUnit'
+
 /**
  * Converts a block into days
  * @param blockTime Expected blocktime in milliseconds
  * @param block block to convert
  */
-export function blockToDays(blockTime: Moment, block: BlockNumber | u32, precision?: number) {
-  return ((block.toNumber() * blockTime.toNumber()) / 1000 / 60 / 60 / 24).toFixed(precision ? precision : 1)
+export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: Moment, precision = 2) {
+  // console.log(blockTime.toString(), block.toString())
+  let blockBn: BN
+  if (typeof block === 'string') {
+    blockBn = new BN(block)
+  } else if (isBN(block)) {
+    blockBn = block
+  } else {
+    blockBn = block.toBn()
+  }
+  const ms = new BN(24 * 60 * 60 * 1000)
+  const blockInMs = blockBn.mul(blockTime)
+  const integer = blockInMs.div(ms)
+  const remainder = blockInMs.mod(ms)
+  const result = formatPrecision(`${integer}.${remainder}`, precision)
+  return result
 }
 
 /**
- * Converts a block into hours
+ * Converts days into blocks, ceiled
  * @param blockTime Expected blocktime in milliseconds
- * @param block block to convert
+ * @param days Number of days as integers
+ * @returns blocks in BN
  */
-export function blockToHours(blockTime: Moment | BlockNumber | BN, block: BlockNumber | u32 | BN, precision?: number) {
-  return ((block.toNumber() * blockTime.toNumber()) / 1000 / 60).toFixed(precision ? precision : 2)
+export function daysToBlocks(days: number, blockTime: Moment): BN {
+  const daysInMs = new BN(days * 24 * 60 * 60 * 1000)
+  const integer = daysInMs.div(blockTime)
+  const remainder = daysInMs.mod(blockTime)
+  console.log(integer.toString(), remainder.toString())
+  return integer
 }
 
 /**
@@ -55,19 +76,12 @@ export function tsToRelative(timestamp: number) {
 }
 
 /**
- * Get the timestamp for that block
- * @param api PolkadotJS ApiPromise Instance
- * @param block BlockNumber
+ * Convert a block to a Epoch Timestamp in milliseconds
+ * @param genesisTs timestamp of genesis block
+ * @param expectedBlockTime expected block time in milliseconds
+ * @param currentBlock the last block processed
+ * @returns epoch timestamp in milliseconds
  */
-export async function blockToTsAsync(api: ApiPromise, block: BlockNumber) {
-  const blockHash = await api.rpc.chain.getBlockHash(block)
-  const signedBlock = await api.rpc.chain.getBlock(blockHash)
-  const methodSetTs = signedBlock.block.extrinsics.find(
-    (info) => info.method.method === 'set' && info.method.section === 'timestamp'
-  )
-  if (methodSetTs) return parseInt(methodSetTs.method.args.toString()) / 1000
-}
-
 export function blockToTs(genesisTs: number, expectedBlockTime: number, currentBlock: number) {
   return genesisTs + currentBlock * expectedBlockTime
 }

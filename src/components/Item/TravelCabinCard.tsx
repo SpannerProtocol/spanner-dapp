@@ -123,8 +123,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
           </IconWrapper>
           <CabinTitle>
             <HeavyText style={{ marginLeft: '0', marginTop: '0', width: '100%' }}>
-              {t(`TravelCabin `)}
-              {travelCabinInfo.name.toString()}
+              {`${t(`TravelCabin`)} ${travelCabinInfo.name.toString()}`}
             </HeavyText>
           </CabinTitle>
           <CabinData1>
@@ -138,7 +137,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
               <InlineSection>
                 <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
                 <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                  {blockToDays(expectedBlockTime, travelCabinInfo.maturity)} {t(`days`)}
+                  {blockToDays(travelCabinInfo.maturity, expectedBlockTime)} {t(`days`)}
                 </StandardText>
               </InlineSection>
             )}
@@ -155,7 +154,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                       chainDecimals: chainDecimals,
                       blocksInPeriod: expectedBlockTime,
                       period: travelCabinInfo.maturity,
-                    }).toString()} %`}
+                    })} %`}
                   </>
                 )}
               </StandardText>
