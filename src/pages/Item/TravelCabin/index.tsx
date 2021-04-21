@@ -21,11 +21,12 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
 import { ThemeContext } from 'styled-components'
-import { blockToDays, blockToTs, tsToRelative } from '../../../utils/formatBlocks'
+import { blockToDays, blockToTs, daysToBlocks, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
 import { getCabinClassImage } from '../../../utils/getCabinClass'
 import { shortenAddr } from '../../../utils/truncateString'
+import BN from 'bn.js'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -161,7 +162,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           <RowFixed>
             <StandardText>{t(`Direct Referral Rate`)}</StandardText>
             <QuestionHelper
-              text={t(`The referral bonus rate given to the Direct Referrer.`)}
+              text={t(`The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -179,20 +180,20 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>{t(`End Block`)}</StandardText>
+            <StandardText>{t(`Crowdfund Expiry`)}</StandardText>
             <QuestionHelper
               text={t(
-                `The Block Number for this Crowdfund to target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
+                `Number of days for your DPO to fundraise for the Target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
               )}
               size={12}
-              backgroundColor={'#fff'}
+              backgroundColor={'transparent'}
             ></QuestionHelper>
           </RowFixed>
           <BorderedInput
             required
-            id="dpo-end-block"
+            id="dpo-end"
             type="string"
-            placeholder="0"
+            placeholder="30"
             onChange={(e) => handleEnd(e)}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
@@ -231,7 +232,7 @@ interface TravelCabinCrowdfundTxConfirmProps {
   managerSeats?: string
   baseFee?: number
   directReferralRate?: number
-  end?: number
+  end?: string
   referrer?: string | null
   token?: string
   errorMsg?: string
@@ -250,6 +251,13 @@ function TravelCabinCrowdfundTxConfirm({
   estimatedFee,
 }: TravelCabinCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
+
+  const endInDays =
+    end && expectedBlockTime && lastBlock
+      ? Math.ceil(parseFloat(blockToDays(new BN(end).sub(lastBlock), expectedBlockTime, 4)))
+      : undefined
+
   return (
     <>
       <Section>
@@ -277,10 +285,12 @@ function TravelCabinCrowdfundTxConfirm({
           <StandardText>{t(`Direct Referral Rate`)}</StandardText>
           <StandardText>{directReferralRate} %</StandardText>
         </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`End Block`)}</StandardText>
-          <StandardText>{end}</StandardText>
-        </RowBetween>
+        {end && endInDays && (
+          <RowBetween>
+            <StandardText>{t(`Expiry`)}</StandardText>
+            <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+          </RowBetween>
+        )}
       </Section>
       <TxFee fee={estimatedFee} />
     </>
@@ -314,7 +324,7 @@ interface CrowdfundData {
   managerSeats?: string
   baseFee?: number
   directReferralRate?: number
-  end?: number
+  end?: string
   referrer?: string | null
 }
 
@@ -330,8 +340,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
-  const { expectedBlockTime } = useBlockManager()
-  // const { queueTransaction } = useTransactionMsg()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
@@ -373,7 +382,12 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     end: number
     referrer: string
   }) => {
-    setCrowdfundData({ dpoName, managerSeats, baseFee, directReferralRate, end, referrer })
+    if (!lastBlock || !expectedBlockTime) {
+      return
+    }
+    const daysBlocks = daysToBlocks(end, expectedBlockTime)
+    const endBlock = lastBlock.add(daysBlocks)
+    setCrowdfundData({ dpoName, managerSeats, baseFee, directReferralRate, end: endBlock.toString(), referrer })
     if (!travelCabinIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
@@ -386,7 +400,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         managerSeats,
         baseFee: baseFee * 10,
         directReferralRate: baseFee * 10,
-        end,
+        end: endBlock.toString(),
         referrer,
       },
     })
@@ -517,7 +531,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                     <StandardText>{t(`Ride Duration`)}</StandardText>
                     <StandardText>
                       {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
-                      {blockToDays(expectedBlockTime, travelCabinInfo.maturity)} {t(`days`)})
+                      {blockToDays(travelCabinInfo.maturity, expectedBlockTime)} {t(`days`)})
                     </StandardText>
                   </RowBetween>
                 )}
