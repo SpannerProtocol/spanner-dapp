@@ -142,7 +142,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>{t(`Base Fee`)}</StandardText>
+            <StandardText>{t(`Base Fee`)} (%)</StandardText>
             <QuestionHelper
               text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
               size={12}
@@ -160,7 +160,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+            <StandardText>{t(`Direct Referral Rate`)} (%)</StandardText>
             <QuestionHelper
               text={t(`The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)`)}
               size={12}
@@ -180,7 +180,9 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>{t(`Crowdfund Expiry`)}</StandardText>
+            <StandardText>
+              {t(`Crowdfund Expiry`)} ({t(`Days`)})
+            </StandardText>
             <QuestionHelper
               text={t(
                 `Number of days for your DPO to fundraise for the Target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
