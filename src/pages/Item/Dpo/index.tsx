@@ -39,6 +39,7 @@ import { Link } from 'react-router-dom'
 import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
+import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
@@ -84,7 +85,7 @@ interface CrowdfundData {
   managerSeats?: string
   baseFee?: number
   directReferralRate?: number
-  end?: number
+  end?: string
   referrer?: string | null
 }
 interface DpoCrowdfundTxConfirmProps extends CrowdfundData {
@@ -286,20 +287,20 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
       </Section>
       <Section>
         <RowFixed>
-          <StandardText>{t(`End Block`)}</StandardText>
+          <StandardText>{t(`Crowdfund Expiry`)}</StandardText>
           <QuestionHelper
             text={t(
-              `The Block Number for this Crowdfund to target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
+              `Number of days for your DPO to fundraise for the Target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
             )}
             size={12}
-            backgroundColor={'#fff'}
+            backgroundColor={'transparent'}
           ></QuestionHelper>
         </RowFixed>
         <BorderedInput
           required
-          id="dpo-end-block"
+          id="dpo-end"
           type="string"
-          placeholder="0"
+          placeholder="30"
           onChange={(e) => handleEnd(e)}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
@@ -333,8 +334,24 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   )
 }
 
-function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
+function DpoCrowdfundTxConfirm({
+  dpoName,
+  deposit,
+  token,
+  targetSeats,
+  managerSeats,
+  baseFee,
+  directReferralRate,
+  end,
+  estimatedFee,
+}: DpoCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
+
+  const endInDays =
+    end && expectedBlockTime && lastBlock
+      ? Math.ceil(parseFloat(blockToDays(new BN(end).sub(lastBlock), expectedBlockTime, 4)))
+      : undefined
   return (
     <>
       <Section>
@@ -343,36 +360,38 @@ function DpoCrowdfundTxConfirm(props: DpoCrowdfundTxConfirmProps) {
       <SpacedSection>
         <RowBetween>
           <StandardText>{t(`DPO Name`)}</StandardText>
-          <StandardText>{props.dpoName}</StandardText>
+          <StandardText>{dpoName}</StandardText>
         </RowBetween>
         <RowBetween>
           <StandardText>{t(`Ticket Fare`)}</StandardText>
           <StandardText>
-            {props.deposit} {props.token}
+            {deposit} {token}
           </StandardText>
         </RowBetween>
         <RowBetween>
           <StandardText>{t(`Target DPO Seats`)}</StandardText>
-          <StandardText>{props.targetSeats}</StandardText>
+          <StandardText>{targetSeats}</StandardText>
         </RowBetween>
-        {props.managerSeats && props.baseFee && (
+        {managerSeats && baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>{Math.round(parseFloat(props.managerSeats) + props.baseFee).toString()} %</StandardText>
+            <StandardText>{Math.round(parseFloat(managerSeats) + baseFee).toString()} %</StandardText>
           </RowBetween>
         )}
-        {props.directReferralRate && (
+        {directReferralRate && (
           <RowBetween>
             <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-            <StandardText>{props.directReferralRate.toString()} %</StandardText>
+            <StandardText>{directReferralRate.toString()} %</StandardText>
           </RowBetween>
         )}
-        <RowBetween>
-          <StandardText>{t(`End Block`)}</StandardText>
-          <StandardText>{props.end}</StandardText>
-        </RowBetween>
+        {end && endInDays && (
+          <RowBetween>
+            <StandardText>{t(`Expiry`)}</StandardText>
+            <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+          </RowBetween>
+        )}
       </SpacedSection>
-      <TxFee fee={props.estimatedFee} />
+      <TxFee fee={estimatedFee} />
     </>
   )
 }
@@ -619,7 +638,20 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     end: number
     referrer: string
   }) => {
-    setCrowdfundData({ dpoName, targetSeats: seats, managerSeats, baseFee, directReferralRate, end, referrer })
+    if (!lastBlock || !expectedBlockTime) {
+      return
+    }
+    const daysBlocks = daysToBlocks(end, expectedBlockTime)
+    const endBlock = lastBlock.add(daysBlocks)
+    setCrowdfundData({
+      dpoName,
+      targetSeats: seats,
+      managerSeats,
+      baseFee,
+      directReferralRate,
+      end: endBlock.toString(),
+      referrer,
+    })
     if (!dpoIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
@@ -633,7 +665,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         managerSeats,
         baseFee: baseFee * 10,
         directReferralRate: directReferralRate * 10,
-        end,
+        end: endBlock.toString(),
         referrer,
       },
     })
@@ -656,10 +688,15 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
 
   return (
     <>
-      <StandardModal title={t(`Join DPO`)} isOpen={joinFormModalOpen} onDismiss={dismissModal}>
+      <StandardModal title={t(`Join DPO`)} isOpen={joinFormModalOpen} onDismiss={dismissModal} desktopScroll={true}>
         <DpoJoinForm dpoInfo={dpoInfo} token={token} chainDecimals={chainDecimals} onSubmit={handleJoinFormCallback} />
       </StandardModal>
-      <StandardModal title={t(`Create DPO`)} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
+      <StandardModal
+        title={t(`Create DPO`)}
+        isOpen={crowdfundFormModalOpen}
+        onDismiss={dismissModal}
+        desktopScroll={true}
+      >
         <DpoCrowdfundForm
           dpoInfo={dpoInfo}
           token={token}
@@ -704,6 +741,8 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           managerSeats={crowdfundData.managerSeats}
           targetSeats={crowdfundData.targetSeats}
           end={crowdfundData.end}
+          baseFee={crowdfundData.baseFee}
+          directReferralRate={crowdfundData.directReferralRate}
           referrer={crowdfundData.referrer}
           deposit={formatToUnit(
             dpoInfo.amount_per_seat.toBn().mul(new BN(crowdfundData.targetSeats ? crowdfundData.targetSeats : 0)),
