@@ -41,3 +41,21 @@ export function bnToHumanNumber(num: BN, precision = 0) {
   const decimalsInPrecision = decimals.length > 0 ? `.${decimals + '0'.repeat(precision - decimals.length)}` : ''
   return num.div(siValue).toString() + decimalsInPrecision + si[i].symbol
 }
+
+/**
+ * Return the value provided after handling the precisions safely
+ * @param num the value to adjust for precision
+ * @param precision number of decimal places
+ * @returns string of the number after precision adjustments
+ */
+export function formatPrecision(num: number | string, precision: number) {
+  let numStr = num.toString()
+  const split = numStr.split('.')
+  const integer = split[0]
+  let decimals = split[1]
+  if (decimals) {
+    decimals = decimals.slice(0, precision)
+  }
+  numStr = decimals ? `${integer}.${decimals}` : integer
+  return numStr
+}
