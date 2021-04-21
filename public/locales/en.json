@@ -363,5 +363,6 @@
   "Please ensure Wtihdrawal Address is correct. Withdrawals to incorrect addresses cannot be returned.": "Please ensure Wtihdrawal Address is correct. Withdrawals to incorrect addresses cannot be returned.",
   "Minimum of": "Minimum of",
   "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee": "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee",
-  "Early Bird Landing Bonus": "Early Bird Landing Bonus"
+  "Early Bird Landing Bonus": "Early Bird Landing Bonus",
+  "Base": "Base"
 }

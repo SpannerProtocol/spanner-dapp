@@ -25,7 +25,7 @@ import {
 } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
-import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
+import { useDpoManager, useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -547,6 +547,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const { t } = useTranslation()
   const { lastBlock } = useBlockManager()
   const { passengerSeatCap } = useConsts()
+  const manager = useDpoManager(dpoIndex, dpoInfo)
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -798,7 +799,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </StatContainer>
               <StatContainer maxWidth="none" background={statsBg}>
                 <StatValue>
-                  {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals, 2)}{' '}
+                  {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
                   <DataTokenName color="#fff">{token}</DataTokenName>
                 </StatValue>
                 <StatText>{t(`Bonus`)}</StatText>
@@ -904,14 +905,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               <RowBetween>
                 <StandardText>{t(`Bonus`)}</StandardText>
                 <StandardText>
-                  {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals, 2)} {token}
+                  {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
                 </StandardText>
               </RowBetween>
               {expectedBlockTime && (
                 <RowBetween>
                   <StandardText>{t(`Yield`)}</StandardText>
                   <StandardText>
-                    {`${formatToUnit(dpoInfo.target_yield_estimate.toString(), chainDecimals, 2)} ${token} (${getApy({
+                    {`${formatToUnit(dpoInfo.target_yield_estimate.toString(), chainDecimals)} ${token} (${getApy({
                       totalYield: dpoInfo.target_yield_estimate.toBn(),
                       totalDeposit: dpoInfo.target_amount.toBn(),
                       chainDecimals: chainDecimals,
@@ -951,10 +952,17 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <SmallText>{t(`Membership Requirements`)}</SmallText>
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
-              <RowBetween>
-                <StandardText>{t(`Management Fee`)}</StandardText>
-                <StandardText>{dpoInfo.fee.toNumber() / 10}%</StandardText>
-              </RowBetween>
+              {manager && (
+                <RowBetween>
+                  <StandardText>{t(`Management Fee`)}</StandardText>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <StandardText>{`${dpoInfo.fee.toNumber() / 10}%`}</StandardText>
+                    <StandardText fontSize={'10px'} style={{ paddingLeft: '0.25rem' }}>{`(${
+                      dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()
+                    } ${t(`Base`)} + ${manager.number_of_seats.toNumber()} ${t(`Seats`)})`}</StandardText>
+                  </div>
+                </RowBetween>
+              )}
               {dpoInfo.fee_slashed && (
                 <RowBetween>
                   <StandardText>{t(`Manager Slashed`)}</StandardText>
@@ -971,13 +979,22 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           </BorderedWrapper>
           <SmallText>{t(`Members`)}</SmallText>
           <ExpandCard title={t(`Members List`)} defaultExpanded={false} borderColor="#e6ebf2">
-            <Section>
-              <HeavyText fontSize="14px">{t(`Manager`)}</HeavyText>
-              <RowBetween>
-                <SmallText>{`${t(`Passenger`)}: `}</SmallText>
-                <SmallText>{shortenAddr(dpoInfo.manager.toString(), 14)}</SmallText>
-              </RowBetween>
-            </Section>
+            {manager && (
+              <Section>
+                <HeavyText fontSize="14px">{t(`Manager`)}</HeavyText>
+                <RowBetween>
+                  <SmallText>{`${t(`Passenger`)}: `}</SmallText>
+                  <CopyHelper toCopy={`${manager.buyer.asPassenger.toString()}`} childrenIsIcon={true}>
+                    <SmallText>
+                      {`${shortenAddr(
+                        manager.buyer.asPassenger.toString(),
+                        8
+                      )} (${manager.number_of_seats.toString()} ${t(`Seats`)})`}
+                    </SmallText>
+                  </CopyHelper>
+                </RowBetween>
+              </Section>
+            )}
             <Section>
               <HeavyText fontSize="14px">{t(`Members`)}</HeavyText>
               {dpoMembers.map((entry, index) => (
@@ -988,7 +1005,12 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                         <RowBetween key={index}>
                           <SmallText>{`${t(`Passenger`)}: `}</SmallText>
                           <CopyHelper toCopy={`${entry[1].buyer.asPassenger.toString()}`} childrenIsIcon={true}>
-                            <SmallText>{shortenAddr(entry[1].buyer.asPassenger.toString(), 14)}</SmallText>
+                            <SmallText>
+                              {`${shortenAddr(
+                                entry[1].buyer.asPassenger.toString(),
+                                8
+                              )} (${entry[1].number_of_seats.toString()} ${t(`Seats`)})`}
+                            </SmallText>
                           </CopyHelper>
                         </RowBetween>
                       )}
@@ -998,7 +1020,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                     <RowBetween key={index}>
                       <SmallText>DPO:</SmallText>
                       <CopyHelper toCopy={`${entry[1].buyer.asDpo.toString()}`} childrenIsIcon={true}>
-                        <SmallText>{(entry[1].buyer.asDpo.toString(), 14)}</SmallText>
+                        <SmallText>
+                          {`${entry[1].buyer.asDpo.toString()} (${entry[1].number_of_seats.toString()} ${t(`Seats`)})`}
+                        </SmallText>
                       </CopyHelper>
                     </RowBetween>
                   )}
