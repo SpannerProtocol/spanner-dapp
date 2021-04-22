@@ -32,7 +32,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { useUserInDpo } from 'hooks/useUser'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { Share2 } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -96,7 +96,7 @@ interface DpoCrowdfundTxConfirmProps extends CrowdfundData {
 
 function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdFormProps) {
   const [seats, setSeats] = useState<string>('')
-  const [managerSeats, setManagerSeats] = useState<string | null>('')
+  const [managerSeats, setManagerSeats] = useState<number>(0)
   const [baseFee, setBaseFee] = useState<number>(0)
   const { passengerSeatCap, dpoSeatCap } = useConsts()
   const [directReferralRate, setDirectReferralRate] = useState<number>(0)
@@ -105,6 +105,13 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
   const { t } = useTranslation()
+  const { lastBlock, expectedBlockTime } = useBlockManager()
+
+  // Subtracting 500 blocks to give buffer if the user idles on the form
+  const maxEnd =
+    expectedBlockTime &&
+    lastBlock &&
+    blockToDays(dpoInfo.expiry_blk.sub(lastBlock).sub(new BN(500)), expectedBlockTime, 2)
 
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -115,10 +122,32 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
     }
   }
 
-  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setEnd(parseInt(value))
+  const handleDirectReferralRate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 100) return
+    setDirectReferralRate(value)
   }
+
+  const handleBaseFee = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 5) return
+    setBaseFee(value)
+  }
+
+  const handleManagerSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 15) return
+    setManagerSeats(value)
+  }
+
+  const handleEnd = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = parseFloat(event.target.value)
+      if (maxEnd && value > parseFloat(maxEnd)) return
+      setEnd(value)
+    },
+    [maxEnd]
+  )
 
   const handleSubmit = () =>
     onSubmit({ seats, managerSeats, end, dpoName, baseFee, directReferralRate, referrer: referralCode })
@@ -239,9 +268,10 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
         <BorderedInput
           required
           id="dpo-manager-seats"
-          type="string"
-          placeholder="0"
-          onChange={(e) => setManagerSeats(e.target.value)}
+          type="number"
+          placeholder="0 - 15"
+          onChange={(e) => handleManagerSeats(e)}
+          value={Number.isNaN(managerSeats) ? '' : managerSeats}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
@@ -258,10 +288,9 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
           required
           id="dpo-base-fee"
           type="number"
-          min="0"
-          max="5"
           placeholder="0 - 5"
-          onChange={(e) => setBaseFee(parseInt(e.target.value))}
+          onChange={(e) => handleBaseFee(e)}
+          value={Number.isNaN(baseFee) ? '' : baseFee}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
@@ -278,32 +307,33 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
           required
           id="dpo-direct-referral-rate"
           type="number"
-          min="0"
-          max="100"
           placeholder="0 - 100"
-          onChange={(e) => setDirectReferralRate(parseInt(e.target.value))}
+          onChange={(e) => handleDirectReferralRate(e)}
+          value={Number.isNaN(directReferralRate) ? '' : directReferralRate}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
       <Section>
-        <RowFixed>
-          <StandardText>
-            {t(`Crowdfund Expiry`)} ({t(`Days`)})
-          </StandardText>
-          <QuestionHelper
-            text={t(
-              `Number of days for your DPO to fundraise for the Target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
-            )}
-            size={12}
-            backgroundColor={'transparent'}
-          ></QuestionHelper>
-        </RowFixed>
+        <RowBetween>
+          <RowFixed>
+            <StandardText>
+              {t(`Crowdfund Period`)} ({t(`Days`)})
+            </StandardText>
+            <QuestionHelper
+              text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
+              size={12}
+              backgroundColor={'transparent'}
+            ></QuestionHelper>
+          </RowFixed>
+          {maxEnd && <StandardText>{`${t(`Max`)} ${maxEnd}`}</StandardText>}
+        </RowBetween>
         <BorderedInput
           required
           id="dpo-end"
-          type="string"
+          type="number"
           placeholder="30"
           onChange={(e) => handleEnd(e)}
+          value={Number.isNaN(end) ? '' : end}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
@@ -1015,6 +1045,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>
                   {formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals, 2)} {token}
                 </StandardText>
+              </RowBetween>
+              <RowBetween>
+                <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+                <StandardText>{dpoInfo.direct_referral_rate.div(new BN(10)).toString()} %</StandardText>
               </RowBetween>
             </Section>
           </BorderedWrapper>
