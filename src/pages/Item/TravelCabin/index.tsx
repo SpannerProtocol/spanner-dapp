@@ -50,7 +50,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   const [managerSeats, setManagerSeats] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string | null>('')
   const [baseFee, setBaseFee] = useState<number>(0)
-  const [directReferralRate, setDirectReferralRate] = useState<number>(0)
+  const [directReferralRate, setDirectReferralRate] = useState<number>(30)
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
@@ -182,7 +182,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           <RowFixed>
             <StandardText>{t(`Direct Referral Rate`)} (%)</StandardText>
             <QuestionHelper
-              text={t(`The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)`)}
+              text={t(`The Referral Bonus (%) given to the Direct Referrer of this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
