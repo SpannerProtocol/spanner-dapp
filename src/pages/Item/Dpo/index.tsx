@@ -325,7 +325,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
               backgroundColor={'transparent'}
             ></QuestionHelper>
           </RowFixed>
-          {maxEnd && <StandardText>{`${t(`Max`)} ${maxEnd}`}</StandardText>}
+          {maxEnd && <StandardText>{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</StandardText>}
         </RowBetween>
         <BorderedInput
           required
@@ -798,18 +798,21 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               <CollapseWrapper>
                 {passengerSeatCap &&
                   (!userMemberInfo ||
-                    (userMemberInfo && userMemberInfo.number_of_seats.toNumber() < passengerSeatCap)) && (
+                    (userMemberInfo && userMemberInfo.number_of_seats.toNumber() < passengerSeatCap)) &&
+                  dpoInfo.state.eq('CREATED') && (
                     <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
                       <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={openJoinFormModal}>
                         {t(`Join`)}
                       </ButtonPrimary>
                     </ButtonWrapper>
                   )}
-                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                  <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                    {t(`Crowdfund`)}
-                  </ButtonSecondary>
-                </ButtonWrapper>
+                {dpoInfo.state.eq('CREATED') && dpoInfo.empty_seats.gt(new BN(0)) && (
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                      {t(`Crowdfund`)}
+                    </ButtonSecondary>
+                  </ButtonWrapper>
+                )}
               </CollapseWrapper>
             ) : (
               <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
