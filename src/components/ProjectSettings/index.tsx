@@ -1,4 +1,5 @@
 import Selector, { SelectorOption } from 'components/Selector'
+import { BorderedWrapper } from 'components/Wrapper'
 import { ProjectData, useProject } from 'hooks/useProject'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +10,7 @@ import getProjectRegistry from '../../utils/getProjectRegistry'
 import { AutoColumn } from '../Column'
 import QuestionHelper from '../QuestionHelper'
 import { RowBetween, RowFixed } from '../Row'
+
 export interface ProjectSettingsProps {
   setSelectedProject: (project: ProjectData) => void
 }
@@ -53,17 +55,19 @@ export default function ProjectSettings({ setSelectedProject }: ProjectSettingsP
           <QuestionHelper text={t(`You can switch projects to view data specific to that project (in most views).`)} />
         </RowFixed>
         <RowBetween>
-          {projectOptions && selectedProject.length > 0 && (
-            <Selector
-              title={t(`Select a Project`)}
-              options={projectOptions}
-              defaultOption={{
-                label: `${selectedProject[0].name} (${selectedProject[0].token.toUpperCase()})`,
-              }}
-              selectedIconMaxWidth={'20px'}
-              selectedIconMaxWidthMobile={'20px'}
-            />
-          )}
+          <BorderedWrapper padding="0" marginTop="0" marginBottom="0">
+            {projectOptions && selectedProject.length > 0 && (
+              <Selector
+                title={t(`Select a Project`)}
+                options={projectOptions}
+                defaultOption={{
+                  label: `${selectedProject[0].name} (${selectedProject[0].token.toUpperCase()})`,
+                }}
+                selectedIconMaxWidth={'20px'}
+                selectedIconMaxWidthMobile={'20px'}
+              />
+            )}
+          </BorderedWrapper>
         </RowBetween>
       </AutoColumn>
     </AutoColumn>

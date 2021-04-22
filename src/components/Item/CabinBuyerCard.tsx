@@ -66,7 +66,7 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
                   <InlineSection>
                     <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
                     <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                      {blockToDays(expectedBlockTime, cabinInfo.maturity)} {t(`days`)}
+                      {blockToDays(cabinInfo.maturity, expectedBlockTime)} {t(`days`)}
                     </StandardText>
                   </InlineSection>
                 )}

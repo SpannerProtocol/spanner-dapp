@@ -1,3 +1,4 @@
+import LanguageSettings from 'components/LanguageSettings'
 import ProjectSettings from 'components/ProjectSettings'
 import { ProjectData } from 'hooks/useProject'
 import React, { useContext, useRef } from 'react'
@@ -81,7 +82,7 @@ const MenuFlyout = styled.span`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     min-width: 18.125rem;
-    top: -17rem;
+    top: -20rem;
   `};
 `
 
@@ -110,6 +111,10 @@ export default function SettingsTab() {
         <MenuFlyout>
           <AutoColumn gap="md" style={{ padding: '1rem' }}>
             <CloseIcon onClick={toggle} style={{ position: 'absolute', right: '10px', height: '18px' }} />
+            <Text fontWeight={400} fontSize={14}>
+              {t(`Language Settings`)}
+            </Text>
+            <LanguageSettings />
             <Text fontWeight={600} fontSize={14}>
               {t(`Project Settings`)}
             </Text>

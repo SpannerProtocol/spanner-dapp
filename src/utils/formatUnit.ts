@@ -1,13 +1,13 @@
 import { formatBalance } from '@polkadot/util'
 import BN from 'bn.js'
-import { bnToHumanNumber, toHumanNumber } from './formatLargeNumbers'
+import { bnToHumanNumber, formatPrecision, toHumanNumber } from './formatNumbers'
 
 /**
  * Typeguard for BN
  * @param num number, BN or string
  * @returns boolean
  */
-function isBN(num: number | BN | string): num is BN {
+export function isBN(num: number | BN | string): num is BN {
   return BN.isBN(num)
 }
 
@@ -30,15 +30,8 @@ export function formatToUnit(num: number | BN | string, cd: number, precision = 
       return toHumanNumber(num, precision)
     }
   }
-  let numStr = formatBalance(num.toString(), { withSi: false, withUnit: false, forceUnit: '-', decimals: cd })
-  const split = numStr.split('.')
-  const integer = split[0]
-  let decimals = split[1]
-  if (decimals) {
-    decimals = decimals.slice(0, precision)
-  }
-  numStr = decimals ? `${integer}.${decimals}` : integer
-  return numStr
+  const numStr = formatBalance(num.toString(), { withSi: false, withUnit: false, forceUnit: '-', decimals: cd })
+  return formatPrecision(numStr, precision)
 }
 
 /**
