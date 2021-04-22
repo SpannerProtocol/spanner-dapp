@@ -41,16 +41,13 @@ export function useSubDpo(dpoIndex: number | string | DpoIndex): DpoInfo | undef
 
   useEffect(() => {
     if (!connected || !dpoIndex) return
-    let unsub: Unsub
     ;(async () => {
-      unsub = await api.query.bulletTrain.dpos(dpoIndex, (result) => {
+      await api.query.bulletTrain.dpos(dpoIndex, (result) => {
         if (result.isSome) {
           setDpoInfo(result.unwrapOrDefault())
         }
       })
     })().catch(console.error)
-
-    return () => unsub()
   }, [api, connected, dpoIndex])
 
   return dpoInfo
