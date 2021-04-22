@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { DpoIndex, DpoMemberInfo } from 'spanner-interfaces'
+import { DpoIndex, DpoInfo, DpoMemberInfo } from 'spanner-interfaces'
 import { useApi } from './useApi'
 
 export function useQueryDpoMembers(dpoIndex: DpoIndex | number | string): Array<[DpoIndex, DpoMemberInfo]> {
@@ -24,4 +24,26 @@ export function useQueryDpoMembers(dpoIndex: DpoIndex | number | string): Array<
   }, [api, connected, dpoIndex])
 
   return dpoMembers
+}
+
+export function useDpoManager(dpoIndex: DpoIndex | number | string, dpoInfo?: DpoInfo) {
+  const { api, connected } = useApi()
+  const [manager, setManager] = useState<DpoMemberInfo>()
+
+  useEffect(() => {
+    if (!connected || !dpoInfo) return
+    api.query.bulletTrain.dpoMembers.entries(dpoIndex).then((entries) => {
+      entries.forEach((entry) => {
+        if (entry[1].isNone) return
+        const member = entry[1].unwrapOrDefault()
+        if (member.buyer.isPassenger) {
+          if (dpoInfo.manager.eq(member.buyer.asPassenger.toString())) {
+            setManager(member)
+          }
+        }
+      })
+    })
+  }, [api, connected, dpoIndex, dpoInfo])
+
+  return manager
 }

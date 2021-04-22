@@ -75,13 +75,19 @@ export const ModalWrapper = styled.div`
   width: 100%;
 `
 
-export const BorderedWrapper = styled.div<{ borderColor?: string; background?: string; padding?: string }>`
+export const BorderedWrapper = styled.div<{
+  borderColor?: string
+  background?: string
+  padding?: string
+  marginTop?: string
+  marginBottom?: string
+}>`
   display: block;
   align-items: center;
   font-size: 0.9rem;
   width: 100%;
-  margin-top: 0.7rem;
-  margin-bottom: 0.7rem;
+  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '0.7rem')};
+  margin-bottom:${({ marginBottom }) => (marginBottom ? marginBottom : '0.7rem')};
   color: ${({ color, theme }) => (color ? color : theme.text1)}
   background: ${({ background }) => (background ? background : 'transparent')}
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#e6ebf2')} !important;

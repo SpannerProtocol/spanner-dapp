@@ -230,7 +230,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
                   method: 'dpoBuyDpoSeats',
                   params: {
                     buyerDpoIdx: dpoIndex,
-                    targetDpoIdx: newTargetIndex,
+                    targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
                     numberOfSeats: dpoInfo.target.asDpo[1].toString(),
                   },
                 }}

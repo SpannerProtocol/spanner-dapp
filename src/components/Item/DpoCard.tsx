@@ -177,7 +177,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {dpoInfo.fee.toNumber() / 10}%
+                    {dpoInfo.fee.toNumber() / 10} %
                   </StandardText>
                 </InlineSection>
               </DpoData1>
@@ -202,6 +202,12 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
+                  </StandardText>
+                </InlineSection>
+                <InlineSection>
+                  <HeavyText fontSize="12px">{t(`Direct Referral`)}:</HeavyText>
+                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    {dpoInfo.direct_referral_rate.div(new BN(10)).toString()} %
                   </StandardText>
                 </InlineSection>
               </DpoData2>
