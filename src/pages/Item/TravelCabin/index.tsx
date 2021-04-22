@@ -47,11 +47,11 @@ interface TravelCabinJoinTxConfirmProps {
 }
 
 function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
-  const [managerSeats, setManagerSeats] = useState<string | null>('')
+  const [managerSeats, setManagerSeats] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string | null>('')
   const [baseFee, setBaseFee] = useState<number>(0)
-  const [directReferralRate, setDirectReferralRate] = useState<number>(0)
-  const [end, setEnd] = useState<number>(0)
+  const [directReferralRate, setDirectReferralRate] = useState<number>(70)
+  const [end, setEnd] = useState<number>(30)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
   const { t } = useTranslation()
@@ -63,6 +63,24 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
     } else {
       setReferralCode(value)
     }
+  }
+
+  const handleDirectReferralRate = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 100) return
+    setDirectReferralRate(value)
+  }
+
+  const handleBaseFee = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 5) return
+    setBaseFee(value)
+  }
+
+  const handleManagerSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(event.target.value)
+    if (value > 15) return
+    setManagerSeats(value)
   }
 
   const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,9 +152,10 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           <BorderedInput
             required
             id="dpo-manager-seats"
-            type="string"
-            placeholder="0"
-            onChange={(e) => setManagerSeats(e.target.value)}
+            type="number"
+            placeholder="0 - 15"
+            onChange={(e) => handleManagerSeats(e)}
+            value={Number.isNaN(managerSeats) ? '' : managerSeats}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
@@ -154,7 +173,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             id="dpo-base-fee"
             type="number"
             placeholder="0 - 5"
-            onChange={(e) => setBaseFee(parseInt(e.target.value))}
+            onChange={(e) => handleBaseFee(e)}
+            value={Number.isNaN(baseFee) ? '' : baseFee}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
@@ -162,7 +182,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           <RowFixed>
             <StandardText>{t(`Direct Referral Rate`)} (%)</StandardText>
             <QuestionHelper
-              text={t(`The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)`)}
+              text={t(`The Referral Bonus (%) given to the Direct Referrer of this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
@@ -174,19 +194,18 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             min="0"
             max="100"
             placeholder="0 - 100"
-            onChange={(e) => setDirectReferralRate(parseInt(e.target.value))}
+            onChange={(e) => handleDirectReferralRate(e)}
+            value={Number.isNaN(directReferralRate) ? '' : directReferralRate}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
         <Section>
           <RowFixed>
             <StandardText>
-              {t(`Crowdfund Expiry`)} ({t(`Days`)})
+              {t(`Crowdfund Period`)} ({t(`Days`)})
             </StandardText>
             <QuestionHelper
-              text={t(
-                `Number of days for your DPO to fundraise for the Target. Passengers might not want to join your DPO if it does not have a realistic deadline for crowdfunding.`
-              )}
+              text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
               size={12}
               backgroundColor={'transparent'}
             ></QuestionHelper>
@@ -401,7 +420,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         target: { TravelCabin: travelCabinIndex },
         managerSeats,
         baseFee: baseFee * 10,
-        directReferralRate: baseFee * 10,
+        directReferralRate: directReferralRate * 10,
         end: endBlock.toString(),
         referrer,
       },
