@@ -99,7 +99,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
   const [managerSeats, setManagerSeats] = useState<number>(0)
   const [baseFee, setBaseFee] = useState<number>(0)
   const { passengerSeatCap, dpoSeatCap } = useConsts()
-  const [directReferralRate, setDirectReferralRate] = useState<number>(0)
+  const [directReferralRate, setDirectReferralRate] = useState<number>(70)
   const [dpoName, setDpoName] = useState<string | null>('')
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
@@ -298,7 +298,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
         <RowFixed>
           <StandardText>{t(`Direct Referral Rate`)} (%)</StandardText>
           <QuestionHelper
-            text={t(`The referral bonus rate given to the Direct Referrer.`)}
+            text={t(`The Referral Bonus (%) given to the Direct Referrer of this DPO.`)}
             size={12}
             backgroundColor={'#fff'}
           ></QuestionHelper>
