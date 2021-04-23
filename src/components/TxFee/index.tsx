@@ -14,7 +14,7 @@ export default function TxFee({ fee }: TxFeeProps) {
   return (
     <>
       {fee && (
-        <SpacedSection>
+        <SpacedSection style={{ margin: '0' }}>
           <RowBetween>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <ItalicText>{t(`Transaction Fee`)}</ItalicText>

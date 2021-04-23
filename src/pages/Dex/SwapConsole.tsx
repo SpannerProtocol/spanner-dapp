@@ -427,7 +427,7 @@ export default function SwapConsole(): JSX.Element {
             <LightHeader>{t(`Current Price`)}</LightHeader>
             {!poolQueryError && price ? (
               <ConsoleStat>
-                {price.toFixed(6)} {tokenB} / {tokenA}
+                1 {tokenA} = {price.toFixed(4)} {tokenB}
               </ConsoleStat>
             ) : (
               <ConsoleStat> ------ </ConsoleStat>
@@ -437,7 +437,7 @@ export default function SwapConsole(): JSX.Element {
           <InputHeader>
             <LightHeader>{t(`Average Swap Price`)}</LightHeader>
             <ConsoleStat>
-              {!amountA ? 0 : (amountB / amountA).toFixed(3)} {tokenB} / {tokenA}
+              {!amountA ? 0 : `1 ${tokenA} = ${(amountB / amountA).toFixed(4)}`} {tokenB}
             </ConsoleStat>
           </InputHeader>
         </Section>
