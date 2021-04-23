@@ -94,6 +94,7 @@ interface DpoCrowdfundTxConfirmProps extends CrowdfundData {
   deposit: string
   token: string
   estimatedFee?: string
+  dpoInfo: DpoInfo
 }
 
 function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdFormProps) {
@@ -217,12 +218,12 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
               ></QuestionHelper>
             </RowFixed>
             <StandardText>
-              {formatToUnit(
+              {`${formatToUnit(
                 new BN(managerSeats).mul(new BN(seats).mul(dpoInfo.amount_per_seat).div(new BN(100))),
                 chainDecimals,
                 2
-              )}{' '}
-              {token}
+              )} 
+              ${token}`}
             </StandardText>
           </RowBetween>
         </BorderedWrapper>
@@ -331,7 +332,7 @@ function DpoCrowdfundForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoCrowdF
         <RowBetween>
           <RowFixed>
             <StandardText>
-              {t(`Crowdfund Period`)} ({t(`Days`)})
+              {t(`Crowdfunding Period`)} ({t(`Days`)})
             </StandardText>
             <QuestionHelper
               text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
@@ -390,9 +391,11 @@ function DpoCrowdfundTxConfirm({
   directReferralRate,
   end,
   estimatedFee,
+  dpoInfo,
 }: DpoCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
+  const { chainDecimals } = useSubstrate()
 
   const endInDays =
     end && expectedBlockTime && lastBlock
@@ -410,14 +413,14 @@ function DpoCrowdfundTxConfirm({
           <StandardText>{dpoName}</StandardText>
         </RowBetween>
         <RowBetween>
+          <StandardText>{t(`Target DPO Seats`)}</StandardText>
+          <StandardText>{targetSeats}</StandardText>
+        </RowBetween>
+        <RowBetween>
           <StandardText>{t(`Crowdfunding Amount`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
-        </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Target DPO Seats`)}</StandardText>
-          <StandardText>{targetSeats}</StandardText>
         </RowBetween>
         {managerSeats && baseFee && (
           <RowBetween>
@@ -443,8 +446,21 @@ function DpoCrowdfundTxConfirm({
         )}
         {end && endInDays && (
           <RowBetween>
-            <StandardText>{t(`Crowdfund Period`)}</StandardText>
+            <StandardText>{t(`Crowdfunding Period`)}</StandardText>
             <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+          </RowBetween>
+        )}
+        {managerSeats && targetSeats && (
+          <RowBetween>
+            <HeavyText fontSize="14px">{t(`Your deposit`)}</HeavyText>
+            <HeavyText fontSize="14px">
+              {`${formatToUnit(
+                new BN(managerSeats).mul(new BN(targetSeats).mul(dpoInfo.amount_per_seat).div(new BN(100))),
+                chainDecimals,
+                2
+              )} 
+              ${token}`}
+            </HeavyText>
           </RowBetween>
         )}
       </BorderedWrapper>
@@ -813,6 +829,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           )}
           token={token}
           estimatedFee={txInfo.estimatedFee}
+          dpoInfo={dpoInfo}
         />
       </TxModal>
       <FlatCard
