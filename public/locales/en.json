@@ -365,5 +365,15 @@
   "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee": "Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee",
   "Early Bird Landing Bonus": "Early Bird Landing Bonus",
   "Base": "Base",
-  "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)": "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)"
+  "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)": "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)",
+  "The number of seats to buy from your Target DPO.": "The number of seats to buy from your Target DPO.",
+  "The amount you have to deposit to the DPO. Calculated by DPO Amount / 100 * Manager Seats": "The amount you have to deposit to the DPO. Calculated by DPO Amount / 100 * Manager Seats",
+  "# of Seats to buy as Manager from your new DPO. This will be a fee from your Member's yields": "# of Seats to buy as Manager from your new DPO. This will be a fee from your Member's yields",
+  "Available Balance": "Available Balance",
+  "Total Seat Price": "Total Seat Price",
+  "The total cost of Seats to buy from this DPO.": "The total cost of Seats to buy from this DPO.",
+  "Crowdfunding Ends": "Crowdfunding Ends",
+  "Highlights": "Highlights",
+  "Yes": "Yes",
+  "No": "No"
 }
