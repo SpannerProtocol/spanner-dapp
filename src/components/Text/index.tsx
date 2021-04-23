@@ -8,12 +8,20 @@ export const ModalTitle = styled.span`
   margin: 0;
 `
 
-export const HeavyText = styled.div<{ fontSize?: string; fontWeight?: string; color?: string }>`
+export const HeavyText = styled.div<{
+  fontSize?: string
+  fontWeight?: string
+  color?: string
+  mobileFontSize?: string
+}>`
   width: fit-content;
   color: ${({ color, theme }) => (color ? color : theme.text2)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   margin: 0;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '12px'}
+`};
 `
 
 export const ModalText = styled.div`
@@ -96,10 +104,14 @@ export const StandardText = styled.div<{
 }>`
   width: ${({ width }) => (width ? width : 'fit-content')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '500')};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
   padding-left: ${({ paddingLeft }) => (paddingLeft ? paddingLeft : '0')}
   overflow-wrap: break-word;
+
+  ${({ fontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${fontSize ? fontSize : '11px'};
+ `};
 `
 
 export const ItalicText = styled(StandardText)`

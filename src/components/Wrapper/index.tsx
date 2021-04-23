@@ -19,6 +19,13 @@ export const SpacedSection = styled(AutoColumn)`
   margin-top: 1rem;
   margin-bottom: 1rem;
 `
+export const PaddedSection = styled(AutoColumn)`
+  display: block;
+  padding: 2rem;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    padding: 1rem;
+`};
+`
 
 export const Wrapper = styled.div`
   position: relative;

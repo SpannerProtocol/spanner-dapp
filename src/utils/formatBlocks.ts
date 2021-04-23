@@ -36,10 +36,7 @@ export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: M
  */
 export function daysToBlocks(days: number, blockTime: Moment): BN {
   const daysInMs = new BN(days * 24 * 60 * 60 * 1000)
-  const integer = daysInMs.div(blockTime)
-  const remainder = daysInMs.mod(blockTime)
-  console.log(integer.toString(), remainder.toString())
-  return integer
+  return daysInMs.div(blockTime)
 }
 
 /**
