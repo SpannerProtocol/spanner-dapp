@@ -114,6 +114,19 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           </RowBetween>
           <RowBetween>
             <RowFixed>
+              <StandardText>{t(`Crowdfund Amount`)}</StandardText>
+              <QuestionHelper
+                text={t(`The amount to crowdfund for the TravelCabin.`)}
+                size={12}
+                backgroundColor={'#fff'}
+              ></QuestionHelper>
+            </RowFixed>
+            <StandardText>
+              {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals, 2)} {token}
+            </StandardText>
+          </RowBetween>
+          <RowBetween>
+            <RowFixed>
               <StandardText>{t(`Seat Price`)}</StandardText>
               <QuestionHelper
                 text={t(`The cost of Ticket Fare is split equally by DPO seats.`)}
@@ -135,12 +148,12 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               ></QuestionHelper>
             </RowFixed>
             <StandardText>
-              {formatToUnit(
-                new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))),
+              {`${formatToUnit(
+                new BN(managerSeats).mul(new BN(travelCabinInfo.deposit_amount).div(new BN(100))),
                 chainDecimals,
                 2
-              )}{' '}
-              {token}
+              )} 
+              ${token}`}
             </StandardText>
           </RowBetween>
         </BorderedWrapper>
@@ -226,7 +239,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         <Section>
           <RowFixed>
             <StandardText>
-              {t(`Crowdfund Period`)} ({t(`Days`)})
+              {t(`Crowdfunding Period`)} ({t(`Days`)})
             </StandardText>
             <QuestionHelper
               text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
@@ -296,6 +309,7 @@ function TravelCabinCrowdfundTxConfirm({
 }: TravelCabinCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
+  const { chainDecimals } = useSubstrate()
 
   const endInDays =
     end && expectedBlockTime && lastBlock
@@ -312,12 +326,14 @@ function TravelCabinCrowdfundTxConfirm({
           <StandardText>{t(`DPO Name`)}</StandardText>
           <StandardText>{dpoName}</StandardText>
         </RowBetween>
-        <RowBetween>
-          <StandardText>{t(`Ticket Fare`)}</StandardText>
-          <StandardText>
-            {deposit} {token}
-          </StandardText>
-        </RowBetween>
+        {deposit && (
+          <RowBetween>
+            <StandardText>{t(`Crowdfunding Amount`)}</StandardText>
+            <StandardText>
+              {formatToUnit(deposit, chainDecimals, 2)} {token}
+            </StandardText>
+          </RowBetween>
+        )}
         {managerSeats && baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
@@ -334,8 +350,17 @@ function TravelCabinCrowdfundTxConfirm({
         </RowBetween>
         {end && endInDays && (
           <RowBetween>
-            <StandardText>{t(`Crowdfund Period`)}</StandardText>
+            <StandardText>{t(`Crowdfunding Period`)}</StandardText>
             <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+          </RowBetween>
+        )}
+        {managerSeats && deposit && (
+          <RowBetween>
+            <HeavyText fontSize="14px">{t(`Your Deposit`)}</HeavyText>
+            <HeavyText fontSize="14px">
+              {`${formatToUnit(new BN(managerSeats).mul(new BN(deposit).div(new BN(100))), chainDecimals, 2)} 
+              ${token}`}
+            </HeavyText>
           </RowBetween>
         )}
       </BorderedWrapper>
@@ -520,7 +545,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         txPending={txPendingMsg}
       >
         <TravelCabinCrowdfundTxConfirm
-          deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
+          deposit={travelCabinInfo.deposit_amount.toString()}
           dpoName={crowdfundData.dpoName}
           managerSeats={crowdfundData.managerSeats}
           baseFee={crowdfundData.baseFee}
