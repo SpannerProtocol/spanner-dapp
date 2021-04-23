@@ -27,6 +27,8 @@ import getApy from '../../../utils/getApy'
 import { getCabinClassImage } from '../../../utils/getCabinClass'
 import { shortenAddr } from '../../../utils/truncateString'
 import BN from 'bn.js'
+import useSubscribeBalance from 'hooks/useQueryBalance'
+import Balance from 'components/Balance'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -43,7 +45,6 @@ interface TravelCabinJoinTxConfirmProps {
   deposit: string
   token: string
   estimatedFee?: string
-  errorMsg?: string
 }
 
 function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
@@ -55,6 +56,7 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
   const { t } = useTranslation()
+  const balance = useSubscribeBalance(token.toUpperCase())
 
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -102,15 +104,19 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
       <Section>
         <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
       </Section>
-      <SpacedSection>
-        <Section>
+      <Section>
+        <BorderedWrapper>
+          <RowBetween>
+            <StandardText>{t(`Balance`)}</StandardText>
+            <StandardText>
+              {formatToUnit(balance, chainDecimals, 2)} {token}
+            </StandardText>
+          </RowBetween>
           <RowBetween>
             <RowFixed>
               <StandardText>{t(`Seat Price`)}</StandardText>
               <QuestionHelper
-                text={t(
-                  `The cost of Ticket Fare is split equally by DPO seats. Your total price is equal to the number of seats you want to buy.`
-                )}
+                text={t(`The cost of Ticket Fare is split equally by DPO seats.`)}
                 size={12}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
@@ -119,7 +125,27 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
               {formatToUnit(travelCabinInfo.deposit_amount.toBn().div(BN_HUNDRED), chainDecimals, 2)} {token}
             </StandardText>
           </RowBetween>
-        </Section>
+          <RowBetween>
+            <RowFixed>
+              <StandardText>{t(`Your Deposit`)}</StandardText>
+              <QuestionHelper
+                text={t(`The amount you have to deposit to the DPO. Calculated by Target Amount / 100 * Manager Seats`)}
+                size={12}
+                backgroundColor={'#fff'}
+              ></QuestionHelper>
+            </RowFixed>
+            <StandardText>
+              {formatToUnit(
+                new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))),
+                chainDecimals,
+                2
+              )}{' '}
+              {token}
+            </StandardText>
+          </RowBetween>
+        </BorderedWrapper>
+      </Section>
+      <SpacedSection>
         <Section>
           <RowFixed>
             <StandardText>{t(`Name your DPO`)}</StandardText>
@@ -140,10 +166,10 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
         </Section>
         <Section>
           <RowFixed>
-            <StandardText>{t(`Manager Seats in DPO`)}</StandardText>
+            <StandardText>{`${t(`Manager Seats in DPO`)}: ${dpoName}`}</StandardText>
             <QuestionHelper
               text={t(
-                `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' bonuses.`
+                `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' yields.`
               )}
               size={12}
               backgroundColor={'#fff'}
@@ -191,8 +217,6 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
             required
             id="dpo-direct-referral-rate"
             type="number"
-            min="0"
-            max="100"
             placeholder="0 - 100"
             onChange={(e) => handleDirectReferralRate(e)}
             value={Number.isNaN(directReferralRate) ? '' : directReferralRate}
@@ -213,9 +237,10 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
           <BorderedInput
             required
             id="dpo-end"
-            type="string"
+            type="number"
             placeholder="30"
             onChange={(e) => handleEnd(e)}
+            value={Number.isNaN(end) ? '' : end}
             style={{ alignItems: 'flex-end', width: '100%' }}
           />
         </Section>
@@ -251,12 +276,11 @@ interface TravelCabinCrowdfundTxConfirmProps {
   deposit?: string
   dpoName?: string
   managerSeats?: string
-  baseFee?: number
-  directReferralRate?: number
+  baseFee?: string
+  directReferralRate?: string
   end?: string
   referrer?: string | null
   token?: string
-  errorMsg?: string
   estimatedFee?: string
 }
 
@@ -268,7 +292,6 @@ function TravelCabinCrowdfundTxConfirm({
   directReferralRate,
   end,
   token,
-  errorMsg,
   estimatedFee,
 }: TravelCabinCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
@@ -284,8 +307,7 @@ function TravelCabinCrowdfundTxConfirm({
       <Section>
         <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
       </Section>
-      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
-      <Section>
+      <BorderedWrapper>
         <RowBetween>
           <StandardText>{t(`DPO Name`)}</StandardText>
           <StandardText>{dpoName}</StandardText>
@@ -299,33 +321,37 @@ function TravelCabinCrowdfundTxConfirm({
         {managerSeats && baseFee && (
           <RowBetween>
             <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>{Math.round(parseFloat(managerSeats) + baseFee).toString()} %</StandardText>
+            <StandardText>
+              {`${managerSeats} (${t(`Seats`)}) + ${baseFee} (${t(`Base`)}) = ${Math.round(
+                parseFloat(managerSeats) + parseFloat(baseFee)
+              ).toString()}%`}
+            </StandardText>
           </RowBetween>
         )}
         <RowBetween>
           <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-          <StandardText>{directReferralRate} %</StandardText>
+          <StandardText>{directReferralRate}%</StandardText>
         </RowBetween>
         {end && endInDays && (
           <RowBetween>
-            <StandardText>{t(`Expiry`)}</StandardText>
+            <StandardText>{t(`Crowdfund Period`)}</StandardText>
             <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
           </RowBetween>
         )}
-      </Section>
+      </BorderedWrapper>
+      {token && <Balance token={token} />}
       <TxFee fee={estimatedFee} />
     </>
   )
 }
 
-function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: TravelCabinJoinTxConfirmProps) {
+function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee }: TravelCabinJoinTxConfirmProps) {
   const { t } = useTranslation()
   return (
     <>
       <Section>
         <StandardText>{t(`Buy this TravelCabin to start earning Rewards`)}</StandardText>
       </Section>
-      {errorMsg ? <Section>{errorMsg}</Section> : <Section>{t(`Confirm the details below.`)}</Section>}
       <SpacedSection>
         <RowBetween>
           <StandardText>{t(`Ticket Fare (deposit)`)}</StandardText>
@@ -334,6 +360,7 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee, errorMsg }: Tr
           </StandardText>
         </RowBetween>
       </SpacedSection>
+      <Balance token={token} />
       <TxFee fee={estimatedFee} />
     </>
   )
@@ -343,8 +370,8 @@ interface CrowdfundData {
   dpoName?: string
   targetSeats?: string
   managerSeats?: string
-  baseFee?: number
-  directReferralRate?: number
+  baseFee?: string
+  directReferralRate?: string
   end?: string
   referrer?: string | null
 }
@@ -408,7 +435,14 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     }
     const daysBlocks = daysToBlocks(end, expectedBlockTime)
     const endBlock = lastBlock.add(daysBlocks)
-    setCrowdfundData({ dpoName, managerSeats, baseFee, directReferralRate, end: endBlock.toString(), referrer })
+    setCrowdfundData({
+      dpoName,
+      managerSeats,
+      baseFee: baseFee.toString(),
+      directReferralRate: directReferralRate.toString(),
+      end: endBlock.toString(),
+      referrer,
+    })
     if (!travelCabinIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }

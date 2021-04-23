@@ -367,7 +367,7 @@
   "Base": "Base",
   "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)": "The referral bonus rate given to the Direct Referrer (the user that referred you to this DPO)",
   "The number of seats to buy from your Target DPO.": "The number of seats to buy from your Target DPO.",
-  "The amount you have to deposit to the DPO. Calculated by DPO Amount / 100 * Manager Seats": "The amount you have to deposit to the DPO. Calculated by DPO Amount / 100 * Manager Seats",
+  "The amount you have to deposit to the DPO. Calculated by Target Amount / 100 * Manager Seats": "The amount you have to deposit to the DPO. Calculated by Target Amount / 100 * Manager Seats",
   "# of Seats to buy as Manager from your new DPO. This will be a fee from your Member's yields": "# of Seats to buy as Manager from your new DPO. This will be a fee from your Member's yields",
   "Available Balance": "Available Balance",
   "Total Seat Price": "Total Seat Price",
