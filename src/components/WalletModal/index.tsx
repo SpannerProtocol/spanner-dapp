@@ -235,7 +235,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
   const { setWalletType, setDevelopmentKeyring } = useWalletManager()
 
   const [isCustodial, setIsCustodial] = useState<boolean | undefined>()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   const { t } = useTranslation()
 

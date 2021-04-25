@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import { useApi } from './useApi'
+import { Option } from '@polkadot/types'
 
 /**
  * Get all dpos, optionally filter by project token
@@ -56,27 +57,30 @@ export function useSubDpo(dpoIndex: number | string | DpoIndex): DpoInfo | undef
 // Replace with spanfura
 export function useRpcUserDpos(address: string | null | undefined) {
   const { api, connected } = useApi()
-  const [indexes, setIndexes] = useState<Array<DpoIndex>>([])
-  const [dpos, setDpos] = useState<Array<[DpoIndex, DpoInfo]>>([])
+  const [indexes, setIndexes] = useState<string[]>([])
+  const [dpos, setDpos] = useState<DpoInfo[]>([])
 
   useEffect(() => {
     if (!connected || !address) return
     api?.rpc?.bulletTrain
       ?.getDposOfAccount(address)
       .then((result) => {
-        setIndexes(result)
+        setIndexes(result.map((dpoIndex) => dpoIndex.toString()))
       })
       .catch((err) => console.log(err))
   }, [api, address, connected])
 
   useEffect(() => {
-    if (!indexes) return
-    const dpoPromises = indexes.map<Promise<[DpoIndex, DpoInfo]>>(async (index) => [
-      index,
-      await api.query.bulletTrain.dpos(index).then((result) => result.unwrapOrDefault()),
-    ])
-    Promise.all(dpoPromises).then((result) => setDpos(result))
-  }, [api, indexes])
+    if (!indexes || !connected) return
+    setDpos([])
+    api.query.bulletTrain.dpos.multi(indexes, (results: Option<DpoInfo>[]) => {
+      results.forEach((result) => {
+        if (result.isSome) {
+          setDpos((prev) => [...prev, result.unwrapOrDefault()])
+        }
+      })
+    })
+  }, [api, connected, indexes])
 
   return dpos
 }

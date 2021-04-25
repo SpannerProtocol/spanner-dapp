@@ -832,9 +832,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           dpoInfo={dpoInfo}
         />
       </TxModal>
-      <FlatCard
-        style={{ marginBottom: '0.5rem', width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}
-      >
+      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
           <SectionHeading style={{ margin: '0' }}>{`DPO`}</SectionHeading>
           <RowBetween>
@@ -941,7 +939,11 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <DpoActions dpoIndex={dpoIndex} />
         </ContentWrapper>
       )}
-      {dpoInfo.state.isCreated && <Highlights dpoInfo={dpoInfo} />}
+      {dpoInfo.state.isCreated && (
+        <ContentWrapper>
+          <Highlights dpoInfo={dpoInfo} />
+        </ContentWrapper>
+      )}
       <ContentWrapper>
         <FlatCard>
           <SectionHeading>{t(`Details`)}</SectionHeading>
@@ -1048,7 +1050,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                       totalYield: dpoInfo.target_yield_estimate.toBn(),
                       totalDeposit: dpoInfo.target_amount.toBn(),
                       chainDecimals: chainDecimals,
-                      blocksInPeriod: expectedBlockTime,
+                      blockTime: expectedBlockTime,
                       period: dpoInfo.target_maturity,
                     }).toString()}% APY)`}
                   </StandardText>

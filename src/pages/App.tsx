@@ -2,7 +2,7 @@ import { Compact } from '@polkadot/types'
 import { BlockNumber } from '@polkadot/types/interfaces'
 import BlockBar from 'components/BlockBar'
 import NetworkSelector from 'components/Network'
-import { useBridgeHealthCheck } from 'hooks/useBridge'
+import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
@@ -83,7 +83,7 @@ export default function App() {
   const [subNetworkSelector, setSubNetworkSelector] = useState<boolean>(false)
   useStoreAndVerifyReferrer()
   useCreateTableUser()
-  useBridgeHealthCheck()
+  useConnectionsInit()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {

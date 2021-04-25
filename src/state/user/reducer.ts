@@ -1,5 +1,5 @@
-import { INITIAL_ALLOWED_SLIPPAGE, DEFAULT_DEADLINE_FROM_NOW } from '../../constants'
 import { createReducer } from '@reduxjs/toolkit'
+import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../constants'
 import { updateVersion } from '../global/actions'
 import {
   addSerializedPair,
@@ -8,17 +8,21 @@ import {
   removeSerializedToken,
   SerializedPair,
   SerializedToken,
+  toggleURLWarning,
+  updateE2sTs,
   updateMatchesDarkMode,
   updateUserDarkMode,
+  updateUserDeadline,
   updateUserExpertMode,
   updateUserSlippageTolerance,
-  updateUserDeadline,
-  toggleURLWarning,
 } from './actions'
 
 const currentTimestamp = () => new Date().getTime()
 
 export interface UserState {
+  // the timestamp of the last time the user did e2s
+  e2sTs: number
+
   // the timestamp of the last updateVersion action
   lastUpdateVersionTimestamp?: number
 
@@ -64,6 +68,7 @@ export const initialState: UserState = {
   pairs: {},
   timestamp: currentTimestamp(),
   URLWarningVisible: true,
+  e2sTs: 1601510400000,
 }
 
 export default createReducer(initialState, (builder) =>
@@ -134,5 +139,11 @@ export default createReducer(initialState, (builder) =>
     })
     .addCase(toggleURLWarning, (state) => {
       state.URLWarningVisible = !state.URLWarningVisible
+    })
+    .addCase(updateE2sTs, (state) => {
+      return {
+        ...state,
+        e2sTs: currentTimestamp(),
+      }
     })
 )

@@ -377,5 +377,9 @@
   "Yes": "Yes",
   "No": "No",
   "The amount to crowdfund for the TravelCabin.": "The amount to crowdfund for the TravelCabin.",
-  "Crowdfunding Period": "Crowdfunding Period"
+  "Crowdfunding Period": "Crowdfunding Period",
+  "Bridge is currently unavailable. Please check back later.": "Bridge is currently unavailable. Please check back later.",
+  "Deposit found and is being processed. Please check your Balance in a few minutes.": "Deposit found and is being processed. Please check your Balance in a few minutes.",
+  "All transactions processed. Any questions, contact ask@spanner.network.": "All transactions processed. Any questions, contact ask@spanner.network.",
+  "Something unexpected Occured. Please contact ask@spanner.network.": "Something unexpected Occured. Please contact ask@spanner.network."
 }

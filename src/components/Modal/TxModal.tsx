@@ -75,7 +75,7 @@ export default function TxModal({
 }: TxModalProps) {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
 
   if (txError) {
     return (
@@ -153,9 +153,9 @@ export default function TxModal({
               <StandardText style={{ margin: 'auto' }}>{t(`Transaction submitted to block at`)} </StandardText>
               <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
             </CenteredRow>
-            {chainInfo && chainInfo.url && (
+            {chain && chain.url && (
               <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <StyledExternalLink href={`${chainInfo.url}/query/${txHash}`} style={{ textDecoration: 'none' }}>
+                <StyledExternalLink href={`${chain.url}/query/${txHash}`} style={{ textDecoration: 'none' }}>
                   {t(`View on Block Explorer`)}
                 </StyledExternalLink>
               </CenteredRow>

@@ -3,9 +3,12 @@ import { useAddBridgeServer, useChainState } from 'state/connections/hooks'
 import { AxiosError } from 'axios'
 import { useEffect } from 'react'
 
-export function useBridgeHealthCheck() {
+/**
+ * Perform all health checks and set chain on app init
+ */
+export function useConnectionsInit() {
   const addBridgeServer = useAddBridgeServer()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (!chain) return

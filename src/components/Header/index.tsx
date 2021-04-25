@@ -313,7 +313,7 @@ export default function Header(props: HeaderProps) {
 
   const [icons, setIcons] = useState<boolean>(false)
   const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -340,7 +340,7 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          {chainInfo && chainInfo.chain === 'Spanner' && (
+          {chain && chain.chain === 'Spanner' && (
             <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
               {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
               {t(`Bridge`)}
@@ -363,8 +363,8 @@ export default function Header(props: HeaderProps) {
               {`Debug`}
             </StyledNavLink>
           )}
-          {chainInfo && chainInfo.url && (
-            <StyledExternalLink id={`scan-nav-link`} href={chainInfo.url}>
+          {chain && chain.url && (
+            <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
               {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
               {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
             </StyledExternalLink>

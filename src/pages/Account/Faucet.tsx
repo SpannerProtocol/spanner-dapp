@@ -19,7 +19,7 @@ export default function Faucet(): JSX.Element {
   const { t } = useTranslation()
 
   const { chainDecimals } = useSubstrate()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   const handleFaucet = useCallback(() => {
     // global error
