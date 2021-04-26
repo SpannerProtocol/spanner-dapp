@@ -11,6 +11,7 @@ import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
 import BlockIcon from '../../assets/svg/icon-block-white.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
 import Menu from '../Menu'
@@ -350,11 +351,15 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
             {t(`DEX`)}
           </StyledNavLink>
-          <StyledNavLink id={`launchpad-nav-link`} to={'/launchpad'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
-            {t(`Launchpad`)}
+          <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="projects" />}
+            {t(`Projects`)}
           </StyledNavLink>
-          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain'}>
+          <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt="bullettrain" />}
+            {t(`DPOs`)}
+          </StyledNavLink>
+          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
             {t(`BulletTrain`)}
           </StyledNavLink>
