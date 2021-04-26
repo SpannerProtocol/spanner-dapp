@@ -3,7 +3,6 @@ import { ButtonPrimary, ButtonSecondary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { GridCell, GridRow } from 'components/Grid'
 import { BorderedInput } from 'components/Input'
-import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
@@ -29,6 +28,8 @@ import { shortenAddr } from '../../../utils/truncateString'
 import BN from 'bn.js'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import Balance from 'components/Balance'
+import DpoModalForm from '../Dpo/Form'
+import Divider from 'components/Divider'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
@@ -47,7 +48,12 @@ interface TravelCabinJoinTxConfirmProps {
   estimatedFee?: string
 }
 
-function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSubmit }: TravelCabinCrowdFormProps) {
+export function TravelCabinCrowdfundForm({
+  travelCabinInfo,
+  token,
+  chainDecimals,
+  onSubmit,
+}: TravelCabinCrowdFormProps) {
   const [managerSeats, setManagerSeats] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string | null>('')
   const [baseFee, setBaseFee] = useState<number>(0)
@@ -286,7 +292,8 @@ function TravelCabinCrowdfundForm({ travelCabinInfo, token, chainDecimals, onSub
 }
 
 interface TravelCabinCrowdfundTxConfirmProps {
-  deposit?: string
+  target?: string
+  targetAmount?: string
   dpoName?: string
   managerSeats?: string
   baseFee?: string
@@ -298,7 +305,8 @@ interface TravelCabinCrowdfundTxConfirmProps {
 }
 
 function TravelCabinCrowdfundTxConfirm({
-  deposit,
+  target,
+  targetAmount,
   dpoName,
   managerSeats,
   baseFee,
@@ -319,46 +327,57 @@ function TravelCabinCrowdfundTxConfirm({
   return (
     <>
       <Section>
-        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
+        <StandardText>{t(`Verify DPO details`)}</StandardText>
       </Section>
       <BorderedWrapper>
+        <RowBetween>
+          <StandardText>{t(`Default Target`)}</StandardText>
+          <StandardText>{target}</StandardText>
+        </RowBetween>
         <RowBetween>
           <StandardText>{t(`DPO Name`)}</StandardText>
           <StandardText>{dpoName}</StandardText>
         </RowBetween>
-        {deposit && (
+        {targetAmount && (
           <RowBetween>
             <StandardText>{t(`Crowdfunding Amount`)}</StandardText>
             <StandardText>
-              {formatToUnit(deposit, chainDecimals, 2)} {token}
+              {formatToUnit(targetAmount, chainDecimals, 2)} {token}
             </StandardText>
           </RowBetween>
         )}
-        {managerSeats && baseFee && (
-          <RowBetween>
-            <StandardText>{t(`Manager Fee`)}</StandardText>
-            <StandardText>
-              {`${managerSeats} (${t(`Seats`)}) + ${baseFee} (${t(`Base`)}) = ${Math.round(
-                parseFloat(managerSeats) + parseFloat(baseFee)
-              ).toString()}%`}
-            </StandardText>
-          </RowBetween>
-        )}
-        <RowBetween>
-          <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-          <StandardText>{directReferralRate}%</StandardText>
-        </RowBetween>
         {end && endInDays && (
           <RowBetween>
             <StandardText>{t(`Crowdfunding Period`)}</StandardText>
             <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
           </RowBetween>
         )}
-        {managerSeats && deposit && (
+        {managerSeats && baseFee && (
           <RowBetween>
-            <HeavyText fontSize="14px">{t(`Your Deposit`)}</HeavyText>
+            <StandardText>{t(`Management Fee`)}</StandardText>
+            <StandardText>
+              {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
+                parseFloat(managerSeats) + parseFloat(baseFee)
+              ).toString()}%`}
+            </StandardText>
+          </RowBetween>
+        )}
+        {directReferralRate && (
+          <RowBetween>
+            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
+            <StandardText>
+              {`${parseInt(directReferralRate)} (${t(`Direct`)}) + ${100 - parseInt(directReferralRate)} (${t(
+                `2nd`
+              )}) = 100%`}
+            </StandardText>
+          </RowBetween>
+        )}
+        <Divider />
+        {managerSeats && targetAmount && (
+          <RowBetween>
+            <HeavyText fontSize="14px">{t(`Required Deposit`)}</HeavyText>
             <HeavyText fontSize="14px">
-              {`${formatToUnit(new BN(managerSeats).mul(new BN(deposit).div(new BN(100))), chainDecimals, 2)} 
+              {`${formatToUnit(new BN(managerSeats).mul(new BN(targetAmount).div(new BN(100))), chainDecimals, 2)} 
               ${token}`}
             </HeavyText>
           </RowBetween>
@@ -510,14 +529,21 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
 
   return (
     <>
-      <StandardModal title={t(`Create DPO`)} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
+      <DpoModalForm
+        targetType={'TravelCabin'}
+        isOpen={crowdfundFormModalOpen}
+        onDismiss={dismissModal}
+        travelCabinInfo={travelCabinInfo}
+        onSubmit={handleCrowdfundFormCallback}
+      />
+      {/* <StandardModal title={t(`Create DPO`)} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
         <TravelCabinCrowdfundForm
           travelCabinInfo={travelCabinInfo}
           token={token}
           chainDecimals={chainDecimals}
           onSubmit={handleCrowdfundFormCallback}
         />
-      </StandardModal>
+      </StandardModal> */}
       <TxModal
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}
@@ -545,7 +571,8 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         txPending={txPendingMsg}
       >
         <TravelCabinCrowdfundTxConfirm
-          deposit={travelCabinInfo.deposit_amount.toString()}
+          target={travelCabinInfo.name.toString()}
+          targetAmount={travelCabinInfo.deposit_amount.toString()}
           dpoName={crowdfundData.dpoName}
           managerSeats={crowdfundData.managerSeats}
           baseFee={crowdfundData.baseFee}

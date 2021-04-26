@@ -101,6 +101,7 @@ export const StandardText = styled.div<{
   fontWeight?: string
   paddingLeft?: string
   width?: string
+  mobileFontSize?: string
 }>`
   width: ${({ width }) => (width ? width : 'fit-content')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
@@ -109,8 +110,8 @@ export const StandardText = styled.div<{
   padding-left: ${({ paddingLeft }) => (paddingLeft ? paddingLeft : '0')}
   overflow-wrap: break-word;
 
-  ${({ fontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${fontSize ? fontSize : '11px'};
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '11px'};
  `};
 `
 
