@@ -66,7 +66,7 @@ function TransferRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
 
   const sender = encodeAddress('0x' + event.params_json[0].value, 42)
   const receiver = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -78,7 +78,7 @@ function TransferRow({ event }: EventRowProps) {
           <TxCell>
             <StyledExternalLink
               fontSize="12px"
-              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+              href={chain && chain.url ? `${chain.url}/query/${event.block_num}` : ''}
             >
               {' '}
               {truncateString(event.extrinsic_hash, 26)}
@@ -133,7 +133,7 @@ function Transfers() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (!wallet || !wallet.address || !chain) return
@@ -173,15 +173,12 @@ function Transfers() {
 // Tx Hash | Extrinsic Info
 function TransactionRow({ tx }: TransactionRowProps) {
   const { chainDecimals } = useSubstrate()
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
   return (
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StyledExternalLink
-            fontSize="12px"
-            href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${tx.block_num}` : ''}
-          >
+          <StyledExternalLink fontSize="12px" href={chain && chain.url ? `${chain.url}/query/${tx.block_num}` : ''}>
             {truncateString(tx.extrinsic_hash, 26)}
           </StyledExternalLink>
         </RowBetween>
@@ -202,7 +199,7 @@ function TransferTokenRow({ event }: EventRowProps) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
 
   const token = event.params_json[0].value.Token
   const sender = encodeAddress('0x' + event.params_json[1].value, 42)
@@ -216,7 +213,7 @@ function TransferTokenRow({ event }: EventRowProps) {
           <TxCell>
             <StyledExternalLink
               fontSize="12px"
-              href={chainInfo && chainInfo.url ? `${chainInfo.url}/query/${event.block_num}` : ''}
+              href={chain && chain.url ? `${chain.url}/query/${event.block_num}` : ''}
             >
               {truncateString(event.extrinsic_hash, 26)}
             </StyledExternalLink>
@@ -270,7 +267,7 @@ function TransfersTokens() {
   const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
   const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
   const [page, setPage] = useState(0)
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (!wallet || !wallet.address || !chain) return
@@ -314,7 +311,7 @@ export function LatestTransactions() {
   const [page, setPage] = useState(0)
   const [hadTransactions, setHadTransactions] = useState<boolean>(false)
   const [lastPage, setLastPage] = useState<number>()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (!wallet || !wallet.address || !chain) return

@@ -1,3 +1,4 @@
+import { Option } from '@polkadot/types'
 import { useEffect, useState } from 'react'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
 import { useApi } from './useApi'
@@ -176,25 +177,27 @@ export function useSubTravelCabinInventory(
 
 export function useRpcUserTravelCabins(address: string | null | undefined) {
   const { api, connected } = useApi()
-  const [indexes, setIndexes] = useState<Array<[TravelCabinIndex, TravelCabinInventoryIndex]>>([])
-  const [travelCabins, setTravelCabins] = useState<Array<[TravelCabinIndex, TravelCabinInfo]>>([])
+  const [indexes, setIndexes] = useState<string[]>([])
+  const [travelCabins, setTravelCabins] = useState<TravelCabinInfo[]>([])
 
   useEffect(() => {
     if (!connected || !address) return
     api.rpc.bulletTrain
       .getTravelCabinsOfAccount(address)
-      .then((result) => setIndexes(result))
+      .then((result) => setIndexes(result.map((cabinIndex) => cabinIndex[0].toString())))
       .catch((err) => console.log(err))
   }, [api, address, connected])
 
   useEffect(() => {
-    if (!indexes) return
-    const travelCabinPromises = indexes.map<Promise<[TravelCabinIndex, TravelCabinInfo]>>(async (index) => [
-      index[0],
-      await api.query.bulletTrain.travelCabins(index[0]).then((result) => result.unwrapOrDefault()),
-    ])
-    Promise.all(travelCabinPromises).then((result) => setTravelCabins(result))
-  }, [api, indexes])
+    if (!indexes || !connected) return
+    api.query.bulletTrain.travelCabins.multi(indexes, (results: Option<TravelCabinInfo>[]) => {
+      results.forEach((result) => {
+        if (result.isSome) {
+          setTravelCabins((prev) => [...prev, result.unwrapOrDefault()])
+        }
+      })
+    })
+  }, [api, connected, indexes])
 
   return travelCabins
 }

@@ -8,6 +8,7 @@ import {
   updateUserDeadline,
   updateUserExpertMode,
   updateUserSlippageTolerance,
+  updateE2sTs,
 } from './actions'
 
 export function useIsDarkMode(): boolean {
@@ -100,4 +101,11 @@ export function useURLWarningVisible(): boolean {
 export function useURLWarningToggle(): () => void {
   const dispatch = useDispatch()
   return useCallback(() => dispatch(toggleURLWarning()), [dispatch])
+}
+
+export function useUpdateE2sTs(): [number, () => void] {
+  const dispatch = useDispatch<AppDispatch>()
+  const e2sTs = useSelector<AppState, AppState['user']['e2sTs']>((state) => state.user.e2sTs)
+  const setE2sTs = useCallback(() => dispatch(updateE2sTs()), [dispatch])
+  return [e2sTs, setE2sTs]
 }
