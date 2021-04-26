@@ -116,8 +116,8 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
   }, [lastBlock, dpoInfo])
 
   const bonusPercent =
-  dpoInfo &&
-  Math.floor(cdDivide(dpoInfo.target_bonus_estimate.toBn(), dpoInfo.target_amount.toBn(), chainDecimals) * 100)
+    dpoInfo &&
+    Math.floor(cdDivide(dpoInfo.target_bonus_estimate.toBn(), dpoInfo.target_amount.toBn(), chainDecimals) * 100)
 
   return (
     <>
