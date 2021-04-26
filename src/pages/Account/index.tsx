@@ -159,7 +159,7 @@ export default function Account() {
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}
-        {currentChain === 'Spanner' && activeTab === 'bridge' && <Bridge />}
+        {activeTab === 'bridge' && <Bridge />}
         {currentChain === 'Hammer' && activeTab === 'faucet' && <Faucet />}
       </SectionContainer>
     </PageWrapper>

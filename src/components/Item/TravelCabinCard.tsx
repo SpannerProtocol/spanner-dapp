@@ -157,7 +157,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                       totalYield: travelCabinInfo.yield_total.toBn(),
                       totalDeposit: travelCabinInfo.deposit_amount.toBn(),
                       chainDecimals: chainDecimals,
-                      blocksInPeriod: expectedBlockTime,
+                      blockTime: expectedBlockTime,
                       period: travelCabinInfo.maturity,
                     })}%`}
                   </>

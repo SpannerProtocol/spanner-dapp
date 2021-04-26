@@ -196,7 +196,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
                           chainDecimals: chainDecimals,
-                          blocksInPeriod: expectedBlockTime,
+                          blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
                       </StandardText>
@@ -349,7 +349,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
                           chainDecimals: chainDecimals,
-                          blocksInPeriod: expectedBlockTime,
+                          blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
                       </StandardText>

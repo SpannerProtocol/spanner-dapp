@@ -4,6 +4,7 @@ import React, { useMemo } from 'react'
 import { useApi } from 'hooks/useApi'
 import { BorderedWrapper } from 'components/Wrapper'
 import styled from 'styled-components'
+import { useChainState } from 'state/connections/hooks'
 
 const NetworkWrapper = styled(BorderedWrapper)`
   padding: 0;
@@ -27,6 +28,8 @@ interface NetworkSelectorProps {
 export default function NetworkSelector(props: NetworkSelectorProps) {
   const chainOptions = SPANNER_SUPPORTED_CHAINS
   const { connectToNetwork } = useApi()
+  const { chain } = useChainState()
+
   const selectorOptions = useMemo(() => {
     const options = chainOptions.map((chainOption) => ({
       label: chainOption.chain,
@@ -34,13 +37,27 @@ export default function NetworkSelector(props: NetworkSelectorProps) {
     }))
     return options
   }, [chainOptions, connectToNetwork])
+
+  const defaultChain = useMemo(() => {
+    if (!chain) return { label: '', callback: () => undefined }
+    const chainInfo = chainOptions.find((option) => option.id === chain.chain)
+    if (!chainInfo) {
+      return { label: '', callback: () => undefined }
+    } else {
+      return {
+        label: chainInfo.chain,
+        callback: () => connectToNetwork(chainInfo.chain),
+      }
+    }
+  }, [chain, chainOptions, connectToNetwork])
+
   return (
     <>
       <NetworkWrapper background={props.background}>
         <Selector
           title={'Select Network'}
           options={selectorOptions}
-          defaultOption={selectorOptions[0]}
+          defaultOption={defaultChain}
           collaspedTextPrefix={props.collaspedTextPrefix}
           color={props.color}
         />
