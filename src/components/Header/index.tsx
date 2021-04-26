@@ -18,6 +18,7 @@ import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
+import Transfer from 'components/Transfer'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -415,6 +416,7 @@ export function Controls() {
           <Web3Status />
         </HeaderElement>
         <HeaderElementWrap>
+          <Transfer />
           <Settings />
           <Menu />
         </HeaderElementWrap>

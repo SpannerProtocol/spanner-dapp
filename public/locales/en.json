@@ -402,5 +402,14 @@
   "Crowdfund Amount": "Crowdfund Amount",
   "Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats": "Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats",
   "Verify DPO details": "Verify DPO details",
-  "Required Deposit": "Required Deposit"
+  "Required Deposit": "Required Deposit",
+  "Send tokens to another user": "Send tokens to another user",
+  "Recipient Address": "Recipient Address",
+  "The Recipient's Spanner address": "The Recipient's Spanner address",
+  "Send": "Send",
+  "Confirm Send": "Confirm Send",
+  "Send Funds": "Send Funds",
+  "Invalid Spanner Address": "Invalid Spanner Address",
+  "Confirm details below. Transfers cannot be returned.": "Confirm details below. Transfers cannot be returned.",
+  "Amount": "Amount"
 }

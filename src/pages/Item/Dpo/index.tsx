@@ -86,6 +86,7 @@ interface DpoJoinTxConfirmProps extends JoinData {
   token: string
   estimatedFee?: string
 }
+
 interface CrowdfundData {
   dpoName?: string
   targetSeats?: string
@@ -95,6 +96,7 @@ interface CrowdfundData {
   end?: string
   referrer?: string | null
 }
+
 interface DpoCrowdfundTxConfirmProps extends CrowdfundData {
   target: string
   targetAmount: string
@@ -865,19 +867,6 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         onDismiss={dismissModal}
         onSubmit={handleCrowdfundFormCallback}
       />
-      {/* <StandardModal
-        title={t(`Create DPO`)}
-        isOpen={crowdfundFormModalOpen}
-        onDismiss={dismissModal}
-        desktopScroll={true}
-      >
-        <DpoCrowdfundForm
-          dpoInfo={dpoInfo}
-          token={token}
-          chainDecimals={chainDecimals}
-          onSubmit={handleCrowdfundFormCallback}
-        />
-      </StandardModal> */}
       <TxModal
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}
