@@ -99,7 +99,7 @@ function ProjectCatalogue() {
               <div key={index}>
                 <Link
                   key={index}
-                  to={{ pathname: `/launchpad/${project.token.toLowerCase()}` }}
+                  to={{ pathname: `/projects/${project.token.toLowerCase()}` }}
                   style={{ textDecoration: 'none' }}
                 >
                   <ProjectCardPlate
