@@ -854,6 +854,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
 
   if (!dpoInfo) return <></>
   const token = dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()
+  const directReferralRate = dpoInfo.direct_referral_rate.toNumber() - 10
 
   return (
     <>
@@ -1176,9 +1177,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               {manager && (
                 <RowBetween>
                   <StandardText>{t(`Management Fee`)}</StandardText>
-                  <StandardText>{`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} ${t(
+                  <StandardText>{`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} (${t(
                     `Base`
-                  )} + ${manager.number_of_seats.toNumber()} ${t(`Seats`)} = ${
+                  )}) + ${manager.number_of_seats.toNumber()} (${t(`Seats`)}) = ${
                     dpoInfo.fee.toNumber() / 10
                   }%`}</StandardText>
                 </RowBetween>
@@ -1197,7 +1198,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </RowBetween>
               <RowBetween>
                 <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-                <StandardText>{dpoInfo.direct_referral_rate.div(new BN(10)).toString()}%</StandardText>
+                <StandardText>{`${directReferralRate} (${t(`Direct`)}) + ${100 - directReferralRate} (${t(
+                  `2nd`
+                )}) = 100%`}</StandardText>
               </RowBetween>
             </Section>
           </BorderedWrapper>

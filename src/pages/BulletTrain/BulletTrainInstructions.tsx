@@ -97,9 +97,6 @@ export default function BulletTrainInstructions() {
         </SpacedSection>
         <SpacedSection>
           <SectionTitle>{t(`BulletTrain Journey`)}</SectionTitle>
-          <StandardText>
-            {t(`The follow diagram shows the different actions that can take place during the BulletTrain Journey.`)}
-          </StandardText>
           <div>{BulletTrainDiagram && <ImageLightBox imageSrc={BulletTrainDiagram} />}</div>
         </SpacedSection>
       </FlatCard>
