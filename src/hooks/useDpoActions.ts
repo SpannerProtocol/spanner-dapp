@@ -52,7 +52,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
   const isMember = useUserIsDpoMember(dpoInfo?.index, wallet?.address)
   const [actionsReq, setActionsReq] = useState<ActionReq>()
   const [dpoActions, setDpoActions] = useState<DpoAction[]>()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   const addActionReq = useCallback((newAction: NewActionReq) => {
     setActionsReq((prev) => {

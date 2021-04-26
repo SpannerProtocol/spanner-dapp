@@ -62,7 +62,7 @@ export default function PriceChart({ token1, token2, from, interval, setUnavaila
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (!chain) return

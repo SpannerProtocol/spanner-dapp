@@ -39,7 +39,7 @@ export default function Web3ReactManager({ children }: { children: JSX.Element }
   const { setWalletType } = useWalletManager()
   const connectionState = useConnectionsState()
   const [custodialError, setCustodialError] = useState<boolean>(false)
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   // try to eagerly connect to an injected provider, if it exists and has granted access already
   const triedEager = useEagerConnect()

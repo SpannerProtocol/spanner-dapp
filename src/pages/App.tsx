@@ -2,7 +2,7 @@ import { Compact } from '@polkadot/types'
 import { BlockNumber } from '@polkadot/types/interfaces'
 import BlockBar from 'components/BlockBar'
 import NetworkSelector from 'components/Network'
-import { useBridgeHealthCheck } from 'hooks/useBridge'
+import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
@@ -23,8 +23,8 @@ import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
 import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
-import Launchpad from './Launchpad'
-import Project from './Launchpad/Project'
+import Launchpad from './Projects'
+import Project from './Projects/Project'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -83,7 +83,7 @@ export default function App() {
   const [subNetworkSelector, setSubNetworkSelector] = useState<boolean>(false)
   useStoreAndVerifyReferrer()
   useCreateTableUser()
-  useBridgeHealthCheck()
+  useConnectionsInit()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -117,8 +117,8 @@ export default function App() {
               <Route exact strict path="/account/:section" component={Account} />
               <Route exact strict path="/bullettrain" component={BulletTrain} />
               <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
-              <Route exact strict path="/launchpad" component={Launchpad} />
-              <Route exact strict path="/launchpad/:token" component={Project} />
+              <Route exact strict path="/projects" component={Launchpad} />
+              <Route exact strict path="/projects/:token" component={Project} />
               <Route exact strict path="/faq" component={Faq} />
               <Route exact strict path="/diagnostics" component={Diagnostics} />
             </Switch>

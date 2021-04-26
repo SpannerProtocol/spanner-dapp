@@ -129,7 +129,7 @@ function ProjectCatalogue() {
   )
 }
 
-export default function Launchpad() {
+export default function Projects() {
   return (
     <>
       <ProjectPage>

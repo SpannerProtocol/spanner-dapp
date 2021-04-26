@@ -43,7 +43,7 @@ export default function useTxHelpers() {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const { toastDispatch } = useToastContext()
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   // Create both the transaction and get the estimated payment info
   const createTx = ({

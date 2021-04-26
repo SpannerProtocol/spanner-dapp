@@ -6,31 +6,30 @@ import { u32 } from '@polkadot/types'
 interface GetApyParams {
   totalYield: BN
   totalDeposit: BN
-  blocksInPeriod: Moment
+  blockTime: Moment
   chainDecimals: number
   period?: u32
-  days?: number
   precision?: number
 }
 
+/**
+ * Our yield calculations are done with 360 days per year.
+ */
 export default function getApy({
   totalYield,
   totalDeposit,
-  blocksInPeriod,
+  blockTime,
   chainDecimals,
   period,
-  days,
   precision,
 }: GetApyParams) {
-  // Should be safe to convert into float after slicing off the chainDecimals
-  const yieldNum = parseFloat(totalYield.toString().slice(0, totalYield.toString.length - chainDecimals))
-  const depositNum = parseFloat(totalDeposit.toString().slice(0, totalDeposit.toString.length - chainDecimals))
+  const cd = new BN(chainDecimals)
+  const yieldNum = parseFloat(totalYield.div(new BN(10).pow(cd)).toString())
+  const depositNum = parseFloat(totalDeposit.div(new BN(10).pow(cd)).toString())
   if (period) {
-    const periodInDays = parseFloat(blockToDays(period, blocksInPeriod, 8))
-    return ((yieldNum / depositNum) * (365 / periodInDays) * 100).toFixed(precision ? precision : 0)
-  } else if (days) {
-    return ((yieldNum / depositNum / days) * 365).toFixed(precision ? precision : 0)
+    const periodInDays = parseFloat(blockToDays(period, blockTime, 8))
+    return ((yieldNum / depositNum) * (360 / periodInDays) * 100).toFixed(precision ? precision : 0)
   } else {
-    return ((yieldNum / depositNum) * 365).toFixed(precision ? precision : 0)
+    return ((yieldNum / depositNum) * 360).toFixed(precision ? precision : 0)
   }
 }
