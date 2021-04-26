@@ -33,13 +33,15 @@ export function useAddChain() {
 
 export function useChainState() {
   const connections = useConnectionsState()
+  const addChain = useAddChain()
   const chain = useMemo(() => {
     if (connections) {
       return {
         chain: connections.chain,
+        chainName: connections.chain === 'Spanner' ? 'Spanner Mainnet' : 'Hammer Testnet',
         url: connections.chain === 'Spanner' ? SPANNER_EXPLORER : HAMMER_EXPLORER,
       }
     }
   }, [connections])
-  return chain
+  return { chain, addChain }
 }

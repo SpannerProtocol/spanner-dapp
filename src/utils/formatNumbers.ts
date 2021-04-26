@@ -59,3 +59,11 @@ export function formatPrecision(num: number | string, precision: number) {
   numStr = decimals ? `${integer}.${decimals}` : integer
   return numStr
 }
+
+export function noNan(num: number) {
+  return Number.isNaN(num) ? 0 : num
+}
+
+export function abs(num: number) {
+  return Math.abs(num)
+}

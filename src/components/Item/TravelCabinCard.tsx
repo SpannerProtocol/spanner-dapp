@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinInfo } from 'spanner-interfaces'
 import styled from 'styled-components'
+import cdDivide from 'utils/cdDivide'
 import { blockToDays } from 'utils/formatBlocks'
 import getApy from 'utils/getApy'
 import { getCabinClassImage } from 'utils/getCabinClass'
@@ -114,6 +115,10 @@ export default function TravelCabinCard(props: TravelCabinCard) {
   const { expectedBlockTime } = useBlockManager()
   const { t } = useTranslation()
 
+  const bonusPercent = Math.floor(
+    cdDivide(travelCabinInfo.bonus_total, travelCabinInfo.deposit_amount, chainDecimals) * 100
+  )
+
   return (
     <CabinWrapper>
       <Link to={`/item/travelcabin/${travelCabinInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
@@ -152,9 +157,9 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                       totalYield: travelCabinInfo.yield_total.toBn(),
                       totalDeposit: travelCabinInfo.deposit_amount.toBn(),
                       chainDecimals: chainDecimals,
-                      blocksInPeriod: expectedBlockTime,
+                      blockTime: expectedBlockTime,
                       period: travelCabinInfo.maturity,
-                    })} %`}
+                    })}%`}
                   </>
                 )}
               </StandardText>
@@ -162,7 +167,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
               <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                {formatToUnit(travelCabinInfo.bonus_total.toBn(), chainDecimals)} {token}
+                {bonusPercent}%
               </StandardText>
             </InlineSection>
           </CabinData2>

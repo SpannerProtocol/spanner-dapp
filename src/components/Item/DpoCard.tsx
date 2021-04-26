@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoIndex } from 'spanner-interfaces'
 import styled from 'styled-components'
+import cdDivide from 'utils/cdDivide'
 import getApy from 'utils/getApy'
 import { ACTION_ICONS, DPO_STATE_COLORS } from '../../constants'
 import { formatToUnit } from '../../utils/formatUnit'
@@ -114,6 +115,10 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
     }
   }, [lastBlock, dpoInfo])
 
+  const bonusPercent =
+  dpoInfo &&
+  Math.floor(cdDivide(dpoInfo.target_bonus_estimate.toBn(), dpoInfo.target_amount.toBn(), chainDecimals) * 100)
+
   return (
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
@@ -191,7 +196,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
                           chainDecimals: chainDecimals,
-                          blocksInPeriod: expectedBlockTime,
+                          blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
                       </StandardText>
@@ -201,13 +206,13 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
+                    {bonusPercent}%
                   </StandardText>
                 </InlineSection>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Direct Referral`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {dpoInfo.direct_referral_rate.div(new BN(10)).toString()} %
+                    {dpoInfo.direct_referral_rate.div(new BN(10)).toString()}%
                   </StandardText>
                 </InlineSection>
               </DpoData2>
@@ -242,6 +247,10 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
       }
     }
   }, [lastBlock, dpoInfo])
+
+  const bonusPercent =
+    dpoInfo &&
+    Math.floor(cdDivide(dpoInfo.target_bonus_estimate.toBn(), dpoInfo.target_amount.toBn(), chainDecimals) * 100)
 
   return (
     <>
@@ -340,7 +349,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
                           chainDecimals: chainDecimals,
-                          blocksInPeriod: expectedBlockTime,
+                          blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
                       </StandardText>
@@ -350,7 +359,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
                   <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
+                    {bonusPercent}%
                   </StandardText>
                 </InlineSection>
               </DpoData2>

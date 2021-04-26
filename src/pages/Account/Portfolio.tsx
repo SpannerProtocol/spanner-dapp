@@ -6,7 +6,7 @@ import { GridWrapper, Wrapper } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useUserItems } from 'hooks/useUser'
 import useWallet from 'hooks/useWallet'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
@@ -19,15 +19,13 @@ export default function Portfolio(): JSX.Element {
   const [inventoryIndexes, setInventoryIndexes] = useState<[TravelCabinIndex, TravelCabinInventoryIndex][]>([])
   const { t } = useTranslation()
 
-  const cabinIndexes = useMemo(() => userItems.userTravelCabins.map((cabin) => cabin[0]), [userItems.userTravelCabins])
-
   useEffect(() => {
-    if (!connected || !wallet || cabinIndexes.length === 0) return
-    cabinIndexes.forEach((cabinIndex) => {
+    if (!connected || !wallet) return
+    userItems.userTravelCabins.forEach((cabinInfo) => {
       if (!wallet.address) return
-      getUserCabinInventoryIndexes(api, cabinIndex, wallet.address).then((indexes) => setInventoryIndexes(indexes))
+      getUserCabinInventoryIndexes(api, cabinInfo.index, wallet.address).then((indexes) => setInventoryIndexes(indexes))
     })
-  }, [api, cabinIndexes, connected, wallet])
+  }, [api, connected, wallet, userItems.userTravelCabins])
 
   return (
     <>
@@ -89,7 +87,7 @@ export default function Portfolio(): JSX.Element {
                     </div>
                     <GridWrapper columns="2">
                       {userItems.userDpos.map((dpo, index) => (
-                        <DpoProfileCard key={index} dpoIndex={dpo[0]} />
+                        <DpoProfileCard key={index} dpoIndex={dpo.index} />
                       ))}
                     </GridWrapper>
                   </>

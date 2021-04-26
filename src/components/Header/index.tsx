@@ -11,12 +11,14 @@ import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
 import BlockIcon from '../../assets/svg/icon-block-white.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
 import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
+import Transfer from 'components/Transfer'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -313,7 +315,7 @@ export default function Header(props: HeaderProps) {
 
   const [icons, setIcons] = useState<boolean>(false)
   const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
-  const chainInfo = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -340,7 +342,7 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          {chainInfo && chainInfo.chain === 'Spanner' && (
+          {chain && chain.chain === 'Spanner' && (
             <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
               {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
               {t(`Bridge`)}
@@ -350,11 +352,15 @@ export default function Header(props: HeaderProps) {
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
             {t(`DEX`)}
           </StyledNavLink>
-          <StyledNavLink id={`launchpad-nav-link`} to={'/launchpad'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="launchpad" />}
-            {t(`Launchpad`)}
+          <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="projects" />}
+            {t(`Projects`)}
           </StyledNavLink>
-          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain'}>
+          <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
+            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt="bullettrain" />}
+            {t(`DPOs`)}
+          </StyledNavLink>
+          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
             {t(`BulletTrain`)}
           </StyledNavLink>
@@ -363,8 +369,8 @@ export default function Header(props: HeaderProps) {
               {`Debug`}
             </StyledNavLink>
           )}
-          {chainInfo && chainInfo.url && (
-            <StyledExternalLink id={`scan-nav-link`} href={chainInfo.url}>
+          {chain && chain.url && (
+            <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
               {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
               {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
             </StyledExternalLink>
@@ -410,6 +416,7 @@ export function Controls() {
           <Web3Status />
         </HeaderElement>
         <HeaderElementWrap>
+          <Transfer />
           <Settings />
           <Menu />
         </HeaderElementWrap>

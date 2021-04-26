@@ -42,27 +42,27 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
   const walletInfo = useWallet()
   const userDpos = useRpcUserDpos(address)
   const [data, setData] = useState<UserDposData>({})
-  const chain = useChainState()
+  const { chain } = useChainState()
 
   useEffect(() => {
-    if (!userDpos || userDpos.length === 0 || !connected || !walletInfo || !walletInfo.address || !chain) return
+    if (userDpos.length === 0 || !connected || !walletInfo || !walletInfo.address || !chain) return
     const dpoData: UserDposData = {}
-    userDpos.forEach(([dpoIndex, dpoInfo]) => {
-      dpoData[dpoIndex.toString()] = {}
-      dpoData[dpoIndex.toString()]['manager'] = dpoInfo.manager
+    userDpos.forEach((dpoInfo) => {
+      dpoData[dpoInfo.index.toString()] = {}
+      dpoData[dpoInfo.index.toString()]['manager'] = dpoInfo.manager
       if (dpoInfo.target.isDpo) {
         getTargetDpo(api, dpoInfo).then((result) => {
           if (result.isSome) {
-            dpoData[dpoIndex.toString()]['target'] = result.unwrapOrDefault()
+            dpoData[dpoInfo.index.toString()]['target'] = result.unwrapOrDefault()
           }
         })
       } else {
         getTargetTravelCabin(chain.chain, api, walletInfo, dpoInfo).then((result) => {
-          dpoData[dpoIndex.toString()]['target'] = result
+          dpoData[dpoInfo.index.toString()]['target'] = result
         })
         getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
           if (result.isSome) {
-            dpoData[dpoIndex.toString()]['travelCabinInventoryCounts'] = result.unwrapOrDefault()
+            dpoData[dpoInfo.index.toString()]['travelCabinInventoryCounts'] = result.unwrapOrDefault()
           }
         })
         getTravelCabinBuyer(api).then((results) => {
@@ -71,8 +71,8 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
               const travelCabinBuyerInfo = result[1].unwrapOrDefault()
               if (travelCabinBuyerInfo.buyer.isDpo) {
                 const buyerIndex = travelCabinBuyerInfo.buyer.asDpo
-                if (buyerIndex.eq(dpoIndex)) {
-                  dpoData[dpoIndex.toString()]['travelCabinInventory'] = [
+                if (buyerIndex.eq(dpoInfo.index)) {
+                  dpoData[dpoInfo.index.toString()]['travelCabinInventory'] = [
                     [result[0][0], result[0][1]],
                     result[1].unwrapOrDefault(),
                   ]
@@ -92,7 +92,7 @@ export function useUserDposData(address: string | null | undefined): UserDposDat
 export function useUserTravelCabins(address: string | null | undefined) {
   return useRpcUserTravelCabins(address)
 }
-// needs to fix
+
 export function useUserItems(address: string | null | undefined) {
   const userDpos = useUserDpos(address)
   const userTravelCabins = useUserTravelCabins(address)
