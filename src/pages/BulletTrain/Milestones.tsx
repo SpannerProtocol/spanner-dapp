@@ -67,7 +67,7 @@ export default function Milestones() {
               )} / ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)} ${project.token}`}
             </StandardText>
             <StandardText fontSize="11px">
-              {`${t(`Reward`)}: ${formatToUnit(nextMilestone[1].toBn(), chainDecimals, 1, true)} ${project.token}`}
+              {`${t(`Total Rewards`)}: ${formatToUnit(nextMilestone[1].toBn(), chainDecimals, 1, true)} ${project.token}`}
             </StandardText>
           </RowBetween>
           <div style={{ display: 'block', width: '100%', borderRadius: '12px' }}>
