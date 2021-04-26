@@ -12,6 +12,9 @@ interface GetApyParams {
   precision?: number
 }
 
+/**
+ * Our yield calculations are done with 360 days per year.
+ */
 export default function getApy({
   totalYield,
   totalDeposit,
@@ -25,8 +28,8 @@ export default function getApy({
   const depositNum = parseFloat(totalDeposit.div(new BN(10).pow(cd)).toString())
   if (period) {
     const periodInDays = parseFloat(blockToDays(period, blockTime, 8))
-    return ((yieldNum / depositNum) * (365 / periodInDays) * 100).toFixed(precision ? precision : 0)
+    return ((yieldNum / depositNum) * (360 / periodInDays) * 100).toFixed(precision ? precision : 0)
   } else {
-    return ((yieldNum / depositNum) * 365).toFixed(precision ? precision : 0)
+    return ((yieldNum / depositNum) * 360).toFixed(precision ? precision : 0)
   }
 }
