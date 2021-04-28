@@ -1,294 +1,39 @@
-import { BN_HUNDRED } from '@polkadot/util'
+import BN from 'bn.js'
+import Balance from 'components/Balance'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
 import { FlatCard } from 'components/Card'
+import Divider from 'components/Divider'
 import { GridCell, GridRow } from 'components/Grid'
-import { BorderedInput } from 'components/Input'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
-import { RowBetween, RowFixed } from 'components/Row'
+import { RowBetween } from 'components/Row'
 import { HeavyText, ItalicText, SectionHeading, SmallText, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubTravelCabin, useSubTravelCabinInventory, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
-import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { useIsConnected } from 'hooks/useWallet'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { TravelCabinInfo } from 'spanner-interfaces'
 import { ThemeContext } from 'styled-components'
 import { blockToDays, blockToTs, daysToBlocks, tsToRelative } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
 import { getCabinClassImage } from '../../../utils/getCabinClass'
 import { shortenAddr } from '../../../utils/truncateString'
-import BN from 'bn.js'
-import useSubscribeBalance from 'hooks/useQueryBalance'
-import Balance from 'components/Balance'
 import DpoModalForm from '../Dpo/Form'
-import Divider from 'components/Divider'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
-}
-
-interface TravelCabinCrowdFormProps {
-  travelCabinInfo: TravelCabinInfo
-  token: string
-  chainDecimals: number
-  onSubmit: (data: any) => void
 }
 
 interface TravelCabinJoinTxConfirmProps {
   deposit: string
   token: string
   estimatedFee?: string
-}
-
-export function TravelCabinCrowdfundForm({
-  travelCabinInfo,
-  token,
-  chainDecimals,
-  onSubmit,
-}: TravelCabinCrowdFormProps) {
-  const [managerSeats, setManagerSeats] = useState<number>(0)
-  const [dpoName, setDpoName] = useState<string | null>('')
-  const [baseFee, setBaseFee] = useState<number>(0)
-  const [directReferralRate, setDirectReferralRate] = useState<number>(70)
-  const [end, setEnd] = useState<number>(30)
-  const [referralCode, setReferralCode] = useState<string | null>('')
-  const referrer = useReferrer()
-  const { t } = useTranslation()
-  const balance = useSubscribeBalance(token.toUpperCase())
-
-  const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    if (value.length === 0) {
-      setReferralCode(null)
-    } else {
-      setReferralCode(value)
-    }
-  }
-
-  const handleDirectReferralRate = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
-    if (value > 100) return
-    setDirectReferralRate(value)
-  }
-
-  const handleBaseFee = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
-    if (value > 5) return
-    setBaseFee(value)
-  }
-
-  const handleManagerSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
-    if (value > 15) return
-    setManagerSeats(value)
-  }
-
-  const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value
-    setEnd(parseInt(value))
-  }
-
-  const handleSubmit = () =>
-    onSubmit({ managerSeats, baseFee, directReferralRate, end, dpoName, referrer: referralCode })
-
-  useEffect(() => {
-    if (!referralCode && referrer) {
-      setReferralCode(referrer)
-    }
-  }, [referralCode, referrer])
-
-  return (
-    <>
-      <Section>
-        <StandardText>{t(`Create a DPO to Crowdfund for this TravelCabin.`)}</StandardText>
-      </Section>
-      <Section>
-        <BorderedWrapper>
-          <RowBetween>
-            <StandardText>{t(`Balance`)}</StandardText>
-            <StandardText>
-              {formatToUnit(balance, chainDecimals, 2)} {token}
-            </StandardText>
-          </RowBetween>
-          <RowBetween>
-            <RowFixed>
-              <StandardText>{t(`Crowdfund Amount`)}</StandardText>
-              <QuestionHelper
-                text={t(`The amount to crowdfund for the TravelCabin.`)}
-                size={12}
-                backgroundColor={'#fff'}
-              ></QuestionHelper>
-            </RowFixed>
-            <StandardText>
-              {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals, 2)} {token}
-            </StandardText>
-          </RowBetween>
-          <RowBetween>
-            <RowFixed>
-              <StandardText>{t(`Seat Price`)}</StandardText>
-              <QuestionHelper
-                text={t(`The cost of Ticket Fare is split equally by DPO seats.`)}
-                size={12}
-                backgroundColor={'#fff'}
-              ></QuestionHelper>
-            </RowFixed>
-            <StandardText>
-              {formatToUnit(travelCabinInfo.deposit_amount.toBn().div(BN_HUNDRED), chainDecimals, 2)} {token}
-            </StandardText>
-          </RowBetween>
-          <RowBetween>
-            <RowFixed>
-              <StandardText>{t(`Your Deposit`)}</StandardText>
-              <QuestionHelper
-                text={t(`The amount you have to deposit to the DPO. Calculated by Target Amount / 100 * Manager Seats`)}
-                size={12}
-                backgroundColor={'#fff'}
-              ></QuestionHelper>
-            </RowFixed>
-            <StandardText>
-              {`${formatToUnit(
-                new BN(managerSeats).mul(new BN(travelCabinInfo.deposit_amount).div(new BN(100))),
-                chainDecimals,
-                2
-              )} 
-              ${token}`}
-            </StandardText>
-          </RowBetween>
-        </BorderedWrapper>
-      </Section>
-      <SpacedSection>
-        <Section>
-          <RowFixed>
-            <StandardText>{t(`Name your DPO`)}</StandardText>
-            <QuestionHelper
-              text={t(`Name your DPO community to make it easier for others to search for you.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          <BorderedInput
-            required
-            id="dpo-name"
-            type="string"
-            placeholder="Name"
-            onChange={(e) => setDpoName(e.target.value)}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
-        </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>{`${t(`Manager Seats in DPO`)}: ${dpoName}`}</StandardText>
-            <QuestionHelper
-              text={t(
-                `# of Seats to buy for yourself as Manager from your new DPO. More seats, more commission rate off your Members' yields.`
-              )}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          <BorderedInput
-            required
-            id="dpo-manager-seats"
-            type="number"
-            placeholder="0 - 15"
-            onChange={(e) => handleManagerSeats(e)}
-            value={Number.isNaN(managerSeats) ? '' : managerSeats}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
-        </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>{t(`Base Fee`)} (%)</StandardText>
-            <QuestionHelper
-              text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          <BorderedInput
-            required
-            id="dpo-base-fee"
-            type="number"
-            placeholder="0 - 5"
-            onChange={(e) => handleBaseFee(e)}
-            value={Number.isNaN(baseFee) ? '' : baseFee}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
-        </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>{t(`Direct Referral Rate`)} (%)</StandardText>
-            <QuestionHelper
-              text={t(`The Referral Bonus (%) given to the Direct Referrer of this DPO.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            ></QuestionHelper>
-          </RowFixed>
-          <BorderedInput
-            required
-            id="dpo-direct-referral-rate"
-            type="number"
-            placeholder="0 - 100"
-            onChange={(e) => handleDirectReferralRate(e)}
-            value={Number.isNaN(directReferralRate) ? '' : directReferralRate}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
-        </Section>
-        <Section>
-          <RowFixed>
-            <StandardText>
-              {t(`Crowdfunding Period`)} ({t(`Days`)})
-            </StandardText>
-            <QuestionHelper
-              text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
-              size={12}
-              backgroundColor={'transparent'}
-            ></QuestionHelper>
-          </RowFixed>
-          <BorderedInput
-            required
-            id="dpo-end"
-            type="number"
-            placeholder="30"
-            onChange={(e) => handleEnd(e)}
-            value={Number.isNaN(end) ? '' : end}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
-        </Section>
-        {!referralCode && (
-          <Section>
-            <RowFixed>
-              <StandardText>{t(`Referral Code`)}</StandardText>
-              <QuestionHelper
-                text={t(`Enter the referrer (the referral code) that introduced you to this project.`)}
-                size={12}
-                backgroundColor={'#fff'}
-              ></QuestionHelper>
-            </RowFixed>
-            <BorderedInput
-              required
-              id="dpo-referrer"
-              type="string"
-              placeholder="A3FDHC..."
-              onChange={(e) => handleReferralCode(e)}
-              style={{ alignItems: 'flex-end', width: '100%' }}
-            />
-          </Section>
-        )}
-      </SpacedSection>
-      <SpacedSection style={{ marginTop: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
-      </SpacedSection>
-    </>
-  )
 }
 
 interface TravelCabinCrowdfundTxConfirmProps {
@@ -468,7 +213,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     referrer,
   }: {
     dpoName: string
-    managerSeats: string
+    managerSeats: number
     baseFee: number
     directReferralRate: number
     end: number
@@ -481,7 +226,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     const endBlock = lastBlock.add(daysBlocks)
     setCrowdfundData({
       dpoName,
-      managerSeats,
+      managerSeats: managerSeats.toString(),
       baseFee: baseFee.toString(),
       directReferralRate: directReferralRate.toString(),
       end: endBlock.toString(),
@@ -536,14 +281,6 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
         travelCabinInfo={travelCabinInfo}
         onSubmit={handleCrowdfundFormCallback}
       />
-      {/* <StandardModal title={t(`Create DPO`)} isOpen={crowdfundFormModalOpen} onDismiss={dismissModal}>
-        <TravelCabinCrowdfundForm
-          travelCabinInfo={travelCabinInfo}
-          token={token}
-          chainDecimals={chainDecimals}
-          onSubmit={handleCrowdfundFormCallback}
-        />
-      </StandardModal> */}
       <TxModal
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}

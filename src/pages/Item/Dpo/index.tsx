@@ -92,7 +92,7 @@ interface CrowdfundData {
   targetSeats?: string
   managerSeats?: string
   baseFee?: string
-  directReferralRate?: number
+  directReferralRate?: string
   end?: string
   referrer?: string | null
 }
@@ -535,7 +535,7 @@ function DpoCrowdfundTxConfirm({
             <RowBetween>
               <StandardText>{t(`Direct Referral Rate`)}</StandardText>
               <StandardText>
-                {`${directReferralRate} (${t(`Direct`)}) + ${100 - directReferralRate} (${t(`2nd`)}) = 100%`}
+                {`${directReferralRate} (${t(`Direct`)}) + ${100 - parseInt(directReferralRate)} (${t(`2nd`)}) = 100%`}
               </StandardText>
             </RowBetween>
           </>
@@ -814,10 +814,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     const endBlock = lastBlock.add(daysBlocks)
     setCrowdfundData({
       dpoName,
-      targetSeats: seats,
-      managerSeats,
+      targetSeats: seats.toString(),
+      managerSeats: managerSeats.toString(),
       baseFee: baseFee.toString(),
-      directReferralRate,
+      directReferralRate: directReferralRate.toString(),
       end: endBlock.toString(),
       referrer,
     })
@@ -992,43 +992,41 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             )}
           </RowBetween>
         </Section>
-        <Section style={{ marginTop: '1rem' }}>
-          <HeavyText color={theme.primary1}>{t(`Rewards Received`)}</HeavyText>
-          <StatDisplayContainer>
-            <StatDisplayGrid>
-              <StatContainer maxWidth="none" background={statsBg}>
-                <StatValue>
-                  {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                  <DataTokenName color="#fff">{token}</DataTokenName>
-                </StatValue>
-                <StatText>{t(`Yield`)}</StatText>
-              </StatContainer>
-              <StatContainer maxWidth="none" background={statsBg}>
-                <StatValue>
-                  {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                  <DataTokenName color="#fff">{token}</DataTokenName>
-                </StatValue>
-                <StatText>{t(`Bonus`)}</StatText>
-              </StatContainer>
-              <StatContainer maxWidth="none" background={statsBg}>
-                <StatValue>
-                  {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                  <DataTokenName color="#fff">{token}</DataTokenName>
-                </StatValue>
-                <StatText>{t(`Milestone`)}</StatText>
-              </StatContainer>
-            </StatDisplayGrid>
-          </StatDisplayContainer>
-        </Section>
+        {!dpoInfo.state.isCreated && (
+          <Section style={{ marginTop: '1rem' }}>
+            <HeavyText color={theme.primary1}>{t(`Rewards Received`)}</HeavyText>
+            <StatDisplayContainer>
+              <StatDisplayGrid>
+                <StatContainer maxWidth="none" background={statsBg}>
+                  <StatValue>
+                    {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
+                    <DataTokenName color="#fff">{token}</DataTokenName>
+                  </StatValue>
+                  <StatText>{t(`Yield`)}</StatText>
+                </StatContainer>
+                <StatContainer maxWidth="none" background={statsBg}>
+                  <StatValue>
+                    {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
+                    <DataTokenName color="#fff">{token}</DataTokenName>
+                  </StatValue>
+                  <StatText>{t(`Bonus`)}</StatText>
+                </StatContainer>
+                <StatContainer maxWidth="none" background={statsBg}>
+                  <StatValue>
+                    {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
+                    <DataTokenName color="#fff">{token}</DataTokenName>
+                  </StatValue>
+                  <StatText>{t(`Milestone`)}</StatText>
+                </StatContainer>
+              </StatDisplayGrid>
+            </StatDisplayContainer>
+          </Section>
+        )}
       </FlatCard>
+      <Highlights dpoInfo={dpoInfo} />
       {isConnected && (
         <ContentWrapper>
           <DpoActions dpoIndex={dpoIndex} />
-        </ContentWrapper>
-      )}
-      {dpoInfo.state.isCreated && (
-        <ContentWrapper>
-          <Highlights dpoInfo={dpoInfo} />
         </ContentWrapper>
       )}
       <ContentWrapper>
@@ -1053,6 +1051,12 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>{t(`Deposit`)}</StandardText>
                 <StandardText>
                   {formatToUnit(dpoInfo.vault_deposit.toString(), chainDecimals, 2)} {token}
+                </StandardText>
+              </RowBetween>
+              <RowBetween>
+                <StandardText>{t(`Withdraw`)}</StandardText>
+                <StandardText>
+                  {formatToUnit(dpoInfo.vault_withdraw.toString(), chainDecimals, 2)} {token}
                 </StandardText>
               </RowBetween>
             </Section>
