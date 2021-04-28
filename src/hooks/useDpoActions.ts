@@ -8,7 +8,7 @@ import {
 } from 'spanner-interfaces'
 import getDpoActions, { DpoAction } from 'utils/getDpoActions'
 import { getTargetDpo, getTargetTravelCabin } from 'utils/getDpoTargets'
-import { getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
+import { getDpoCabinInventoryIndex, getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
 import getTravelCabinInventory from 'utils/getTravelCabinInventory'
 import { WalletInfo } from 'utils/getWalletInfo'
 import { useApi } from './useApi'
@@ -25,6 +25,7 @@ interface ActionReq {
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
+  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
   targetDpo?: DpoInfo
   dpoIsMemberOfTargetDpo?: boolean
   walletInfo?: WalletInfo
@@ -85,6 +86,11 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
           addActionReq({ targetTravelCabin: result[0] })
         }
       })
+      getDpoCabinInventoryIndex(api, dpoInfo).then((result) => {
+        if (result) {
+          addActionReq({ targetTravelCabinInventoryIndex: result[1] })
+        }
+      })
       getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
         if (result.isSome) {
           addActionReq({ targetTravelCabinInventory: result.unwrapOrDefault() })
@@ -131,6 +137,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
     targetTravelCabin: actionsReq?.targetTravelCabin,
     targetTravelCabinBuyer: actionsReq?.targetTravelCabinBuyer,
     targetTravelCabinInventory: actionsReq?.targetTravelCabinInventory,
+    targetTravelCabinInventoryIndex: actionsReq?.targetTravelCabinInventoryIndex,
     targetDpo: actionsReq?.targetDpo,
   }
 }
