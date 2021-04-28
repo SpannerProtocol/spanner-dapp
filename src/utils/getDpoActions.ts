@@ -27,6 +27,7 @@ interface GetDpoActionsParams {
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
+  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
   targetDpo?: DpoInfo
   dpoIsMemberOfTargetDpo?: boolean
   walletInfo: WalletInfo
@@ -55,6 +56,7 @@ export default function getDpoActions({
   lastBlock,
   targetTravelCabin,
   targetTravelCabinInventory,
+  targetTravelCabinBuyer,
   targetDpo,
   dpoIsMemberOfTargetDpo,
 }: GetDpoActionsParams): Array<DpoAction> | undefined {
@@ -62,7 +64,7 @@ export default function getDpoActions({
 
   const actions: Array<DpoAction> = []
 
-  if (dpoInfo.state.toString() === 'CREATED') {
+  if (dpoInfo.state.isCreated) {
     // If expired then anyone can withdraw from target [Verified]
     if (lastBlock.gte(dpoInfo.expiry_blk)) {
       if (!dpoInfo.vault_deposit.isZero()) {
@@ -71,7 +73,7 @@ export default function getDpoActions({
     }
   }
 
-  if (dpoInfo.state.toString() === 'ACTIVE') {
+  if (dpoInfo.state.isActive) {
     const blockFilled = dpoInfo.blk_of_dpo_filled.unwrapOrDefault()
     const gracePeriodEnd = blockFilled.toBn().add(new BN(DPO_COMMIT_GRACE_BLOCKS))
 
@@ -193,16 +195,34 @@ export default function getDpoActions({
     }
   }
 
-  // At Committed state, manager or user has to release rewards [Verified]
-  if (dpoInfo.state.toString() === 'RUNNING') {
+  // At Committed state, manager or user has to release rewards
+  if (dpoInfo.state.isRunning) {
     // Can withdraw whenever they want
-    actions.push({
-      role: 'any',
-      hasGracePeriod: false,
-      action: 'withdrawYieldFromTravelCabin',
-      dpoIndex: dpoInfo.index,
-    })
+    if (dpoInfo.target.isTravelCabin) {
+      if (!targetTravelCabinBuyer || !targetTravelCabin) return
+      // If there is still any yield left to withdraw
+      if (!targetTravelCabinBuyer[1].yield_withdrawn.eq(targetTravelCabin.yield_total)) {
+        actions.push({
+          role: 'any',
+          hasGracePeriod: false,
+          action: 'withdrawYieldFromTravelCabin',
+          dpoIndex: dpoInfo.index,
+        })
+      } else {
+        // If there is no more yield to withdraw, trip is over, can withdraw Fare
+        // Also only show the action when all yields and bonuses have been released.
+        if (dpoInfo.vault_yield.isZero() && dpoInfo.vault_bonus.isZero()) {
+          actions.push({
+            role: 'any',
+            hasGracePeriod: false,
+            action: 'withdrawFareFromTravelCabin',
+            dpoIndex: dpoInfo.index,
+          })
+        }
+      }
+    }
 
+    // Release bonus if there is bonus in vault
     if (!dpoInfo.vault_bonus.isZero()) {
       actions.push({
         role: 'any',
@@ -239,8 +259,8 @@ export default function getDpoActions({
     }
   }
 
-  if (dpoInfo.state.toString() === 'COMPLETED') {
-    if (!dpoInfo.vault_deposit.isZero()) {
+  if (dpoInfo.state.isCompleted) {
+    if (dpoInfo.fare_withdrawn.isFalse) {
       actions.push({
         role: 'any',
         hasGracePeriod: false,
@@ -250,7 +270,7 @@ export default function getDpoActions({
     }
   }
 
-  if (dpoInfo.state.toString() === 'FAILED') {
+  if (dpoInfo.state.isFailed) {
     if (!dpoInfo.vault_deposit.isZero()) {
       actions.push({
         role: 'any',
