@@ -1,7 +1,8 @@
 import { TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-interfaces'
 import BN from 'bn.js'
-import { BlockNumber } from '@polkadot/types/interfaces'
+import { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import { bnToUnit } from './formatUnit'
+import { daysToBlocks } from './formatBlocks'
 
 export function getCabinYield(
   cabinInfo: TravelCabinInfo,
@@ -26,4 +27,12 @@ export function getCabinYield(
       return '0'
     }
   }
+}
+export function getCabinGracePeriodTimeLeft(
+  buyerInfo: TravelCabinBuyerInfo,
+  lastBlock: BlockNumber,
+  expectedBlockTime: Moment
+) {
+  const gracecPeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
+  return gracecPeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracecPeriodTimeLeft.sub(lastBlock).toString()
 }

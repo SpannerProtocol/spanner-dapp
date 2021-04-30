@@ -30,7 +30,7 @@ export default function Balance({ token }: BalanceProps) {
               )}
             />
           </div>
-          <ItalicText>{`${formatToUnit(balance, chainDecimals, 2)} BOLT`}</ItalicText>
+          <ItalicText>{`${formatToUnit(balance, chainDecimals, 2)} ${token}`}</ItalicText>
         </RowBetween>
       </SpacedSection>
     </>

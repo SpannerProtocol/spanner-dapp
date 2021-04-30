@@ -148,11 +148,7 @@ function TransferForm({ onSubmit }: TransferFormProps) {
       <SpacedSection>
         <RowFixed>
           <StandardText>{t(`Recipient Address`)}</StandardText>
-          <QuestionHelper
-            text={t(`The Recipient's Spanner address`)}
-            size={12}
-            backgroundColor={'#fff'}
-          ></QuestionHelper>
+          <QuestionHelper text={t(`The Recipient's Spanner address`)} size={12} backgroundColor={'#fff'} />
         </RowFixed>
         <BorderedInput
           required

@@ -2,7 +2,7 @@ import { HAMMER_EXPLORER, SPANNER_EXPLORER } from '../../constants'
 import { useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, AppState } from '../index'
-import { addBridgeServer, addChain } from './actions'
+import { addBridgeServer, addChain, updateApiConnection } from './actions'
 import { ConnectionsState } from './reducer'
 
 export function useConnectionsState(): ConnectionsState | undefined {
@@ -29,6 +29,17 @@ export function useAddChain() {
     [dispatch]
   )
   return setChain
+}
+
+export function useUpdateApiConnected() {
+  const dispatch = useDispatch<AppDispatch>()
+  const updateApiConnected = useCallback(
+    (connected: boolean) => {
+      dispatch(updateApiConnection(connected))
+    },
+    [dispatch]
+  )
+  return updateApiConnected
 }
 
 export function useChainState() {

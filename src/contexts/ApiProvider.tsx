@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState, useMemo, useCallback } from 
 import * as definitions from '../spanner-interfaces/definitions'
 import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
-import { useChainState } from 'state/connections/hooks'
+import { useChainState, useConnectionsState, useUpdateApiConnected } from 'state/connections/hooks'
 
 const getEnvVars = () => {
   const APP_NAME = process.env.REACT_APP_APP_NAME
@@ -42,6 +42,8 @@ export function ApiProvider({ children }: any): JSX.Element {
   const { chain, addChain } = useChainState()
   const [selectedChain, setSelectedChain] = useState<string>(chain ? chain.chainName : '')
   const [renderLoading, setRenderLoading] = useState<boolean>(false)
+  const connState = useConnectionsState()
+  const updateApiConnected = useUpdateApiConnected()
 
   const config = useMemo(getEnvVars, [])
   const supportedChains = useMemo(() => {
@@ -68,6 +70,14 @@ export function ApiProvider({ children }: any): JSX.Element {
     errorMessage,
     connectToNetwork,
   ])
+
+  useEffect(() => {
+    if (!connState) return
+    if (!connState.apiConnected) {
+      updateApiConnected(true)
+      connectToNetwork(selectedChain)
+    }
+  }, [connState, connectToNetwork, selectedChain, updateApiConnected])
 
   useEffect(() => {
     if (!config || !rpcDefinitions) return
