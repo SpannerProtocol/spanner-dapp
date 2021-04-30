@@ -44,15 +44,14 @@ import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
+import { abs, noNan } from 'utils/formatNumbers'
 import { formatToUnit } from 'utils/formatUnit'
-import { noNan, abs } from 'utils/formatNumbers'
 import { shortenAddr } from 'utils/truncateString'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
-import getCabinClass from '../../../utils/getCabinClass'
 import DpoActions from './actions'
-import Highlights from './Highlights/index'
 import DpoModalForm from './Form'
+import Highlights from './Highlights/index'
 
 const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
 const membershipBg = 'linear-gradient(90deg, #EC3D3D -11.67%, #AD074F 100%)'
@@ -714,7 +713,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const dpoInfo = useSubDpo(dpoIndex)
   const dpoMembers = useQueryDpoMembers(dpoIndex)
   const wallet = useWallet()
-  const [targetItem, setTargetItem] = useState<[string, string]>(['', ''])
+  // const [targetItem, setTargetItem] = useState<[string, string]>(['', ''])
   const { chainDecimals } = useSubstrate()
   const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
   const [joinFormModalOpen, setJoinFormModalOpen] = useState<boolean>(false)
@@ -739,14 +738,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
 
   const { createTx, submitTx } = useTxHelpers()
 
-  useEffect(() => {
-    if (!dpoInfo) return
-    if (dpoInfo.target.isTravelCabin) {
-      setTargetItem(['TravelCabin', dpoInfo.target.asTravelCabin.toString()])
-    } else {
-      setTargetItem(['DPO', dpoInfo.target.asDpo[0].toString()])
-    }
-  }, [dpoInfo])
+  // useEffect(() => {
+  //   if (!dpoInfo) return
+  //   if (dpoInfo.target.isTravelCabin) {
+  //     setTargetItem(['TravelCabin', dpoInfo.target.asTravelCabin.toString()])
+  //   } else {
+  //     setTargetItem(['DPO', dpoInfo.target.asDpo[0].toString()])
+  //   }
+  // }, [dpoInfo])
 
   const openJoinTxModal = () => {
     ;[setCrowdfundFormModalOpen, setJoinFormModalOpen, setCrowdfundTxModalOpen].forEach((fn) => fn(false))
@@ -994,7 +993,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         </Section>
         {!dpoInfo.state.isCreated && (
           <Section style={{ marginTop: '1rem' }}>
-            <HeavyText color={theme.primary1}>{t(`Rewards Received`)}</HeavyText>
+            <HeavyText color={theme.primary1}>{t(`Total Rewards Received`)}</HeavyText>
             <StatDisplayContainer>
               <StatDisplayGrid>
                 <StatContainer maxWidth="none" background={statsBg}>
@@ -1092,35 +1091,38 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               <RowBetween>
                 <StandardText>{t(`Target`)}</StandardText>
-                <StandardText>
-                  <Link
-                    to={{ pathname: `/item/${targetItem[0].toLowerCase()}/${targetItem[1]}` }}
-                    style={{ textDecoration: 'none' }}
-                  >
-                    {dpoInfo.target.isTravelCabin && (
-                      <>
-                        {targetItem[0]} {getCabinClass(targetItem[1])}
-                      </>
-                    )}
-                    {dpoInfo.target.isDpo && (
-                      <>
-                        {targetItem[0]} {targetItem[1]}
-                      </>
-                    )}
+                {dpoInfo.target.isTravelCabin && (
+                  <Link to={`/item/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}>
+                    <StandardText color={theme.blue2}>
+                      {t(`TravelCabin`)} {dpoInfo.target.asTravelCabin.toString()}
+                    </StandardText>
                   </Link>
-                </StandardText>
+                )}
+                {dpoInfo.target.isDpo && (
+                  <Link to={`/item/dpo/${dpoInfo.target.asDpo[0].toString()}`}>
+                    <StandardText color={theme.blue2}>
+                      {t(`DPO`)} {dpoInfo.target.asDpo[0].toString()}
+                    </StandardText>
+                  </Link>
+                )}
               </RowBetween>
+              {dpoInfo.target.isDpo && (
+                <RowBetween>
+                  <StandardText>{t(`Seats Purchased`)}</StandardText>
+                  <StandardText>{dpoInfo.target.asDpo[1].toString()}</StandardText>
+                </RowBetween>
+              )}
               <RowBetween>
                 <StandardText>{t(`Amount`)}</StandardText>
                 <StandardText>
-                  {formatToUnit(dpoInfo.target_amount.toString(), chainDecimals, 2)} {token}
+                  {formatToUnit(dpoInfo.target_amount.toString(), chainDecimals)} {token}
                 </StandardText>
               </RowBetween>
               {expectedBlockTime && (
                 <RowBetween>
                   <StandardText>{t(`Maturity`)}</StandardText>
                   <StandardText>
-                    {`${t(`Block`)} #${dpoInfo.target_maturity.toString()} (${blockToDays(
+                    {`${t(`Block`)} #${formatToUnit(dpoInfo.target_maturity.toString(), 0)} (${blockToDays(
                       dpoInfo.target_maturity,
                       expectedBlockTime
                     )} ${t(`days`)})`}
