@@ -713,7 +713,6 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const dpoInfo = useSubDpo(dpoIndex)
   const dpoMembers = useQueryDpoMembers(dpoIndex)
   const wallet = useWallet()
-  // const [targetItem, setTargetItem] = useState<[string, string]>(['', ''])
   const { chainDecimals } = useSubstrate()
   const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
   const [joinFormModalOpen, setJoinFormModalOpen] = useState<boolean>(false)
@@ -726,26 +725,16 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
   const [joinData, setJoinData] = useState<JoinData>({})
   const userInDpo = useUserInDpo(dpoIndex, wallet?.address)
-  const { expectedBlockTime } = useBlockManager()
+  const isConnected = useIsConnected()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const { projectState } = useProjectManager()
   const [txInfo, setTxInfo] = useState<TxInfo>({})
-  const isConnected = useIsConnected()
-  const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  const { lastBlock } = useBlockManager()
   const { passengerSeatCap } = useConsts()
   const manager = useDpoManager(dpoIndex, dpoInfo)
+  const theme = useContext(ThemeContext)
 
   const { createTx, submitTx } = useTxHelpers()
-
-  // useEffect(() => {
-  //   if (!dpoInfo) return
-  //   if (dpoInfo.target.isTravelCabin) {
-  //     setTargetItem(['TravelCabin', dpoInfo.target.asTravelCabin.toString()])
-  //   } else {
-  //     setTargetItem(['DPO', dpoInfo.target.asDpo[0].toString()])
-  //   }
-  // }, [dpoInfo])
 
   const openJoinTxModal = () => {
     ;[setCrowdfundFormModalOpen, setJoinFormModalOpen, setCrowdfundTxModalOpen].forEach((fn) => fn(false))
@@ -839,7 +828,6 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     })
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
-
     openCrowdfundTxModal()
   }
 
