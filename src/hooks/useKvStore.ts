@@ -47,13 +47,13 @@ export function useCreateTableUser() {
           client.createTable(params, (err) => {
             if (err) console.log(err, err.stack)
             else {
-              console.log('INIT: Did not find User table. Will create.')
+              console.log('INIT: Did not find necessary table. Will create.')
               setTableExists(true)
             }
           })
         } else {
           if (data && data.Table && data.Table.TableName === 'User' && data.Table.TableStatus === 'ACTIVE') {
-            console.log('INIT: DynamoDB connected, User table found.')
+            console.log('INIT: DynamoDB connected.')
             setTableExists(true)
           }
         }
