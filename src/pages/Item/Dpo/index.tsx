@@ -8,7 +8,7 @@ import Divider from 'components/Divider'
 import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
-import { ProgressBar } from 'components/ProgressBar'
+import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
@@ -1155,14 +1155,11 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               )}
             </Section>
             <Section>
-              <StandardText style={{ paddingBottom: '0.25rem' }}>{t(`Seats Filled`)}</StandardText>
-              <ProgressBar current={100 - dpoInfo.empty_seats.toNumber()} end={100} />
-            </Section>
-            <Section style={{ marginTop: '1rem' }}>
-              <RowBetween>
-                <StandardText>{t(`Available Seats`)}</StandardText>
-                <StandardText>{dpoInfo.empty_seats.toString()}</StandardText>
+              <RowBetween style={{ paddingBottom: '0.25rem' }}>
+                <StandardText>{t(`Seats Filled`)}</StandardText>
+                <StandardText>{`${100 - dpoInfo.empty_seats.toNumber()} / 100`}</StandardText>
               </RowBetween>
+              <LinearProgressBar value={100 - dpoInfo.empty_seats.toNumber()} />
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`Membership Requirements`)}</SmallText>
