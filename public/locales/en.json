@@ -416,5 +416,11 @@
   "Waiting for": "Waiting for",
   "to receive and release yield": "to receive and release yield",
   "Total Rewards Received": "Total Rewards Received",
-  "to release yield": "to release yield"
+  "to release yield": "to release yield",
+  "Ethereum": "Ethereum",
+  "Connecting to Blockchain": "Connecting to Blockchain",
+  "Reconnect": "Reconnect",
+  "Connection lost": "Connection lost",
+  "Spanner Dapp": "Spanner Dapp",
+  "Reconnecting": "Reconnecting"
 }

@@ -1,25 +1,25 @@
 import NetworkSelector from 'components/Network'
+import Transfer from 'components/Transfer'
 import { darken } from 'polished'
 import React, { useEffect, useState } from 'react'
+import { User } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
+import BlockIcon from '../../assets/svg/icon-block-white.svg'
 import BridgeIcon from '../../assets/svg/icon-bridge.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
-import BlockIcon from '../../assets/svg/icon-block-white.svg'
-import DpoIcon from '../../assets/svg/icon-dpo.svg'
 import { useActiveWeb3React } from '../../hooks'
-import { ExternalLink, MEDIA_WIDTHS, TYPE } from '../../theme'
+import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
 import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
-import Transfer from 'components/Transfer'
-
 const HeaderFrame = styled.div`
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -143,6 +143,16 @@ const BOLTAmount = styled(AccountElement)`
   padding: 0.5rem;
   font-weight: 500;
   background-color: ${({ theme }) => theme.secondary1};
+  max-width: 35px;
+  max-height: 35px;
+
+  :hover {
+    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+  }
+
+  :focus {
+    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+  }
 `
 
 const BalanceWrapper = styled.span`
@@ -160,11 +170,11 @@ const BalanceWrapper = styled.span`
   }
 `
 
-const HideSmall = styled.span`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;
-  `};
-`
+// const HideSmall = styled.span`
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+//     display: none;
+//   `};
+// `
 
 // const NetworkCard = styled(YellowCard)`
 //   border-radius: 12px;
@@ -383,32 +393,16 @@ export default function Header(props: HeaderProps) {
 
 export function Controls() {
   const { account } = useActiveWeb3React()
-  const { t } = useTranslation()
-  // const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
 
   return (
     <>
       <HeaderControls>
         <HeaderElement>
-          <HideSmall>
-            {/* {chainId && NETWORK_LABELS[chainId] && (
-              <NetworkCard title={NETWORK_LABELS[chainId]}>{NETWORK_LABELS[chainId]}</NetworkCard>
-            )} */}
-          </HideSmall>
           {true && (
-            <Link to="/account" style={{ textDecoration: 'none' }}>
+            <Link to="/account/balances" style={{ textDecoration: 'none' }}>
               <BalanceWrapper>
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
-                  {account && (
-                    <HideSmall>
-                      <TYPE.white
-                        style={{
-                          paddingRight: '.4rem',
-                        }}
-                      ></TYPE.white>
-                    </HideSmall>
-                  )}
-                  {t(`Account`)}
+                  <User />
                 </BOLTAmount>
               </BalanceWrapper>
             </Link>
