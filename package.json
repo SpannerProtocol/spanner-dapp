@@ -52,6 +52,7 @@
   },
   "license": "GPL-3.0-or-later",
   "dependencies": {
+    "@apollo/client": "^3.3.16",
     "@babel/core": "^7.12.9",
     "@babel/register": "^7.12.1",
     "@babel/runtime": "^7.12.5",
@@ -116,6 +117,7 @@
     "eslint-plugin-react": "^7.19.0",
     "eslint-plugin-react-hooks": "^4.0.0",
     "ethers": "^5.0.7",
+    "graphql": "^15.5.0",
     "i18next": "^15.0.9",
     "i18next-browser-languagedetector": "^3.0.1",
     "i18next-xhr-backend": "^2.0.1",
