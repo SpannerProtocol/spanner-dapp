@@ -1,15 +1,14 @@
 import { Compact } from '@polkadot/types'
 import { BlockNumber } from '@polkadot/types/interfaces'
 import BlockBar from 'components/BlockBar'
+import GlobalApiSpinner from 'components/GlobalSpinner'
 import NetworkSelector from 'components/Network'
-import { useApi } from 'hooks/useApi'
 import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
 import React, { createContext, Suspense, useEffect, useState } from 'react'
 import { Route, Switch } from 'react-router-dom'
-import { useUpdateApiConnected } from 'state/connections/hooks'
 import styled from 'styled-components'
 import Header, { Controls } from '../components/Header'
 import Popups from '../components/Popups'
@@ -81,10 +80,8 @@ const INIT_BLOCK_STATE: BlockNumbers = {
 export const BlockContext = createContext<BlockNumbers>(INIT_BLOCK_STATE)
 
 export default function App() {
-  const { connected } = useApi()
   const { width } = useWindowSize()
   const [subNetworkSelector, setSubNetworkSelector] = useState<boolean>(false)
-  const updateApiConnected = useUpdateApiConnected()
 
   useStoreAndVerifyReferrer()
   useCreateTableUser()
@@ -98,46 +95,42 @@ export default function App() {
     }
   }, [width])
 
-  // If api connection goes down save it as a global state
-  useEffect(() => {
-    if (connected) return
-    updateApiConnected(false)
-  }, [connected, updateApiConnected])
-
   return (
     <Suspense fallback={null}>
       <Route component={DarkModeQueryParamReader} />
-      <AppWrapper>
-        <HeaderWrapper>
-          <Header width={width} />
-        </HeaderWrapper>
-        <Controls />
-        <SubControl>
-          {subNetworkSelector && <NetworkSelector background={'transparent'} color={'#fff'} />}
-          <BlockBar />
-        </SubControl>
-        <AppBody>
-          <Popups />
-          <Web3ReactManager>
-            <Switch>
-              <Route exact strict path="/" component={Home} />
-              <Route exact strict path="/dex" component={Dex} />
-              <Route exact strict path="/item/:name/:index" component={Item} />
-              <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
-              <Route exact strict path="/account" component={Account} />
-              <Route exact strict path="/account/:section" component={Account} />
-              <Route exact strict path="/bullettrain" component={BulletTrain} />
-              <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
-              <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
-              <Route exact strict path="/projects" component={Launchpad} />
-              <Route exact strict path="/projects/:token" component={Project} />
-              <Route exact strict path="/faq" component={Faq} />
-              <Route exact strict path="/diagnostics" component={Diagnostics} />
-            </Switch>
-          </Web3ReactManager>
-          <Marginer />
-        </AppBody>
-      </AppWrapper>
+      <GlobalApiSpinner>
+        <AppWrapper>
+          <HeaderWrapper>
+            <Header width={width} />
+          </HeaderWrapper>
+          <Controls />
+          <SubControl>
+            {subNetworkSelector && <NetworkSelector background={'transparent'} color={'#fff'} />}
+            <BlockBar />
+          </SubControl>
+          <AppBody>
+            <Popups />
+            <Web3ReactManager>
+              <Switch>
+                <Route exact strict path="/" component={Home} />
+                <Route exact strict path="/dex" component={Dex} />
+                <Route exact strict path="/item/:name/:index" component={Item} />
+                <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
+                <Route exact strict path="/account" component={Account} />
+                <Route exact strict path="/account/:section" component={Account} />
+                <Route exact strict path="/bullettrain" component={BulletTrain} />
+                <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
+                <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
+                <Route exact strict path="/projects" component={Launchpad} />
+                <Route exact strict path="/projects/:token" component={Project} />
+                <Route exact strict path="/faq" component={Faq} />
+                <Route exact strict path="/diagnostics" component={Diagnostics} />
+              </Switch>
+            </Web3ReactManager>
+            <Marginer />
+          </AppBody>
+        </AppWrapper>
+      </GlobalApiSpinner>
     </Suspense>
   )
 }
