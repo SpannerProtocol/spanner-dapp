@@ -1,20 +1,19 @@
 import BN from 'bn.js'
-import { ProgressBar2 } from 'components/ProgressBar'
+import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { StandardText, HeavyText } from 'components/Text'
+import { HeavyText, StandardText } from 'components/Text'
 import useMilestones from 'hooks/useMilestones'
 import { useSelectedProject } from 'hooks/useProject'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 
 export default function Milestones() {
   const project = useSelectedProject()
   const milestoneInfo = useMilestones(project?.token)
-  const theme = useContext(ThemeContext)
+  // const theme = useContext(ThemeContext)
   const { chainDecimals } = useSubstrate()
   const [progress, setProgress] = useState<number>(0)
   const { t } = useTranslation()
@@ -38,9 +37,9 @@ export default function Milestones() {
   useEffect(() => {
     if (!nextMilestone || !milestoneInfo) return
     const cd = new BN(chainDecimals)
-    const deposited = milestoneInfo.deposited.div(cd)
-    const nextTarget = nextMilestone[0].div(cd)
-    setProgress(deposited.toNumber() / nextTarget.toNumber())
+    const deposited = milestoneInfo.deposited.div(new BN(10).pow(cd))
+    const nextTarget = nextMilestone[0].div(new BN(10).pow(cd))
+    setProgress((deposited.toNumber() / nextTarget.toNumber()) * 100)
   }, [nextMilestone, milestoneInfo, chainDecimals])
 
   return (
@@ -62,30 +61,18 @@ export default function Milestones() {
               {`${t(`Progress`)}: ${formatToUnit(
                 milestoneInfo.deposited.toBn(),
                 chainDecimals,
-                1,
+                3,
                 true
               )} / ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)} ${project.token}`}
             </StandardText>
             <StandardText fontSize="11px">
-              {`${t(`Total Rewards`)}: ${formatToUnit(nextMilestone[1].toBn(), chainDecimals, 1, true)} ${
+              {`${t(`Total Rewards`)}: ${formatToUnit(nextMilestone[1].toBn(), chainDecimals, 0, true)} ${
                 project.token
               }`}
             </StandardText>
           </RowBetween>
           <div style={{ display: 'block', width: '100%', borderRadius: '12px' }}>
-            <ProgressBar2
-              type={'line'}
-              percent={parseFloat(progress.toFixed(1))}
-              strokeColor={{
-                '0%': theme.primary1,
-                '100%': theme.secondary1,
-              }}
-              status={'active'}
-              strokeLinecap={'round'}
-              trailColor={theme.text5}
-              size={'default'}
-              showInfo={false}
-            />
+            <LinearProgressBar value={parseFloat(progress.toFixed(0))} />
           </div>
         </>
       )}

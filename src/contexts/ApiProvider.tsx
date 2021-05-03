@@ -1,136 +1,104 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
-import React, { createContext, useEffect, useState, useMemo, useCallback } from 'react'
-import * as definitions from '../spanner-interfaces/definitions'
-import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
+import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { useChainState } from 'state/connections/hooks'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
-import { useChainState, useConnectionsState, useUpdateApiConnected } from 'state/connections/hooks'
+import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
+import * as definitions from '../spanner-interfaces/definitions'
 
-const getEnvVars = () => {
-  const APP_NAME = process.env.REACT_APP_APP_NAME
-  const PROVIDER_SOCKET = process.env.REACT_APP_SUBSTRATE_PROVIDER_SOCKET
-  const DEVELOPMENT_KEYRING = process.env.REACT_APP_DEVELOPMENT_KEYRING
-  return {
-    APP_NAME,
-    DEVELOPMENT_KEYRING,
-    PROVIDER_SOCKET,
-  }
-}
-
-export interface ApiState {
+interface ApiInternalState {
   api: ApiPromise
   connected: boolean
   error: boolean
   loading: boolean
-  connectToNetwork: (chain: string) => void
-  errorMessage: string | null
+  chain: string
+  needReconnect: boolean
 }
-
-interface Error {
-  name: string
-  message: string
-  stack?: string
+export interface ApiState extends ApiInternalState {
+  reconnect: () => void
+  connectToNetwork: (chain: string) => void
 }
 
 export const ApiContext = createContext<ApiState>({} as ApiState)
 
 export function ApiProvider({ children }: any): JSX.Element {
-  const [api, setApi] = useState<ApiPromise>({} as ApiPromise)
-  const [connected, setConnected] = useState<boolean>(false)
-  const [error, setError] = useState<boolean>(false)
-  const [errorMessage, setErrorMessage] = useState<null | string>(null)
-  const [loading, setLoading] = useState<boolean>(false)
+  const [apiState, setApiState] = useState<ApiInternalState>({
+    api: {} as ApiPromise,
+    connected: false,
+    chain: '',
+    error: false,
+    loading: false,
+    needReconnect: false,
+  })
   const { chain, addChain } = useChainState()
   const [selectedChain, setSelectedChain] = useState<string>(chain ? chain.chainName : '')
-  const [renderLoading, setRenderLoading] = useState<boolean>(false)
-  const connState = useConnectionsState()
-  const updateApiConnected = useUpdateApiConnected()
 
-  const config = useMemo(getEnvVars, [])
   const supportedChains = useMemo(() => {
     const chains = SPANNER_SUPPORTED_CHAINS.map((supportedChain) => supportedChain.chain)
     return chains
   }, [])
 
+  const createApi = useCallback(
+    (chainToConnect: string) => {
+      const types = Object.values(definitions).reduce(
+        (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
+        {}
+      )
+      const rpc = rpcDefinitions.default.rpc
+      let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === chainToConnect)
+      chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
+      chainInfo.chain === 'Spanner Mainnet' ? addChain('Spanner') : addChain('Hammer')
+      const provider = new WsProvider(chainInfo.providerSocket)
+      const apiPromise = new ApiPromise({
+        provider,
+        types,
+        rpc,
+      })
+
+      apiPromise.on('disconnected', () => {
+        setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true }))
+      })
+      apiPromise.on('error', () => {
+        setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true, error: true }))
+      })
+      apiPromise.on('connected', () => {
+        setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, loading: true }))
+      })
+      apiPromise.on('ready', () => {
+        setApiState((prev) => ({
+          ...prev,
+          api: apiPromise,
+          loading: false,
+          connected: true,
+          needReconnect: false,
+          error: false,
+        }))
+      })
+    },
+    [addChain]
+  )
+
   const connectToNetwork = useCallback(
     (chain: string) => {
       if (!supportedChains.includes(chain)) return
-      if (api.isConnected) {
-        api.disconnect()
-      }
+      createApi(chain)
+      // Save to component state for reconnect if necessary
       setSelectedChain(chain)
     },
-    [api, supportedChains]
+    [createApi, supportedChains]
   )
 
-  const value = useMemo<ApiState>(() => ({ api, error, connected, loading, connectToNetwork, errorMessage }), [
-    api,
-    error,
-    connected,
-    loading,
-    errorMessage,
+  const reconnect = useCallback(() => createApi(selectedChain), [selectedChain, createApi])
+
+  useEffect(() => {
+    createApi(selectedChain)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  const value = useMemo<ApiState>(() => ({ ...apiState, connectToNetwork, reconnect }), [
+    apiState,
     connectToNetwork,
+    reconnect,
   ])
-
-  useEffect(() => {
-    if (!connState) return
-    if (!connState.apiConnected) {
-      updateApiConnected(true)
-      connectToNetwork(selectedChain)
-    }
-  }, [connState, connectToNetwork, selectedChain, updateApiConnected])
-
-  useEffect(() => {
-    if (!config || !rpcDefinitions) return
-    const types = Object.values(definitions).reduce(
-      (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
-      {}
-    )
-    const rpc = rpcDefinitions.default.rpc
-    // Spanner is default
-    let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === selectedChain)
-    chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
-    chainInfo.chain === 'Spanner Mainnet' ? addChain('Spanner') : addChain('Hammer')
-    const provider = new WsProvider(chainInfo.providerSocket)
-    const apiPromise = new ApiPromise({
-      provider,
-      types,
-      rpc,
-    })
-
-    apiPromise.on('disconnected', () => {
-      setLoading(false)
-      setConnected(false)
-      setError(false)
-    })
-    apiPromise.on('error', (error: Error) => {
-      setErrorMessage(error.message)
-      setLoading(false)
-      setConnected(false)
-      setError(true)
-    })
-    apiPromise.on('connected', () => {
-      setLoading(true)
-      setConnected(false)
-      setError(false)
-    })
-    apiPromise.on('ready', () => {
-      setApi(apiPromise)
-      setLoading(false)
-      setConnected(true)
-      setError(false)
-    })
-  }, [config, selectedChain, addChain])
-
-  useEffect(() => {
-    if (loading) {
-      setRenderLoading(true)
-    }
-    setRenderLoading(false)
-  }, [loading])
-
-  if (renderLoading) {
-    return <div>Api is loading</div>
-  }
 
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>
 }

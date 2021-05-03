@@ -1,57 +1,11 @@
-import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress'
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { Progress } from 'antd'
-import React, { useEffect, useState } from 'react'
-import styled from 'styled-components'
-import './progress.css'
 import Box from '@material-ui/core/Box'
+import CircularProgress, { CircularProgressProps } from '@material-ui/core/CircularProgress'
+import LinearProgress, { LinearProgressProps } from '@material-ui/core/LinearProgress'
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { StandardText } from 'components/Text'
-
-const BarContainer = styled.div`
-  height: 30px;
-  width: 100%;
-  background-color: #e0e0de;
-  border-radius: 8px;
-`
-
-const BarFill = styled.div<{ completion: number }>`
-  height: 100%;
-  width: ${(props) => props.completion}%;
-  background-color: ${({ theme }) => theme.primary1};
-  border-radius: inherit;
-  text-align: center;
-`
-
-const BarLabel = styled.div`
-  padding-top: 5px;
-  color: #fff;
-  font-weight: 700;
-`
-
-interface ProgressBarProps {
-  current: number
-  end: number
-}
-
-export function ProgressBar(props: ProgressBarProps): JSX.Element {
-  const { current, end } = props
-  const [completion, setCompletion] = useState<number>(0)
-
-  useEffect(() => {
-    setCompletion((current / end) * 100)
-  }, [current, end])
-
-  return (
-    <BarContainer>
-      <BarFill completion={completion}>
-        <BarLabel>{`${completion}%`}</BarLabel>
-      </BarFill>
-    </BarContainer>
-  )
-}
-
-export const ProgressBar2 = styled(Progress)``
+import React from 'react'
+import './progress.css'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,6 +26,39 @@ const useStyles = makeStyles((theme: Theme) =>
     },
   })
 )
+
+const ProgressBar = withStyles((theme: Theme) =>
+  createStyles({
+    root: {
+      width: '100%',
+      height: 8,
+      borderRadius: 5,
+    },
+    colorPrimary: {
+      color: '#EC3D3D',
+      backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+    },
+    bar: {
+      borderRadius: 5,
+      backgroundColor: '#EC3D3D',
+    },
+  })
+)(LinearProgress)
+
+const useLinearStyles = makeStyles({
+  root: {
+    flexGrow: 1,
+  },
+})
+
+export function LinearProgressBar(props: LinearProgressProps & { value: number }) {
+  const classes = useLinearStyles()
+  return (
+    <div className={classes.root}>
+      <ProgressBar variant="determinate" {...props} />
+    </div>
+  )
+}
 
 export function CircleProgress(props: CircularProgressProps & { value: number }) {
   const classes = useStyles()
