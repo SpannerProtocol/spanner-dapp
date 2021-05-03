@@ -130,19 +130,19 @@ export const SmallText = styled.div`
  `};
 `
 
-export const DataTokenName = styled.div<{ color?: string }>`
+export const DataTokenName = styled.div<{ color?: string; fontSize?: string; mobileFontSize?: string }>`
   display: inline;
-  font-size: 14px;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
   font-weight: 700;
-  color: ${({ color }) => (color ? color : '#000')};
+  color: ${({ color, theme }) => (color ? color : theme.text3)};
   overflow-wrap: break-word;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;
  `};
 
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    font-size: 10px;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '10px'}
   `};
 `
 export const SectionTitle = styled.h3`

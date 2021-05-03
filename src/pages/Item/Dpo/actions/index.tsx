@@ -32,7 +32,13 @@ interface ActionProviderProps {
 function ActionProvider(props: ActionProviderProps): JSX.Element {
   const { dpoInfo, dpoIndex } = props
   const { api, connected } = useApi()
-  const { dpoActions, targetTravelCabin, targetTravelCabinInventory, targetDpo } = useDpoActions(dpoInfo)
+  const {
+    dpoActions,
+    targetTravelCabin,
+    targetTravelCabinInventory,
+    targetTravelCabinInventoryIndex,
+    targetDpo,
+  } = useDpoActions(dpoInfo)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
   const targetInventoryIndex = useDPOTravelCabinInventoryIndex(dpoInfo.index.toString(), targetTravelCabin?.index)
   const [estimatedFee, setEstimatedFee] = useState<string>()
@@ -54,7 +60,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
             txContent={
               <>
                 <StandardText>
-                  {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.index.toString()}`
+                  {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.name.toString()}
                 </StandardText>
                 <TxFee fee={estimatedFee} />
               </>
@@ -75,7 +81,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
         )
       } else if (dpoAction.action === 'withdrawFareFromTravelCabin') {
         // check if this is the right stock index
-        if (!targetTravelCabinInventory) return undefined
+        if (!targetTravelCabinInventoryIndex) return undefined
         return (
           <Action
             txContent={
@@ -95,7 +101,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
               method: 'withdrawFareFromTravelCabin',
               params: {
                 travelCabinIdx: dpoInfo.target.asTravelCabin.toString(),
-                travelCabinNumber: targetTravelCabinInventory[0],
+                travelCabinNumber: targetTravelCabinInventoryIndex.toString(),
               },
             }}
             setEstimatedFee={setEstimatedFee}
@@ -324,7 +330,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
           </>
         )
       } else if (dpoAction.action === 'withdrawYieldFromTravelCabin') {
-        if (!targetTravelCabinInventory || !targetInventoryIndex || !dpoInfo.target.isTravelCabin) return undefined
+        if (!targetInventoryIndex || !dpoInfo.target.isTravelCabin) return undefined
         // Test this to make sure this is the correct stock index
         return (
           <Action
@@ -427,6 +433,7 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
     estimatedFee,
     chainDecimals,
     t,
+    targetTravelCabinInventoryIndex,
   ])
 
   return (

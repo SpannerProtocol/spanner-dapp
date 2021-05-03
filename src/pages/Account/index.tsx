@@ -10,7 +10,6 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import { shortenAddress } from 'utils'
 import { useAccount } from 'utils/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import {
@@ -115,31 +114,9 @@ export default function Account() {
               )}
             </RowBetween>
           </Section>
-          {wallet && wallet.address && (
+          {wallet && wallet.address && referrer && (
             <BorderedWrapper>
               <Section>
-                <RowBetween>
-                  <HeavyText fontSize="14px">{t(`Wallet Type`)}</HeavyText>
-                  <StandardText fontSize="14px">{wallet.type}</StandardText>
-                </RowBetween>
-                {wallet.type === 'custodial' && wallet.ethereumAddress && (
-                  <RowBetween>
-                    <HeavyText fontSize="14px">{t(`Ethereum Address`)}</HeavyText>
-                    <CopyWrapper style={{ display: 'flex' }}>
-                      <CopyHelper toCopy={`${wallet.ethereumAddress}`} childrenIsIcon={true}>
-                        <StandardText fontSize="14px">{shortenAddress(wallet.ethereumAddress, 8)}</StandardText>
-                      </CopyHelper>
-                    </CopyWrapper>
-                  </RowBetween>
-                )}
-                <RowBetween>
-                  <HeavyText fontSize="14px">{t(`Address`)}</HeavyText>
-                  <CopyWrapper style={{ display: 'flex' }}>
-                    <CopyHelper toCopy={`${wallet.address}`} childrenIsIcon={true}>
-                      <StandardText fontSize="14px">{shortenAddr(wallet.address, 8)}</StandardText>
-                    </CopyHelper>
-                  </CopyWrapper>
-                </RowBetween>
                 {referrer && (
                   <RowBetween>
                     <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>

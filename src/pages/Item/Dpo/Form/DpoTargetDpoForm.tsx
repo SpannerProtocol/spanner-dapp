@@ -105,8 +105,17 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
     [maxEnd]
   )
 
-  const handleSubmit = () =>
-    onSubmit({ seats, managerSeats, end, dpoName, baseFee, directReferralRate, referrer: referralCode })
+  const handleSubmit = () => {
+    onSubmit({
+      dpoName,
+      seats: Number.isNaN(seats) ? 1 : seats,
+      managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
+      baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
+      directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
+      end: Number.isNaN(end) ? 1 : end,
+      referrer: referralCode,
+    })
+  }
 
   useEffect(() => {
     if (!referralCode) {
@@ -137,7 +146,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
       </Section>
       <SpacedSection>
         <Section>
-          <HeavyText mobileFontSize="14px">{t(`Default Target`)}</HeavyText>
+          <HeavyText mobileFontSize="14px">{t(`DPO Goal`)}</HeavyText>
           <Divider />
         </Section>
         <BorderedWrapper>

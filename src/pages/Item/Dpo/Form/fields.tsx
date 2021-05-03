@@ -262,7 +262,7 @@ export function DpoDefaultTarget({ target }: { target: string }) {
   return (
     <Section>
       <RowFixed>
-        <StandardText mobileFontSize="10px">{`${t(`Target`)}`}</StandardText>
+        <StandardText mobileFontSize="10px">{`${t(`Default Target`)}`}</StandardText>
         <QuestionHelper
           text={t(
             `The Default Target is a goal that all members agree to pursue. When the DPO is ACTIVE, the Default Target must be selected if available.`
