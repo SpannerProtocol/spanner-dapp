@@ -4,11 +4,15 @@ import { addBridgeServer, addChain } from './actions'
 export interface ConnectionsState {
   readonly bridgeServerOn: boolean
   readonly chain: 'Hammer' | 'Spanner'
+  readonly apiConnected: boolean
+  readonly apiLoading: boolean
 }
 
 const initialState: ConnectionsState = {
   bridgeServerOn: false,
   chain: 'Spanner',
+  apiConnected: false,
+  apiLoading: false,
 }
 
 export default createReducer(initialState, (builder) =>

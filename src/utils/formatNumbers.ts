@@ -1,5 +1,23 @@
 import BN from 'bn.js'
 
+/**
+ * Return the value provided after handling the precisions safely
+ * @param num the value to adjust for precision
+ * @param precision number of decimal places
+ * @returns string of the number after precision adjustments
+ */
+export function formatPrecision(num: number | string, precision: number) {
+  let numStr = num.toString()
+  const split = numStr.split('.')
+  const integer = split[0]
+  let decimals = split[1]
+  if (decimals) {
+    decimals = decimals.slice(0, precision)
+  }
+  numStr = decimals ? `${integer}.${decimals}` : integer
+  return numStr
+}
+
 const si = [
   { value: 1, symbol: '' },
   { value: 1e3, symbol: 'K' },
@@ -29,35 +47,17 @@ export function toHumanNumber(num: number, digits: number): string {
  * @returns number as string
  */
 export function bnToHumanNumber(num: BN, precision = 0) {
-  let i
+  let i = 0
   for (i = si.length - 1; i > 0; i--) {
     if (num.gte(new BN(si[i].value.toString()))) {
+      // console.log('num', num.toString(), 'si value', si[i].value)
       break
     }
   }
   const siValue = new BN(si[i].value)
-  const mod = num.mod(siValue).toString()
-  const decimals = mod.toString().slice(0, precision)
-  const decimalsInPrecision = decimals.length > 0 ? `.${decimals + '0'.repeat(precision - decimals.length)}` : ''
-  return num.div(siValue).toString() + decimalsInPrecision + si[i].symbol
-}
-
-/**
- * Return the value provided after handling the precisions safely
- * @param num the value to adjust for precision
- * @param precision number of decimal places
- * @returns string of the number after precision adjustments
- */
-export function formatPrecision(num: number | string, precision: number) {
-  let numStr = num.toString()
-  const split = numStr.split('.')
-  const integer = split[0]
-  let decimals = split[1]
-  if (decimals) {
-    decimals = decimals.slice(0, precision)
-  }
-  numStr = decimals ? `${integer}.${decimals}` : integer
-  return numStr
+  const integer = num.div(siValue).toString()
+  const decimals = num.toString().slice(integer.length, num.toString().length)
+  return formatPrecision(integer + '.' + decimals, precision) + si[i].symbol
 }
 
 export function noNan(num: number) {

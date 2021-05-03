@@ -1,18 +1,19 @@
 import QuestionHelper from 'components/QuestionHelper'
+import useWallet from 'hooks/useWallet'
 import React, { useEffect } from 'react'
-import { ExternalLink as LinkIcon } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
+import { shortenAddr } from 'utils/truncateString'
 import PortisIcon from '../../assets/images/portisIcon.png'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
 import { injected, portis, walletconnect } from '../../connectors'
 import { SUPPORTED_WALLETS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
-import { ExternalLink } from '../../theme'
 import { shortenAddress } from '../../utils'
 import { ButtonSecondary } from '../Button'
+import SpannerLogo from '../../assets/svg/logo-spanner-gradient.svg'
 import Identicon from '../Identicon'
 import Copy from './Copy'
 
@@ -109,17 +110,6 @@ const AccountControl = styled.div`
   }
 `
 
-const AddressLink = styled(ExternalLink)<{ hasENS: boolean; isENS: boolean }>`
-  font-size: 0.825rem;
-  color: ${({ theme }) => theme.text3};
-  margin-left: 1rem;
-  font-size: 0.825rem;
-  display: flex;
-  :hover {
-    color: ${({ theme }) => theme.text2};
-  }
-`
-
 const CloseIcon = styled.div`
   position: absolute;
   right: 1rem;
@@ -181,9 +171,10 @@ interface AccountDetailsProps {
 }
 
 export default function AccountDetails({ toggleWalletModal, ENSName, openOptions }: AccountDetailsProps) {
-  const { chainId, account, connector } = useActiveWeb3React()
+  const { account: ethAccount, connector } = useActiveWeb3React()
   const { t } = useTranslation()
   const connectionState = useConnectionsState()
+  const wallet = useWallet()
 
   useEffect(() => {
     if (connectionState && !connectionState.bridgeServerOn && connector) {
@@ -289,14 +280,14 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                     <>
                       <div>
                         {getStatusIcon()}
-                        <p> {ENSName}</p>
+                        <p>{` ${ENSName} (${t(`Ethereum`)})`}</p>
                       </div>
                     </>
                   ) : (
                     <>
                       <div>
                         {getStatusIcon()}
-                        <p> {account && shortenAddress(account)}</p>
+                        <p>{` ${ethAccount && shortenAddress(ethAccount)} (${t(`Ethereum`)})`}</p>
                       </div>
                     </>
                   )}
@@ -307,15 +298,10 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                   <>
                     <AccountControl>
                       <div>
-                        {account && (
-                          <Copy toCopy={account}>
+                        {ethAccount && (
+                          <Copy toCopy={ethAccount}>
                             <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
                           </Copy>
-                        )}
-                        {chainId && account && (
-                          <AddressLink hasENS={!!ENSName} isENS={true} href={''}>
-                            <LinkIcon size={16} />
-                          </AddressLink>
                         )}
                       </div>
                     </AccountControl>
@@ -324,21 +310,42 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                   <>
                     <AccountControl>
                       <div>
-                        {account && (
-                          <Copy toCopy={account}>
+                        {ethAccount && (
+                          <Copy toCopy={ethAccount}>
                             <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
                           </Copy>
-                        )}
-                        {chainId && account && (
-                          <AddressLink hasENS={!!ENSName} isENS={false} href={''}>
-                            <LinkIcon size={16} />
-                            <span style={{ marginLeft: '4px' }}>View on Etherscan</span>
-                          </AddressLink>
                         )}
                       </div>
                     </AccountControl>
                   </>
                 )}
+              </AccountGroupingRow>
+              <AccountGroupingRow>
+                <AccountControl>
+                  <>
+                    {wallet && wallet.address && (
+                      <div style={{ paddingTop: '1rem' }}>
+                        <img
+                          src={SpannerLogo}
+                          style={{ height: '1.35rem', width: '1.35rem', marginRight: '8px' }}
+                          alt="spanner connection logo"
+                        />
+                        <p>{` ${shortenAddr(wallet.address)} (${t(`Spanner`)})`}</p>
+                      </div>
+                    )}
+                  </>
+                </AccountControl>
+              </AccountGroupingRow>
+              <AccountGroupingRow>
+                <AccountControl>
+                  <div>
+                    {wallet && wallet.address && (
+                      <Copy toCopy={wallet.address}>
+                        <span style={{ marginLeft: '4px' }}>{t(`Copy Address`)}</span>
+                      </Copy>
+                    )}
+                  </div>
+                </AccountControl>
               </AccountGroupingRow>
             </InfoCard>
           </YourAccount>

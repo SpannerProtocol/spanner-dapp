@@ -87,8 +87,16 @@ export default function DpoTargetCabinForm({
     setEnd(parseInt(value))
   }
 
-  const handleSubmit = () =>
-    onSubmit({ managerSeats, baseFee, directReferralRate, end, dpoName, referrer: referralCode })
+  const handleSubmit = () => {
+    onSubmit({
+      managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
+      baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
+      directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
+      end: Number.isNaN(end) ? 1 : end,
+      dpoName,
+      referrer: referralCode,
+    })
+  }
 
   useEffect(() => {
     if (!referralCode && referrer) {
@@ -118,7 +126,7 @@ export default function DpoTargetCabinForm({
       </Section>
       <SpacedSection>
         <Section>
-          <HeavyText mobileFontSize="14px">{t(`Default Target`)}</HeavyText>
+          <HeavyText mobileFontSize="14px">{t(`DPO Goal`)}</HeavyText>
           <Divider />
         </Section>
         <BorderedWrapper>
@@ -135,7 +143,7 @@ export default function DpoTargetCabinForm({
                 text={t(`The number of seats to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
-              ></QuestionHelper>
+              />
             </RowFixed>
             <StandardText>
               {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
@@ -148,7 +156,7 @@ export default function DpoTargetCabinForm({
                 text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
                 size={10}
                 backgroundColor={'#fff'}
-              ></QuestionHelper>
+              />
             </RowFixed>
             <StandardText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</StandardText>
           </RowBetween>
