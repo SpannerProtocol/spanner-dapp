@@ -76,16 +76,18 @@ export function DpoBaseFee({
 
 export function DpoReferralCode({
   referralCode,
+  newReferrer,
   onChange,
 }: {
   referralCode?: string | null
+  newReferrer?: boolean
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) {
   const { t } = useTranslation()
 
   return (
     <>
-      {!referralCode && (
+      {(!(!referralCode && newReferrer) || newReferrer) && (
         <Section>
           <RowFixed>
             <StandardText mobileFontSize="10px">{t(`Referral Code`)}</StandardText>
