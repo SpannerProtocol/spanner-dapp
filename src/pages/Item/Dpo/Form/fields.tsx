@@ -87,7 +87,7 @@ export function DpoReferralCode({
 
   return (
     <>
-      {(!(!referralCode && newReferrer) || newReferrer) && (
+      {(!referralCode || newReferrer) && (
         <Section>
           <RowFixed>
             <StandardText mobileFontSize="10px">{t(`Referral Code`)}</StandardText>

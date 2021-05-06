@@ -700,7 +700,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
-      {(!(!referralCode && newReferrer) || newReferrer) && (
+      {(!referralCode || newReferrer) && (
         <Section>
           <RowFixed>
             <StandardText>{t(`Referral Code`)}</StandardText>
