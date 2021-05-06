@@ -1,4 +1,5 @@
 import { Section } from 'components/Wrapper'
+import { parse } from 'qs'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
@@ -38,14 +39,14 @@ interface PaginationProps {
 }
 
 export default function Pagination({ currentPage, maxPage }: PaginationProps) {
-  const [page, setPage] = useState(0)
+  const [page, setPage] = useState(1)
   const [canPreviousPage, setCanPreviousPage] = useState(false)
   const [canNextPage, setCanNextPage] = useState(true)
 
-  const makePageNotNaN = (page: number) => (Number.isNaN(page) ? 0 : page)
+  // const makePageNotNaN = (page: number) => (Number.isNaN(page) ? 0 : page)
 
   const previousPage = () => {
-    setPage((prev) => (prev > 0 ? prev - 1 : 0))
+    setPage((prev) => (prev > 1 ? prev - 1 : 0))
   }
 
   const nextPage = () => {
@@ -54,14 +55,16 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
   }
 
   const handleInput = (value: string) => {
-    setPage(makePageNotNaN(parseInt(value)))
+    if (parse(value)) return
+    setPage(parseInt(value))
   }
 
   useEffect(() => {
-    page > 0 ? setCanPreviousPage(true) : setCanPreviousPage(false)
+    page > 1 ? setCanPreviousPage(true) : setCanPreviousPage(false)
     if (maxPage) {
       page < maxPage ? setCanNextPage(true) : setCanNextPage(false)
     }
+    if (Number.isNaN(page)) return
     currentPage(page)
   }, [currentPage, maxPage, page])
 
@@ -73,7 +76,7 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
         </PageButtons>
         <PageInput
           type="number"
-          value={page ? page : ''}
+          value={page}
           placeholder={page.toString()}
           onChange={(e) => handleInput(e.target.value)}
         />

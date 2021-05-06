@@ -1,3 +1,4 @@
+import { useQuery } from '@apollo/client'
 import { encodeAddress } from '@polkadot/keyring'
 import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
@@ -10,12 +11,15 @@ import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/
 import { Section, SectionContainer, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
-import { postTransfers, postTransfersTokens, postTxHistory } from 'queries'
+import { postTransfersTokens, postTxHistory } from 'queries'
+import transferIn from 'queries/graphql/transferIn'
+import { TransferIn, TransferInVariables } from 'queries/graphql/__generated__/TransferIn'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { SpanfuraDataEvents, SpanfuraDataExtrinsic } from 'spanfura'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
+import { Dispatcher } from 'types/dispatcher'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import truncateString, { shortenAddr } from 'utils/truncateString'
@@ -62,62 +66,53 @@ interface EventRowProps {
   index?: number
 }
 
-function TransferRow({ event }: EventRowProps) {
+interface TransferProp {
+  id: string
+  amount: string | null
+  token: string | null
+  fromId: string | null
+  toId: string | null
+  timestamp: any | null
+}
+
+function TransferRow({ id, amount, token, fromId, toId, timestamp }: TransferProp) {
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const wallet = useWallet()
   const { chain } = useChainState()
 
-  const sender = encodeAddress('0x' + event.params_json[0].value, 42)
-  const receiver = encodeAddress('0x' + event.params_json[1].value, 42)
+  const blockNum = id.split('-')[0]
 
   return (
     <>
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <StyledExternalLink
-              fontSize="12px"
-              href={chain && chain.url ? `${chain.url}/query/${event.block_num}` : ''}
-            >
-              {' '}
-              {truncateString(event.extrinsic_hash, 26)}
+            <StyledExternalLink fontSize="12px" href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}>
+              {` ${id}`}
             </StyledExternalLink>
             <ItalicText fontSize="11px">
-              {tsToRelative(event.block_timestamp)} - {tsToDateTimeHuman(event.block_timestamp)}
+              {tsToRelative(timestamp)} - {tsToDateTimeHuman(timestamp)}
             </ItalicText>
           </TxCell>
           <TxCell>
-            {wallet.address === sender ? (
-              <>
-                <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
-                    receiver,
-                    6
-                  )}`}</StandardText>
-                </div>
-              </>
-            ) : (
-              <>
-                <div style={{ display: 'inline-flex' }}>
-                  <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
-                    sender,
-                    6
-                  )}`}</StandardText>
-                </div>
-              </>
-            )}
+            {toId ||
+              (fromId && (
+                <>
+                  <div style={{ display: 'inline-flex' }}>
+                    <HeavyText fontSize="12px">{wallet.address === toId ? t(`To`) : t(`From`)}:</HeavyText>
+                    <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>{` ${shortenAddr(
+                      wallet.address === toId ? toId : fromId ? fromId : '',
+                      6
+                    )}`}</StandardText>
+                  </div>
+                </>
+              ))}
           </TxCell>
           <TxCell>
-            {wallet.address === sender ? (
-              <TransferWrapper color="#fff" background="#EC3D3D">
-                {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
-              </TransferWrapper>
-            ) : (
-              <TransferWrapper color="#fff" background="#5BC85B">
-                {formatToUnit(event.params_json[2].value, chainDecimals, 2)} BOLT
+            {amount && (
+              <TransferWrapper color="#fff" background={wallet.address === fromId ? '#EC3D3D' : '#5BC85B'}>
+                {formatToUnit(amount, chainDecimals, 2)} {token}
               </TransferWrapper>
             )}
           </TxCell>
@@ -127,25 +122,67 @@ function TransferRow({ event }: EventRowProps) {
   )
 }
 
-function Transfers() {
-  const { t } = useTranslation()
+function TransferInRows({
+  first,
+  offset,
+  setTotalCount,
+}: {
+  first: number
+  offset: number
+  setTotalCount: Dispatcher<number>
+}) {
   const wallet = useWallet()
-  const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
-  const [meta, setMeta] = useState<{ count: number }>({ count: 0 })
-  const [page, setPage] = useState(0)
-  const { chain } = useChainState()
+
+  const address = wallet && wallet.address ? wallet.address : ''
+  const { loading, error, data } = useQuery<TransferIn, TransferInVariables>(transferIn, {
+    variables: {
+      address: address,
+      first: first,
+      offset: offset,
+    },
+    pollInterval: 2000,
+  })
+
+  console.log(data)
 
   useEffect(() => {
-    if (!wallet || !wallet.address || !chain) return
-    postTransfers({
-      chain: chain.chain,
-      row: 10,
-      page: page,
-      address: wallet.address,
-      setData: setTransactions,
-      setMeta,
-    })
-  }, [wallet, page, chain])
+    if (data && data.account) {
+      setTotalCount(data.account.transferIn.totalCount)
+    }
+  }, [data, setTotalCount])
+
+  return (
+    <>
+      {error && <div>Woops</div>}
+      {loading && <div>Loading</div>}
+      {data &&
+        data.account &&
+        data.account.transferIn.nodes.map((transfer, index) => transfer && <TransferRow key={index} {...transfer} />)}
+    </>
+  )
+}
+
+function Transfers() {
+  const { t } = useTranslation()
+  // const [transactions, setTransactions] = useState<SpanfuraDataEvents[]>([])
+  const [totalCount, setTotalCount] = useState<number>(0)
+  const [page, setPage] = useState(1)
+  const [pagination, setPagination] = useState<{ first: number; offset: number }>({ first: 10, offset: 0 })
+
+  useEffect(() => {
+    // postTransfers({
+    //   chain: chain.chain,
+    //   row: 10,
+    //   page: page,
+    //   address: wallet.address,
+    //   setData: setTransactions,
+    //   setMeta,
+    // })
+    // page size will be fixed to 10 until we have a page size filter
+    const offset = (page - 1) * 10 > 0 ? (page - 1) * 10 : 0
+    setPagination({ first: 10, offset })
+    console.log('first', 10, 'offset', offset)
+  }, [page])
 
   return (
     <>
@@ -162,10 +199,9 @@ function Transfers() {
         </div>
       </Section>
       <SpacedSection>
-        {transactions.length > 0 &&
-          transactions.map((transaction, index) => <TransferRow key={index} event={transaction}></TransferRow>)}
+        <TransferInRows {...pagination} setTotalCount={setTotalCount} />
       </SpacedSection>
-      <Pagination currentPage={setPage} maxPage={Math.ceil(meta.count / 10) - 1} />
+      <Pagination currentPage={setPage} maxPage={totalCount / 10} />
     </>
   )
 }
