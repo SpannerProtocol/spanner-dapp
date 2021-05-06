@@ -43,6 +43,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   const [dpoName, setDpoName] = useState<string | null>('')
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
+  const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const referrer = useReferrer()
   const { t } = useTranslation()
   const { lastBlock, expectedBlockTime } = useBlockManager()
@@ -67,6 +68,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
       setReferralCode(null)
     } else {
       setReferralCode(value)
+      setNewReferrer(true)
     }
   }
 
@@ -114,6 +116,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
       referrer: referralCode,
+      newReferrer: newReferrer,
     })
   }
 
@@ -238,7 +241,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         <DpoDirectReferralRate directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
       </SpacedSection>
       <SpacedSection>
-        <DpoReferralCode referralCode={referralCode} onChange={handleReferralCode} />
+        <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit} disabled={errNoBalance ? true : false}>
