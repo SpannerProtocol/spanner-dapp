@@ -44,6 +44,7 @@ export default function DpoTargetCabinForm({
   const [end, setEnd] = useState<number>(30)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
+  const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const { t } = useTranslation()
   const { passengerSeatCap } = useConsts()
   const balance = useSubscribeBalance(token.toUpperCase())
@@ -57,6 +58,7 @@ export default function DpoTargetCabinForm({
       setReferralCode(null)
     } else {
       setReferralCode(value)
+      setNewReferrer(true)
     }
   }
 
@@ -95,6 +97,7 @@ export default function DpoTargetCabinForm({
       end: Number.isNaN(end) ? 1 : end,
       dpoName,
       referrer: referralCode,
+      newReferrer,
     })
   }
 
@@ -211,7 +214,7 @@ export default function DpoTargetCabinForm({
       <DpoBaseFee baseFee={baseFee} onChange={handleBaseFee} />
       <DpoDirectReferralRate directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
       <SpacedSection>
-        <DpoReferralCode referralCode={referralCode} onChange={handleReferralCode} />
+        <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
         <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
