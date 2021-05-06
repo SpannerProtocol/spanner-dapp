@@ -45,6 +45,7 @@ interface TravelCabinCrowdfundTxConfirmProps {
   directReferralRate?: string
   end?: string
   referrer?: string | null
+  newReferrer?: boolean
   token?: string
   estimatedFee?: string
 }
@@ -59,6 +60,8 @@ function TravelCabinCrowdfundTxConfirm({
   end,
   token,
   estimatedFee,
+  referrer,
+  newReferrer,
 }: TravelCabinCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
@@ -128,6 +131,14 @@ function TravelCabinCrowdfundTxConfirm({
           </RowBetween>
         )}
       </BorderedWrapper>
+      {newReferrer && referrer && (
+        <BorderedWrapper>
+          <RowBetween>
+            <StandardText>{t(`Referral Code`)}</StandardText>
+            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+          </RowBetween>
+        </BorderedWrapper>
+      )}
       {token && <Balance token={token} />}
       <TxFee fee={estimatedFee} />
     </>
@@ -141,14 +152,14 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee }: TravelCabinJ
       <Section>
         <StandardText>{t(`Buy this TravelCabin to start earning Rewards`)}</StandardText>
       </Section>
-      <SpacedSection>
+      <BorderedWrapper>
         <RowBetween>
           <StandardText>{t(`Ticket Fare (deposit)`)}</StandardText>
           <StandardText>
             {deposit} {token}
           </StandardText>
         </RowBetween>
-      </SpacedSection>
+      </BorderedWrapper>
       <Balance token={token} />
       <TxFee fee={estimatedFee} />
     </>
@@ -163,6 +174,7 @@ interface CrowdfundData {
   directReferralRate?: string
   end?: string
   referrer?: string | null
+  newReferrer?: boolean
 }
 
 function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
@@ -211,6 +223,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     directReferralRate,
     end,
     referrer,
+    newReferrer,
   }: {
     dpoName: string
     managerSeats: number
@@ -218,6 +231,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
     directReferralRate: number
     end: number
     referrer: string
+    newReferrer: boolean
   }) => {
     if (!lastBlock || !expectedBlockTime) {
       return
@@ -231,6 +245,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       directReferralRate: directReferralRate.toString(),
       end: endBlock.toString(),
       referrer,
+      newReferrer,
     })
     if (!travelCabinIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
@@ -316,6 +331,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
           directReferralRate={crowdfundData.directReferralRate}
           end={crowdfundData.end}
           referrer={crowdfundData.referrer}
+          newReferrer={crowdfundData.newReferrer}
           token={token}
           estimatedFee={txInfo?.estimatedFee}
         />

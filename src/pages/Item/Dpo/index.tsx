@@ -78,6 +78,7 @@ interface JoinData {
   dpoIndex?: string
   targetSeats?: string
   referrer?: string | null
+  newReferrer?: boolean
 }
 
 interface DpoJoinTxConfirmProps extends JoinData {
@@ -94,6 +95,7 @@ interface CrowdfundData {
   directReferralRate?: string
   end?: string
   referrer?: string | null
+  newReferrer?: boolean
 }
 
 interface DpoCrowdfundTxConfirmProps extends CrowdfundData {
@@ -479,6 +481,8 @@ function DpoCrowdfundTxConfirm({
   end,
   estimatedFee,
   dpoInfo,
+  referrer,
+  newReferrer,
 }: DpoCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
@@ -554,13 +558,21 @@ function DpoCrowdfundTxConfirm({
           </RowBetween>
         )}
       </BorderedWrapper>
+      {newReferrer && referrer && (
+        <BorderedWrapper>
+          <RowBetween>
+            <StandardText>{t(`Referral Code`)}</StandardText>
+            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+          </RowBetween>
+        </BorderedWrapper>
+      )}
       <Balance token={token} />
       <TxFee fee={estimatedFee} />
     </>
   )
 }
 
-function DpoJoinTxConfirm({ targetSeats, deposit, estimatedFee, token }: DpoJoinTxConfirmProps) {
+function DpoJoinTxConfirm({ targetSeats, deposit, estimatedFee, token, referrer, newReferrer }: DpoJoinTxConfirmProps) {
   const { t } = useTranslation()
   return (
     <>
@@ -578,6 +590,12 @@ function DpoJoinTxConfirm({ targetSeats, deposit, estimatedFee, token }: DpoJoin
             {deposit} {token}
           </StandardText>
         </RowBetween>
+        {newReferrer && referrer && (
+          <RowBetween>
+            <StandardText>{t(`Referral Code`)}</StandardText>
+            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+          </RowBetween>
+        )}
       </BorderedWrapper>
       <Balance token={token} />
       <TxFee fee={estimatedFee} />
@@ -592,6 +610,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   const { t } = useTranslation()
   const { passengerSeatCap } = useConsts()
   const balance = useSubscribeBalance(token)
+  const [newReferrer, setNewReferrer] = useState<boolean>(false)
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -600,6 +619,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
       setReferralCode(null)
     } else {
       setReferralCode(value)
+      setNewReferrer(true)
     }
   }
 
@@ -611,7 +631,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   }
 
   const handleSubmit = () => {
-    onSubmit({ seats, referrer: referralCode })
+    onSubmit({ seats, referrer: referralCode, newReferrer })
   }
 
   // if the user had a stored referrer, set it
@@ -680,7 +700,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
       </Section>
-      {!referralCode && (
+      {(!(!referralCode && newReferrer) || newReferrer) && (
         <Section>
           <RowFixed>
             <StandardText>{t(`Referral Code`)}</StandardText>
@@ -763,11 +783,19 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }
 
-  const handleJoinFormCallback = ({ referrer, seats }: { referrer: string | null; seats: string }) => {
+  const handleJoinFormCallback = ({
+    referrer,
+    seats,
+    newReferrer,
+  }: {
+    referrer: string | null
+    seats: string
+    newReferrer: boolean
+  }) => {
     if (!dpoIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
-    setJoinData({ dpoIndex, targetSeats: seats, referrer })
+    setJoinData({ dpoIndex, targetSeats: seats, referrer, newReferrer })
     const txData = createTx({
       section: 'bulletTrain',
       method: 'passengerBuyDpoSeats',
@@ -786,6 +814,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     directReferralRate,
     end,
     referrer,
+    newReferrer,
   }: {
     dpoName: string
     seats: string
@@ -794,6 +823,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     directReferralRate: number
     end: number
     referrer: string
+    newReferrer: boolean
   }) => {
     if (!lastBlock || !expectedBlockTime) {
       return
@@ -808,6 +838,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
       directReferralRate: directReferralRate.toString(),
       end: endBlock.toString(),
       referrer,
+      newReferrer,
     })
     if (!dpoIndex) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
@@ -868,6 +899,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         <DpoJoinTxConfirm
           targetSeats={joinData.targetSeats}
           referrer={joinData.referrer}
+          newReferrer={joinData.newReferrer}
           deposit={formatToUnit(
             dpoInfo.amount_per_seat.toBn().mul(new BN(joinData.targetSeats ? joinData.targetSeats : 0)),
             chainDecimals,
@@ -896,6 +928,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           baseFee={crowdfundData.baseFee}
           directReferralRate={crowdfundData.directReferralRate}
           referrer={crowdfundData.referrer}
+          newReferrer={crowdfundData.newReferrer}
           targetAmount={formatToUnit(
             dpoInfo.amount_per_seat.toBn().mul(new BN(crowdfundData.targetSeats ? crowdfundData.targetSeats : 0)),
             chainDecimals,
