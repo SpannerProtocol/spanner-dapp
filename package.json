@@ -18,6 +18,7 @@
   },
   "scripts": {
     "build:types": "yarn generate:defs && yarn generate:meta",
+    "build:apollo-types": "apollo client:codegen --tagName=gql --target=typescript types",
     "generate:defs": "ts-node --skip-project node_modules/.bin/polkadot-types-from-defs --package 'spanner-interfaces' --input ./src/spanner-interfaces",
     "generate:meta": "ts-node --skip-project node_modules/.bin/polkadot-types-from-chain --package 'spanner-interfaces' --endpoint ./src/spanner-interfaces/metadata.json --output ./src/spanner-interfaces",
     "lint": "tsc --noEmit --pretty",

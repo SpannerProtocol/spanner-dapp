@@ -422,5 +422,19 @@
   "Reconnect": "Reconnect",
   "Connection lost": "Connection lost",
   "Spanner Dapp": "Spanner Dapp",
-  "Reconnecting": "Reconnecting"
+  "Reconnecting": "Reconnecting",
+  "Filter transfer type": "Filter transfer type",
+  "Filter token": "Filter token",
+  "Succeeded": "Succeeded",
+  "Failed": "Failed",
+  "Slippage tolerance": "Slippage tolerance",
+  "Current Price": "Current Price",
+  "Average Swap Price": "Average Swap Price",
+  "Projects": "Projects",
+  "Received": "Received",
+  "Sent": "Sent",
+  "Price data unavailable. Please try again later.": "Price data unavailable. Please try again later.",
+  "Token Performance": "Token Performance",
+  "Get Referral Link": "Get Referral Link",
+  "Check your Referrer": "Check your Referrer"
 }

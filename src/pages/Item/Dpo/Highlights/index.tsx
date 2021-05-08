@@ -1,8 +1,9 @@
+import { BN_ZERO } from '@polkadot/util'
 import { FlatCard } from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DataTokenName, HeavyText, SectionTitle, StandardText } from 'components/Text'
-import { ContentWrapper, GridWrapper, PaddedSection, Section } from 'components/Wrapper'
+import { BorderedWrapper, ContentWrapper, GridWrapper, PaddedSection, Section } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoManager } from 'hooks/useQueryDpoMembers'
@@ -11,17 +12,15 @@ import { useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelC
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 import { useMedia } from 'react-use'
-import { DpoInfo, DpoIndex, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
-import { ThemeContext } from 'styled-components'
+import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import styled, { ThemeContext } from 'styled-components'
 import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
-import { getCabinGracePeriodTimeLeft, getCabinYield } from 'utils/getCabinData'
+import { getCabinYield, getTreasureHuntingGPLeft, getYieldGPLeft } from 'utils/getCabinData'
 import { getDpoCabinInventoryIndex } from 'utils/getTravelCabinBuyer'
 import WaitingIcon from '../../../../assets/svg/icon-waiting.svg'
-import styled from 'styled-components'
-import { Link } from 'react-router-dom'
-import { BN_ZERO } from '@polkadot/util'
 
 const Icon = styled.img`
   max-height: 100%;
@@ -131,9 +130,11 @@ function RunningHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoInd
 function RunningHighlightsCabinTarget({
   cabinIndex,
   inventoryIndex,
+  dpoInfo,
 }: {
   cabinIndex: TravelCabinIndex
   inventoryIndex: TravelCabinInventoryIndex
+  dpoInfo: DpoInfo
 }) {
   const { chainDecimals } = useSubstrate()
   const { lastBlock } = useBlockManager()
@@ -142,65 +143,92 @@ function RunningHighlightsCabinTarget({
   const cabinInfo = useSubTravelCabin(cabinIndex)
   const buyerInfo = useSubTravelCabinBuyer(cabinIndex, inventoryIndex)
   const [yieldAvailable, setYieldAvailable] = useState<string>()
-  const [graceTimeLeft, setGraceTimeLeft] = useState<string>()
+  const [treasureHuntingGPLeft, setTreasureHuntingGPLeft] = useState<string>()
+  const [yieldGPLeft, setYieldGPLeft] = useState<string>()
   const theme = useContext(ThemeContext)
 
   useEffect(() => {
     if (!cabinInfo || !buyerInfo || !lastBlock || !expectedBlockTime) return
     setYieldAvailable(getCabinYield(cabinInfo, buyerInfo, lastBlock, chainDecimals))
-    setGraceTimeLeft(getCabinGracePeriodTimeLeft(buyerInfo, lastBlock, expectedBlockTime))
-  }, [cabinInfo, buyerInfo, lastBlock, chainDecimals, expectedBlockTime])
+    setTreasureHuntingGPLeft(getTreasureHuntingGPLeft(buyerInfo, lastBlock, expectedBlockTime))
+    const yieldGP = getYieldGPLeft(dpoInfo, lastBlock, expectedBlockTime)
+    setYieldGPLeft(yieldGP ? yieldGP : undefined)
+  }, [cabinInfo, buyerInfo, lastBlock, chainDecimals, expectedBlockTime, dpoInfo])
 
   const token = cabinInfo && cabinInfo.token_id.isToken && cabinInfo.token_id.asToken.toString()
   return (
     <>
-      <GridWrapper columns={'2'} mobileColumns={'2'}>
+      <GridWrapper columns={'1'} mobileColumns={'1'}>
         {buyerInfo && cabinInfo && yieldAvailable && (
-          <PaddedSection>
-            <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
-              {`${yieldAvailable} `}
-              <DataTokenName color={theme.green1}>{token}</DataTokenName>
-            </HeavyText>
-            <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-              {t(`Yield Available`)}
-            </StandardText>
-          </PaddedSection>
-        )}
-        {graceTimeLeft && expectedBlockTime && (
-          <PaddedSection>
-            <div style={{ display: 'block' }}>
-              <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
-                {`${formatToUnit(graceTimeLeft, 0)} `}
-                <DataTokenName>{t(`Blocks`)}</DataTokenName>
-              </HeavyText>
-              <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                {`${blockToDays(graceTimeLeft, expectedBlockTime, 2)} `}
-                <DataTokenName>{t(`Days`)}</DataTokenName>
-              </HeavyText>
-            </div>
-            <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-              {t(`Grace Period`)}
-            </StandardText>
-          </PaddedSection>
-        )}
-      </GridWrapper>
-      {cabinInfo && (
-        <PaddedSection style={{ paddingTop: '0' }}>
-          <CenteredRow>
+          <>
             <Link
               to={`/item/travelCabin/${cabinIndex.toString()}/inventory/${inventoryIndex.toString()}`}
               style={{ textDecoration: 'none' }}
             >
-              <div style={{ display: 'block ' }}>
-                <StandardText style={{ margin: 'auto' }}>{t(`Yield in`)}:</StandardText>
-                <HeavyText fontSize={'18px'} color={theme.blue2} mobileFontSize={'14px'}>{`${t(
+              <div style={{ display: 'flex' }}>
+                <StandardText fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
+                  {t(`Yield in`)}
+                </StandardText>
+                <HeavyText fontSize={'12px'} mobileFontSize="11px" color={theme.blue2}>{`${t(
                   `TravelCabin`
                 )}: ${cabinInfo.name.toString()}`}</HeavyText>
               </div>
             </Link>
-          </CenteredRow>
-        </PaddedSection>
-      )}
+            <BorderedWrapper marginBottom="0" marginTop="0">
+              <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
+                {`${yieldAvailable} `}
+                <DataTokenName color={theme.green1}>{token}</DataTokenName>
+              </HeavyText>
+              <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
+                {t(`Yield Available`)}
+              </StandardText>
+            </BorderedWrapper>
+          </>
+        )}
+        <>
+          <StandardText fontSize="12px" mobileFontSize="11px">
+            {t(`Grace Period`)}
+          </StandardText>
+          <BorderedWrapper marginTop="0" marginBottom="0" style={{ display: 'flex' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
+              {treasureHuntingGPLeft && expectedBlockTime && (
+                <>
+                  <div style={{ display: 'block', paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
+                      {`${formatToUnit(treasureHuntingGPLeft, 0)} `}
+                      <DataTokenName>{t(`Blocks`)}</DataTokenName>
+                    </HeavyText>
+                    <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
+                      {`${blockToDays(treasureHuntingGPLeft, expectedBlockTime, 2)} `}
+                      <DataTokenName>{t(`Days`)}</DataTokenName>
+                    </HeavyText>
+                    <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
+                      {t(`Time left to Withdraw Yield`)}
+                    </StandardText>
+                  </div>
+                </>
+              )}
+              {yieldGPLeft && expectedBlockTime && (
+                <>
+                  <div style={{ display: 'block', paddingLeft: '1rem', paddingRight: '1rem' }}>
+                    <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
+                      {`${formatToUnit(yieldGPLeft, 0)} `}
+                      <DataTokenName>{t(`Blocks`)}</DataTokenName>
+                    </HeavyText>
+                    <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
+                      {`${blockToDays(yieldGPLeft, expectedBlockTime, 2)} `}
+                      <DataTokenName>{t(`Days`)}</DataTokenName>
+                    </HeavyText>
+                    <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
+                      {t(`Time left to Release Yield`)}
+                    </StandardText>
+                  </div>
+                </>
+              )}
+            </div>
+          </BorderedWrapper>
+        </>
+      </GridWrapper>
     </>
   )
 }
@@ -220,7 +248,11 @@ function RunningHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
   return (
     <>
       {dpoInfo.target.isTravelCabin && inventoryIndexes && (
-        <RunningHighlightsCabinTarget cabinIndex={inventoryIndexes[0]} inventoryIndex={inventoryIndexes[1]} />
+        <RunningHighlightsCabinTarget
+          cabinIndex={inventoryIndexes[0]}
+          inventoryIndex={inventoryIndexes[1]}
+          dpoInfo={dpoInfo}
+        />
       )}
       {dpoInfo.target.isDpo && <RunningHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />}
     </>

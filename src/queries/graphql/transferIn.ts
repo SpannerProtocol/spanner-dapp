@@ -18,4 +18,21 @@ const transferIn = gql`
   }
 `
 
+export const transferInTokenFilter = gql`
+  query TransferInTokenFilter($address: String!, $first: Int!, $offset: Int!, $token: String!) {
+    account(id: $address) {
+      transferIn(orderBy: TIMESTAMP_DESC, first: $first, offset: $offset, filter: { token: { equalTo: $token } }) {
+        nodes {
+          id
+          amount
+          token
+          fromId
+          toId
+          timestamp
+        }
+      }
+    }
+  }
+`
+
 export default transferIn

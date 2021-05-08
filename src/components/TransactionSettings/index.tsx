@@ -7,6 +7,7 @@ import { AutoColumn } from '../Column'
 import { RowBetween, RowFixed } from '../Row'
 
 import { darken } from 'polished'
+import { useTranslation } from 'translate'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -93,6 +94,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
   const theme = useContext(ThemeContext)
 
   const inputRef = useRef<HTMLInputElement>()
+  const { t } = useTranslation()
 
   const [slippageInput, setSlippageInput] = useState('')
 
@@ -126,11 +128,12 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
       <AutoColumn gap="sm">
         <RowFixed>
           <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
-            Slippage tolerance
+            {t(`Slippage tolerance`)}
           </TYPE.black>
           <QuestionHelper
             text="Your transaction will revert if the price changes unfavorably by more than this percentage."
             backgroundColor="transparent"
+            size={12}
           />
         </RowFixed>
         <RowBetween>
