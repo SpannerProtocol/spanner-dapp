@@ -2,9 +2,7 @@ import { Web3Provider } from '@ethersproject/providers'
 import { InjectedConnector } from '@web3-react/injected-connector'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { PortisConnector } from '@web3-react/portis-connector'
-
 import { NetworkConnector } from './NetworkConnector'
-
 import AWS from 'aws-sdk'
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL

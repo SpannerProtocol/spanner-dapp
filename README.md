@@ -8,19 +8,9 @@ An open source interface for Spanner.
 
 ```bash
 yarn
-```
-
-### Generate TypeScript definitions
-```bash
-yarn build:types
-```
-
-### Run
-
-```bash
+yarn build:apollo-types
 yarn start
 ```
-
 ### Configuring the environment (optional)
 Some of the environment configuration is currently not available yet until Mainnet Launch.
 1. Make a copy of `.env.example` named `.env.local`

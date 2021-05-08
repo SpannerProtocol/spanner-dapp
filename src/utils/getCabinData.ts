@@ -1,4 +1,4 @@
-import { TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-interfaces'
 import BN from 'bn.js'
 import { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import { bnToUnit } from './formatUnit'
@@ -28,11 +28,23 @@ export function getCabinYield(
     }
   }
 }
-export function getCabinGracePeriodTimeLeft(
+export function getTreasureHuntingGPLeft(
   buyerInfo: TravelCabinBuyerInfo,
   lastBlock: BlockNumber,
   expectedBlockTime: Moment
 ) {
-  const gracecPeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
-  return gracecPeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracecPeriodTimeLeft.sub(lastBlock).toString()
+  const gracePeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
+  return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+}
+
+export function getYieldGPLeft(dpoInfo: DpoInfo, lastBlock: BlockNumber, expectedBlockTime: Moment) {
+  // console.log(dpoInfo.blk_of_last_yield.unwrapOrDefault().toString())
+  if (dpoInfo.blk_of_last_yield.isSome) {
+    const gracePeriodTimeLeft = dpoInfo.blk_of_last_yield.unwrapOrDefault().add(daysToBlocks(7, expectedBlockTime))
+    return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  } else if (dpoInfo.blk_of_last_yield.isNone) {
+    return undefined
+  } else {
+    return '0'
+  }
 }

@@ -82,3 +82,11 @@ export function tsToRelative(timestamp: number) {
 export function blockToTs(genesisTs: number, expectedBlockTime: number, currentBlock: number) {
   return genesisTs + currentBlock * expectedBlockTime
 }
+
+export function isoToTs(iso: string) {
+  const myDate = new Date(iso)
+  const offset = myDate.getTimezoneOffset() * 60 * 1000
+  const withOffset = myDate.getTime()
+  const withoutOffset = withOffset - offset
+  return withoutOffset
+}

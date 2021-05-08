@@ -1,7 +1,6 @@
 import { FlatCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import { HeavyText, SectionTitle, StandardText } from 'components/Text'
-import TransactionHistory from 'components/TransactionHistory'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -133,7 +132,6 @@ export default function Balances() {
             />
           ))}
       </FlatCard>
-      <TransactionHistory />
     </>
   )
 }
