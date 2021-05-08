@@ -1,46 +1,26 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Area, ResponsiveContainer, Tooltip, AreaChart, YAxis, XAxis } from 'recharts'
-import styled, { keyframes, ThemeContext } from 'styled-components'
-import { useMedia } from 'react-use'
-import { darken } from 'polished'
+import { useQuery } from '@apollo/client'
+import { StandardText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { getPrice } from '../../queries'
-import { PriceData } from '../../spanfura'
-import { FlexWrapper } from '../Wrapper'
+import { darken } from 'polished'
+import swapsPrice from 'queries/graphql/swapsPrice'
+import { SwapsPrice, SwapsPriceVariables } from 'queries/graphql/types/SwapsPrice'
+import React, { useContext, useEffect, useMemo } from 'react'
+import Circle from 'assets/svg/yellow-loader.svg'
+import { CustomLightSpinner } from 'theme/components'
+import { useMedia } from 'react-use'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import styled, { ThemeContext } from 'styled-components'
+import { useTranslation } from 'translate'
 import { Dispatcher } from 'types/dispatcher'
-import { useChainState } from 'state/connections/hooks'
 
 dayjs.extend(utc)
-
-const pulse = keyframes`
-  0% { transform: scale(1); }
-  60% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-`
-
-const AnimatedImg = styled.div`
-  animation: ${pulse} 800ms linear infinite;
-  & > * {
-    width: 50px;
-  }
-`
 
 const ChartWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
 `
-
-const LocalLoader = () => {
-  return (
-    <FlexWrapper>
-      <AnimatedImg>
-        <img src={require('../../assets/svg/logo-spanner-gradient.svg')} alt="loading-icon" />
-      </AnimatedImg>
-    </FlexWrapper>
-  )
-}
 
 export const toNiceDate = (date: number) => {
   return dayjs.utc(dayjs.unix(date)).format('MMM DD')
@@ -54,32 +34,47 @@ interface ChartProps {
   from: number
   interval: number
   setUnavailable?: Dispatcher<boolean>
+  setLatestPrice?: Dispatcher<string>
 }
 
-export default function PriceChart({ token1, token2, from, interval, setUnavailable }: ChartProps) {
-  const [priceData, setPriceData] = useState<PriceData[]>()
+export default function PriceChart({ token1, token2, setUnavailable, setLatestPrice }: ChartProps) {
   const theme = useContext(ThemeContext)
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
-  const { chain } = useChainState()
+  const { loading, error, data } = useQuery<SwapsPrice, SwapsPriceVariables>(swapsPrice, {
+    variables: {
+      token1,
+      token2,
+      first: 1000,
+      offset: 0,
+    },
+    pollInterval: 5000,
+  })
+  const { t } = useTranslation()
 
-  useEffect(() => {
-    if (!chain) return
-    getPrice({ chain: chain.chain, token1, token2, from, interval, setData: setPriceData })
-  }, [token1, token2, from, interval, setPriceData, chain])
+  const priceData = useMemo(() => {
+    if (!data || !data.swaps) return
+    return data.swaps.nodes.map((node) => {
+      if (!node) return undefined
+      return { timestamp: node.timestamp, price: parseFloat(node.price) }
+    })
+  }, [data])
 
   useEffect(() => {
     // undefined means still waiting for response from server.
-    if (!priceData || !setUnavailable) return
+    if (!priceData || !setUnavailable || !setLatestPrice) return
     if (priceData.length === 0) {
       setUnavailable(true)
+    } else {
+      if (priceData && priceData[0]) setLatestPrice(priceData[0].price.toFixed(4))
     }
-  }, [priceData, setUnavailable])
+  }, [priceData, setLatestPrice, setUnavailable])
 
   return (
     <>
-      {!priceData && <LocalLoader />}
+      {loading && <CustomLightSpinner src={Circle} alt="loader" size={'28px'} />}
+      {error && <StandardText>{t(`Price data unavailable. Please try again later.`)}</StandardText>}
       {priceData && priceData.length > 0 && (
         <ChartWrapper>
           <ResponsiveContainer aspect={below1080 ? 2.5 / 1 : 3 / 1}>

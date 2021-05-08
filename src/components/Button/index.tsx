@@ -73,6 +73,7 @@ export const FakeButton = styled.div<{
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: 500;
   text-align: center;
+  border: 1px solid transparent;
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
   background-color: ${({ theme }) => theme.primary1};
   color: white;

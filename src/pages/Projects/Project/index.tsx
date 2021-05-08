@@ -75,6 +75,8 @@ export default function Project(): JSX.Element {
   const dexPools = usePoolsWithToken(projectPath.token)
   const [priceUnavailable, setPriceUnavailable] = useState<boolean>(false)
   const stats = useStats(projectPath.token.toUpperCase())
+  const [latestPrice, setLatestPrice] = useState<string>('')
+
   const noBulletTrain =
     stats.totalCabinsBought === 0 &&
     stats.totalPassengers === 0 &&
@@ -133,14 +135,30 @@ export default function Project(): JSX.Element {
                     <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
                       <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
                     </div>
-                    {t(`Token Price`)}
+                    {t(`Token Performance`)}
                   </SectionHeading>
+                  <SpacedSection>
+                    {latestPrice && (
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <StandardText>{t(`Current Price`)}</StandardText>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
+                            ${latestPrice}
+                          </HeavyText>
+                          <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
+                        </div>
+                      </>
+                    )}
+                  </SpacedSection>
                   <PriceChart
                     token1={projectInfo.token.toUpperCase()}
                     token2={'WUSD'}
                     from={0}
                     interval={300}
                     setUnavailable={setPriceUnavailable}
+                    setLatestPrice={setLatestPrice}
                   />
                 </FlatCard>
               </ContentWrapper>

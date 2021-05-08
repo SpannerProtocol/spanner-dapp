@@ -343,7 +343,7 @@
   "Press Connect to a Wallet next to the Account button. If you see a wallet address (e.g. 5JEJ3...i6NwF) then you are already connected.": "按下连接到帐户按钮旁边的钱包。如果你看到一个钱包地址(例如5JEJ3…i6NwF)，那么你已经成功连接。",
   "Deposit tokens to Spanner": "转移代币到Spanner",
   "Use our Ethereum Bridge to exchange Ethereum USDT for Spanner WUSD.": "使用我们的Ethereum跨链桥来将Ethereum的USDT兑换为Spanner的WUSD。",
-  "Use Bridge to deposit": "使用跨链桥来抵押",
+  "Use Bridge to deposit": "使用跨链桥来转账",
   "Swap WUSD for BOLT": "用WUSD兑换BOLT",
   "Swap WUSD for BOLT at our Decentralized Exchange (DEX).": "在去中心化交易所（DEX）用WUSD兑换BOLT。",
   "Get BOLT at DEX": "在Dex获得BOLT",

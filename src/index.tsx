@@ -1,4 +1,5 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
+import SubQLProvider from 'components/SubQLProvider'
 import { ApiProvider } from 'contexts/ApiProvider'
 import { SubstrateProvider } from 'contexts/SubstrateProvider'
 import { ToastProvider } from 'contexts/ToastContext'
@@ -30,14 +31,16 @@ ReactDOM.render(
           <Provider store={store}>
             <ApiProvider>
               <SubstrateProvider>
-                <ThemeProvider>
-                  <ThemedGlobalStyle />
-                  <HashRouter>
-                    <ToastProvider>
-                      <App />
-                    </ToastProvider>
-                  </HashRouter>
-                </ThemeProvider>
+                <SubQLProvider>
+                  <ThemeProvider>
+                    <ThemedGlobalStyle />
+                    <HashRouter>
+                      <ToastProvider>
+                        <App />
+                      </ToastProvider>
+                    </HashRouter>
+                  </ThemeProvider>
+                </SubQLProvider>
               </SubstrateProvider>
             </ApiProvider>
           </Provider>
