@@ -28,7 +28,7 @@ import {
   InputHeader,
   LightHeader,
   TokenInputAmount,
-  TokenInputWrapper,
+  TokenInputWrapper
 } from './components'
 import TokenSelector from './components/TokenSelector'
 
@@ -265,7 +265,7 @@ export default function SwapConsole(): JSX.Element {
     } else {
       // user provided target
       setFromHeader(t(`To (estimated)`))
-      setToHeader(t(`To`))
+      setToHeader(t(`From`))
       if (Number.isNaN(amountB) || !pool || !fee) {
         return
       } else if (!amountB) {
