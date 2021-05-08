@@ -258,9 +258,7 @@ export default function SwapConsole(): JSX.Element {
           new BN(integer).mul(new BN(10).pow(cd))
         )
         setSupplyAmount(supply)
-        if (supply.lte(balanceA)) {
-          setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
-        }
+        setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
       }
     } else {
       // user provided target
