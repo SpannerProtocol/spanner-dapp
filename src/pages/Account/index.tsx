@@ -1,4 +1,5 @@
-import { FakeButton } from 'components/Button'
+import Activity from 'components/Activity'
+import { ButtonSecondary, FakeButton } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
@@ -39,6 +40,7 @@ export default function Account() {
   const referrer = useReferrer()
   const connectionState = useConnectionsState()
   const project = useSelectedProject()
+  const [revealReferrer, setRevealReferrer] = useState<boolean>(false)
 
   const currentChain = connectionState && connectionState.chain
 
@@ -54,6 +56,11 @@ export default function Account() {
         id: 'portfolio',
         label: 'Portfolio',
         path: '/account/portfolio',
+      },
+      {
+        id: 'activity',
+        label: 'Activity',
+        path: '/account/activity',
       },
     ]
     const hammerOnly = [
@@ -100,33 +107,47 @@ export default function Account() {
           <Section style={{ marginBottom: '1rem' }}>
             <RowBetween>
               <Heading>{t(`Account`)}</Heading>
-              {wallet && wallet.address && project && (
-                <CopyHelper
-                  toCopy={`${DAPP_HOST}/#/?ref=${wallet.address}&project=${project.token}`}
-                  childrenIsIcon={true}
-                >
-                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                    <FakeButton padding="0.45rem" fontSize="10px">
-                      {t(`Your Referral Link`)}
-                    </FakeButton>
-                  </ButtonWrapper>
-                </CopyHelper>
-              )}
+              <div style={{ display: 'flex' }}>
+                {wallet && wallet.address && project && (
+                  <div style={{ padding: '0.25rem' }}>
+                    <CopyHelper
+                      toCopy={`${DAPP_HOST}/#/?ref=${wallet.address}&project=${project.token}`}
+                      childrenIsIcon={true}
+                    >
+                      <ButtonWrapper style={{ width: '120px' }}>
+                        <FakeButton padding="0.5rem" fontSize="10px">
+                          {t(`Get Referral Link`)}
+                        </FakeButton>
+                      </ButtonWrapper>
+                    </CopyHelper>
+                  </div>
+                )}
+                {referrer && (
+                  <div style={{ padding: '0.25rem' }}>
+                    <ButtonSecondary
+                      padding="0.5rem"
+                      fontSize={'10px'}
+                      width={'120px'}
+                      onClick={() => setRevealReferrer(!revealReferrer)}
+                    >
+                      {t(`Check your Referrer`)}
+                    </ButtonSecondary>
+                  </div>
+                )}
+              </div>
             </RowBetween>
           </Section>
-          {wallet && wallet.address && referrer && (
+          {referrer && revealReferrer && (
             <BorderedWrapper>
               <Section>
-                {referrer && (
-                  <RowBetween>
-                    <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
-                    <CopyWrapper style={{ display: 'flex' }}>
-                      <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
-                        <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
-                      </CopyHelper>
-                    </CopyWrapper>
-                  </RowBetween>
-                )}
+                <RowBetween>
+                  <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
+                  <CopyWrapper style={{ display: 'flex' }}>
+                    <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
+                      <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
+                    </CopyHelper>
+                  </CopyWrapper>
+                </RowBetween>
               </Section>
             </BorderedWrapper>
           )}
@@ -138,6 +159,7 @@ export default function Account() {
         {activeTab === 'portfolio' && <Portfolio />}
         {activeTab === 'bridge' && <Bridge />}
         {currentChain === 'Hammer' && activeTab === 'faucet' && <Faucet />}
+        {activeTab === 'activity' && <Activity />}
       </SectionContainer>
     </PageWrapper>
   )
