@@ -28,7 +28,7 @@ import {
   InputHeader,
   LightHeader,
   TokenInputAmount,
-  TokenInputWrapper
+  TokenInputWrapper,
 } from './components'
 import TokenSelector from './components/TokenSelector'
 

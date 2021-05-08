@@ -4,7 +4,7 @@ export const TokenInputAmount = styled.input`
   border: transparent;
   border-radius: 8px 0px 0px 8px;
   display: block;
-  padding: 0.75rem;
+  padding-left: 1rem;
   font-weight: 400;
   font-size: 15px;
   line-height: 1.5;
