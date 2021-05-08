@@ -258,14 +258,12 @@ export default function SwapConsole(): JSX.Element {
           new BN(integer).mul(new BN(10).pow(cd))
         )
         setSupplyAmount(supply)
-        if (supply.lte(balanceA)) {
-          setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
-        }
+        setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
       }
     } else {
       // user provided target
       setFromHeader(t(`To (estimated)`))
-      setToHeader(t(`To`))
+      setToHeader(t(`From`))
       if (Number.isNaN(amountB) || !pool || !fee) {
         return
       } else if (!amountB) {
