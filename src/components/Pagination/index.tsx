@@ -1,5 +1,4 @@
-import { Section } from 'components/Wrapper'
-import { parse } from 'qs'
+import { Section, SpacedSection } from 'components/Wrapper'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
@@ -8,7 +7,7 @@ const PageButtons = styled.button`
   background: transparent;
   border: none;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 20px;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
   max-width: 1.5rem;
@@ -19,7 +18,7 @@ const PageButtons = styled.button`
 `
 
 const PageInput = styled.input`
-  max-width: 40px;
+  max-width: 60px;
   text-align: center;
   border: 1px solid ${({ theme }) => theme.text5};
   border-radius: 4px;
@@ -38,15 +37,19 @@ interface PaginationProps {
   maxPage?: number
 }
 
+/**
+ * Pagination component.
+ * @param currentPage callback to send the current page (for server side pagination)
+ * @param maxPage the highest page number to disable next
+ * @returns Pagination Component
+ */
 export default function Pagination({ currentPage, maxPage }: PaginationProps) {
   const [page, setPage] = useState(1)
   const [canPreviousPage, setCanPreviousPage] = useState(false)
   const [canNextPage, setCanNextPage] = useState(true)
 
-  // const makePageNotNaN = (page: number) => (Number.isNaN(page) ? 0 : page)
-
   const previousPage = () => {
-    setPage((prev) => (prev > 1 ? prev - 1 : 0))
+    setPage((prev) => (prev > 1 ? prev - 1 : 1))
   }
 
   const nextPage = () => {
@@ -55,8 +58,9 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
   }
 
   const handleInput = (value: string) => {
-    if (parse(value)) return
-    setPage(parseInt(value))
+    const inputPage = parseInt(value)
+    if (maxPage && inputPage > maxPage) return
+    setPage(inputPage)
   }
 
   useEffect(() => {
@@ -76,14 +80,17 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
         </PageButtons>
         <PageInput
           type="number"
-          value={page}
-          placeholder={page.toString()}
+          placeholder={''}
+          value={Number.isNaN(page) ? '' : page}
           onChange={(e) => handleInput(e.target.value)}
         />
         <PageButtons onClick={nextPage} disabled={!canNextPage}>
           {'>'}
         </PageButtons>
       </div>
+      {maxPage && maxPage !== 0 && (
+        <SpacedSection style={{ display: 'inline', width: 'fit-content' }}>1 - {maxPage}</SpacedSection>
+      )}
     </Section>
   )
 }
