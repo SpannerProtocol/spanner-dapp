@@ -3,8 +3,8 @@ import { StandardText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { darken } from 'polished'
-import swapsPrice from 'queries/graphql/swapsPrice'
-import { SwapsPrice, SwapsPriceVariables } from 'queries/graphql/types/SwapsPrice'
+import pairPrice from 'queries/graphql/pairPrice'
+import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
 import React, { useContext, useEffect, useMemo } from 'react'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { CustomLightSpinner } from 'theme/components'
@@ -42,11 +42,10 @@ export default function PriceChart({ token1, token2, setUnavailable, setLatestPr
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
-  const { loading, error, data } = useQuery<SwapsPrice, SwapsPriceVariables>(swapsPrice, {
+  const { loading, error, data } = useQuery<PairPrice, PairPriceVariables>(pairPrice, {
     variables: {
-      token1,
-      token2,
-      first: 1000,
+      pairId: `${token1}-${token2}`,
+      first: 60,
       offset: 0,
     },
     pollInterval: 5000,
@@ -54,10 +53,10 @@ export default function PriceChart({ token1, token2, setUnavailable, setLatestPr
   const { t } = useTranslation()
 
   const priceData = useMemo(() => {
-    if (!data || !data.swaps) return
-    return data.swaps.nodes.map((node) => {
+    if (!data || !data.pair) return
+    return data.pair.pairHourData.nodes.map((node) => {
       if (!node) return undefined
-      return { timestamp: node.timestamp, price: parseFloat(node.price) }
+      return { timestamp: parseInt(node.hourStartTime), price: parseFloat(node.price) }
     })
   }, [data])
 
