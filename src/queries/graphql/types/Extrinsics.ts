@@ -10,22 +10,22 @@
 export interface Extrinsics_extrinsics_nodes_block {
   __typename: "Block";
   id: string;
-  number: any | null;
+  number: any;
 }
 
 export interface Extrinsics_extrinsics_nodes {
   __typename: "Extrinsic";
   id: string;
-  section: string | null;
-  method: string | null;
-  args: string | null;
-  signerId: string | null;
-  timestamp: any | null;
+  section: string;
+  method: string;
+  args: string;
+  signerId: string;
+  timestamp: any;
   /**
    * Reads a single `Block` that is related to this `Extrinsic`.
    */
   block: Extrinsics_extrinsics_nodes_block | null;
-  isSuccess: boolean | null;
+  isSuccess: boolean;
 }
 
 export interface Extrinsics_extrinsics {
