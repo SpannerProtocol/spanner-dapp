@@ -1,16 +1,16 @@
 import { useQuery } from '@apollo/client'
+import Circle from 'assets/svg/yellow-loader.svg'
 import { StandardText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { darken } from 'polished'
 import pairPrice from 'queries/graphql/pairPrice'
 import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
-import React, { useContext, useEffect, useMemo } from 'react'
-import Circle from 'assets/svg/yellow-loader.svg'
-import { CustomLightSpinner } from 'theme/components'
+import React, { useContext, useEffect, useState } from 'react'
 import { useMedia } from 'react-use'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import styled, { ThemeContext } from 'styled-components'
+import { CustomLightSpinner } from 'theme/components'
 import { useTranslation } from 'translate'
 import { Dispatcher } from 'types/dispatcher'
 
@@ -33,11 +33,16 @@ interface ChartProps {
   token2: string
   from: number
   interval: number
-  setUnavailable?: Dispatcher<boolean>
+  setAvailable?: Dispatcher<boolean>
   setLatestPrice?: Dispatcher<string>
 }
 
-export default function PriceChart({ token1, token2, setUnavailable, setLatestPrice }: ChartProps) {
+interface ChartParams {
+  timestamp: number
+  price: number
+}
+
+export default function PriceChart({ token1, token2, setAvailable, setLatestPrice }: ChartProps) {
   const theme = useContext(ThemeContext)
   const textColor = theme.text3
   const color = theme.primary1
@@ -48,27 +53,34 @@ export default function PriceChart({ token1, token2, setUnavailable, setLatestPr
       first: 60,
       offset: 0,
     },
-    pollInterval: 5000,
+    pollInterval: 3000,
   })
+  const [priceData, setPriceData] = useState<(ChartParams | undefined)[]>()
   const { t } = useTranslation()
 
-  const priceData = useMemo(() => {
+  useEffect(() => {
     if (!data || !data.pair) return
-    return data.pair.pairHourData.nodes.map((node) => {
+    const prices = data.pair.pairHourData.nodes.map((node) => {
       if (!node) return undefined
-      return { timestamp: parseInt(node.hourStartTime), price: parseFloat(node.price) }
+      return {
+        timestamp: parseInt(node.hourStartTime),
+        price: token1 === 'BOLT' ? parseFloat(node.price) : 1 / parseFloat(node.price),
+      }
     })
-  }, [data])
+    if (!prices) return
+    setPriceData(prices)
+  }, [data, token1])
 
   useEffect(() => {
     // undefined means still waiting for response from server.
-    if (!priceData || !setUnavailable || !setLatestPrice) return
-    if (priceData.length === 0) {
-      setUnavailable(true)
+    if (!setAvailable || !setLatestPrice) return
+    if (priceData && priceData[0]) {
+      setLatestPrice(priceData[0].price.toFixed(4))
+      setAvailable(true)
     } else {
-      if (priceData && priceData[0]) setLatestPrice(priceData[0].price.toFixed(4))
+      setAvailable(false)
     }
-  }, [priceData, setLatestPrice, setUnavailable])
+  }, [setLatestPrice, setAvailable, priceData])
 
   return (
     <>

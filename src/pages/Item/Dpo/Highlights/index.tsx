@@ -199,7 +199,7 @@ function RunningHighlightsCabinTarget({
                       <DataTokenName>{t(`Blocks`)}</DataTokenName>
                     </HeavyText>
                     <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${blockToDays(treasureHuntingGPLeft, expectedBlockTime, 2)} `}
+                      {`${blockToDays(treasureHuntingGPLeft, expectedBlockTime, 4)} `}
                       <DataTokenName>{t(`Days`)}</DataTokenName>
                     </HeavyText>
                     <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
@@ -216,7 +216,7 @@ function RunningHighlightsCabinTarget({
                       <DataTokenName>{t(`Blocks`)}</DataTokenName>
                     </HeavyText>
                     <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${blockToDays(yieldGPLeft, expectedBlockTime, 2)} `}
+                      {`${blockToDays(yieldGPLeft, expectedBlockTime, 4)} `}
                       <DataTokenName>{t(`Days`)}</DataTokenName>
                     </HeavyText>
                     <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
