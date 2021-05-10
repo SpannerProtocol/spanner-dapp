@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import AutoColumn from '../Column'
 
-export const PageWrapper = styled(AutoColumn)`
-  max-width: 640px;
+export const PageWrapper = styled(AutoColumn)<{ maxWidth?: string }>`
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '640px')};
   width: 100%;
 `
 

@@ -1,10 +1,13 @@
+import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
+import { RowBetween } from 'components/Row'
 import { HeavyText, StandardText } from 'components/Text'
-import { PageWrapper } from 'components/Wrapper'
+import { ContentWrapper, PageWrapper } from 'components/Wrapper'
 import useProjectInfos from 'hooks/useProjectInfo'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
+import { useTranslation } from 'translate'
 import getProjectRegistry from 'utils/getProjectRegistry'
 
 const ProjectsContainer = styled.div`
@@ -39,10 +42,6 @@ const ProjectCard = styled.div`
   grid-row-gap: 10px;
   align-items: center;
   margin: 1rem;
-  // transition: background-color 0.3s ease-in;
-  // &:hover {
-  //   background: ${({ theme }) => theme.primary1};
-  // }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin: 0;
     width: 100%;
@@ -130,8 +129,20 @@ function ProjectCatalogue() {
 }
 
 export default function Projects() {
+  const { t } = useTranslation()
   return (
     <>
+      <PageWrapper>
+        <ContentWrapper>
+          <FlatCard padding="2rem">{t(`Project onboarding available Late Q3, 2021`)}</FlatCard>
+          <RowBetween>
+            <div />
+            <div style={{ maxWidth: '400px' }}>
+              <ButtonPrimary disabled>{t(`Create Project`)}</ButtonPrimary>
+            </div>
+          </RowBetween>
+        </ContentWrapper>
+      </PageWrapper>
       <ProjectPage>
         <ProjectCatalogue />
       </ProjectPage>

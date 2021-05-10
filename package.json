@@ -111,6 +111,7 @@
     "cross-env": "^7.0.2",
     "cypress": "^4.11.0",
     "d3": "^6.3.1",
+    "decimal.js": "^10.2.1",
     "enzyme": "^3.11.0",
     "eslint": "^6.8.0",
     "eslint-config-prettier": "^6.11.0",
