@@ -4,7 +4,7 @@ import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, W
 import { useProjectPath } from 'hooks/useProject'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import styled from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import getProjectRegistry from 'utils/getProjectRegistry'
@@ -73,8 +73,10 @@ export default function Project(): JSX.Element {
   const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
   const { t } = useTranslation()
   const dexPools = usePoolsWithToken(projectPath.token)
-  const [priceUnavailable, setPriceUnavailable] = useState<boolean>(false)
+  const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
   const stats = useStats(projectPath.token.toUpperCase())
+  const [latestPrice, setLatestPrice] = useState<string>('')
+
   const noBulletTrain =
     stats.totalCabinsBought === 0 &&
     stats.totalPassengers === 0 &&
@@ -86,6 +88,15 @@ export default function Project(): JSX.Element {
     const currentProject = projectInfos.find((project) => project.token.toLowerCase() === projectPath.token)
     setProjectInfo(currentProject)
   }, [projectInfos, projectPath])
+
+  const [token1, token2] = useMemo(() => {
+    if (!projectInfo) return [undefined, undefined]
+    if (projectInfo.token === 'BOLT') {
+      return ['BOLT', 'WUSD']
+    } else {
+      return ['WUSD', projectInfo.token]
+    }
+  }, [projectInfo])
 
   return (
     <>
@@ -126,22 +137,41 @@ export default function Project(): JSX.Element {
               </GridWrapper>
             </FlatCard>
 
-            {projectInfo && !priceUnavailable && (
+            {projectInfo && (
               <ContentWrapper>
                 <FlatCard>
                   <SectionHeading style={{ display: 'inline-flex' }}>
                     <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
                       <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
                     </div>
-                    {t(`Token Price`)}
+                    {t(`Token Performance`)}
                   </SectionHeading>
-                  <PriceChart
-                    token1={projectInfo.token.toUpperCase()}
-                    token2={'WUSD'}
-                    from={0}
-                    interval={300}
-                    setUnavailable={setPriceUnavailable}
-                  />
+                  <SpacedSection>
+                    {latestPrice && (
+                      <>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <StandardText>{t(`Current Price`)}</StandardText>
+                        </div>
+                        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                          <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
+                            ${latestPrice}
+                          </HeavyText>
+                          <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
+                        </div>
+                      </>
+                    )}
+                  </SpacedSection>
+                  {token1 && token2 && (
+                    <PriceChart
+                      token1={token1}
+                      token2={token2}
+                      from={0}
+                      interval={300}
+                      setAvailable={setPriceAvailable}
+                      setLatestPrice={setLatestPrice}
+                    />
+                  )}
+                  {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
                 </FlatCard>
               </ContentWrapper>
             )}

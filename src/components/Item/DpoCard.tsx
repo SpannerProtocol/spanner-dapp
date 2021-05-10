@@ -224,7 +224,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
   )
 }
 
-export function DpoProfileCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
+export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
   const dpoInfo = useSubDpo(dpoIndex)
   const { chainDecimals } = useSubstrate()
   const { lastBlock } = useBlockManager()

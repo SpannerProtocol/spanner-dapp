@@ -108,7 +108,8 @@ export const StandardText = styled.div<{
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
   padding-left: ${({ paddingLeft }) => (paddingLeft ? paddingLeft : '0')}
-  overflow-wrap: break-word;
+  word-break: break-word;
+  align-items: center;
 
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '11px'};
@@ -149,6 +150,38 @@ export const SectionTitle = styled.h3`
   font-weight: 700;
   margin-top: 0.45rem;
   margin-bottom: 0.45rem;
+`
+
+export const ErrorMsg = styled.div<{
+  borderColor?: string
+  background?: string
+  padding?: string
+  marginTop?: string
+  marginBottom?: string
+  fontSize?: string
+  mobileFontSize?: string
+}>`
+  display: block;
+  align-items: center;
+  width: 100%;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
+  width: 100%;
+  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '0')};
+  margin-bottom: ${({ marginBottom }) => (marginBottom ? marginBottom : '0')};
+  color: ${({ color, theme }) => (color ? color : theme.white)};
+  background: ${({ background, theme }) => (background ? background : theme.red2)};
+  border: 1px solid ${({ borderColor, theme }) => (borderColor ? borderColor : theme.red2)};
+  border-radius: 8px;
+  padding: ${({ padding }) => (padding ? padding : '1rem')};
+  word-break: break-word;
+  ${({ padding, mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    padding: ${padding ? padding : '0.4rem'};
+    font-size: ${mobileFontSize ? mobileFontSize : '12px'}
+  `};
+`
+
+export const WarningMsg = styled(ErrorMsg)`
+  background: ${({ background, theme }) => (background ? background : theme.primary4)};
 `
 
 export default Text
