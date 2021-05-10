@@ -140,7 +140,7 @@ export default function Selector(props: SelectorProps) {
             <StandardText
               fontWeight={'700'}
               color={color}
-              style={{ display: 'flex', alignItems: 'center', paddingLeft: '0.5rem' }}
+              style={{ display: 'flex', alignItems: 'center', paddingLeft: '0.5rem', wordBreak: 'initial' }}
             >
               {collaspedTextPrefix} {activeOption.label}
             </StandardText>

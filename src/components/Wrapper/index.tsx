@@ -1,8 +1,8 @@
 import styled from 'styled-components'
 import AutoColumn from '../Column'
 
-export const PageWrapper = styled(AutoColumn)`
-  max-width: 640px;
+export const PageWrapper = styled(AutoColumn)<{ maxWidth?: string }>`
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '640px')};
   width: 100%;
 `
 
@@ -18,13 +18,18 @@ export const InlineSection = styled.div`
 export const SpacedSection = styled(AutoColumn)`
   margin-top: 1rem;
   margin-bottom: 1rem;
+
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  `};
 `
 export const PaddedSection = styled(AutoColumn)`
   display: block;
   padding: 2rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 1rem;
-`};
+  `};
 `
 
 export const Wrapper = styled.div`
@@ -37,7 +42,7 @@ export const ContentWrapper = styled.div`
   width: 100%;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0.5rem;
-`};
+  `};
 `
 
 export const SectionContainer = styled.div`
@@ -46,7 +51,7 @@ export const SectionContainer = styled.div`
   margin-top: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
   padding: 0.5rem;
-`};
+  `};
 `
 
 export const FlexWrapper = styled.div`
@@ -59,7 +64,6 @@ export const FlexWrapper = styled.div`
 `
 
 export const ButtonWrapper = styled.div`
-  margin: 1vh 2vw 1vh 2vw;
   width: 100%;
   max-width: clamp(200px, 80vw, 290px);
   align-items: center;
@@ -103,8 +107,7 @@ export const BorderedWrapper = styled.div<{
   overflow-wrap: anywhere;
   ${({ padding, theme }) => theme.mediaWidth.upToSmall`
     padding: ${padding ? padding : '0.5rem'};
-
-`};
+  `};
 `
 
 export const RoundWrapper = styled(BorderedWrapper)`

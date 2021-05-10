@@ -32,12 +32,6 @@ import {
 } from './components'
 import TokenSelector from './components/TokenSelector'
 
-// interface SwapErrors {
-//   slippage?: string
-//   amountA?: string
-//   amountB?: string
-// }
-
 interface SwapData {
   amountA: number
   amountB: number
@@ -101,7 +95,6 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
 }
 
 export default function SwapConsole(): JSX.Element {
-  // const { api, connected } = useApi()
   const [slippage, setSlippage] = useUserSlippageTolerance()
   const { chainDecimals } = useSubstrate()
   const [tokenA, setTokenA] = useState<string>('BOLT')
@@ -113,7 +106,6 @@ export default function SwapConsole(): JSX.Element {
   const [toHeader, setToHeader] = useState<string>()
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
-  const [price, setPrice] = useState<number>(0)
   const [unsafeInteger, setUnsafeInteger] = useState<boolean>(false)
   const [supplyAmount, setSupplyAmount] = useState<BN>(new BN(0))
   const [targetAmount, setTargetAmount] = useState<BN>(new BN(0))
@@ -127,31 +119,9 @@ export default function SwapConsole(): JSX.Element {
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const { t } = useTranslation()
-  // const wallet = useWallet()
-  // const [balanceA, setBalanceA] = useState<BN>(new BN(0))
-  // const [balanceB, setBalanceB] = useState<BN>(new BN(0))
 
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
-
-  // const balances = useSubscribeBalances([tokenA, tokenB])
-  // useEffect(() => {
-  //   if (balances.length === 0) return
-  //   setBalanceA(balances[0])
-  //   setBalanceB(balances[1])
-  // }, [balancesStr, balances])
-
-  // useEffect(() => {
-  //   if (!tokenA || !connected || !wallet || !wallet.address) return
-  //   console.log('tokenA:', tokenA)
-  //   getBalance({ api, wallet, token: tokenA, setData: setBalanceA })
-  // }, [api, connected, tokenA, wallet])
-
-  // useEffect(() => {
-  //   if (!tokenB || !connected || !wallet || !wallet.address) return
-  //   console.log('tokenB:', tokenB)
-  //   getBalance({ api, wallet, token: tokenB, setData: setBalanceB })
-  // }, [api, connected, tokenB, wallet])
 
   const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
     tokenA,
@@ -227,7 +197,6 @@ export default function SwapConsole(): JSX.Element {
     } else {
       setPool(subscribedPool)
       if (subscribedFee) setFee(subscribedFee)
-      if (subscribedPrice) setPrice(subscribedPrice)
     }
   }, [subscribedPool, subscribedFee, subscribedPrice, poolError])
 
@@ -276,8 +245,8 @@ export default function SwapConsole(): JSX.Element {
     const cd = new BN(chainDecimals)
     if (isOnA) {
       // user provided supply
-      setFromHeader('From')
-      setToHeader('To (estimated)')
+      setFromHeader(t(`From`))
+      setToHeader(t(`To (estimated)`))
       if (Number.isNaN(amountA) || !pool || !fee) {
         return
       } else if (!amountA) {
@@ -289,14 +258,12 @@ export default function SwapConsole(): JSX.Element {
           new BN(integer).mul(new BN(10).pow(cd))
         )
         setSupplyAmount(supply)
-        if (supply.lte(balanceA)) {
-          setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
-        }
+        setTargetAmount(getTargetAmount(pool[0], pool[1], supply, fee))
       }
     } else {
       // user provided target
-      setFromHeader('From (estimated)')
-      setToHeader('To')
+      setFromHeader(t(`To (estimated)`))
+      setToHeader(t(`From`))
       if (Number.isNaN(amountB) || !pool || !fee) {
         return
       } else if (!amountB) {
@@ -311,7 +278,7 @@ export default function SwapConsole(): JSX.Element {
         setSupplyAmount(getSupplyAmount(pool[0], pool[1], target, fee))
       }
     }
-  }, [isOnA, amountA, balanceA, balanceB, amountB, pool, fee, chainDecimals])
+  }, [isOnA, amountA, balanceA, balanceB, amountB, pool, fee, chainDecimals, t])
 
   const dismissModal = () => {
     setModalOpen(false)
@@ -423,21 +390,11 @@ export default function SwapConsole(): JSX.Element {
           <SlippageTabs rawSlippage={slippage} setRawSlippage={setSlippage} />
         </Section>
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-          <InputHeader>
-            <LightHeader>{t(`Current Price`)}</LightHeader>
-            {!poolQueryError && price ? (
-              <ConsoleStat>
-                1 {tokenA} = {price.toFixed(4)} {tokenB}
-              </ConsoleStat>
-            ) : (
-              <ConsoleStat> ------ </ConsoleStat>
-            )}
-          </InputHeader>
           {poolQueryError && <ErrorMsg>{poolQueryError}</ErrorMsg>}
           <InputHeader>
             <LightHeader>{t(`Average Swap Price`)}</LightHeader>
             <ConsoleStat>
-              {!amountA ? 0 : `1 ${tokenA} = ${(amountB / amountA).toFixed(4)}`} {tokenB}
+              {!amountA ? '----' : `1 ${tokenA} = ${(amountB / amountA).toFixed(4)}`} {tokenB}
             </ConsoleStat>
           </InputHeader>
         </Section>

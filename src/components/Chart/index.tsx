@@ -1,46 +1,26 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Area, ResponsiveContainer, Tooltip, AreaChart, YAxis, XAxis } from 'recharts'
-import styled, { keyframes, ThemeContext } from 'styled-components'
-import { useMedia } from 'react-use'
-import { darken } from 'polished'
+import { useQuery } from '@apollo/client'
+import Circle from 'assets/svg/yellow-loader.svg'
+import { StandardText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { getPrice } from '../../queries'
-import { PriceData } from '../../spanfura'
-import { FlexWrapper } from '../Wrapper'
+import { darken } from 'polished'
+import pairPrice from 'queries/graphql/pairPrice'
+import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
+import React, { useContext, useEffect, useState } from 'react'
+import { useMedia } from 'react-use'
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import styled, { ThemeContext } from 'styled-components'
+import { CustomLightSpinner } from 'theme/components'
+import { useTranslation } from 'translate'
 import { Dispatcher } from 'types/dispatcher'
-import { useChainState } from 'state/connections/hooks'
 
 dayjs.extend(utc)
-
-const pulse = keyframes`
-  0% { transform: scale(1); }
-  60% { transform: scale(1.1); }
-  100% { transform: scale(1); }
-`
-
-const AnimatedImg = styled.div`
-  animation: ${pulse} 800ms linear infinite;
-  & > * {
-    width: 50px;
-  }
-`
 
 const ChartWrapper = styled.div`
   height: 100%;
   display: flex;
   align-items: center;
 `
-
-const LocalLoader = () => {
-  return (
-    <FlexWrapper>
-      <AnimatedImg>
-        <img src={require('../../assets/svg/logo-spanner-gradient.svg')} alt="loading-icon" />
-      </AnimatedImg>
-    </FlexWrapper>
-  )
-}
 
 export const toNiceDate = (date: number) => {
   return dayjs.utc(dayjs.unix(date)).format('MMM DD')
@@ -53,33 +33,59 @@ interface ChartProps {
   token2: string
   from: number
   interval: number
-  setUnavailable?: Dispatcher<boolean>
+  setAvailable?: Dispatcher<boolean>
+  setLatestPrice?: Dispatcher<string>
 }
 
-export default function PriceChart({ token1, token2, from, interval, setUnavailable }: ChartProps) {
-  const [priceData, setPriceData] = useState<PriceData[]>()
+interface ChartParams {
+  timestamp: number
+  price: number
+}
+
+export default function PriceChart({ token1, token2, setAvailable, setLatestPrice }: ChartProps) {
   const theme = useContext(ThemeContext)
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
-  const { chain } = useChainState()
+  const { loading, error, data } = useQuery<PairPrice, PairPriceVariables>(pairPrice, {
+    variables: {
+      pairId: `${token1}-${token2}`,
+      first: 60,
+      offset: 0,
+    },
+    pollInterval: 3000,
+  })
+  const [priceData, setPriceData] = useState<(ChartParams | undefined)[]>()
+  const { t } = useTranslation()
 
   useEffect(() => {
-    if (!chain) return
-    getPrice({ chain: chain.chain, token1, token2, from, interval, setData: setPriceData })
-  }, [token1, token2, from, interval, setPriceData, chain])
+    if (!data || !data.pair) return
+    const prices = data.pair.pairHourData.nodes.map((node) => {
+      if (!node) return undefined
+      return {
+        timestamp: parseInt(node.hourStartTime),
+        price: token1 === 'BOLT' ? parseFloat(node.price) : 1 / parseFloat(node.price),
+      }
+    })
+    if (!prices) return
+    setPriceData(prices)
+  }, [data, token1])
 
   useEffect(() => {
     // undefined means still waiting for response from server.
-    if (!priceData || !setUnavailable) return
-    if (priceData.length === 0) {
-      setUnavailable(true)
+    if (!setAvailable || !setLatestPrice) return
+    if (priceData && priceData[0]) {
+      setLatestPrice(priceData[0].price.toFixed(4))
+      setAvailable(true)
+    } else {
+      setAvailable(false)
     }
-  }, [priceData, setUnavailable])
+  }, [setLatestPrice, setAvailable, priceData])
 
   return (
     <>
-      {!priceData && <LocalLoader />}
+      {loading && <CustomLightSpinner src={Circle} alt="loader" size={'28px'} />}
+      {error && <StandardText>{t(`Price data unavailable. Please try again later.`)}</StandardText>}
       {priceData && priceData.length > 0 && (
         <ChartWrapper>
           <ResponsiveContainer aspect={below1080 ? 2.5 / 1 : 3 / 1}>
