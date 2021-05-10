@@ -1,17 +1,15 @@
 import { u32 } from '@polkadot/types'
 import type { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
+import { Decimal } from 'decimal.js'
 import moment from 'moment'
-import { formatPrecision } from './formatNumbers'
 import { isBN } from './formatUnit'
-
 /**
  * Converts a block into days
  * @param blockTime Expected blocktime in milliseconds
  * @param block block to convert
  */
 export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: Moment, precision = 2) {
-  // console.log(blockTime.toString(), block.toString())
   let blockBn: BN
   if (typeof block === 'string') {
     blockBn = new BN(block)
@@ -20,12 +18,8 @@ export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: M
   } else {
     blockBn = block.toBn()
   }
-  const ms = new BN(24 * 60 * 60 * 1000)
-  const blockInMs = blockBn.mul(blockTime)
-  const integer = blockInMs.div(ms)
-  const remainder = blockInMs.mod(ms)
-  const result = formatPrecision(`${integer}.${remainder}`, precision)
-  return result
+  const blockTimeInS = blockTime.div(new BN(1000))
+  return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(24 * 60 * 60).toPrecision(precision)
 }
 
 /**
