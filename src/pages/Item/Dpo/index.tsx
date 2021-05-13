@@ -727,7 +727,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                     ${
                       dpoInfo.expiry_blk.sub(lastBlock).isNeg()
                         ? '0'
-                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime)}`
+                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime, 2)}`
                     } ${t(`days`)})`}
                   </StandardText>
                 </RowBetween>
@@ -772,7 +772,8 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   <StandardText>
                     {`${t(`Block`)} #${formatToUnit(dpoInfo.target_maturity.toString(), 0)} (${blockToDays(
                       dpoInfo.target_maturity,
-                      expectedBlockTime
+                      expectedBlockTime,
+                      2
                     )} ${t(`days`)})`}
                   </StandardText>
                 </RowBetween>
