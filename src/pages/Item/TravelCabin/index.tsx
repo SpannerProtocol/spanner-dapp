@@ -391,7 +391,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                     <StandardText>{t(`Ride Duration`)}</StandardText>
                     <StandardText>
                       {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
-                      {blockToDays(travelCabinInfo.maturity, expectedBlockTime)} {t(`days`)})
+                      {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)})
                     </StandardText>
                   </RowBetween>
                 )}
