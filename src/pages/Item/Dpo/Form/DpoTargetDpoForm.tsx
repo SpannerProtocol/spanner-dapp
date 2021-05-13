@@ -15,6 +15,7 @@ import { DpoInfo } from 'spanner-interfaces'
 import { blockToDays } from 'utils/formatBlocks'
 import { abs, noNan } from 'utils/formatNumbers'
 import { formatToUnit } from 'utils/formatUnit'
+import { isValidSpannerAddress } from 'utils/validAddress'
 import {
   DpoReferralCode,
   DpoDefaultTarget,
@@ -108,6 +109,10 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   )
 
   const handleSubmit = () => {
+    let validatedReferrer: null | string = null
+    if (typeof referralCode === 'string' && isValidSpannerAddress(referralCode)) {
+      validatedReferrer = referralCode
+    }
     onSubmit({
       dpoName,
       seats: Number.isNaN(seats) ? 1 : seats,
@@ -115,7 +120,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
-      referrer: referralCode,
+      referrer: validatedReferrer,
       newReferrer: newReferrer,
     })
   }

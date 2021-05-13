@@ -38,7 +38,6 @@ export function getTreasureHuntingGPLeft(
 }
 
 export function getYieldGPLeft(dpoInfo: DpoInfo, lastBlock: BlockNumber, expectedBlockTime: Moment) {
-  // console.log(dpoInfo.blk_of_last_yield.unwrapOrDefault().toString())
   if (dpoInfo.blk_of_last_yield.isSome) {
     const gracePeriodTimeLeft = dpoInfo.blk_of_last_yield.unwrapOrDefault().add(daysToBlocks(7, expectedBlockTime))
     return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
