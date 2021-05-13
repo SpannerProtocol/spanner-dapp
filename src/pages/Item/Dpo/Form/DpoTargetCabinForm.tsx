@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next'
 import { TravelCabinInfo } from 'spanner-interfaces'
 import { noNan } from 'utils/formatNumbers'
 import { formatToUnit } from 'utils/formatUnit'
+import { isValidSpannerAddress } from 'utils/validAddress'
 import {
   DpoBaseFee,
   DpoDefaultTarget,
@@ -90,13 +91,17 @@ export default function DpoTargetCabinForm({
   }
 
   const handleSubmit = () => {
+    let validatedReferrer: null | string = null
+    if (typeof referralCode === 'string' && isValidSpannerAddress(referralCode)) {
+      validatedReferrer = referralCode
+    }
     onSubmit({
       managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
       dpoName,
-      referrer: referralCode,
+      referrer: validatedReferrer,
       newReferrer,
     })
   }
