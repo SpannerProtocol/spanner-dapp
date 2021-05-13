@@ -142,7 +142,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
               <InlineSection>
                 <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
                 <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
-                  {blockToDays(travelCabinInfo.maturity, expectedBlockTime)} {t(`days`)}
+                  {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
                 </StandardText>
               </InlineSection>
             )}

@@ -95,15 +95,16 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
 }
 
 export default function SwapConsole(): JSX.Element {
+  const { t } = useTranslation()
   const [slippage, setSlippage] = useUserSlippageTolerance()
   const { chainDecimals } = useSubstrate()
   const [tokenA, setTokenA] = useState<string>('BOLT')
   const [tokenB, setTokenB] = useState<string>('WUSD')
   const [amountA, setAmountA] = useState<number>(0)
   const [amountB, setAmountB] = useState<number>(0)
-  const [isOnA, setIsOnA] = useState<boolean>(false)
-  const [fromHeader, setFromHeader] = useState<string>()
-  const [toHeader, setToHeader] = useState<string>()
+  const [isOnA, setIsOnA] = useState<boolean>(true)
+  const [fromHeader, setFromHeader] = useState<string>(t(`From`))
+  const [toHeader, setToHeader] = useState<string>(t(`To (estimated)`))
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [unsafeInteger, setUnsafeInteger] = useState<boolean>(false)
@@ -118,7 +119,6 @@ export default function SwapConsole(): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
-  const { t } = useTranslation()
 
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
