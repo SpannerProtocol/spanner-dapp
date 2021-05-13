@@ -645,23 +645,23 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <StatDisplayContainer>
               <StatDisplayGrid>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">{token}</DataTokenName>
                   </StatValue>
                   <StatText>{t(`Yield`)}</StatText>
                 </StatContainer>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">{token}</DataTokenName>
                   </StatValue>
                   <StatText>{t(`Bonus`)}</StatText>
                 </StatContainer>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">{token}</DataTokenName>
                   </StatValue>
                   <StatText>{t(`Milestone`)}</StatText>
                 </StatContainer>

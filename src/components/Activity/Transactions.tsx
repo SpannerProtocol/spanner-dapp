@@ -8,7 +8,11 @@ import { HeavyText, ItalicText, SectionHeading } from 'components/Text'
 import { SpacedSection, TransferWrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import extrinsics from 'queries/graphql/extrinsics'
-import { Extrinsics, ExtrinsicsVariables, Extrinsics_extrinsics_nodes } from 'queries/graphql/types/Extrinsics'
+import {
+  ExtrinsicsByAddress,
+  ExtrinsicsByAddressVariables,
+  ExtrinsicsByAddress_extrinsics_nodes,
+} from 'queries/graphql/types/ExtrinsicsByAddress'
 import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
@@ -19,7 +23,7 @@ import truncateString from 'utils/truncateString'
 import { TxCell, TxRow } from '.'
 
 // Tx Hash | Extrinsic Info
-function TransactionRow({ id, section, method, timestamp, isSuccess, block }: Extrinsics_extrinsics_nodes) {
+function TransactionRow({ id, section, method, timestamp, isSuccess, block }: ExtrinsicsByAddress_extrinsics_nodes) {
   const { chain } = useChainState()
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
@@ -63,7 +67,7 @@ function TransactionRows({
 }) {
   const wallet = useWallet()
   const address = wallet && wallet.address ? wallet.address : ''
-  const { loading, error, data } = useQuery<Extrinsics, ExtrinsicsVariables>(extrinsics, {
+  const { loading, error, data } = useQuery<ExtrinsicsByAddress, ExtrinsicsByAddressVariables>(extrinsics, {
     variables: {
       address: address,
       first: first,

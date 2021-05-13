@@ -18,6 +18,12 @@ import type { BlockNumber } from '@polkadot/types/interfaces'
 import { useUserIsDpoMember } from './useUser'
 import { getDpoMembers } from 'utils/getDpoMembers'
 import { useChainState } from 'state/connections/hooks'
+// import { useQuery } from '@apollo/client'
+// import {
+//   ExtrinsicsBySectionAndMethods,
+//   ExtrinsicsBySectionAndMethodsVariables,
+// } from 'queries/graphql/types/ExtrinsicsBySectionAndMethods'
+// import { extrinsicsBySectionAndMethods } from 'queries/graphql/extrinsics'
 
 interface ActionReq {
   dpoInfo?: DpoInfo
@@ -81,9 +87,9 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         })
       })
     } else {
-      getTargetTravelCabin(chain.chain, api, wallet, dpoInfo).then((result) => {
-        if (result) {
-          addActionReq({ targetTravelCabin: result[0] })
+      getTargetTravelCabin(api, dpoInfo).then((result) => {
+        if (result && result.isSome) {
+          addActionReq({ targetTravelCabin: result.unwrapOrDefault() })
         }
       })
       getDpoCabinInventoryIndex(api, dpoInfo).then((result) => {

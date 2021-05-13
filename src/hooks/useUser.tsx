@@ -1,92 +1,11 @@
 import { useEffect, useState } from 'react'
-import {
-  DpoIndex,
-  DpoInfo,
-  DpoMemberInfo,
-  TravelCabinBuyerInfo,
-  TravelCabinIndex,
-  TravelCabinInfo,
-  TravelCabinInventoryIndex,
-} from 'spanner-interfaces/bulletTrain'
-import { useChainState } from 'state/connections/hooks'
-import { getTargetDpo, getTargetTravelCabin, TravelCabinData } from 'utils/getDpoTargets'
-import { getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
-import getTravelCabinInventory from 'utils/getTravelCabinInventory'
+import { DpoIndex } from 'spanner-interfaces/bulletTrain'
 import { useApi } from './useApi'
 import { useRpcUserDpos } from './useQueryDpos'
 import { useRpcUserTravelCabins } from './useQueryTravelCabins'
-import useWallet from './useWallet'
 
 export function useUserDpos(address: string | null | undefined) {
   return useRpcUserDpos(address)
-}
-
-interface DpoData {
-  manager: DpoMemberInfo
-  target: [TravelCabinInfo, TravelCabinData] | DpoInfo
-  dpoInfo: DpoInfo
-  travelCabinInventory?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  travelCabinInventoryCounts?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
-}
-
-interface UserDposData {
-  [index: string]: DpoData | any
-}
-
-/**
- * A heavier function that gets all the Dpo Data for a given user address.
- * Produces a dictionary indexable by dpoIndex.
- * */
-export function useUserDposData(address: string | null | undefined): UserDposData {
-  const { api, connected } = useApi()
-  const walletInfo = useWallet()
-  const userDpos = useRpcUserDpos(address)
-  const [data, setData] = useState<UserDposData>({})
-  const { chain } = useChainState()
-
-  useEffect(() => {
-    if (userDpos.length === 0 || !connected || !walletInfo || !walletInfo.address || !chain) return
-    const dpoData: UserDposData = {}
-    userDpos.forEach((dpoInfo) => {
-      dpoData[dpoInfo.index.toString()] = {}
-      dpoData[dpoInfo.index.toString()]['manager'] = dpoInfo.manager
-      if (dpoInfo.target.isDpo) {
-        getTargetDpo(api, dpoInfo).then((result) => {
-          if (result.isSome) {
-            dpoData[dpoInfo.index.toString()]['target'] = result.unwrapOrDefault()
-          }
-        })
-      } else {
-        getTargetTravelCabin(chain.chain, api, walletInfo, dpoInfo).then((result) => {
-          dpoData[dpoInfo.index.toString()]['target'] = result
-        })
-        getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
-          if (result.isSome) {
-            dpoData[dpoInfo.index.toString()]['travelCabinInventoryCounts'] = result.unwrapOrDefault()
-          }
-        })
-        getTravelCabinBuyer(api).then((results) => {
-          results.forEach((result) => {
-            if (result[1].isSome) {
-              const travelCabinBuyerInfo = result[1].unwrapOrDefault()
-              if (travelCabinBuyerInfo.buyer.isDpo) {
-                const buyerIndex = travelCabinBuyerInfo.buyer.asDpo
-                if (buyerIndex.eq(dpoInfo.index)) {
-                  dpoData[dpoInfo.index.toString()]['travelCabinInventory'] = [
-                    [result[0][0], result[0][1]],
-                    result[1].unwrapOrDefault(),
-                  ]
-                }
-              }
-            }
-          })
-        })
-      }
-    })
-    setData(dpoData)
-  }, [api, connected, userDpos, walletInfo, chain])
-
-  return data
 }
 
 export function useUserTravelCabins(address: string | null | undefined) {

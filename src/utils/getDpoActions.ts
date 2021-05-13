@@ -237,8 +237,8 @@ export default function getDpoActions({
       .toBn()
       .add(new BN(DPO_RELEASE_DROP_GRACE_BLOCKS))
 
-    // Within grace period
     if (!dpoInfo.vault_yield.isZero()) {
+      // Within grace period
       if (lastBlock.lt(dropGracePeriod)) {
         actions.push({
           role: 'any',
