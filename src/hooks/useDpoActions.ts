@@ -81,9 +81,9 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
         })
       })
     } else {
-      getTargetTravelCabin(chain.chain, api, wallet, dpoInfo).then((result) => {
-        if (result) {
-          addActionReq({ targetTravelCabin: result[0] })
+      getTargetTravelCabin(api, dpoInfo).then((result) => {
+        if (result && result.isSome) {
+          addActionReq({ targetTravelCabin: result.unwrapOrDefault() })
         }
       })
       getDpoCabinInventoryIndex(api, dpoInfo).then((result) => {

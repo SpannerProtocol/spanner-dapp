@@ -44,6 +44,7 @@ import { ThemeContext } from 'styled-components'
 import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
+import { isValidSpannerAddress } from 'utils/validAddress'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import DpoActions from './actions'
@@ -258,7 +259,11 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   }
 
   const handleSubmit = () => {
-    onSubmit({ seats, referrer: referralCode, newReferrer })
+    let validatedReferrer: null | string = null
+    if (typeof referralCode === 'string' && isValidSpannerAddress(referralCode)) {
+      validatedReferrer = referralCode
+    }
+    onSubmit({ seats, referrer: validatedReferrer, newReferrer })
   }
 
   // if the user had a stored referrer, set it
@@ -449,7 +454,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     baseFee: number
     directReferralRate: number
     end: number
-    referrer: string
+    referrer: string | null
     newReferrer: boolean
   }) => {
     if (!lastBlock || !expectedBlockTime) {
@@ -645,23 +650,29 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <StatDisplayContainer>
               <StatDisplayGrid>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">
+                      {token}
+                    </DataTokenName>
                   </StatValue>
                   <StatText>{t(`Yield`)}</StatText>
                 </StatContainer>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">
+                      {token}
+                    </DataTokenName>
                   </StatValue>
                   <StatText>{t(`Bonus`)}</StatText>
                 </StatContainer>
                 <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue>
+                  <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff">{token}</DataTokenName>
+                    <DataTokenName color="#fff" mobileFontSize="8px">
+                      {token}
+                    </DataTokenName>
                   </StatValue>
                   <StatText>{t(`Milestone`)}</StatText>
                 </StatContainer>
@@ -727,7 +738,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                     ${
                       dpoInfo.expiry_blk.sub(lastBlock).isNeg()
                         ? '0'
-                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime)}`
+                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime, 2)}`
                     } ${t(`days`)})`}
                   </StandardText>
                 </RowBetween>
@@ -772,7 +783,8 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   <StandardText>
                     {`${t(`Block`)} #${formatToUnit(dpoInfo.target_maturity.toString(), 0)} (${blockToDays(
                       dpoInfo.target_maturity,
-                      expectedBlockTime
+                      expectedBlockTime,
+                      2
                     )} ${t(`days`)})`}
                   </StandardText>
                 </RowBetween>

@@ -50,7 +50,6 @@ export function bnToHumanNumber(num: BN, precision = 0) {
   let i = 0
   for (i = si.length - 1; i > 0; i--) {
     if (num.gte(new BN(si[i].value.toString()))) {
-      // console.log('num', num.toString(), 'si value', si[i].value)
       break
     }
   }
