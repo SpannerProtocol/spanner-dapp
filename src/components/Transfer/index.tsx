@@ -116,7 +116,7 @@ function TransferForm({ onSubmit }: TransferFormProps) {
   const [amount, setAmount] = useState<number>(0)
   const [token, setToken] = useState<string>('BOLT')
   const [dest, setDest] = useState<string>()
-  const [invalidDest, setInvalidDest] = useState<boolean>(false)
+  const [invalidDest, setInvalidDest] = useState<boolean>(true)
   const { t } = useTranslation()
   const { chainDecimals } = useSubstrate()
   const balance = useSubscribeBalance(token)
@@ -133,14 +133,17 @@ function TransferForm({ onSubmit }: TransferFormProps) {
     // Should parse address as user types it
     isValidSpannerAddress(value) ? setInvalidDest(false) : setInvalidDest(true)
     // If user erases the entire input then revoke the error msg
-    value === '' && setInvalidDest(false)
     setDest(value)
   }
 
   const handleSubmit = () => {
     // Convert amount to string with chain decimals
+    let validatedDest: null | string = null
+    if (typeof dest === 'string' && isValidSpannerAddress(dest)) {
+      validatedDest = dest
+    }
     const amountBn = new BN(amount).mul(new BN(10).pow(new BN(chainDecimals)))
-    onSubmit({ dest, amount: amountBn.toString(), token })
+    onSubmit({ dest: validatedDest, amount: amountBn.toString(), token })
   }
 
   return (
