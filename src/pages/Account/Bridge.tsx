@@ -14,7 +14,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import useWallet from 'hooks/useWallet'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
 import { useChainState, useConnectionsState } from 'state/connections/hooks'
@@ -41,16 +41,18 @@ function BridgeTxConfirm({
   estimatedFee,
   feeData,
   bridgeFee,
+  balanceNum,
 }: {
   withdrawAmount: number
   withdrawAddress: string
   errorMsg: string | undefined
   estimatedFee?: string
   feeData?: FeeData
-  bridgeFee?: string
+  bridgeFee?: number
+  balanceNum?: number
 }) {
   const { t } = useTranslation()
-  const balance = useSubscribeBalance('WUSD')
+
   return (
     <>
       <Section>
@@ -100,25 +102,32 @@ function BridgeTxConfirm({
                       text={t(`Estimated USDT transferred to provided Ethereum address after fees.`)}
                     />
                   </div>
-                  <StandardText>{(withdrawAmount - parseFloat(bridgeFee)).toFixed(4)} USDT</StandardText>
+                  <StandardText>{(withdrawAmount - bridgeFee).toFixed(4)} USDT</StandardText>
                 </RowBetween>
               </>
             )}
           </BorderedWrapper>
           <Balance token={'WUSD'} />
           {bridgeFee && <TxFee fee={estimatedFee} />}
-          {!bridgeFee && feeData && (
+          {bridgeFee && withdrawAmount && withdrawAmount < bridgeFee && (
             <BorderedWrapper background="#F82D3A">
               <StandardText color="#fff">
-                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {feeData.feeMinUsd}{' '}
-                USDT
+                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {bridgeFee} USDT
               </StandardText>
             </BorderedWrapper>
           )}
-          {feeData && bridgeFee && balance.lt(new BN(bridgeFee)) && (
+          {balanceNum && bridgeFee && balanceNum < bridgeFee && (
             <BorderedWrapper background="#F82D3A">
               <StandardText color="#fff">
-                {t(`Cannot Proceed. Your Balance cannot be lower than the Bridge Fee`)}: {feeData.feeMinUsd} USDT
+                {t(`Cannot Proceed. Your Balance cannot be lower than the Bridge Fee`)}: {bridgeFee.toFixed(4)} USDT
+              </StandardText>
+            </BorderedWrapper>
+          )}
+          {balanceNum && withdrawAmount && balanceNum < withdrawAmount && (
+            <BorderedWrapper background="#F82D3A">
+              <StandardText color="#fff">
+                {t(`Cannot Proceed. Your Balance cannot be lower than the Withdraw Amount`)}:{' '}
+                {withdrawAmount.toFixed(4)} USDT
               </StandardText>
             </BorderedWrapper>
           )}
@@ -154,6 +163,11 @@ export default function Bridge(): JSX.Element {
   const bridge = connectionState && connectionState.bridgeServerOn
 
   const canE2s = useCallback(() => (time > e2sTsPlus5 ? true : false), [time, e2sTsPlus5])
+
+  const wusdBalanceNum = useMemo(() => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(), [
+    chainDecimals,
+    wusdBalance,
+  ])
 
   useEffect(() => {
     if (!e2sTs) {
@@ -192,23 +206,27 @@ export default function Bridge(): JSX.Element {
   const calcBridgeFee = useCallback(() => {
     if (!feeData) return
     const feeMin = feeData.feeMinUsd
-    // Amount has to be greater than feeMin or user gets nothing
-    if (ethWithdrawAmount < feeMin) return
     const feeBps = feeData.feeBps * 0.0001
     const feeByBps = ethWithdrawAmount * feeBps
     const fee = Math.max(feeMin, feeByBps)
-    console.log('bps', feeData.feeBps, 'feeByBps', feeByBps, 'feeMin', feeMin, 'fee', fee)
-    return fee.toFixed(4)
+    return fee
   }, [ethWithdrawAmount, feeData])
 
   const isTxDisabled = useCallback(() => {
-    if (!feeData) return
-    const feeMin = feeData.feeMinUsd
-    if (ethWithdrawAmount < feeMin) {
+    const bridgeFee = calcBridgeFee()
+    if (!bridgeFee) return
+    // Amount has to be greater than feeMin or user gets nothing
+    if (ethWithdrawAmount < bridgeFee) {
+      return true
+    }
+    if (wusdBalanceNum < bridgeFee) {
+      return true
+    }
+    if (wusdBalanceNum < ethWithdrawAmount) {
       return true
     }
     return false
-  }, [ethWithdrawAmount, feeData])
+  }, [calcBridgeFee, ethWithdrawAmount, wusdBalanceNum])
 
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
@@ -281,6 +299,7 @@ export default function Bridge(): JSX.Element {
           estimatedFee={txInfo?.estimatedFee}
           feeData={feeData}
           bridgeFee={calcBridgeFee()}
+          balanceNum={wusdBalanceNum}
         />
       </TxModal>
       {!wallet ? (
@@ -412,6 +431,23 @@ export default function Bridge(): JSX.Element {
                   <SectionHeading>{t(`Withdraw to Ethereum`)}</SectionHeading>
                   <StandardText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</StandardText>
                 </Section>
+                {/* {feeData && (
+                  <SpacedSection>
+                    <RowBetween>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <HeavyText>{`${t(`Estimated Withdrawal Fee`)}`}</HeavyText>
+                        <QuestionHelper
+                          size={12}
+                          backgroundColor={'transparent'}
+                          text={t(
+                            `The withdrawal fee is dependent on Ethereum gas fee and will vary depending on Ethereum's network congestion.`
+                          )}
+                        />
+                      </div>
+                      <StandardText>{feeData.ethPriceUsd}</StandardText>
+                    </RowBetween>
+                  </SpacedSection>
+                )} */}
                 <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                   <div
                     style={{

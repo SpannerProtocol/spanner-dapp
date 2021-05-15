@@ -18,7 +18,9 @@ export const StatContainer = styled(Card)<{ background?: string; maxWidth?: stri
 
 export const StatDisplayGrid = styled.div<{ columns?: string }>`
   display: grid;
-  grid-template-columns: repeat(${({ columns }) => (columns ? columns : '3')}, minmax(0, 4fr));
+  grid-auto-columns: auto;
+  grid-auto-flow: column;
+  // grid-template-columns: repeat(${({ columns }) => (columns ? columns : '3')}, minmax(0, 4fr));
   grid-column-gap: 10px;
   grid-row-gap: 10px;
   width: 100%;

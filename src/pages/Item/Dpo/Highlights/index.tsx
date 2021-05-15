@@ -38,14 +38,11 @@ const IconWrapper = styled.div`
 `
 
 function RunningHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoIndex }) {
-  const { chainDecimals } = useSubstrate()
   const { lastBlock } = useBlockManager()
   const { expectedBlockTime } = useBlockManager()
   const { t } = useTranslation()
   const dpoInfo = useSubDpo(targetDpoIndex)
   const theme = useContext(ThemeContext)
-
-  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
 
   let gracePeriodTimeLeft = BN_ZERO
   if (dpoInfo && expectedBlockTime && lastBlock) {
@@ -82,15 +79,24 @@ function RunningHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoInd
           ) : (
             <>
               <GridWrapper columns={'2'} mobileColumns={'2'}>
-                <PaddedSection>
-                  <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
-                    {`${formatToUnit(dpoInfo.vault_yield.toString(), chainDecimals)} `}
-                    <DataTokenName color={theme.green1}>{token}</DataTokenName>
-                  </HeavyText>
-                  <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-                    {t(`Yield`)}
-                  </StandardText>
-                </PaddedSection>
+                {dpoInfo.vault_yield.isZero() && (
+                  <PaddedSection>
+                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                      <HeavyText fontSize={'12px'} color={theme.text3} style={{ margin: 'auto' }}>
+                        {t(`Waiting for`)} {dpoInfo.name} {t(`to release yield`)}
+                      </HeavyText>
+                    </div>
+                  </PaddedSection>
+                )}
+                {!dpoInfo.vault_yield.isZero() && (
+                  <PaddedSection>
+                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
+                      <HeavyText fontSize={'12px'} color={theme.text3} style={{ margin: 'auto' }}>
+                        {t(`Waiting for`)} {dpoInfo.name} {t(`to withdraw yield`)}
+                      </HeavyText>
+                    </div>
+                  </PaddedSection>
+                )}
                 {gracePeriodTimeLeft && expectedBlockTime && (
                   <PaddedSection>
                     <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
