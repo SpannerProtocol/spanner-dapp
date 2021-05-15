@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { Web3Provider } from '@ethersproject/providers'
 import { ApiPromise } from '@polkadot/api'
 import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
@@ -181,7 +182,7 @@ function signAndSendCustodial({
   toastDispatch,
 }: SignAndSendCustodialParams) {
   // Section and Method are used to reconstruct the @polkadot/api tx call server-side
-  if (!custodialProvider || !address || !txInfo || !wallet || !chain) {
+  if (!api || !custodialProvider || !address || !txInfo || !wallet || !chain) {
     setErrorMsg('Unexpected Error with Custodial Signing operation.')
     return
   }
@@ -217,6 +218,9 @@ function signAndSendCustodial({
     }
     return custodialPayload
   }
+  // Get chain spec
+  const chainSpec = api.runtimeVersion.specVersion.toNumber()
+  const randomNumber = Math.floor(Math.random() * 1000000000000)
 
   // Format message for custodial wallet to sign
   const paramKeys = tx.meta.args.map((arg) => arg.name.toString())
@@ -230,6 +234,8 @@ function signAndSendCustodial({
       method,
       params: paramsMap,
     },
+    spanner_spec: chainSpec,
+    nonce: randomNumber,
   })
 
   // Use signing server. They use a different key derivation.
