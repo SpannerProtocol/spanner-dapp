@@ -4,6 +4,7 @@ import BN from 'bn.js'
 import { Decimal } from 'decimal.js'
 import moment from 'moment'
 import { isBN } from './formatUnit'
+
 /**
  * Converts a block into days
  * @param blockTime Expected blocktime in milliseconds
@@ -19,7 +20,7 @@ export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: M
     blockBn = block.toBn()
   }
   const blockTimeInS = blockTime.div(new BN(1000))
-  return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(24 * 60 * 60).toPrecision(precision)
+  return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(24 * 60 * 60).toFixed(precision)
 }
 
 /**
