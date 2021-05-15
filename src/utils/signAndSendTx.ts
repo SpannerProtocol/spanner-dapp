@@ -219,7 +219,7 @@ function signAndSendCustodial({
     return custodialPayload
   }
   // Get chain spec
-  const chainSpec = api.consts.system.version.specVersion.toNumber()
+  const chainSpec = api.runtimeVersion.specVersion.toNumber()
   const randomNumber = Math.floor(Math.random() * 1000000000000)
 
   // Format message for custodial wallet to sign
