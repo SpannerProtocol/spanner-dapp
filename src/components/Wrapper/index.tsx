@@ -15,15 +15,14 @@ export const InlineSection = styled.div`
   display: inline-flex;
 `
 
-export const SpacedSection = styled(AutoColumn)`
-  margin-top: 1rem;
-  margin-bottom: 1rem;
+export const SpacedSection = styled(AutoColumn)<{ margin?: string; mobileMargin?: string }>`
+  margin: ${({ margin }) => (margin ? margin : '1rem 0')};
 
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
+  ${({ mobileMargin, theme }) => theme.mediaWidth.upToExtraSmall`
+  margin: ${mobileMargin ? mobileMargin : '0.5rem 0'};
   `};
 `
+
 export const PaddedSection = styled(AutoColumn)`
   display: block;
   padding: 2rem;

@@ -1,13 +1,13 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import { injected, walletconnect } from '../connectors'
-import ReleaseIcon from '../assets/svg/icon-release.svg'
-import TicketIcon from '../assets/svg/icon-ticket.svg'
-import WithdrawIcon from '../assets/svg/icon-withdraw.svg'
 import BronzeIcon from '../assets/svg/icon-bronze.svg'
-import SilverIcon from '../assets/svg/icon-silver.svg'
+import DiamondIcon from '../assets/svg/icon-diamond.svg'
 import GoldIcon from '../assets/svg/icon-gold.svg'
 import PlatinumIcon from '../assets/svg/icon-platinum.svg'
-import DiamondIcon from '../assets/svg/icon-diamond.svg'
+import ReleaseIcon from '../assets/svg/icon-release.svg'
+import SilverIcon from '../assets/svg/icon-silver.svg'
+import TicketIcon from '../assets/svg/icon-ticket.svg'
+import WithdrawIcon from '../assets/svg/icon-withdraw.svg'
+import { injected, walletconnect } from '../connectors'
 
 export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
 
@@ -63,6 +63,25 @@ export const TRAVELCABIN_CLASSES: { [index: string]: any } = {
   Platinum: { name: 'Platinum', image: PlatinumIcon, order: 3 },
   Diamond: { name: 'Diamond', image: DiamondIcon, order: 4 },
 }
+
+export const BULLETTRAIN_MILESTONES = [
+  [1_000_000, 2_500],
+  [2_000_000, 6_000],
+  [3_000_000, 10_500],
+  [5_000_000, 20_000],
+  [7_000_000, 31_500],
+  [15_000_000, 75_000],
+  [30_000_000, 165_000],
+  [35_000_000, 210_000],
+  [40_000_000, 260_000],
+  [45_000_000, 315_000],
+  [50_000_000, 375_000],
+  [60_000_000, 480_000],
+  [70_000_000, 595_000],
+  [80_000_000, 720_000],
+  [90_000_000, 855_000],
+  [100_000_000, 1_000_000],
+]
 
 export const DPO_COMMIT_GRACE_BLOCKS = 86_400
 export const DPO_RELEASE_DROP_GRACE_BLOCKS = 201_600
