@@ -14,7 +14,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import useWallet from 'hooks/useWallet'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
 import { useChainState, useConnectionsState } from 'state/connections/hooks'
@@ -24,6 +24,15 @@ import { getBridgeFee, getBurnAddr, getEthDepositAddr, postE2sCheck } from '../.
 import { AxiosError } from 'axios'
 import { useUpdateE2sTs } from 'state/user/hooks'
 import moment from 'moment'
+import Balance from 'components/Balance'
+import BN from 'bn.js'
+interface FeeData {
+  feeBps: number
+  feeMinUsd: number
+  gasPriceGwei: number
+  ethPriceUsd: number
+  gasEstimateUnit: number
+}
 
 function BridgeTxConfirm({
   withdrawAmount,
@@ -32,15 +41,18 @@ function BridgeTxConfirm({
   estimatedFee,
   feeData,
   bridgeFee,
+  balanceNum,
 }: {
   withdrawAmount: number
   withdrawAddress: string
   errorMsg: string | undefined
   estimatedFee?: string
-  feeData?: { feeMin: number; feeBps: number }
-  bridgeFee?: string
+  feeData?: FeeData
+  bridgeFee?: number
+  balanceNum?: number
 }) {
   const { t } = useTranslation()
+
   return (
     <>
       <Section>
@@ -76,7 +88,7 @@ function BridgeTxConfirm({
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
-                      text={`${(feeData.feeBps * 0.01).toFixed(2)}%, ${t(`Minimum of`)} ${feeData.feeMin} USDT`}
+                      text={`${t(`Minimum of`)} ${feeData.feeMinUsd} USDT`}
                     />
                   </div>
                   <StandardText>{bridgeFee} USDT</StandardText>
@@ -90,16 +102,32 @@ function BridgeTxConfirm({
                       text={t(`Estimated USDT transferred to provided Ethereum address after fees.`)}
                     />
                   </div>
-                  <StandardText>{(withdrawAmount - parseFloat(bridgeFee)).toFixed(4)} USDT</StandardText>
+                  <StandardText>{(withdrawAmount - bridgeFee).toFixed(4)} USDT</StandardText>
                 </RowBetween>
               </>
             )}
           </BorderedWrapper>
+          <Balance token={'WUSD'} />
           {bridgeFee && <TxFee fee={estimatedFee} />}
-          {!bridgeFee && feeData && (
+          {bridgeFee && withdrawAmount && withdrawAmount < bridgeFee && (
             <BorderedWrapper background="#F82D3A">
               <StandardText color="#fff">
-                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {feeData.feeMin} USDT
+                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {bridgeFee} USDT
+              </StandardText>
+            </BorderedWrapper>
+          )}
+          {balanceNum && bridgeFee && balanceNum < bridgeFee && (
+            <BorderedWrapper background="#F82D3A">
+              <StandardText color="#fff">
+                {t(`Cannot Proceed. Your Balance cannot be lower than the Bridge Fee`)}: {bridgeFee.toFixed(4)} USDT
+              </StandardText>
+            </BorderedWrapper>
+          )}
+          {balanceNum && withdrawAmount && balanceNum < withdrawAmount && (
+            <BorderedWrapper background="#F82D3A">
+              <StandardText color="#fff">
+                {t(`Cannot Proceed. Your Balance cannot be lower than the Withdraw Amount`)}:{' '}
+                {withdrawAmount.toFixed(4)} USDT
               </StandardText>
             </BorderedWrapper>
           )}
@@ -124,7 +152,7 @@ export default function Bridge(): JSX.Element {
   const { createTx, submitTx } = useTxHelpers()
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [txInfo, setTxInfo] = useState<TxInfo>()
-  const [feeData, setFeeData] = useState<{ feeMin: number; feeBps: number }>()
+  const [feeData, setFeeData] = useState<FeeData>()
   const { chain } = useChainState()
   const connectionState = useConnectionsState()
   const [e2sMsg, setE2sMsg] = useState<string>()
@@ -135,6 +163,11 @@ export default function Bridge(): JSX.Element {
   const bridge = connectionState && connectionState.bridgeServerOn
 
   const canE2s = useCallback(() => (time > e2sTsPlus5 ? true : false), [time, e2sTsPlus5])
+
+  const wusdBalanceNum = useMemo(() => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(), [
+    chainDecimals,
+    wusdBalance,
+  ])
 
   useEffect(() => {
     if (!e2sTs) {
@@ -161,34 +194,39 @@ export default function Bridge(): JSX.Element {
       (response) =>
         response.data &&
         setFeeData({
-          feeMin: parseInt(response.data.fee_min),
-          feeBps: parseInt(response.data.fee_bps),
+          feeBps: response.data.fee_bps,
+          feeMinUsd: response.data.fee_min_usd,
+          gasPriceGwei: response.data.gas_price_gwei,
+          ethPriceUsd: response.data.eth_price_usd,
+          gasEstimateUnit: response.data.gas_estimate_unit,
         })
     )
   }, [wallet, chain])
 
   const calcBridgeFee = useCallback(() => {
     if (!feeData) return
-    const feeMin = feeData.feeMin
-    // Amount has to be greater than feeMin or user gets nothing
-    if (ethWithdrawAmount < feeMin) return
+    const feeMin = feeData.feeMinUsd
     const feeBps = feeData.feeBps * 0.0001
-    const fee = ethWithdrawAmount * feeBps
-    if (fee < feeMin) {
-      return feeMin.toFixed(4)
-    } else {
-      return fee.toFixed(4)
-    }
+    const feeByBps = ethWithdrawAmount * feeBps
+    const fee = Math.max(feeMin, feeByBps)
+    return fee
   }, [ethWithdrawAmount, feeData])
 
   const isTxDisabled = useCallback(() => {
-    if (!feeData) return
-    const feeMin = feeData.feeMin
-    if (ethWithdrawAmount < feeMin) {
+    const bridgeFee = calcBridgeFee()
+    if (!bridgeFee) return
+    // Amount has to be greater than feeMin or user gets nothing
+    if (ethWithdrawAmount < bridgeFee) {
+      return true
+    }
+    if (wusdBalanceNum < bridgeFee) {
+      return true
+    }
+    if (wusdBalanceNum < ethWithdrawAmount) {
       return true
     }
     return false
-  }, [ethWithdrawAmount, feeData])
+  }, [calcBridgeFee, ethWithdrawAmount, wusdBalanceNum])
 
   const withdrawToEthereum = useCallback(
     (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
@@ -261,6 +299,7 @@ export default function Bridge(): JSX.Element {
           estimatedFee={txInfo?.estimatedFee}
           feeData={feeData}
           bridgeFee={calcBridgeFee()}
+          balanceNum={wusdBalanceNum}
         />
       </TxModal>
       {!wallet ? (
@@ -392,6 +431,23 @@ export default function Bridge(): JSX.Element {
                   <SectionHeading>{t(`Withdraw to Ethereum`)}</SectionHeading>
                   <StandardText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</StandardText>
                 </Section>
+                {/* {feeData && (
+                  <SpacedSection>
+                    <RowBetween>
+                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                        <HeavyText>{`${t(`Estimated Withdrawal Fee`)}`}</HeavyText>
+                        <QuestionHelper
+                          size={12}
+                          backgroundColor={'transparent'}
+                          text={t(
+                            `The withdrawal fee is dependent on Ethereum gas fee and will vary depending on Ethereum's network congestion.`
+                          )}
+                        />
+                      </div>
+                      <StandardText>{feeData.ethPriceUsd}</StandardText>
+                    </RowBetween>
+                  </SpacedSection>
+                )} */}
                 <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                   <div
                     style={{

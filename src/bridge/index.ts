@@ -118,8 +118,11 @@ export function getHealth(chain: 'Hammer' | 'Spanner') {
 export function getBridgeFee(chain: 'Hammer' | 'Spanner') {
   const bridgeHost = getHost(chain)
   return axios.get<{
-    fee_bps: string
-    fee_min: string
+    fee_bps: number
+    fee_min_usd: number
+    gas_price_gwei: number
+    eth_price_usd: number
+    gas_estimate_unit: number
   }>(`${bridgeHost}/fee`, {
     httpAgent,
   })

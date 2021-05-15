@@ -100,6 +100,7 @@ export const StandardText = styled.div<{
   color?: string
   fontWeight?: string
   paddingLeft?: string
+  padding?: string
   width?: string
   mobileFontSize?: string
 }>`
@@ -107,7 +108,7 @@ export const StandardText = styled.div<{
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
-  padding-left: ${({ paddingLeft }) => (paddingLeft ? paddingLeft : '0')}
+  padding: ${({ padding }) => (padding ? padding : '0')}
   word-break: break-word;
   align-items: center;
 
