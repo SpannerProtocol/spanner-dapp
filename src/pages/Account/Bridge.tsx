@@ -88,7 +88,7 @@ function BridgeTxConfirm({
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
-                      text={`${(feeData.feeBps * 0.0001).toFixed(2)}%, ${t(`Minimum of`)} ${feeData.feeMinUsd} USDT`}
+                      text={`${t(`Minimum of`)} ${feeData.feeMinUsd} USDT`}
                     />
                   </div>
                   <StandardText>{bridgeFee} USDT</StandardText>

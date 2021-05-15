@@ -102,8 +102,8 @@ export default function Milestones() {
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   <StandardText fontSize="16px" mobileFontSize="11px">
                     {String.fromCodePoint(0x1f389)} {t(`Congrats!! Total of`)}{' '}
-                    <b>{`${rewardsData.finishedPercent}% `}</b> {t(`given to all passengers. Don't miss out!`)}!
-                    {String.fromCodePoint(0x1f389)}
+                    <b>{`${rewardsData.finishedPercent.toFixed(2)}% `}</b>{' '}
+                    {t(`given to all passengers. Don't miss out!`)}!{String.fromCodePoint(0x1f389)}
                   </StandardText>
                 </div>
               </SpacedSection>
