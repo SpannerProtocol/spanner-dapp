@@ -62,6 +62,11 @@ export default function Account() {
         label: 'Activity',
         path: '/account/activity',
       },
+      {
+        id: 'bridge',
+        label: 'Bridge',
+        path: '/account/bridge',
+      },
     ]
     const hammerOnly = [
       {
