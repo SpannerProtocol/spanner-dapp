@@ -24,6 +24,15 @@ import { getBridgeFee, getBurnAddr, getEthDepositAddr, postE2sCheck } from '../.
 import { AxiosError } from 'axios'
 import { useUpdateE2sTs } from 'state/user/hooks'
 import moment from 'moment'
+import Balance from 'components/Balance'
+import BN from 'bn.js'
+interface FeeData {
+  feeBps: number
+  feeMinUsd: number
+  gasPriceGwei: number
+  ethPriceUsd: number
+  gasEstimateUnit: number
+}
 
 function BridgeTxConfirm({
   withdrawAmount,
@@ -37,10 +46,11 @@ function BridgeTxConfirm({
   withdrawAddress: string
   errorMsg: string | undefined
   estimatedFee?: string
-  feeData?: { feeMin: number; feeBps: number }
+  feeData?: FeeData
   bridgeFee?: string
 }) {
   const { t } = useTranslation()
+  const balance = useSubscribeBalance('WUSD')
   return (
     <>
       <Section>
@@ -76,7 +86,7 @@ function BridgeTxConfirm({
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
-                      text={`${(feeData.feeBps * 0.01).toFixed(2)}%, ${t(`Minimum of`)} ${feeData.feeMin} USDT`}
+                      text={`${(feeData.feeBps * 0.0001).toFixed(2)}%, ${t(`Minimum of`)} ${feeData.feeMinUsd} USDT`}
                     />
                   </div>
                   <StandardText>{bridgeFee} USDT</StandardText>
@@ -95,11 +105,20 @@ function BridgeTxConfirm({
               </>
             )}
           </BorderedWrapper>
+          <Balance token={'WUSD'} />
           {bridgeFee && <TxFee fee={estimatedFee} />}
           {!bridgeFee && feeData && (
             <BorderedWrapper background="#F82D3A">
               <StandardText color="#fff">
-                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {feeData.feeMin} USDT
+                {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {feeData.feeMinUsd}{' '}
+                USDT
+              </StandardText>
+            </BorderedWrapper>
+          )}
+          {feeData && bridgeFee && balance.lt(new BN(bridgeFee)) && (
+            <BorderedWrapper background="#F82D3A">
+              <StandardText color="#fff">
+                {t(`Cannot Proceed. Your Balance cannot be lower than the Bridge Fee`)}: {feeData.feeMinUsd} USDT
               </StandardText>
             </BorderedWrapper>
           )}
@@ -124,7 +143,7 @@ export default function Bridge(): JSX.Element {
   const { createTx, submitTx } = useTxHelpers()
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false)
   const [txInfo, setTxInfo] = useState<TxInfo>()
-  const [feeData, setFeeData] = useState<{ feeMin: number; feeBps: number }>()
+  const [feeData, setFeeData] = useState<FeeData>()
   const { chain } = useChainState()
   const connectionState = useConnectionsState()
   const [e2sMsg, setE2sMsg] = useState<string>()
@@ -161,29 +180,30 @@ export default function Bridge(): JSX.Element {
       (response) =>
         response.data &&
         setFeeData({
-          feeMin: parseInt(response.data.fee_min),
-          feeBps: parseInt(response.data.fee_bps),
+          feeBps: response.data.fee_bps,
+          feeMinUsd: response.data.fee_min_usd,
+          gasPriceGwei: response.data.gas_price_gwei,
+          ethPriceUsd: response.data.eth_price_usd,
+          gasEstimateUnit: response.data.gas_estimate_unit,
         })
     )
   }, [wallet, chain])
 
   const calcBridgeFee = useCallback(() => {
     if (!feeData) return
-    const feeMin = feeData.feeMin
+    const feeMin = feeData.feeMinUsd
     // Amount has to be greater than feeMin or user gets nothing
     if (ethWithdrawAmount < feeMin) return
     const feeBps = feeData.feeBps * 0.0001
-    const fee = ethWithdrawAmount * feeBps
-    if (fee < feeMin) {
-      return feeMin.toFixed(4)
-    } else {
-      return fee.toFixed(4)
-    }
+    const feeByBps = ethWithdrawAmount * feeBps
+    const fee = Math.max(feeMin, feeByBps)
+    console.log('bps', feeData.feeBps, 'feeByBps', feeByBps, 'feeMin', feeMin, 'fee', fee)
+    return fee.toFixed(4)
   }, [ethWithdrawAmount, feeData])
 
   const isTxDisabled = useCallback(() => {
     if (!feeData) return
-    const feeMin = feeData.feeMin
+    const feeMin = feeData.feeMinUsd
     if (ethWithdrawAmount < feeMin) {
       return true
     }
