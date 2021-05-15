@@ -58,14 +58,14 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
               <CabinData1>
                 <InlineSection>
                   <HeavyText fontSize={'12px'}>{t(`Fare`)}:</HeavyText>
-                  <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
+                  <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
                     {formatToUnit(cabinInfo.deposit_amount.toBn(), chainDecimals, 2)} {token}
                   </StandardText>
                 </InlineSection>
                 {expectedBlockTime && (
                   <InlineSection>
                     <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
-                    <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
+                    <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
                       {blockToDays(cabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
                     </StandardText>
                   </InlineSection>
@@ -74,14 +74,14 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
               <CabinData2>
                 <InlineSection>
                   <HeavyText fontSize={'12px'}>{t(`Yield`)}:</HeavyText>
-                  <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
+                  <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
                     {`${yieldAvailable} ${token}`}
                   </StandardText>
                 </InlineSection>
                 {buyerInfo && (
                   <InlineSection>
                     <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
-                    <StandardText fontSize={'12px'} paddingLeft={'0.5rem'}>
+                    <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
                       {!buyerInfo.fare_withdrawn
                         ? `0 ${token}`
                         : formatToUnit(cabinInfo.bonus_total.toString(), chainDecimals, 2) + ` ${token}`}

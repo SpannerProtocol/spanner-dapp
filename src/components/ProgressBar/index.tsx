@@ -35,6 +35,10 @@ const ProgressBar = withStyles((theme: Theme) =>
       borderRadius: 5,
     },
     colorPrimary: {
+      color: '#FFBE2E',
+      backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
+    },
+    colorSecondary: {
       color: '#EC3D3D',
       backgroundColor: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
     },

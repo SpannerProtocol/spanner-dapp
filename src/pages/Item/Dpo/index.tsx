@@ -667,15 +667,17 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   </StatValue>
                   <StatText>{t(`Bonus`)}</StatText>
                 </StatContainer>
-                <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue small={true}>
-                    {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff" mobileFontSize="8px">
-                      {token}
-                    </DataTokenName>
-                  </StatValue>
-                  <StatText>{t(`Milestone`)}</StatText>
-                </StatContainer>
+                {dpoInfo.target.isTravelCabin && (
+                  <StatContainer maxWidth="none" background={statsBg}>
+                    <StatValue small={true}>
+                      {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
+                      <DataTokenName color="#fff" mobileFontSize="8px">
+                        {token}
+                      </DataTokenName>
+                    </StatValue>
+                    <StatText>{t(`Milestone`)}</StatText>
+                  </StatContainer>
+                )}
               </StatDisplayGrid>
             </StatDisplayContainer>
           </Section>
