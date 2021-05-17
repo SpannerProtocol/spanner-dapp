@@ -447,5 +447,18 @@
   "Next Reward": "Next Reward",
   "to all passengers": "to all passengers",
   "Don't miss the next one": "Don't miss the next one",
-  "to withdraw yield": "to withdraw yield"
+  "to withdraw yield": "to withdraw yield",
+  "Make a Purchase": "Make a Purchase",
+  "per seat": "per seat",
+  "As a DPO, you can buy a maximum of 30 seats.": "As a DPO, you can buy a maximum of 30 seats.",
+  "Confirm purchase": "Confirm purchase",
+  "Cost per seat": "Cost per seat",
+  "Select target type": "Select target type",
+  "Select new target": "Select new target",
+  "Your default target is no longer available. Please select a new target.": "Your default target is no longer available. Please select a new target.",
+  "New Cabin": "New Cabin",
+  "New DPO": "New DPO",
+  "Choose number of seats": "Choose number of seats",
+  "No Cabins can be purchased by your DPO's Crowdfund Amount.": "No Cabins can be purchased by your DPO's Crowdfund Amount.",
+  "Buy Target": "Buy Target"
 }

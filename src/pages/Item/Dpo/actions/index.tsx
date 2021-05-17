@@ -1,10 +1,9 @@
 import { FlatCard } from 'components/Card'
 import { BorderedInput } from 'components/Input'
-import QuestionHelper from 'components/QuestionHelper'
-import { RowBetween, RowFixed } from 'components/Row'
+import { RowBetween } from 'components/Row'
 import { SectionHeading, StandardText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { Section, SpacedSection } from 'components/Wrapper'
+import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useDpoActions } from 'hooks/useDpoActions'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -19,6 +18,7 @@ import { DpoAction } from 'utils/getDpoActions'
 import { isDpoAvailable, isTravelCabinAvailable } from 'utils/isTargetAvailable'
 import { ACTION_ICONS } from '../../../../constants'
 import Action from '../../actions'
+import { DpoBuyDpoSeatsAvailable, DpoBuyDpoSeatsNotAvailable } from './DpoBuyDpoSeats'
 
 interface ActionProviderProps {
   dpoInfo: DpoInfo
@@ -47,7 +47,6 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
   const { t } = useTranslation()
 
   // Conditional action states for callbacks
-  const [seatsToBuy, setSeatsToBuy] = useState<string>()
   const [newTargetIndex, setNewTargetIndex] = useState<string>()
 
   // When dpoActions are present, parse the actions and generate Action components
@@ -212,120 +211,9 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
         return (
           <>
             {isDpoAvailable(dpoInfo, targetDpo) ? (
-              <Action
-                txContent={
-                  <>
-                    <SpacedSection>
-                      <StandardText>{t(`Confirm Purchase of DPO Seats`)}</StandardText>
-                    </SpacedSection>
-                    <SpacedSection>
-                      <RowBetween>
-                        <StandardText>{t(`DPO Id`)}</StandardText>
-                        <StandardText>{dpoInfo.target.asDpo[0].toString()}</StandardText>
-                      </RowBetween>
-                    </SpacedSection>
-                    <TxFee fee={estimatedFee} />
-                  </>
-                }
-                actionName={t('Buy DPO Seats')}
-                tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
-                buttonText={t(`Buy`)}
-                icon={ACTION_ICONS[dpoAction.action]}
-                transaction={{
-                  section: 'bulletTrain',
-                  method: 'dpoBuyDpoSeats',
-                  params: {
-                    buyerDpoIdx: dpoIndex,
-                    targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
-                    numberOfSeats: dpoInfo.target.asDpo[1].toString(),
-                  },
-                }}
-                setEstimatedFee={setEstimatedFee}
-              />
+              <DpoBuyDpoSeatsAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />
             ) : (
-              <Action
-                txContent={
-                  <>
-                    {newTargetIndex && (
-                      <>
-                        <SpacedSection>
-                          <StandardText>{t(`Confirm Purchase of DPO Seats`)}</StandardText>
-                        </SpacedSection>
-                        <SpacedSection>
-                          <RowBetween>
-                            <StandardText>{t(`DPO Id`)}</StandardText>
-                            <StandardText>{newTargetIndex}</StandardText>
-                          </RowBetween>
-                        </SpacedSection>
-                        <TxFee fee={estimatedFee} />
-                      </>
-                    )}
-                  </>
-                }
-                actionName={t('Buy DPO Seats')}
-                tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
-                form={
-                  <>
-                    <StandardText>
-                      {`${`DPO ${dpoInfo.target.asDpo[0].toString()}`} 
-                        ${t(`is no longer available. Please enter a new DPO Id to purchase.`)}`}
-                    </StandardText>
-                    <SpacedSection>
-                      <RowFixed>
-                        <StandardText>{t(`New DPO Id`)}</StandardText>
-                        <QuestionHelper
-                          text={t(
-                            `The DPO Id of another DPO you want to buy. You can find by looking at the DPO's information page.`
-                          )}
-                          size={12}
-                          backgroundColor={'#fff'}
-                        ></QuestionHelper>
-                      </RowFixed>
-                      <BorderedInput
-                        required
-                        id="dpo-index"
-                        type="number"
-                        placeholder={`0`}
-                        onChange={(e) => setNewTargetIndex(e.target.value)}
-                        style={{ alignItems: 'flex-end', width: '100%' }}
-                      />
-                    </SpacedSection>
-                    <Section>
-                      <RowFixed>
-                        <StandardText>{t(`Seats to Buy`)}</StandardText>
-                        <QuestionHelper
-                          text={t(
-                            `The # of Seats you wish to buy from THIS DPO will determine the crowdfunding target of YOUR new DPO. The crowdfunding target will be split equally to 100 seats for your DPO members.`
-                          )}
-                          size={12}
-                          backgroundColor={'#fff'}
-                        ></QuestionHelper>
-                      </RowFixed>
-                      <BorderedInput
-                        required
-                        id="dpo-seats"
-                        type="number"
-                        placeholder="0.0"
-                        onChange={(e) => setSeatsToBuy(e.target.value)}
-                        style={{ alignItems: 'flex-end', width: '100%' }}
-                      />
-                    </Section>
-                  </>
-                }
-                formTitle={t('Change DPO Target')}
-                buttonText={t('Buy')}
-                icon={ACTION_ICONS[dpoAction.action]}
-                transaction={{
-                  section: 'bulletTrain',
-                  method: 'dpoBuyDpoSeats',
-                  params: {
-                    buyerDpoIdx: dpoIndex,
-                    targetDpoIdx: newTargetIndex,
-                    numberOfSeats: seatsToBuy,
-                  },
-                }}
-                setEstimatedFee={setEstimatedFee}
-              />
+              <DpoBuyDpoSeatsNotAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />
             )}
           </>
         )
@@ -429,7 +317,6 @@ function ActionProvider(props: ActionProviderProps): JSX.Element {
     targetTravelCabinInventory,
     targetInventoryIndex,
     newTargetIndex,
-    seatsToBuy,
     estimatedFee,
     chainDecimals,
     t,
