@@ -8,10 +8,7 @@ const bridgeSpannerHost = process.env.REACT_APP_SPANNER_BRIDGE_HOST
 let httpAgent: https.Agent
 
 if (process.env.NODE_ENV === 'development') {
-  httpAgent = new https.Agent({
-    cert: require(process.env.REACT_APP_BRIDGE_SSL_CERT as string),
-    rejectUnauthorized: false,
-  })
+  httpAgent = new https.Agent()
 } else {
   httpAgent = new https.Agent()
 }
