@@ -14,6 +14,7 @@ import { Link } from 'react-router-dom'
 import { DpoIndex } from 'spanner-interfaces'
 import styled from 'styled-components'
 import cdDivide from 'utils/cdDivide'
+import { blocksToCountDown } from 'utils/formatBlocks'
 import getApy from 'utils/getApy'
 import { ACTION_ICONS, DPO_STATE_COLORS } from '../../constants'
 import { formatToUnit } from '../../utils/formatUnit'
@@ -145,10 +146,11 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                         </>
                       ) : (
                         <div style={{ display: 'flex', marginRight: '0.5rem' }}>
-                          <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
-                          <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
-                            `Blocks`
-                          )}`}</StandardText>
+                          <HeavyText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${blocksToCountDown(
+                            expiry.toString(),
+                            expectedBlockTime,
+                            t('EXPIRED')
+                          )}`}</HeavyText>
                         </div>
                       )}
                     </InlineSection>
