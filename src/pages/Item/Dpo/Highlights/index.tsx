@@ -4,8 +4,8 @@ import { CenteredRow, RowBetween } from 'components/Row'
 import { DataTokenName, HeavyText, SectionTitle, StandardText } from 'components/Text'
 import { ContentWrapper, PaddedSection, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
+import useDpoFees from 'hooks/useDpoFees'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useDpoManager } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -82,7 +82,7 @@ function RunningHighlightsCabinTarget({
   useEffect(() => {
     if (!cabinInfo || !buyerInfo || !lastBlock || !expectedBlockTime) return
     const cabinYield = getCabinYield(cabinInfo, buyerInfo, lastBlock, chainDecimals)
-    if (cabinYield && parseFloat(cabinYield) === 0) {
+    if (cabinInfo.yield_total.eq(buyerInfo.yield_withdrawn)) {
       setYieldAvailable('All yield withdrawn')
     } else {
       setYieldAvailable(cabinYield)
@@ -230,12 +230,12 @@ function ActiveHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
 }
 
 function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
-  const manager = useDpoManager(dpoInfo.index, dpoInfo)
   const progress = 100 - dpoInfo.empty_seats.toNumber()
   const below420 = useMedia('(max-width: 420px)')
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
   const { t } = useTranslation()
+  const fees = useDpoFees(dpoInfo.index.toString())
 
   return (
     <>
@@ -243,15 +243,13 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
         <PaddedSection>
           <CircleProgress value={progress} size={below420 ? 60 : 100} />
         </PaddedSection>
-        {manager && (
+        {fees && (
           <PaddedSection>
             <HeavyText fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
             <StandardText fontSize="9px" style={{ margin: 'auto' }}>
-              {`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} ${t(
-                `Base`
-              )} + ${manager.number_of_seats.toNumber()} ${t(`Seats`)}`}
+              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
             </StandardText>
             <StandardText style={{ margin: 'auto' }}>{t(`Management Fee`)}</StandardText>
           </PaddedSection>
@@ -276,16 +274,17 @@ export default function Highlights({ dpoInfo }: HighlightsProps) {
   const { t } = useTranslation()
   return (
     <>
-      {(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning) && (
-        <ContentWrapper>
-          <FlatCard>
-            <SectionTitle>{t(`Highlights`)}</SectionTitle>
-            {dpoInfo.state.isCreated && <CreateHighlights dpoInfo={dpoInfo} />}
-            {dpoInfo.state.isActive && dpoInfo.target.isDpo && <ActiveHighlights dpoInfo={dpoInfo} />}
-            {dpoInfo.state.isRunning && <RunningHighlights dpoInfo={dpoInfo} />}
-          </FlatCard>
-        </ContentWrapper>
-      )}
+      {(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning) &&
+        !(dpoInfo.state.isActive && dpoInfo.target.isTravelCabin) && (
+          <ContentWrapper>
+            <FlatCard>
+              <SectionTitle>{t(`Highlights`)}</SectionTitle>
+              {dpoInfo.state.isCreated && <CreateHighlights dpoInfo={dpoInfo} />}
+              {dpoInfo.state.isActive && dpoInfo.target.isDpo && <ActiveHighlights dpoInfo={dpoInfo} />}
+              {dpoInfo.state.isRunning && <RunningHighlights dpoInfo={dpoInfo} />}
+            </FlatCard>
+          </ContentWrapper>
+        )}
     </>
   )
 }
