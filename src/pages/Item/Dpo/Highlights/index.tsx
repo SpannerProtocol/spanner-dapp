@@ -142,9 +142,7 @@ function RunningHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
           dpoInfo={dpoInfo}
         />
       )}
-      {dpoInfo.target.isDpo && dpoInfo.vault_yield.isZero() && (
-        <RunningHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />
-      )}
+      {dpoInfo.target.isDpo && <RunningHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />}
     </>
   )
 }
@@ -272,19 +270,36 @@ interface HighlightsProps {
 
 export default function Highlights({ dpoInfo }: HighlightsProps) {
   const { t } = useTranslation()
+  if (!(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning)) return null
+
+  const getHighlight = () => {
+    if (dpoInfo.state.isCreated) {
+      return <CreateHighlights dpoInfo={dpoInfo} />
+    }
+    if (dpoInfo.state.isActive && dpoInfo.target.isDpo) {
+      return <ActiveHighlights dpoInfo={dpoInfo} />
+    }
+    if (dpoInfo.state.isRunning) {
+      if (dpoInfo.target.isTravelCabin) {
+        return <RunningHighlights dpoInfo={dpoInfo} />
+      }
+      if (dpoInfo.target.isDpo && dpoInfo.vault_yield.isZero()) {
+        return <RunningHighlights dpoInfo={dpoInfo} />
+      }
+    }
+    return null
+  }
+
   return (
     <>
-      {(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning) &&
-        !(dpoInfo.state.isActive && dpoInfo.target.isTravelCabin) && (
-          <ContentWrapper>
-            <FlatCard>
-              <SectionTitle>{t(`Highlights`)}</SectionTitle>
-              {dpoInfo.state.isCreated && <CreateHighlights dpoInfo={dpoInfo} />}
-              {dpoInfo.state.isActive && dpoInfo.target.isDpo && <ActiveHighlights dpoInfo={dpoInfo} />}
-              {dpoInfo.state.isRunning && <RunningHighlights dpoInfo={dpoInfo} />}
-            </FlatCard>
-          </ContentWrapper>
-        )}
+      {getHighlight() && (
+        <ContentWrapper>
+          <FlatCard>
+            <SectionTitle>{t(`Highlights`)}</SectionTitle>
+            {getHighlight()}
+          </FlatCard>
+        </ContentWrapper>
+      )}
     </>
   )
 }
