@@ -42,13 +42,13 @@ import { Link } from 'react-router-dom'
 import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
-import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
+import { blocksToCountDown, blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
-import DpoActions from './Actions'
+import DpoActions from './actions'
 import DpoModalForm from './Form'
 import Highlights from './Highlights/index'
 
@@ -507,6 +507,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   if (!dpoInfo) return <></>
   const token = dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()
   const dirRefRate = dpoInfo.direct_referral_rate.toNumber() / 10
+  let expiry = new BN(0)
+  if (lastBlock) {
+    expiry = dpoInfo.expiry_blk.sub(lastBlock).isNeg() ? new BN(0) : dpoInfo.expiry_blk.sub(lastBlock)
+  }
 
   return (
     <>
@@ -730,17 +734,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>{t(`DPO Name`)}</StandardText>
                 <StandardText>{dpoInfo.name}</StandardText>
               </RowBetween>
-              {dpoInfo.state.isCreated && lastBlock && expectedBlockTime && (
+              {dpoInfo.state.isCreated && expiry && expectedBlockTime && (
                 <RowBetween>
                   <StandardText>{t(`Crowdfunding Ends`)}</StandardText>
-                  <StandardText>
-                    {`${t(`Block`)} #${dpoInfo.expiry_blk.toString()} 
-                    ${
-                      dpoInfo.expiry_blk.sub(lastBlock).isNeg()
-                        ? '0'
-                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime, 2)}`
-                    } ${t(`days`)})`}
-                  </StandardText>
+                  <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</StandardText>
                 </RowBetween>
               )}
             </Section>
