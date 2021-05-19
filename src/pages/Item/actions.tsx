@@ -192,9 +192,9 @@ export default function Action({
         <ButtonPrimary
           onClick={form ? () => setFormModalOpen(!formModalOpen) : handleConfirm}
           fontSize="12px"
-          mobileFontSize="11px"
+          mobileFontSize="10px"
           padding="0.5rem 1rem"
-          mobilePadding="0.5rem 1rem"
+          mobilePadding="0.35rem 0.5rem"
           width="fit-content"
         >
           {buttonText}

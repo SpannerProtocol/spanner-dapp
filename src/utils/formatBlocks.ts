@@ -36,11 +36,13 @@ export function blockToHours(block: BlockNumber | u32 | string | BN, blockTime: 
   return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(60 * 60).toFixed(precision)
 }
 
-// 1 block = 6 seconds
-// 10 block = 60 seconds = 1 min
-// 600 blocks = 3600 seconds = 60 min = 1 hour
-// 14400 blocks = 86400 seconds = 1440 min = 24 hours = 1 day
-
+/**
+ * Formats block into 'd h m s' format for a countdown.
+ * @param block Last block
+ * @param blockTime Expected block time in milliseconds (e.g. 3000 or 6000)
+ * @param expiredText String to show user if countdown = 0
+ * @returns String of time in format 'd h m s' or expiredText
+ */
 export function blocksToCountDown(block: BlockNumber | u32 | string | BN, blockTime: Moment, expiredText?: string) {
   let blockBn: BN
   if (typeof block === 'string') {
@@ -59,7 +61,7 @@ export function blocksToCountDown(block: BlockNumber | u32 | string | BN, blockT
   // Display the result in the element with id="demo"
   const countDown = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's '
   // If the count down is finished, return expired text
-  if (expiredText && seconds <= 0) {
+  if (expiredText && nowInMs <= 0) {
     return expiredText
   }
   return countDown
