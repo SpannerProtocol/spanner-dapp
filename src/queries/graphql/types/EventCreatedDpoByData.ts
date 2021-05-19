@@ -48,5 +48,5 @@ export interface EventCreatedDpoByData {
 export interface EventCreatedDpoByDataVariables {
   first: number;
   offset: number;
-  endsWith: string;
+  includes: string;
 }

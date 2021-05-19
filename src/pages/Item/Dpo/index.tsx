@@ -48,7 +48,7 @@ import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
-import DpoActions from './Actions'
+import DpoActions from './actions'
 import DpoModalForm from './Form'
 import Highlights from './Highlights/index'
 
