@@ -140,6 +140,7 @@ export default function Milestones() {
             </>
           )}
           <SpacedSection>
+            <HeavyText fontSize="14px">{t(`Next Milestone`)}</HeavyText>
             <RowBetween>
               <StandardText fontSize="11px">
                 {`${t(`Progress`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}
