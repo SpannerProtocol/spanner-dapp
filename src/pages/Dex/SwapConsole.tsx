@@ -103,8 +103,6 @@ export default function SwapConsole(): JSX.Element {
   const [amountA, setAmountA] = useState<number>(0)
   const [amountB, setAmountB] = useState<number>(0)
   const [isOnA, setIsOnA] = useState<boolean>(true)
-  const [fromHeader, setFromHeader] = useState<string>(t(`From`))
-  const [toHeader, setToHeader] = useState<string>(t(`To (estimated)`))
   const [poolQueryError, setPoolQueryError] = useState<string>()
   const [pool, setPool] = useState<[Balance, Balance]>()
   const [unsafeInteger, setUnsafeInteger] = useState<boolean>(false)
@@ -245,8 +243,6 @@ export default function SwapConsole(): JSX.Element {
     const cd = new BN(chainDecimals)
     if (isOnA) {
       // user provided supply
-      setFromHeader(t(`From`))
-      setToHeader(t(`To (estimated)`))
       if (Number.isNaN(amountA) || !pool || !fee) {
         return
       } else if (!amountA) {
@@ -262,8 +258,6 @@ export default function SwapConsole(): JSX.Element {
       }
     } else {
       // user provided target
-      setFromHeader(t(`To (estimated)`))
-      setToHeader(t(`From`))
       if (Number.isNaN(amountB) || !pool || !fee) {
         return
       } else if (!amountB) {
@@ -316,7 +310,7 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{t(fromHeader)}</LightHeader>
+                <LightHeader>{t(`From`)}</LightHeader>
                 <ConsoleStat>
                   {t(`Balance`)}: {formatToUnit(balanceA, chainDecimals)}
                 </ConsoleStat>
@@ -351,7 +345,7 @@ export default function SwapConsole(): JSX.Element {
           <CenteredRow>
             <InputGroup>
               <InputHeader>
-                <LightHeader>{t(toHeader)}</LightHeader>
+                <LightHeader>{t(`To (estimated)`)}</LightHeader>
                 <ConsoleStat>
                   {t(`Balance`)}: {formatToUnit(balanceB, chainDecimals)}
                 </ConsoleStat>
