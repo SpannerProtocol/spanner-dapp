@@ -179,7 +179,7 @@ function TravelCabinBuyersInfo({
                 <>
                   <RowBetween>
                     <StandardText>{t(`Buyer`)}</StandardText>
-                    <StandardText>{truncateString(buyer[1].buyer.asDpo.toString(), 14)} (DPO)</StandardText>
+                    <StandardText>{truncateString(buyer[1].buyer.asDpo.toString(), 14)}</StandardText>
                   </RowBetween>
                   <RowBetween>
                     <StandardText>{t(`User Type`)}</StandardText>
