@@ -126,7 +126,7 @@ export default function Milestones() {
                         <AnyQuestionHelper
                           text={`${((milestone.reward / milestone.milestone) * 100).toFixed(2)}% ${t(
                             `will be given to all passengers when hitting the Milestone of`
-                          )}: ${formatToUnit(milestone.milestone.toString(), chainDecimals, 0)} ${project.token} `}
+                          )}: ${milestone.milestone.toLocaleString()} ${project.token} `}
                         >
                           <StandardText fontSize="20px" mobileFontSize="14px" padding="0 0.1rem">
                             {String.fromCodePoint(0x1f381)}
@@ -140,6 +140,7 @@ export default function Milestones() {
             </>
           )}
           <SpacedSection>
+            <HeavyText fontSize="14px">{t(`Next Milestone`)}</HeavyText>
             <RowBetween>
               <StandardText fontSize="11px">
                 {`${t(`Progress`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}

@@ -24,6 +24,7 @@ import {
   Section,
   StateWrapper,
 } from 'components/Wrapper'
+import useDpoFees from 'hooks/useDpoFees'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import useSubscribeBalance from 'hooks/useQueryBalance'
@@ -41,7 +42,7 @@ import { Link } from 'react-router-dom'
 import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
-import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
+import { blocksToCountDown, blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
@@ -385,6 +386,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const { passengerSeatCap } = useConsts()
   const manager = useDpoManager(dpoIndex, dpoInfo)
   const theme = useContext(ThemeContext)
+  const fees = useDpoFees(dpoIndex)
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -505,6 +507,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   if (!dpoInfo) return <></>
   const token = dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()
   const dirRefRate = dpoInfo.direct_referral_rate.toNumber() / 10
+  let expiry = new BN(0)
+  if (lastBlock) {
+    expiry = dpoInfo.expiry_blk.sub(lastBlock).isNeg() ? new BN(0) : dpoInfo.expiry_blk.sub(lastBlock)
+  }
 
   return (
     <>
@@ -684,11 +690,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         )}
       </FlatCard>
       <Highlights dpoInfo={dpoInfo} />
-      {isConnected && (
-        <ContentWrapper>
-          <DpoActions dpoIndex={dpoIndex} />
-        </ContentWrapper>
-      )}
+      {isConnected && <DpoActions dpoIndex={dpoIndex} />}
       <ContentWrapper>
         <FlatCard>
           <SectionHeading>{t(`Details`)}</SectionHeading>
@@ -732,17 +734,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StandardText>{t(`DPO Name`)}</StandardText>
                 <StandardText>{dpoInfo.name}</StandardText>
               </RowBetween>
-              {dpoInfo.state.isCreated && lastBlock && expectedBlockTime && (
+              {dpoInfo.state.isCreated && expiry && expectedBlockTime && (
                 <RowBetween>
                   <StandardText>{t(`Crowdfunding Ends`)}</StandardText>
-                  <StandardText>
-                    {`${t(`Block`)} #${dpoInfo.expiry_blk.toString()} 
-                    ${
-                      dpoInfo.expiry_blk.sub(lastBlock).isNeg()
-                        ? '0'
-                        : `(${blockToDays(dpoInfo.expiry_blk.sub(lastBlock), expectedBlockTime, 2)}`
-                    } ${t(`days`)})`}
-                  </StandardText>
+                  <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</StandardText>
                 </RowBetween>
               )}
             </Section>
@@ -839,12 +834,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <SmallText>{t(`Membership Requirements`)}</SmallText>
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
-              {manager && (
+              {fees && (
                 <RowBetween>
                   <StandardText>{t(`Management Fee`)}</StandardText>
-                  <StandardText>{`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} (${t(
-                    `Base`
-                  )}) + ${manager.number_of_seats.toNumber()} (${t(`Seats`)}) = ${
+                  <StandardText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
                     dpoInfo.fee.toNumber() / 10
                   }%`}</StandardText>
                 </RowBetween>

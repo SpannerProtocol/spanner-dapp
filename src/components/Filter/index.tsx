@@ -29,7 +29,7 @@ const Option = styled(BorderedWrapper)`
 
 interface FilterOption {
   label: string
-  callback: Dispatcher<string>
+  callback: Dispatcher<any>
 }
 
 interface FilterProps {
@@ -68,6 +68,10 @@ function FilterOptions({
   )
 }
 
+/**
+ * Filter takes an object with a label and a callback.
+ * On selection of one of the labels, it will call the callback
+ */
 export default function Filter({ options, activeOption, modalTitle }: FilterProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
 

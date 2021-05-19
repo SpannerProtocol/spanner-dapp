@@ -12,15 +12,18 @@ export const HeavyText = styled.div<{
   fontSize?: string
   fontWeight?: string
   color?: string
+  padding?: string
   mobileFontSize?: string
+  width?: string
 }>`
-  width: fit-content;
+  width: ${({ width }) => (width ? width : 'fit-content')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   margin: 0;
+  padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${mobileFontSize ? mobileFontSize : '12px'}
+    font-size: ${mobileFontSize ? mobileFontSize : '12px'};
 `};
 `
 
@@ -108,7 +111,7 @@ export const StandardText = styled.div<{
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   color: ${({ color, theme }) => (color ? color : theme.text2)};
-  padding: ${({ padding }) => (padding ? padding : '0')}
+  padding: ${({ padding }) => (padding ? padding : '0')};
   word-break: break-word;
   align-items: center;
 

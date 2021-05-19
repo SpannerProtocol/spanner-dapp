@@ -1,4 +1,3 @@
-import { Option } from '@polkadot/types'
 import { useEffect, useState } from 'react'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
 import { useApi } from './useApi'
@@ -112,7 +111,13 @@ export function useSubTravelCabinBuyerVerbose(
   return buyerInfo
 }
 
-export function useDPOTravelCabinInventoryIndex(
+/**
+ * Get the TravelCabinInventoryIndex from the TravelCabinBuyer storage for a dpo
+ * @param dpoIndex current dpo's index
+ * @param travelCabinIndex index of travelcabin that current dpo is targeting
+ * @returns TravelCabinInventoryIndex | undefined
+ */
+export function useDpoTravelCabinInventoryIndex(
   dpoIndex: string,
   travelCabinIndex?: TravelCabinIndex | number | string
 ) {
@@ -173,31 +178,4 @@ export function useSubTravelCabinInventory(
   }, [api, travelCabinIndex])
 
   return inventoryCounts
-}
-
-export function useRpcUserTravelCabins(address: string | null | undefined) {
-  const { api, connected } = useApi()
-  const [indexes, setIndexes] = useState<string[]>([])
-  const [travelCabins, setTravelCabins] = useState<TravelCabinInfo[]>([])
-
-  useEffect(() => {
-    if (!connected || !address) return
-    api.rpc.bulletTrain
-      .getTravelCabinsOfAccount(address)
-      .then((result) => setIndexes(result.map((cabinIndex) => cabinIndex[0].toString())))
-      .catch((err) => console.log(err))
-  }, [api, address, connected])
-
-  useEffect(() => {
-    if (!indexes || !connected) return
-    api.query.bulletTrain.travelCabins.multi(indexes, (results: Option<TravelCabinInfo>[]) => {
-      results.forEach((result) => {
-        if (result.isSome) {
-          setTravelCabins((prev) => [...prev, result.unwrapOrDefault()])
-        }
-      })
-    })
-  }, [api, connected, indexes])
-
-  return travelCabins
 }

@@ -5,16 +5,7 @@ import https from 'https'
 const bridgeHammerHost = process.env.REACT_APP_HAMMER_BRIDGE_HOST
 const bridgeSpannerHost = process.env.REACT_APP_SPANNER_BRIDGE_HOST
 
-let httpAgent: https.Agent
-
-if (process.env.NODE_ENV === 'development') {
-  httpAgent = new https.Agent({
-    cert: require(process.env.REACT_APP_BRIDGE_SSL_CERT as string),
-    rejectUnauthorized: false,
-  })
-} else {
-  httpAgent = new https.Agent()
-}
+const httpAgent = new https.Agent()
 
 function getHost(chain: string) {
   if (chain === 'Hammer') {

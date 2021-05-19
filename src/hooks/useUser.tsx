@@ -1,22 +1,6 @@
 import { useEffect, useState } from 'react'
 import { DpoIndex } from 'spanner-interfaces/bulletTrain'
 import { useApi } from './useApi'
-import { useRpcUserDpos } from './useQueryDpos'
-import { useRpcUserTravelCabins } from './useQueryTravelCabins'
-
-export function useUserDpos(address: string | null | undefined) {
-  return useRpcUserDpos(address)
-}
-
-export function useUserTravelCabins(address: string | null | undefined) {
-  return useRpcUserTravelCabins(address)
-}
-
-export function useUserItems(address: string | null | undefined) {
-  const userDpos = useUserDpos(address)
-  const userTravelCabins = useUserTravelCabins(address)
-  return { userDpos, userTravelCabins }
-}
 
 export function useUserIsDpoMember(
   dpoIndex: number | string | DpoIndex | undefined,
