@@ -28,7 +28,15 @@ export function getCabinYield(
     }
   }
 }
-export function getTreasureHuntingGPLeft(
+
+/**
+ * Treasure Hunting Rule - returns time left for treasure hunting grace period
+ * @param buyerInfo TravelCabinBuyerInfo
+ * @param lastBlock the last block
+ * @param expectedBlockTime chain block time in milliseconds
+ * @returns string
+ */
+export function getTreasureHuntingGpLeft(
   buyerInfo: TravelCabinBuyerInfo,
   lastBlock: BlockNumber,
   expectedBlockTime: Moment
@@ -37,13 +45,36 @@ export function getTreasureHuntingGPLeft(
   return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
 }
 
-export function getYieldGPLeft(dpoInfo: DpoInfo, lastBlock: BlockNumber, expectedBlockTime: Moment) {
+/**
+ * Lazy Manager Rule - returns time left for lazy manager grace period.
+ * @param dpoInfo DpoInfo
+ * @param lastBlock the last block
+ * @param expectedBlockTime chain block time in milliseconds
+ * @returns string or undefined. undefined is useful if there is no block time.
+ */
+export function getLazyManagerGpLeft(dpoInfo: DpoInfo, lastBlock: BlockNumber, expectedBlockTime: Moment) {
   if (dpoInfo.blk_of_last_yield.isSome) {
     const gracePeriodTimeLeft = dpoInfo.blk_of_last_yield.unwrapOrDefault().add(daysToBlocks(7, expectedBlockTime))
     return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
   } else if (dpoInfo.blk_of_last_yield.isNone) {
     return undefined
-  } else {
-    return '0'
   }
+  return '0'
+}
+
+/**
+ * Life Sentence Rule - returns time left for life sentence grace period.
+ * @param dpoInfo DpoInfo
+ * @param lastBlock the last block
+ * @param expectedBlockTime chain block time in milliseconds
+ * @returns string or undefined. undefined is useful if there is no block time.
+ */
+export function getLifeSentenceGpLeft(dpoInfo: DpoInfo, lastBlock: BlockNumber, expectedBlockTime: Moment) {
+  if (dpoInfo.blk_of_dpo_filled.isSome) {
+    const gracePeriodTimeLeft = dpoInfo.blk_of_dpo_filled.unwrapOrDefault().add(daysToBlocks(7, expectedBlockTime))
+    return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  } else if (dpoInfo.blk_of_dpo_filled.isNone) {
+    return undefined
+  }
+  return '0'
 }
