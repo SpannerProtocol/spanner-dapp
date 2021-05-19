@@ -23,6 +23,50 @@ export function blockToDays(block: BlockNumber | u32 | string | BN, blockTime: M
   return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(24 * 60 * 60).toFixed(precision)
 }
 
+export function blockToHours(block: BlockNumber | u32 | string | BN, blockTime: Moment, precision = 2) {
+  let blockBn: BN
+  if (typeof block === 'string') {
+    blockBn = new BN(block)
+  } else if (isBN(block)) {
+    blockBn = block
+  } else {
+    blockBn = block.toBn()
+  }
+  const blockTimeInS = blockTime.div(new BN(1000))
+  return new Decimal(blockBn.mul(blockTimeInS).toString()).dividedBy(60 * 60).toFixed(precision)
+}
+
+/**
+ * Formats block into 'd h m s' format for a countdown.
+ * @param block Last block
+ * @param blockTime Expected block time in milliseconds (e.g. 3000 or 6000)
+ * @param expiredText String to show user if countdown = 0
+ * @returns String of time in format 'd h m s' or expiredText
+ */
+export function blocksToCountDown(block: BlockNumber | u32 | string | BN, blockTime: Moment, expiredText?: string) {
+  let blockBn: BN
+  if (typeof block === 'string') {
+    blockBn = new BN(block)
+  } else if (isBN(block)) {
+    blockBn = block
+  } else {
+    blockBn = block.toBn()
+  }
+  const nowInMs = blockBn.mul(blockTime).toNumber()
+  // Time calculations for days, hours, minutes and seconds
+  const days = Math.floor(nowInMs / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((nowInMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  const minutes = Math.floor((nowInMs % (1000 * 60 * 60)) / (1000 * 60))
+  const seconds = Math.floor((nowInMs % (1000 * 60)) / 1000)
+  // Display the result in the element with id="demo"
+  const countDown = days + 'd ' + hours + 'h ' + minutes + 'm ' + seconds + 's '
+  // If the count down is finished, return expired text
+  if (expiredText && nowInMs <= 0) {
+    return expiredText
+  }
+  return countDown
+}
+
 /**
  * Converts days into blocks, ceiled
  * @param blockTime Expected blocktime in milliseconds

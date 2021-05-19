@@ -24,6 +24,7 @@ import {
   Section,
   StateWrapper,
 } from 'components/Wrapper'
+import useDpoFees from 'hooks/useDpoFees'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import useSubscribeBalance from 'hooks/useQueryBalance'
@@ -47,7 +48,7 @@ import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
-import DpoActions from './actions'
+import DpoActions from './Actions'
 import DpoModalForm from './Form'
 import Highlights from './Highlights/index'
 
@@ -385,6 +386,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const { passengerSeatCap } = useConsts()
   const manager = useDpoManager(dpoIndex, dpoInfo)
   const theme = useContext(ThemeContext)
+  const fees = useDpoFees(dpoIndex)
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -684,11 +686,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         )}
       </FlatCard>
       <Highlights dpoInfo={dpoInfo} />
-      {isConnected && (
-        <ContentWrapper>
-          <DpoActions dpoIndex={dpoIndex} />
-        </ContentWrapper>
-      )}
+      {isConnected && <DpoActions dpoIndex={dpoIndex} />}
       <ContentWrapper>
         <FlatCard>
           <SectionHeading>{t(`Details`)}</SectionHeading>
@@ -839,12 +837,10 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <SmallText>{t(`Membership Requirements`)}</SmallText>
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
-              {manager && (
+              {fees && (
                 <RowBetween>
                   <StandardText>{t(`Management Fee`)}</StandardText>
-                  <StandardText>{`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} (${t(
-                    `Base`
-                  )}) + ${manager.number_of_seats.toNumber()} (${t(`Seats`)}) = ${
+                  <StandardText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
                     dpoInfo.fee.toNumber() / 10
                   }%`}</StandardText>
                 </RowBetween>

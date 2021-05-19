@@ -1,12 +1,11 @@
-import { BN_ZERO } from '@polkadot/util'
 import { FlatCard } from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DataTokenName, HeavyText, SectionTitle, StandardText } from 'components/Text'
-import { BorderedWrapper, ContentWrapper, GridWrapper, PaddedSection, Section } from 'components/Wrapper'
+import { ContentWrapper, PaddedSection, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
+import useDpoFees from 'hooks/useDpoFees'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useDpoManager } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -16,9 +15,8 @@ import { Link } from 'react-router-dom'
 import { useMedia } from 'react-use'
 import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
-import { blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
-import { getCabinYield, getTreasureHuntingGPLeft, getYieldGPLeft } from 'utils/getCabinData'
+import { getCabinYield } from 'utils/getCabinData'
 import { getDpoCabinInventoryIndex } from 'utils/getTravelCabinBuyer'
 import WaitingIcon from '../../../../assets/svg/icon-waiting.svg'
 
@@ -38,96 +36,26 @@ const IconWrapper = styled.div`
 `
 
 function RunningHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoIndex }) {
-  const { lastBlock } = useBlockManager()
-  const { expectedBlockTime } = useBlockManager()
   const { t } = useTranslation()
-  const dpoInfo = useSubDpo(targetDpoIndex)
-  const theme = useContext(ThemeContext)
-
-  let gracePeriodTimeLeft = BN_ZERO
-  if (dpoInfo && expectedBlockTime && lastBlock) {
-    gracePeriodTimeLeft = dpoInfo.blk_of_last_yield
-      .unwrapOr(gracePeriodTimeLeft)
-      .add(daysToBlocks(7, expectedBlockTime))
-      .sub(lastBlock)
-    if (gracePeriodTimeLeft.lte(BN_ZERO)) {
-      gracePeriodTimeLeft = BN_ZERO
-    }
-  }
+  const targetDpo = useSubDpo(targetDpoIndex)
 
   return (
     <>
-      {dpoInfo && (
-        <>
-          {dpoInfo.vault_yield.isZero() ? (
-            <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
-              <CenteredRow>
-                <CenteredRow>
-                  <PaddedSection>
-                    <div style={{ display: 'block' }}>
-                      <IconWrapper>
-                        <Icon src={WaitingIcon} />
-                      </IconWrapper>
-                      <HeavyText>{`${t(`Waiting for`)} ${dpoInfo.name.toString()} ${t(
-                        `to receive and release yield`
-                      )}`}</HeavyText>
-                    </div>
-                  </PaddedSection>
-                </CenteredRow>
-              </CenteredRow>
-            </Link>
-          ) : (
-            <>
-              <GridWrapper columns={'2'} mobileColumns={'2'}>
-                {dpoInfo.vault_yield.isZero() && (
-                  <PaddedSection>
-                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                      <HeavyText fontSize={'12px'} color={theme.text3} style={{ margin: 'auto' }}>
-                        {t(`Waiting for`)} {dpoInfo.name} {t(`to release yield`)}
-                      </HeavyText>
-                    </div>
-                  </PaddedSection>
-                )}
-                {!dpoInfo.vault_yield.isZero() && (
-                  <PaddedSection>
-                    <div style={{ display: 'flex', justifyContent: 'center', textAlign: 'center' }}>
-                      <HeavyText fontSize={'12px'} color={theme.text3} style={{ margin: 'auto' }}>
-                        {t(`Waiting for`)} {dpoInfo.name} {t(`to withdraw yield`)}
-                      </HeavyText>
-                    </div>
-                  </PaddedSection>
-                )}
-                {gracePeriodTimeLeft && expectedBlockTime && (
-                  <PaddedSection>
-                    <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${formatToUnit(gracePeriodTimeLeft.toString(), 0)} `}
-                      <DataTokenName>{t(`Blocks`)}</DataTokenName>
-                    </HeavyText>
-                    <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${blockToDays(gracePeriodTimeLeft, expectedBlockTime, 2)} `}
-                      <DataTokenName fontSize={'12px'} mobileFontSize="8px">{`${t(`Days`)}`}</DataTokenName>
-                    </HeavyText>
-                    <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-                      {t(`Grace Period`)}
-                    </StandardText>
-                  </PaddedSection>
-                )}
-              </GridWrapper>
-              <PaddedSection style={{ paddingTop: '0' }}>
-                <CenteredRow>
-                  <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
-                    <div style={{ display: 'block ' }}>
-                      <StandardText style={{ margin: 'auto' }}>{t(`Yield in`)}:</StandardText>
-                      <HeavyText fontSize={'18px'} color={theme.blue2} mobileFontSize={'14px'}>
-                        {`${t(`DPO`)}: ${dpoInfo.name.toString()}`}
-                      </HeavyText>
-                    </div>
-                  </Link>
-                </CenteredRow>
+      {targetDpo && (
+        <Link to={`/item/dpo/${targetDpo.index.toString()}`} style={{ textDecoration: 'none' }}>
+          <CenteredRow>
+            <CenteredRow>
+              <PaddedSection>
+                <div style={{ display: 'block' }}>
+                  <IconWrapper>
+                    <Icon src={WaitingIcon} />
+                  </IconWrapper>
+                  <HeavyText>{`${t(`Waiting for`)} ${targetDpo.name.toString()} ${t(`to release yield`)}`}</HeavyText>
+                </div>
               </PaddedSection>
-            </>
-          )}
-        </>
+            </CenteredRow>
+          </CenteredRow>
+        </Link>
       )}
     </>
   )
@@ -149,29 +77,35 @@ function RunningHighlightsCabinTarget({
   const cabinInfo = useSubTravelCabin(cabinIndex)
   const buyerInfo = useSubTravelCabinBuyer(cabinIndex, inventoryIndex)
   const [yieldAvailable, setYieldAvailable] = useState<string>()
-  const [treasureHuntingGPLeft, setTreasureHuntingGPLeft] = useState<string>()
-  const [yieldGPLeft, setYieldGPLeft] = useState<string>()
   const theme = useContext(ThemeContext)
 
   useEffect(() => {
     if (!cabinInfo || !buyerInfo || !lastBlock || !expectedBlockTime) return
-    setYieldAvailable(getCabinYield(cabinInfo, buyerInfo, lastBlock, chainDecimals))
-    setTreasureHuntingGPLeft(getTreasureHuntingGPLeft(buyerInfo, lastBlock, expectedBlockTime))
-    const yieldGP = getYieldGPLeft(dpoInfo, lastBlock, expectedBlockTime)
-    setYieldGPLeft(yieldGP ? yieldGP : undefined)
+    const cabinYield = getCabinYield(cabinInfo, buyerInfo, lastBlock, chainDecimals)
+    if (cabinInfo.yield_total.eq(buyerInfo.yield_withdrawn)) {
+      setYieldAvailable('All yield withdrawn')
+    } else {
+      setYieldAvailable(cabinYield)
+    }
   }, [cabinInfo, buyerInfo, lastBlock, chainDecimals, expectedBlockTime, dpoInfo])
 
   const token = cabinInfo && cabinInfo.token_id.isToken && cabinInfo.token_id.asToken.toString()
   return (
     <>
-      <GridWrapper columns={'1'} mobileColumns={'1'}>
-        {buyerInfo && cabinInfo && yieldAvailable && (
-          <>
+      {buyerInfo && cabinInfo && yieldAvailable && (
+        <>
+          <SpacedSection margin="2rem 0" mobileMargin="1rem 0">
             <Link
               to={`/item/travelCabin/${cabinIndex.toString()}/inventory/${inventoryIndex.toString()}`}
               style={{ textDecoration: 'none' }}
             >
-              <div style={{ display: 'flex' }}>
+              <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
+                {`${yieldAvailable} `}
+                {!(yieldAvailable === 'All yield withdrawn') && (
+                  <DataTokenName color={theme.green1}>{token}</DataTokenName>
+                )}
+              </HeavyText>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
                 <StandardText fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
                   {t(`Yield in`)}
                 </StandardText>
@@ -180,61 +114,9 @@ function RunningHighlightsCabinTarget({
                 )}: ${cabinInfo.name.toString()}`}</HeavyText>
               </div>
             </Link>
-            <BorderedWrapper marginBottom="0" marginTop="0">
-              <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
-                {`${yieldAvailable} `}
-                <DataTokenName color={theme.green1}>{token}</DataTokenName>
-              </HeavyText>
-              <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-                {t(`Yield Available`)}
-              </StandardText>
-            </BorderedWrapper>
-          </>
-        )}
-        <>
-          <StandardText fontSize="12px" mobileFontSize="11px">
-            {t(`Grace Period`)}
-          </StandardText>
-          <BorderedWrapper marginTop="0" marginBottom="0" style={{ display: 'flex' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%' }}>
-              {treasureHuntingGPLeft && expectedBlockTime && (
-                <>
-                  <div style={{ display: 'block', paddingLeft: '1rem', paddingRight: '1rem' }}>
-                    <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${formatToUnit(treasureHuntingGPLeft, 0)} `}
-                      <DataTokenName>{t(`Blocks`)}</DataTokenName>
-                    </HeavyText>
-                    <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${blockToDays(treasureHuntingGPLeft, expectedBlockTime, 4)} `}
-                      <DataTokenName>{t(`Days`)}</DataTokenName>
-                    </HeavyText>
-                    <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-                      {t(`Time left to Withdraw Yield`)}
-                    </StandardText>
-                  </div>
-                </>
-              )}
-              {yieldGPLeft && expectedBlockTime && (
-                <>
-                  <div style={{ display: 'block', paddingLeft: '1rem', paddingRight: '1rem' }}>
-                    <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${formatToUnit(yieldGPLeft, 0)} `}
-                      <DataTokenName>{t(`Blocks`)}</DataTokenName>
-                    </HeavyText>
-                    <HeavyText fontSize={'14px'} color={theme.text3} style={{ margin: 'auto' }}>
-                      {`${blockToDays(yieldGPLeft, expectedBlockTime, 4)} `}
-                      <DataTokenName>{t(`Days`)}</DataTokenName>
-                    </HeavyText>
-                    <StandardText fontSize={'12px'} style={{ margin: 'auto' }}>
-                      {t(`Time left to Release Yield`)}
-                    </StandardText>
-                  </div>
-                </>
-              )}
-            </div>
-          </BorderedWrapper>
+          </SpacedSection>
         </>
-      </GridWrapper>
+      )}
     </>
   )
 }
@@ -260,30 +142,83 @@ function RunningHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
           dpoInfo={dpoInfo}
         />
       )}
-      {dpoInfo.target.isDpo && <RunningHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />}
+      {dpoInfo.target.isDpo && dpoInfo.vault_yield.isZero() && (
+        <RunningHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />
+      )}
     </>
   )
 }
 
-function ActiveHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoIndex }) {
+function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoInfo; targetDpoIndex: DpoIndex }) {
   const { t } = useTranslation()
-  const dpoInfo = useSubDpo(targetDpoIndex)
+  const targetDpo = useSubDpo(targetDpoIndex)
+  const theme = useContext(ThemeContext)
+
   return (
     <>
-      {dpoInfo && (
+      {targetDpo && (
         <>
-          <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
-            <CenteredRow>
-              <PaddedSection>
+          <SpacedSection margin="2rem 0" mobileMargin="1rem 0">
+            <Link to={`/item/dpo/${targetDpo.index.toString()}`} style={{ textDecoration: 'none' }}>
+              <CenteredRow>
                 <div style={{ display: 'block' }}>
-                  <IconWrapper>
-                    <Icon src={WaitingIcon} />
-                  </IconWrapper>
-                  <HeavyText>{`${t(`Waiting for`)} ${dpoInfo.name.toString()} ${t(`to release yield`)}`}</HeavyText>
+                  {targetDpo.state.isCreated && !dpoInfo.vault_deposit.isZero() && (
+                    <>
+                      <HeavyText width="100%">{`${t(`DPO Filled! You can now buy seats from`)}`}</HeavyText>
+                      <HeavyText color={theme.blue2} width="100%">
+                        {targetDpo.name.toString()}
+                      </HeavyText>
+                    </>
+                  )}
+                  {targetDpo.state.isCreated && dpoInfo.vault_deposit.isZero() && (
+                    <>
+                      <IconWrapper>
+                        <Icon src={WaitingIcon} />
+                      </IconWrapper>
+                      <div style={{ display: 'flex' }}>
+                        <HeavyText>{t(`Waiting for`)}</HeavyText>
+                        <HeavyText
+                          color={theme.blue2}
+                          padding="0 0.25rem"
+                        >{` ${targetDpo.name.toString()} `}</HeavyText>
+                        <HeavyText>{t(`to finish crowdfunding`)}</HeavyText>
+                      </div>
+                    </>
+                  )}
+                  {targetDpo.state.isActive && (
+                    <>
+                      <IconWrapper>
+                        <Icon src={WaitingIcon} />
+                      </IconWrapper>
+                      <div style={{ display: 'flex' }}>
+                        <HeavyText>{t(`Waiting for`)}</HeavyText>
+                        <HeavyText
+                          color={theme.blue2}
+                          padding="0 0.25rem"
+                        >{` ${targetDpo.name.toString()} `}</HeavyText>
+                        <HeavyText>{t(`to purchase target`)}</HeavyText>
+                      </div>
+                    </>
+                  )}
+                  {targetDpo.state.isRunning && (
+                    <>
+                      <IconWrapper>
+                        <Icon src={WaitingIcon} />
+                      </IconWrapper>
+                      <div style={{ display: 'flex' }}>
+                        <HeavyText>{t(`Waiting for`)}</HeavyText>
+                        <HeavyText
+                          color={theme.blue2}
+                          padding="0 0.25rem"
+                        >{` ${targetDpo.name.toString()} `}</HeavyText>
+                        <HeavyText>{t(`to release yield`)}</HeavyText>
+                      </div>
+                    </>
+                  )}
                 </div>
-              </PaddedSection>
-            </CenteredRow>
-          </Link>
+              </CenteredRow>
+            </Link>
+          </SpacedSection>
         </>
       )}
     </>
@@ -291,16 +226,16 @@ function ActiveHighlightsDpoTarget({ targetDpoIndex }: { targetDpoIndex: DpoInde
 }
 
 function ActiveHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
-  return <>{dpoInfo.target.isDpo && <ActiveHighlightsDpoTarget targetDpoIndex={dpoInfo.target.asDpo[0]} />}</>
+  return <ActiveHighlightsDpoTarget dpoInfo={dpoInfo} targetDpoIndex={dpoInfo.target.asDpo[0]} />
 }
 
 function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
-  const manager = useDpoManager(dpoInfo.index, dpoInfo)
   const progress = 100 - dpoInfo.empty_seats.toNumber()
   const below420 = useMedia('(max-width: 420px)')
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
   const { t } = useTranslation()
+  const fees = useDpoFees(dpoInfo.index.toString())
 
   return (
     <>
@@ -308,15 +243,13 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
         <PaddedSection>
           <CircleProgress value={progress} size={below420 ? 60 : 100} />
         </PaddedSection>
-        {manager && (
+        {fees && (
           <PaddedSection>
             <HeavyText fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
             <StandardText fontSize="9px" style={{ margin: 'auto' }}>
-              {`${dpoInfo.fee.toNumber() / 10 - manager.number_of_seats.toNumber()} ${t(
-                `Base`
-              )} + ${manager.number_of_seats.toNumber()} ${t(`Seats`)}`}
+              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
             </StandardText>
             <StandardText style={{ margin: 'auto' }}>{t(`Management Fee`)}</StandardText>
           </PaddedSection>
@@ -341,18 +274,17 @@ export default function Highlights({ dpoInfo }: HighlightsProps) {
   const { t } = useTranslation()
   return (
     <>
-      {(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning) && (
-        <ContentWrapper>
-          <FlatCard>
-            <Section>
+      {(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning) &&
+        !(dpoInfo.state.isActive && dpoInfo.target.isTravelCabin) && (
+          <ContentWrapper>
+            <FlatCard>
               <SectionTitle>{t(`Highlights`)}</SectionTitle>
-            </Section>
-            {dpoInfo.state.isCreated && <CreateHighlights dpoInfo={dpoInfo} />}
-            {dpoInfo.state.isActive && <ActiveHighlights dpoInfo={dpoInfo} />}
-            {dpoInfo.state.isRunning && <RunningHighlights dpoInfo={dpoInfo} />}
-          </FlatCard>
-        </ContentWrapper>
-      )}
+              {dpoInfo.state.isCreated && <CreateHighlights dpoInfo={dpoInfo} />}
+              {dpoInfo.state.isActive && dpoInfo.target.isDpo && <ActiveHighlights dpoInfo={dpoInfo} />}
+              {dpoInfo.state.isRunning && <RunningHighlights dpoInfo={dpoInfo} />}
+            </FlatCard>
+          </ContentWrapper>
+        )}
     </>
   )
 }

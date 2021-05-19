@@ -127,6 +127,7 @@ export default function Account() {
                     <ButtonSecondary
                       padding="0.5rem"
                       fontSize={'10px'}
+                      mobileFontSize={'10px'}
                       width={'120px'}
                       onClick={() => setRevealReferrer(!revealReferrer)}
                     >
