@@ -9,6 +9,8 @@ const Base = styled(RebassButton)<{
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
+  mobileFontSize?: string
+  mobilePadding?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
   width: ${({ width }) => (width ? width : '100%')};
@@ -59,6 +61,11 @@ export const ButtonPrimary = styled(Base)`
     outline: none;
     opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.7' : '1')};
   }
+
+  ${({ theme, mobileFontSize, mobilePadding }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '10px'};
+    padding: ${mobilePadding ? mobilePadding : '0.5rem'};
+  `};
 `
 
 export const FakeButton = styled.div<{

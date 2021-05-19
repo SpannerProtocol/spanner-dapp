@@ -684,11 +684,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
         )}
       </FlatCard>
       <Highlights dpoInfo={dpoInfo} />
-      {isConnected && (
-        <ContentWrapper>
-          <DpoActions dpoIndex={dpoIndex} />
-        </ContentWrapper>
-      )}
+      {isConnected && <DpoActions dpoIndex={dpoIndex} />}
       <ContentWrapper>
         <FlatCard>
           <SectionHeading>{t(`Details`)}</SectionHeading>
