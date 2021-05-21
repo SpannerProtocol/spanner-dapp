@@ -11,6 +11,7 @@ import styled from 'styled-components'
 import { CustomLightSpinner } from 'theme/components'
 import { useTranslation } from 'translate'
 import { Activity } from 'react-feather'
+
 interface GlobalSpinnerProps {
   children: React.ReactNode
 }
