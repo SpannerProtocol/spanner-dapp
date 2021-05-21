@@ -1,6 +1,7 @@
 {
   "Spanner": "Spanner",
   "Blockchain Info": "Blockchain Info",
+  "The Blockchain Component Marketplace": "The Blockchain Component Marketplace",
   "Last Block: #": "Last Block: #",
   "Connected to: ": "Connected to: ",
   "Genesis Hash: ": "Genesis Hash: ",
@@ -85,6 +86,7 @@
   "Send USDT to this address": "Send USDT to this address",
   "Check your WUSD balance in 5 minutes": "Check your WUSD balance in 5 minutes",
   "nter an address to convert and bridge your WUSD back into Ethereum USDT.": "nter an address to convert and bridge your WUSD back into Ethereum USDT.",
+
   "Bridges help transfer crypto between different blockchains. Spanner's Ethereum Bridge sends your custodial wallet WUSD for the USDT (Ethereum ERC20) you send to your deposit address.": "Bridges help transfer crypto between different blockchains. Spanner's Ethereum Bridge sends your custodial wallet WUSD for the USDT (Ethereum ERC20) you send to your deposit address.",
   "Balance": "Balance",
   "Balances": "Balances",
