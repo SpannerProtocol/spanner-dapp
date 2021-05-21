@@ -491,5 +491,15 @@
   "Total": "Total",
   "Cabin Inventory Vault": "Cabin Inventory Vault",
   "Total Deposit": "Total Deposit",
-  "Ride Ends at": "Ride Ends at"
+  "Ride Ends at": "Ride Ends at",
+  "Confirm Swap": "Confirm Swap",
+  "Your transaction will revert if the price changes unfavorably by more than this percentage": "Your transaction will revert if the price changes unfavorably by more than this percentage",
+  "suggested": "suggested",
+  "Enter a valid slippage percentage": "Enter a valid slippage percentage",
+  "Your transaction may fail": "Your transaction may fail",
+  "Minimum Received": "Minimum Received",
+  "Maximum Used": "Maximum Used",
+  "Transaction submitted to block at": "Transaction submitted to block at",
+  "You have not added liquidity to any dexShares.": "You have not added liquidity to any dexShares.",
+  "My LP Tokens": "My LP Tokens"
 }
