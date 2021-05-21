@@ -265,6 +265,7 @@
   "FAILED": "失败",
   "RUNNING": "运行中",
   "ACTIVE": "募资中",
+  "COMPLETED": "已完成",
   "Our custodial wallet service is currently unavailable. Please choose a Spanner wallet.": "我们的映射钱包服务目前不可用。请选Spanner钱包。",
   "Project Info": "项目信息",
   "Token": "代币",
@@ -445,5 +446,8 @@
   "Next Reward": "下一个奖励",
   "to all passengers": "给所有的乘客",
   "Don't miss the next one": "不要错过了下一次的奖励",
-  "to withdraw yield": "提取收益"
+  "to withdraw yield": "提取收益",
+  "Direct Referral": "直推奖励",
+  "Crowdfunding": "众筹金额",
+  "Expires in": "过期区块"
 }
