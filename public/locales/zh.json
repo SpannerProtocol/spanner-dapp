@@ -501,5 +501,8 @@
   "Maximum Used": "最大使用",
   "Transaction submitted to block at": "交易已提交到区块中",
   "You have not added liquidity to any dexShares.": "您没有向任何dex共享添加流动性。",
-  "My LP Tokens": "我的LP代币"
+  "My LP Tokens": "我的LP代币",
+  "Language Settings": "语言设置",
+  "Selected Language": "选择的语言",
+  "Select a Language": "请选择一种语言"
 }
