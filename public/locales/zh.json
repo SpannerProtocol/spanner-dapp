@@ -153,7 +153,7 @@
   "Details": "详细信息",
   "DPO Account Vault": "DPO金库",
   "Deposit": "抵押",
-  "DPO Id": "DPO Id",
+  "DPO Id": "DPO标识符",
   "Block": "区块",
   "Crowdfunding Information": "众筹信息",
   "Target": "目标",
@@ -374,7 +374,7 @@
   "Total Seat Price": "总席位价格",
   "The total cost of Seats to buy from this DPO.": "从此DPO购买席位的总费用。",
   "Crowdfunding Ends": "众筹结束",
-  "Highlights": "Highlights",
+  "Highlights": "关注",
   "Yes": "是",
   "No": "否",
   "The amount to crowdfund for the TravelCabin.": "客舱的众筹金额。",
@@ -473,5 +473,14 @@
   "to finish crowdfunding": "去完成众筹",
   "Direct Referral": "直推奖励",
   "Crowdfunding": "众筹金额",
-  "Expires in": "过期区块"
+  "Expires in": "过期区块",
+  "Seats Purchased": "购买席位",
+  "Maturity": "到期区块",
+  "Management Fee": "管理费",
+  "Direct Referral Rate": "推荐奖励",
+  "Direct": "直推",
+  "Your Deposit": "您的抵押金额",
+  "Crowdfund Period": "众筹周期",
+  "Days": "天",
+  "Referral Rates": "推荐奖励"
 }
