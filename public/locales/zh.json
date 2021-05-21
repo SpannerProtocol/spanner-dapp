@@ -504,5 +504,6 @@
   "My LP Tokens": "我的LP代币",
   "Language Settings": "语言设置",
   "Selected Language": "选择的语言",
-  "Select a Language": "请选择一种语言"
+  "Select a Language": "请选择一种语言",
+  "# of Blocks Finalized": "# 已打包的块"
 }
