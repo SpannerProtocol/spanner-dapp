@@ -14,12 +14,32 @@ import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
 import TrainIcon from '../../assets/svg/icon-train-white.svg'
 import Logo from '../../assets/svg/logo-spanner-white.svg'
+import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
 import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
 import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
+import { makeStyles } from '@material-ui/core/styles'
+import Divider from '@material-ui/core/Divider'
+import Drawer from '@material-ui/core/Drawer'
+import { ClassNameMap } from '@material-ui/styles'
+import clsx from 'clsx'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import { SLink } from '../Link'
+import { useMedia } from 'react-use'
+
+import BridgeIconBlack from '../../assets/svg/icon-bridge-black.svg'
+import DpoIconBlack from '../../assets/svg/icon-dpo-black.svg'
+import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
+import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
+import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
+
+
 const HeaderFrame = styled.div`
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -97,17 +117,15 @@ const HeaderRow = styled(RowFixed)`
   top: 0;
   left: 0;
   align-items: flex-start;
-  background: linear-gradient(
-    180deg,
+  background: linear-gradient(180deg,
     ${({ theme }) => theme.primary1} -11.67%,
-    ${({ theme }) => theme.secondary1} 100%
-  );
+  ${({ theme }) => theme.secondary1} 100%);
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
     align-items: center;
     position: inherit;
     background: linear-gradient(90deg, ${({ theme }) => theme.primary1} -11.67%, ${({ theme }) =>
-    theme.secondary1} 100%);
+          theme.secondary1} 100%);
     width: 100%;
     height: inherit;
   `};
@@ -206,6 +224,7 @@ const Title = styled(Link)`
     margin-left: 0.5rem;
     justify-self: center;
   `};
+
   :hover {
     cursor: pointer;
   }
@@ -214,9 +233,11 @@ const Title = styled(Link)`
 const SpannerIcon = styled.div`
   margin: 1rem;
   transition: transform 0.3s ease;
+
   :hover {
     transform: rotate(-5deg);
   }
+
   ${({ theme }) => theme.mediaWidth.upToMedium`
   margin: 0.25rem;
   color: ${({ theme }) => theme.primary1}
@@ -226,7 +247,7 @@ const SpannerIcon = styled.div`
 const activeClassName = 'ACTIVE'
 
 const StyledNavLink = styled(NavLink).attrs({
-  activeClassName,
+  activeClassName
 })`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
@@ -263,7 +284,7 @@ const StyledNavLink = styled(NavLink).attrs({
 `
 
 const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName,
+  activeClassName
 })<{ isActive?: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: left;
@@ -325,7 +346,7 @@ export default function Header(props: HeaderProps) {
 
   const [icons, setIcons] = useState<boolean>(false)
   const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
-  const { chain } = useChainState()
+  const isMobile = useMedia('(max-width: 720px)')
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -342,52 +363,229 @@ export default function Header(props: HeaderProps) {
       <HeaderRow>
         <Title to={{ pathname: '/' }}>
           <SpannerIcon>
-            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
+            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt='logo' />
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
         {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
-        <HeaderLinks>
-          {/* <StyledNavLink id={`account-nav-link`} to={'/account'}>
+        <>{isMobile ? <MobileNav /> : <DesktopNav icons={icons} />}</>
+      </HeaderRow>
+    </HeaderFrame>
+  )
+}
+
+interface DesktopNavProp {
+  icons?: boolean
+}
+
+export function DesktopNav(props: DesktopNavProp) {
+  const { chain } = useChainState()
+  let icons = props.icons
+  const { t } = useTranslation()
+
+  return (
+    <HeaderLinks>
+      {/* <StyledNavLink id={`account-nav-link`} to={'/account'}>
             {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
             Account
           </StyledNavLink> */}
-          {chain && chain.chain === 'Spanner' && (
-            <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
-              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
-              {t(`Bridge`)}
-            </StyledNavLink>
-          )}
-          <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
-            {t(`DEX`)}
-          </StyledNavLink>
-          <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="projects" />}
-            {t(`Projects`)}
-          </StyledNavLink>
-          <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt="bullettrain" />}
-            {t(`DPOs`)}
-          </StyledNavLink>
-          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
-            {t(`BulletTrain`)}
-          </StyledNavLink>
-          {process.env.REACT_APP_DEBUG_MODE === 'true' && (
-            <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
-              {`Debug`}
-            </StyledNavLink>
-          )}
-          {chain && chain.url && (
-            <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
-              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
-              {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
-            </StyledExternalLink>
-          )}
-        </HeaderLinks>
-      </HeaderRow>
-    </HeaderFrame>
+      {chain && chain.chain === 'Spanner' && (
+        <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
+          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt='bridge' />}
+          {t(`Bridge`)}
+        </StyledNavLink>
+      )}
+      <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt='dex' />}
+        {t(`DEX`)}
+      </StyledNavLink>
+      <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt='projects' />}
+        {t(`Projects`)}
+      </StyledNavLink>
+      <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt='bullettrain' />}
+        {t(`DPOs`)}
+      </StyledNavLink>
+      <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt='bullettrain' />}
+        {t(`BulletTrain`)}
+      </StyledNavLink>
+      {process.env.REACT_APP_DEBUG_MODE === 'true' && (
+        <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
+          {`Debug`}
+        </StyledNavLink>
+      )}
+      {chain && chain.url && (
+        <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
+          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt='explorer' />}
+          {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
+        </StyledExternalLink>
+      )}
+    </HeaderLinks>
+  )
+
+}
+
+const useStyles = makeStyles({
+  list: {
+    width: 250
+  },
+  fullList: {
+    width: 'auto'
+  }
+})
+
+const HamburgerWrapper = styled.div`
+  cursor: pointer;
+
+  :hover {
+    opacity: 0.8;
+  }
+
+  :active {
+    opacity: 0.9;
+  }
+`
+
+
+const navItems = [
+  {
+    label: 'Bridge',
+    link: '/account/bridge',
+    iconLink: BridgeIconBlack,
+    internal: true
+  },
+  {
+    label: 'DEX',
+    link: '/dex',
+    iconLink: SwapIconBlack,
+    internal: true
+  },
+  {
+    label: 'Projects',
+    link: '/projects',
+    iconLink: LaunchpadIconBlack,
+    internal: true
+  },
+  {
+    label: 'DPOs',
+    link: '/bullettrain/dpos',
+    iconLink: DpoIconBlack,
+    internal: true
+  },
+  {
+    label: 'BulletTrain',
+    link: '/bullettrain/travelcabins',
+    iconLink: TrainIconBlack,
+    internal: true
+  }
+]
+
+interface NavItemProps {
+  iconLink: string
+  text: string
+  link: string
+  internal: boolean
+  classes: ClassNameMap<'list' | 'fullList'>
+  toggleDrawer: (
+    open: boolean
+  ) => (event: React.MouseEvent | React.KeyboardEvent) => void
+}
+
+function NavItem({
+                   iconLink,
+                   text,
+                   link,
+                   classes,
+                   internal,
+                   toggleDrawer
+                 }: NavItemProps) {
+  return (
+    <>
+      <div
+        className={clsx(classes.list, {
+          [classes.fullList]: false
+        })}
+        role='presentation'
+        onClick={toggleDrawer(false)}
+        onKeyDown={toggleDrawer(false)}
+      >
+        {internal ? (
+          <List>
+            <SLink to={link}>
+              <ListItem button>
+                {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
+                                                 alt={text} /></ListItemIcon>}
+                <ListItemText primary={text} />
+              </ListItem>
+            </SLink>
+          </List>
+        ) : (
+          <List>
+            <ExternalLink href={link} target='_blank' download>
+              <ListItem button>
+                {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
+                                                 alt={text} /></ListItemIcon>}
+                <ListItemText primary={text} />
+              </ListItem>
+            </ExternalLink>
+          </List>
+        )}
+      </div>
+    </>
+  )
+}
+
+export function MobileNav() {
+  const classes = useStyles()
+  const [isOpen, setIsOpen] = React.useState<boolean>(false)
+  const { t } = useTranslation()
+  const { chain } = useChainState()
+
+  const toggleDrawer = (open: boolean) => (
+    event: React.KeyboardEvent | React.MouseEvent
+  ) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' ||
+        (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return
+    }
+    setIsOpen(open)
+  }
+
+  return (
+    <HeaderLinks>
+      <>
+        <HamburgerWrapper onClick={toggleDrawer(true)}>
+          <img src={hamburgerIcon} width='30px' alt='hamburgerIcon' />
+        </HamburgerWrapper>
+        <Drawer anchor={'right'} open={isOpen} onClose={toggleDrawer(false)}>
+          <Divider />
+          {
+            navItems.map(function(navItem, index) {
+              if (chain && chain.chain !== 'Spanner' && navItem.label === 'Bridge') {
+                return
+              } else {
+                return <NavItem
+                  key={index}
+                  iconLink={navItem.iconLink}
+                  link={navItem.link}
+                  text={t(navItem.label)}
+                  internal={navItem.internal}
+                  classes={classes}
+                  toggleDrawer={toggleDrawer}
+                />
+              }
+            })
+          }
+          <Divider />
+        </Drawer>
+        {/* </MobileWrapper> */}
+      </>
+    </HeaderLinks>
   )
 }
 
@@ -399,7 +597,7 @@ export function Controls() {
       <HeaderControls>
         <HeaderElement>
           {true && (
-            <Link to="/account/balances" style={{ textDecoration: 'none' }}>
+            <Link to='/account/balances' style={{ textDecoration: 'none' }}>
               <BalanceWrapper>
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                   <User />
