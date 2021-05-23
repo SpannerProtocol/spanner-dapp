@@ -41,7 +41,11 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
         filteredDpoActions.push(<WithdrawFareFromTravelCabin dpoInfo={dpoInfo} dpoAction={dpoAction} />)
       } else if (dpoAction.action === 'dpoBuyTravelCabin') {
         // If not available, user needs to set a new target
-        if (targetTravelCabinInventory && isTravelCabinAvailable(targetTravelCabinInventory)) {
+        if (
+          targetTravelCabinInventory &&
+          isTravelCabinAvailable(targetTravelCabinInventory) &&
+          dpoInfo.target.isTravelCabin
+        ) {
           filteredDpoActions.push(<DpoBuyTravelCabinAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)
         } else {
           filteredDpoActions.push(<DpoBuyTargetNotAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)

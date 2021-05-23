@@ -7,7 +7,7 @@ import { AutoColumn } from '../Column'
 import { RowBetween, RowFixed } from '../Row'
 
 import { darken } from 'polished'
-import { useTranslation } from 'translate'
+import { useTranslation } from 'react-i18next'
 
 enum SlippageError {
   InvalidInput = 'InvalidInput',
@@ -131,7 +131,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
             {t(`Slippage tolerance`)}
           </TYPE.black>
           <QuestionHelper
-            text="Your transaction will revert if the price changes unfavorably by more than this percentage."
+            text={t(`Your transaction will revert if the price changes unfavorably by more than this percentage`)}
             backgroundColor="transparent"
             size={12}
           />
@@ -153,7 +153,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
             }}
             active={rawSlippage === 50}
           >
-            0.5% (suggested)
+            0.5% ({t(`suggested`)})
           </Option>
           <Option
             onClick={() => {
@@ -198,9 +198,9 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage }: SlippageTa
             }}
           >
             {slippageError === SlippageError.InvalidInput
-              ? 'Enter a valid slippage percentage'
+              ? t('Enter a valid slippage percentage')
               : slippageError === SlippageError.RiskyLow
-              ? 'Your transaction may fail'
+              ? t('Your transaction may fail')
               : 'Your transaction may be frontrun'}
           </RowBetween>
         )}
