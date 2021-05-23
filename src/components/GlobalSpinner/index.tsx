@@ -2,7 +2,7 @@ import { DialogOverlay } from '@reach/dialog'
 import '@reach/dialog/styles.css'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { ButtonPrimary } from 'components/Button'
-import { HeavyText } from 'components/Text'
+import { HeavyText, StandardText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import React, { useCallback, useState } from 'react'
@@ -11,6 +11,9 @@ import styled from 'styled-components'
 import { CustomLightSpinner } from 'theme/components'
 import { useTranslation } from 'translate'
 import { Activity } from 'react-feather'
+import ToolBoxIcon from '../../assets/svg/icon-tool-box.svg'
+import NetworkSelector from '../Network'
+import { useChainState } from 'state/connections/hooks'
 
 interface GlobalSpinnerProps {
   children: React.ReactNode
@@ -33,9 +36,10 @@ const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
 `
 
 export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
-  const { loading, chain, needReconnect, reconnect } = useApi()
+  const { loading, chain, needReconnect, reconnect, error } = useApi()
   const [reconnecting, setReconnecting] = useState<boolean>(false)
   const { t } = useTranslation()
+  const { chain: chainState } = useChainState()
 
   const fadeTransition = useTransition(loading, null, {
     config: { duration: 400 },
@@ -49,69 +53,83 @@ export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
     reconnect()
   }, [reconnect])
 
-  return (
-    <div className="loading-container">
-      <div className="loading">
-        {loading ? (
-          <>
-            {fadeTransition.map(
-              ({ item, key, props }) =>
-                item && (
-                  <StyledDialogOverlay key={key} style={props}>
-                    {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
+  if (loading) {
+    return (
+      <>
+        {fadeTransition.map(
+          ({ item, key, props }) =>
+            item && (
+              <StyledDialogOverlay key={key} style={props}>
+                {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
 
-                    <div style={{ display: 'block', justifyContent: 'center', textAlign: 'center' }}>
-                      {needReconnect ? (
-                        <>
-                          {reconnecting ? (
-                            <>
-                              <CustomLightSpinner src={Circle} alt="loader" size={'45px'} />
-                              <SpacedSection>
-                                <HeavyText fontSize="24px" mobileFontSize="20px" style={{ margin: 'auto' }}>
-                                  {t(`Reconnecting`)}
-                                </HeavyText>
-                              </SpacedSection>
-                            </>
-                          ) : (
-                            <>
-                              <SpacedSection>
-                                <HeavyText fontSize="24px" mobileFontSize="20px" style={{ margin: 'auto' }}>
-                                  {t(`Connection lost`)}
-                                </HeavyText>
-                              </SpacedSection>
-                              <ButtonPrimary onClick={handleReconnect}>
-                                <div style={{ marginRight: '8px' }}>
-                                  <Activity />
-                                </div>
-                                <HeavyText color="fff" fontSize="16px" mobileFontSize="14px">
-                                  {t(`Reconnect`)}
-                                </HeavyText>
-                              </ButtonPrimary>
-                            </>
-                          )}
-                        </>
-                      ) : (
+                <div style={{ display: 'block', justifyContent: 'center', textAlign: 'center' }}>
+                  {needReconnect ? (
+                    <>
+                      {reconnecting ? (
                         <>
                           <CustomLightSpinner src={Circle} alt="loader" size={'45px'} />
                           <SpacedSection>
                             <HeavyText fontSize="24px" mobileFontSize="20px" style={{ margin: 'auto' }}>
-                              {t(`Spanner Dapp`)}
+                              {t(`Reconnecting`)}
                             </HeavyText>
                           </SpacedSection>
-                          <HeavyText fontSize="18px" mobileFontSize="16px" style={{ margin: 'auto' }}>
-                            {t(`Connecting to`)}: {chain}
-                          </HeavyText>
+                        </>
+                      ) : (
+                        <>
+                          <SpacedSection>
+                            <HeavyText fontSize="24px" mobileFontSize="20px" style={{ margin: 'auto' }}>
+                              {t(`Connection lost`)}
+                            </HeavyText>
+                          </SpacedSection>
+                          <ButtonPrimary onClick={handleReconnect}>
+                            <div style={{ marginRight: '8px' }}>
+                              <Activity />
+                            </div>
+                            <HeavyText color="fff" fontSize="16px" mobileFontSize="14px">
+                              {t(`Reconnect`)}
+                            </HeavyText>
+                          </ButtonPrimary>
                         </>
                       )}
-                    </div>
-                  </StyledDialogOverlay>
-                )
-            )}
-          </>
-        ) : (
-          children
+                    </>
+                  ) : (
+                    <>
+                      <CustomLightSpinner src={Circle} alt="loader" size={'45px'} />
+                      <SpacedSection>
+                        <HeavyText fontSize="24px" mobileFontSize="20px" style={{ margin: 'auto' }}>
+                          {t(`Spanner Dapp`)}
+                        </HeavyText>
+                      </SpacedSection>
+                      <HeavyText fontSize="18px" mobileFontSize="16px" style={{ margin: 'auto' }}>
+                        {t(`Connecting to`)}: {chain}
+                      </HeavyText>
+                    </>
+                  )}
+                </div>
+              </StyledDialogOverlay>
+            )
         )}
-      </div>
-    </div>
-  )
+      </>
+    )
+  } else if (error) {
+    return (
+      <>
+        <div className="loading-container">
+          <div className="loading" style={{ display: 'flex', height: '100vh', alignItems: 'center' }}>
+            <div style={{ display: 'block', justifyContent: 'center', textAlign: 'center', width: '100%' }}>
+              <img src={ToolBoxIcon} width="55px" alt="Toolbox Icon for Under Maintenance" />
+              <HeavyText fontSize="18px" mobileFontSize="16px" style={{ margin: '1rem auto' }}>
+                {`${chainState ? chainState.chain : 'Spanner'} ${t(`is under maintenance`)}`}
+              </HeavyText>
+              <StandardText style={{ margin: 'auto' }}>{t(`You can try a different chain`)}</StandardText>
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <NetworkSelector />
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+  return <div>{children}</div>
 }

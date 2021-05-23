@@ -625,7 +625,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   </StateWrapper>
                 ) : (
                   <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                    {dpoInfo.state.toString()}
+                    {t(dpoInfo.state.toString())}
                   </StateWrapper>
                 )}
               </AnyQuestionHelper>
@@ -815,7 +815,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               <RowBetween>
                 <StandardText>{t(`State`)}</StandardText>
-                <StandardText>{dpoInfo.state.toString()}</StandardText>
+                <StandardText>{t(dpoInfo.state.toString())}</StandardText>
               </RowBetween>
               {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) && (
                 <RowBetween>
