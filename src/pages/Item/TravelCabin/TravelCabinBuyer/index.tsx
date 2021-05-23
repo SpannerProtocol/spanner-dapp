@@ -102,7 +102,7 @@ function TravelCabinBuyersInfo({
                   </RowBetween>
                   <RowBetween>
                     <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
-                    <StandardText>{buyer[1].fare_withdrawn.toString()}</StandardText>
+                    <StandardText>{buyer[1].fare_withdrawn.isTrue ? t(`Yes`) : t(`No`)}</StandardText>
                   </RowBetween>
                   <RowBetween>
                     <StandardText>{t('Total Yield')}</StandardText>
