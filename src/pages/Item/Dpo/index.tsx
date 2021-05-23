@@ -51,6 +51,7 @@ import getApy from '../../../utils/getApy'
 import DpoActions from './actions'
 import DpoModalForm from './Form'
 import Highlights from './Highlights/index'
+import TargetedBy from './TargetedBy'
 
 const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
 const membershipBg = 'linear-gradient(90deg, #EC3D3D -11.67%, #AD074F 100%)'
@@ -917,6 +918,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           </ExpandCard>
         </FlatCard>
       </ContentWrapper>
+      <TargetedBy dpoInfo={dpoInfo} />
     </>
   )
 }

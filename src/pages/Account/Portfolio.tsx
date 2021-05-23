@@ -20,7 +20,7 @@ export default function Portfolio(): JSX.Element {
     variables: {
       address: wallet && wallet.address ? wallet.address : '',
     },
-    pollInterval: 5000,
+    pollInterval: 3000,
   })
 
   const userItems = useMemo(() => {
