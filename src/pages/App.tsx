@@ -60,8 +60,8 @@ const SubControl = styled.div`
     display: flex
     width: 100%;
     justify-content: space-between;
-    background: linear-gradient(90deg, ${({ theme }) => theme.primary1} -11.67%, ${({ theme }) =>
-    theme.secondary1} 100%);
+    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) =>
+    theme.bg1} 100%);
   `};
 `
 
@@ -105,7 +105,7 @@ export default function App() {
           </HeaderWrapper>
           <Controls />
           <SubControl>
-            {subNetworkSelector && <NetworkSelector background={'transparent'} color={'#fff'} />}
+            {subNetworkSelector && <NetworkSelector background={'transparent'} />}
             <BlockBar />
           </SubControl>
           <AppBody>

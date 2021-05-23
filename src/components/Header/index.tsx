@@ -7,13 +7,13 @@ import { useTranslation } from 'react-i18next'
 import { Link, NavLink } from 'react-router-dom'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import BlockIcon from '../../assets/svg/icon-block-white.svg'
-import BridgeIcon from '../../assets/svg/icon-bridge.svg'
-import DpoIcon from '../../assets/svg/icon-dpo.svg'
-import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
-import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
-import TrainIcon from '../../assets/svg/icon-train-white.svg'
-import Logo from '../../assets/svg/logo-spanner-white.svg'
+import BlockIcon from '../../assets/svg/icon-block-black.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge-black.svg'
+import DpoIcon from '../../assets/svg/icon-dpo-black.svg'
+import LaunchpadIcon from '../../assets/svg/icon-launchpad-black.svg'
+import SwapIcon from '../../assets/svg/icon-swap-arrows-black.svg'
+import TrainIcon from '../../assets/svg/icon-train-black.svg'
+import Logo from '../../assets/svg/logo-spanner-gradient.svg'
 import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
@@ -118,14 +118,14 @@ const HeaderRow = styled(RowFixed)`
   left: 0;
   align-items: flex-start;
   background: linear-gradient(180deg,
-    ${({ theme }) => theme.primary1} -11.67%,
-  ${({ theme }) => theme.secondary1} 100%);
+    ${({ theme }) => theme.bg1} -11.67%,
+  ${({ theme }) => theme.bg1} 100%);
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
     align-items: center;
     position: inherit;
-    background: linear-gradient(90deg, ${({ theme }) => theme.primary1} -11.67%, ${({ theme }) =>
-          theme.secondary1} 100%);
+    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) =>
+          theme.bg1} 100%);
     width: 100%;
     height: inherit;
   `};
@@ -255,26 +255,26 @@ const StyledNavLink = styled(NavLink).attrs({
   outline: none;
   cursor: pointer;
   text-decoration: none;
-  color: #fff;
+  color: ${({ theme }) => theme.text1};
   font-size: 16px;
   width: fit-content;
-  margin: 1.1rem 1rem 1.1rem 1rem;
+  margin: 1.3rem 1rem 1.3rem 2rem;
   font-weight: 500;
 
   &.${activeClassName} {
     border-radius: 12px;
     font-weight: 700;
-    color: ${({ theme }) => theme.white};
+    color: ${({ theme }) => theme.text1};
   }
 
   :hover,
   :focus {
-    color: ${({ theme }) => darken(0.1, theme.white)};
+    color: ${({ theme }) => darken(0.1, theme.text1)};
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
-    color: ${({ theme }) => theme.white}
+    color: ${({ theme }) => theme.text1}
     font-size: 14px;
     padding: 0;
     justify-content: flex-end;
@@ -292,26 +292,26 @@ const StyledExternalLink = styled(ExternalLink).attrs({
   outline: none;
   cursor: pointer;
   text-decoration: none;
-  color: #fff;
+  color: ${({ theme }) => theme.text1};
   font-size: 16px;
   width: fit-content;
-  margin: 1.1rem 1rem 1.1rem 1rem;
+  margin: 1.3rem 1rem 1.3rem 2rem;
   font-weight: 500;
 
   &.${activeClassName} {
     border-radius: 12px;
     font-weight: 600;
-    color: ${({ theme }) => theme.white};
+    color: ${({ theme }) => theme.text1};
   }
 
   :hover,
   :focus {
-    color: ${({ theme }) => darken(0.1, theme.white)};
+    color: ${({ theme }) => darken(0.1, theme.text1)};
   }
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
   display: flex;
-  color: ${({ theme }) => theme.white}
+  color: ${({ theme }) => theme.text1}
   font-size: 14px;
   padding: 0;
   justify-content: flex-end;
@@ -325,7 +325,7 @@ const StyledExternalLink = styled(ExternalLink).attrs({
 `
 
 const LogoText = styled.div`
-  color: #fff;
+  color: ${({ theme }) => theme.text1};
   font-size: 22px;
   font-weight: 900;
   font-family: avenir;
@@ -567,7 +567,7 @@ export function MobileNav() {
           {
             navItems.map(function(navItem, index) {
               if (chain && chain.chain !== 'Spanner' && navItem.label === 'Bridge') {
-                return
+                return false
               } else {
                 return <NavItem
                   key={index}
