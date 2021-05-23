@@ -36,7 +36,7 @@ export function useDposWithKeys(token?: string): [DpoIndex, DpoInfo][] {
   return dpoEntries
 }
 
-export function useSubDpo(dpoIndex: number | string | DpoIndex): DpoInfo | undefined {
+export function useSubDpo(dpoIndex: number | string | DpoIndex | null | undefined): DpoInfo | undefined {
   const { api, connected } = useApi()
   const [dpoInfo, setDpoInfo] = useState<DpoInfo | undefined>()
 
