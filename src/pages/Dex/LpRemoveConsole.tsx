@@ -125,7 +125,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       </TxModal>
       <Section style={{ marginTop: '1.2rem', marginBottom: '1.2rem' }}>
         <RowBetween>
-          <CardText>{`My LP Tokens`}</CardText>
+          <CardText>{t(`My LP Tokens`)}</CardText>
           <CardText>{formatToUnit(amountLp, chainDecimals)}</CardText>
         </RowBetween>
       </Section>

@@ -1,14 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client'
 import { createdDpoByData } from 'queries/graphql/createdDpoByData'
-import { EventCreatedDpoByData, EventCreatedDpoByDataVariables } from 'queries/graphql/types/EventCreatedDpoByData'
+import { CreatedDpoByData, CreatedDpoByDataVariables } from 'queries/graphql/types/CreatedDpoByData'
 import { useEffect } from 'react'
 
 export default function useDpoFees(dpoIndex: string) {
   const [fees, setFees] = useState<{ management: number; base: number }>()
   // Need to add a better filter or change the data model on SubQL. For now,
   // getting first x and interating should be fine.
-  const { data } = useQuery<EventCreatedDpoByData, EventCreatedDpoByDataVariables>(createdDpoByData, {
+  const { data } = useQuery<CreatedDpoByData, CreatedDpoByDataVariables>(createdDpoByData, {
     variables: {
       includes: `,${dpoIndex}`,
       first: 1000,

@@ -285,8 +285,8 @@ export default function SwapConsole(): JSX.Element {
         isOpen={modalOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
-        title={'Confirm Swap'}
-        buttonText={'Confirm'}
+        title={t('Confirm Swap')}
+        buttonText={t('Confirm')}
         txError={txErrorMsg}
         txHash={txHash}
         txPending={txPendingMsg}
@@ -299,7 +299,7 @@ export default function SwapConsole(): JSX.Element {
             tokenB,
             slippage,
             averagePrice: !amountA ? 0 : amountB / amountA,
-            displayHeader: isOnA ? 'Minimum Received' : 'Maximum Used',
+            displayHeader: isOnA ? t('Minimum Received') : t('Maximum Used'),
             displayAmount: isOnA ? amountB * (1 - slippage / 10000) : amountA * (1 + slippage / 10000),
             estimatedFee: txInfo?.estimatedFee,
           }}
