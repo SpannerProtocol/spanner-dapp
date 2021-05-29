@@ -10,9 +10,12 @@ import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { createdDpoAllArgsOnly } from 'queries/graphql/createdDpoAllArgsOnly'
-import { dposTargetPurchasedByDpo } from 'queries/graphql/dposTargetPurchasedByDpo'
+import { dposTargetPurchasedIncludes } from 'queries/graphql/dposTargetPurchasedIncludes'
 import { CreatedDpoAllArgsOnly } from 'queries/graphql/types/CreatedDpoAllArgsOnly'
-import { DposTargetPurchasedByDpo } from 'queries/graphql/types/DposTargetPurchasedByDpo'
+import {
+  DposTargetPurchasedIncludes,
+  DposTargetPurchasedIncludesVariables,
+} from 'queries/graphql/types/DposTargetPurchasedIncludes'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
@@ -144,8 +147,13 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
     variables: {},
   })
-  const { error: purchasedError, data: purchasedData } = useQuery<DposTargetPurchasedByDpo>(dposTargetPurchasedByDpo, {
-    variables: {},
+  const { error: purchasedError, data: purchasedData } = useQuery<
+    DposTargetPurchasedIncludes,
+    DposTargetPurchasedIncludesVariables
+  >(dposTargetPurchasedIncludes, {
+    variables: {
+      includes: 'dpo',
+    },
   })
   // this component might take awhile so use a loader
   const [loading, setLoading] = useState<boolean>(true)
