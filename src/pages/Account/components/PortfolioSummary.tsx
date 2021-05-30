@@ -29,7 +29,7 @@ interface TokenDeposits {
  * uses HOC pattern to set the total portfolio balances.
  * @param address: string
  */
-export default function PortfolioBalance({ address, selectedToken }: { address: string; selectedToken: string }) {
+export default function PortfolioSummary({ address, selectedToken }: { address: string; selectedToken: string }) {
   const { error: outError, loading: inLoading, data: outData } = useQuery<UserTransferOut, UserTransferOutVariables>(
     userTransferOut,
     {
@@ -148,7 +148,7 @@ export default function PortfolioBalance({ address, selectedToken }: { address: 
                   </StandardText>
                   {Object.keys(totalDeposited).includes(selectedToken) && (
                     <div style={{ display: 'block' }}>
-                      {totalDeposited[selectedToken].dpoCount && (
+                      {totalDeposited[selectedToken].dpoCount > 0 && (
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
                           <StandardText fontSize="14px" mobileFontSize="10px">
                             {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
