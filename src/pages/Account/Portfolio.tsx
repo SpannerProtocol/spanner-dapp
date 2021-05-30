@@ -12,7 +12,7 @@ import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { CustomLightSpinner } from 'theme/components'
-import PortfolioBalance from './components/PortfolioBalance'
+import PortfolioSummary from './components/PortfolioSummary'
 import ProjectSettings from 'components/ProjectSettings'
 import { useProjectState } from 'state/project/hooks'
 
@@ -97,7 +97,7 @@ export default function Portfolio(): JSX.Element {
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
               <ProjectSettings backgroundColor={'#fff'} />
             </div>
-            <PortfolioBalance
+            <PortfolioSummary
               address={wallet.address}
               selectedToken={project.selectedProject ? project.selectedProject.token : 'BOLT'}
             />
