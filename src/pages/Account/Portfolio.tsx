@@ -12,10 +12,15 @@ import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { CustomLightSpinner } from 'theme/components'
+import PortfolioBalance from './components/PortfolioBalance'
+import ProjectSettings from 'components/ProjectSettings'
+import { useProjectState } from 'state/project/hooks'
 
 export default function Portfolio(): JSX.Element {
   const wallet = useWallet()
   const { t } = useTranslation()
+  const project = useProjectState()
+
   const { loading, error, data } = useQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
     variables: {
       address: wallet && wallet.address ? wallet.address : '',
@@ -89,6 +94,13 @@ export default function Portfolio(): JSX.Element {
                 </FlatCard>
               </>
             )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <ProjectSettings backgroundColor={'#fff'} />
+            </div>
+            <PortfolioBalance
+              address={wallet.address}
+              selectedToken={project.selectedProject ? project.selectedProject.token : 'BOLT'}
+            />
             {userItems && userItems.cabinIndexes.length > 0 && (
               <>
                 <SectionHeading>{t(`Your TravelCabins`)}</SectionHeading>

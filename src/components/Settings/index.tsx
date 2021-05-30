@@ -1,11 +1,9 @@
 import LanguageSettings from 'components/LanguageSettings'
 import ProjectSettings from 'components/ProjectSettings'
-import { ProjectData } from 'hooks/useProject'
 import React, { useContext, useRef } from 'react'
 import { Settings } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'
-import { useSelectProject } from 'state/project/hooks'
 import styled, { ThemeContext } from 'styled-components'
 import { CloseIcon } from 'theme/components'
 import { ApplicationModal } from '../../state/application/actions'
@@ -90,16 +88,11 @@ export default function SettingsTab() {
   const node = useRef<HTMLDivElement>()
   const open = useModalOpen(ApplicationModal.SETTINGS)
   const toggle = useToggleSettingsMenu()
-  const selectProject = useSelectProject()
   const { t } = useTranslation()
 
   const theme = useContext(ThemeContext)
 
   const [darkMode, toggleDarkMode] = useDarkModeManager()
-
-  const handleSelectProject = (project: ProjectData) => {
-    selectProject({ project: project.name, token: project.token, totalIssuance: project.totalIssuance.toString() })
-  }
 
   return (
     // https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451
@@ -118,7 +111,7 @@ export default function SettingsTab() {
             <Text fontWeight={600} fontSize={14}>
               {t(`Project Settings`)}
             </Text>
-            <ProjectSettings setSelectedProject={handleSelectProject} />
+            <ProjectSettings />
             <Text fontWeight={600} fontSize={14}>
               {t(`Interface Settings`)}
             </Text>

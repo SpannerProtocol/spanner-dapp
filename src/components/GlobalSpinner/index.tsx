@@ -6,14 +6,12 @@ import { HeavyText, StandardText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import React, { useCallback, useState } from 'react'
+import { Activity } from 'react-feather'
 import { animated, useTransition } from 'react-spring'
 import styled from 'styled-components'
 import { CustomLightSpinner } from 'theme/components'
 import { useTranslation } from 'translate'
-import { Activity } from 'react-feather'
 import ToolBoxIcon from '../../assets/svg/icon-tool-box.svg'
-import NetworkSelector from '../Network'
-import { useChainState } from 'state/connections/hooks'
 
 interface GlobalSpinnerProps {
   children: React.ReactNode
@@ -36,10 +34,10 @@ const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
 `
 
 export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
-  const { loading, chain, needReconnect, reconnect, error } = useApi()
+  const { loading, chain, needReconnect, reconnect } = useApi()
   const [reconnecting, setReconnecting] = useState<boolean>(false)
   const { t } = useTranslation()
-  const { chain: chainState } = useChainState()
+  // const { chain: chainState } = useChainState()
 
   const fadeTransition = useTransition(loading, null, {
     config: { duration: 400 },
@@ -111,7 +109,7 @@ export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
         )}
       </>
     )
-  } else if (error) {
+  } else if (process.env.REACT_APP_MAINTENANCE === 'true') {
     return (
       <>
         <div className="loading-container">
@@ -119,12 +117,9 @@ export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
             <div style={{ display: 'block', justifyContent: 'center', textAlign: 'center', width: '100%' }}>
               <img src={ToolBoxIcon} width="55px" alt="Toolbox Icon for Under Maintenance" />
               <HeavyText fontSize="18px" mobileFontSize="16px" style={{ margin: '1rem auto' }}>
-                {`${chainState ? chainState.chain : 'Spanner'} ${t(`is under maintenance`)}`}
+                {t(`Spanner Dapp is being upgraded`)}
               </HeavyText>
-              <StandardText style={{ margin: 'auto' }}>{t(`You can try a different chain`)}</StandardText>
-              <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <NetworkSelector />
-              </div>
+              <StandardText style={{ margin: 'auto' }}>{t(`Please check back later`)}</StandardText>
             </div>
           </div>
         </div>

@@ -43,6 +43,7 @@ interface SelectorProps {
   defaultOption: SelectorOption
   options: Array<SelectorOption>
   color?: string
+  backgroundColor?: string
   selectedIconMaxWidth?: string
   selectedIconMaxWidthMobile?: string
 }
@@ -93,6 +94,7 @@ export default function Selector(props: SelectorProps) {
     options,
     collaspedTextPrefix,
     color,
+    backgroundColor,
     selectedIconMaxWidth,
     selectedIconMaxWidthMobile,
   } = props
@@ -122,7 +124,7 @@ export default function Selector(props: SelectorProps) {
           <SelectorOptions handleSelect={handleSelect} options={options} activeOption={activeOption} />
         </StandardModal>
       )}
-      <SelectorWrapper onClick={() => setSelectModalOpen(true)}>
+      <SelectorWrapper background={backgroundColor} onClick={() => setSelectModalOpen(true)}>
         {activeOption && (
           <div style={{ display: 'inline-flex' }}>
             {activeOption.icon && (

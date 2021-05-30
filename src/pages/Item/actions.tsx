@@ -143,7 +143,7 @@ export default function Action({
       <TxModal
         isOpen={commitDpoModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={actionName}
         buttonText={buttonText}
         txError={txErrorMsg}

@@ -284,7 +284,7 @@ export default function Bridge(): JSX.Element {
       <TxModal
         isOpen={confirmModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Withdraw to Ethereum (USDT)`)}
         buttonText={t(`Confirm`)}
         txError={txError}
