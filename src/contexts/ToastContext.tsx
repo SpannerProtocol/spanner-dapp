@@ -1,10 +1,11 @@
-import React, { createContext, useReducer, useContext, useEffect } from 'react'
+import React, { createContext, useReducer, useContext, useEffect, useCallback, useState, useMemo } from 'react'
 import { createPortal } from 'react-dom'
 import Toast from '../components/Toast'
 
 interface ToastContextState {
   toast: ToastState[]
   toastDispatch: React.Dispatch<ToastAction>
+  queueToast: (item: ToastAction) => void
 }
 
 export const ToastContext = createContext({} as ToastContextState)
@@ -19,7 +20,7 @@ export interface ToastState {
 }
 
 export interface ToastAction {
-  type: 'ADD' | 'REMOVE' | 'REMOVE_ALL'
+  type: 'ADD' | 'UPDATE' | 'REMOVE' | 'REMOVE_ALL'
   payload: ToastState
 }
 
@@ -35,6 +36,10 @@ export const toastReducer = (state: ToastState[], action: ToastAction) => {
           type: action.payload.type ? action.payload.type : 'info',
         },
       ]
+    case 'UPDATE':
+      const updateIndex = state.findIndex((t) => t.id === action.payload.id)
+      state[updateIndex] = { ...action.payload }
+      return state
     case 'REMOVE':
       return state.filter((t) => t.id !== action.payload.id)
     case 'REMOVE_ALL':
@@ -50,25 +55,41 @@ interface ToastProviderProps {
 
 export const ToastProvider = (props: ToastProviderProps) => {
   const [toast, toastDispatch] = useReducer(toastReducer, initialState)
-  const toastData = { toast, toastDispatch }
+  const [toastQueue, setToastQueue] = useState<ToastAction[]>([])
 
+  const queueToast = useCallback((item: ToastAction) => {
+    setToastQueue((prev) => [...prev, item])
+  }, [])
+
+  // Add queued items to dispatch, then empty queue
+  useEffect(() => {
+    if (toastQueue.length === 0) return
+    toastQueue.forEach((item) => {
+      toastDispatch(item)
+    })
+    // should be fine to modify state within the same useeffect because it will stay empty
+    setToastQueue([])
+  }, [toastQueue])
+
+  // Remove Items after certain time
   useEffect(() => {
     if (toast.length === 0) return
     const interval = setInterval(() => {
       if (toast.length) {
         toastDispatch({ type: 'REMOVE', payload: { id: toast[0].id } })
       }
-    }, 3000)
+    }, 8000)
 
     return () => {
       clearInterval(interval)
     }
   }, [toast])
 
+  const toastData = useMemo(() => ({ toast, toastDispatch, queueToast }), [queueToast, toast])
+
   return (
     <ToastContext.Provider value={toastData}>
       {props.children}
-
       {createPortal(<Toast toast={toast} />, document.body)}
     </ToastContext.Provider>
   )

@@ -259,7 +259,7 @@ export default function Transfer() {
       <TxModal
         isOpen={txModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Confirm Send`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}

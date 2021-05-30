@@ -513,7 +513,16 @@
   "Selected Language": "Selected Language",
   "Select a Language": "Select a Language",
   "# of Blocks Finalized": "# of Blocks Finalized",
-  "Spanner Dapp is currently under maintenance, please try again later.": "Spanner Dapp is currently under maintenance, please try again later.",
+  "Spanner Dapp is being upgraded": "Spanner Dapp is being upgraded",
   "You can try a different chain": "You can try a different chain",
-  "is under maintenance": "is under maintenance"
+  "is under maintenance": "is under maintenance",
+  "Portfolio Summary": "Portfolio Summary",
+  "Filter Project": "Filter Project",
+  "Total Deposited": "Total Deposited",
+  "Deposit by Asset": "Deposit by Asset",
+  "Please check back later": "Please check back later",
+  "Transaction created": "Transaction created",
+  "Transaction succeeded": "Transaction succeeded",
+  "Submitted to Block": "Submitted to Block",
+  "Waiting for signature": "Waiting for signature"
 }

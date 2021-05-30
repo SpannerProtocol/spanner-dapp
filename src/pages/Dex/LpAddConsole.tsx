@@ -118,7 +118,7 @@ export default function LpAddConsole(): JSX.Element {
       <TxModal
         isOpen={modalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Confirm`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}

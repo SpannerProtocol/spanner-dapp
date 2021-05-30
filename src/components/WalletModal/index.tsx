@@ -3,6 +3,7 @@ import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
+import { AxiosError } from 'axios'
 import { getCustodialAddr } from 'bridge'
 import { HeavyText, SectionHeading, StandardText } from 'components/Text'
 import { BorderedSelection, Section } from 'components/Wrapper'
@@ -10,10 +11,10 @@ import { useWeb3Accounts } from 'hooks/useWeb3Accounts'
 import React, { useEffect, useState } from 'react'
 import { isMobile } from 'react-device-detect'
 import { useTranslation } from 'react-i18next'
+import { useChainState } from 'state/connections/hooks'
 import { useIsDarkMode } from 'state/user/hooks'
 import { useWalletManager } from 'state/wallet/hooks'
 import styled from 'styled-components'
-import getCustodialAccount from 'utils/getCustodialAccount'
 import MetamaskIcon from '../../assets/images/metamask.png'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
 import MathBlackIcon from '../../assets/svg/logo-math-black.svg'
@@ -36,8 +37,6 @@ import PendingView, {
   PendingSection,
   StyledLoader,
 } from './PendingView'
-import { AxiosError } from 'axios'
-import { useChainState } from 'state/connections/hooks'
 
 export const CloseIcon = styled.div`
   position: absolute;
@@ -232,7 +231,7 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
   const [openAccountSelectModal, setOpenAccountSelectModal] = useState(false)
   const [spannerWalletActive, setSpannerWalletActive] = useState(false)
   const isDarkMode = useIsDarkMode()
-  const { setWalletType, setDevelopmentKeyring } = useWalletManager()
+  const { setWalletType } = useWalletManager()
 
   const [isCustodial, setIsCustodial] = useState<boolean | undefined>()
   const { chain } = useChainState()
@@ -301,34 +300,25 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
     if (typeof isCustodial === 'undefined') return
     if (isCustodial) {
       if (!account) return
-      if (process.env.REACT_APP_DEVELOPMENT_KEYRING === 'true' && process.env.NODE_ENV === 'development') {
-        setWalletType({
-          type: 'custodial',
-          address: account,
-          custodialAddress: getCustodialAccount(account).address,
+      // Get custodial address and set it in the wallet
+      getCustodialAddr(chain.chain, account)
+        .then((response) => {
+          setWalletType({
+            type: 'custodial',
+            address: account,
+            custodialAddress: response.data,
+          })
         })
-        setDevelopmentKeyring()
-      } else {
-        // Get custodial address and set it in the wallet
-        getCustodialAddr(chain.chain, account)
-          .then((response) => {
-            setWalletType({
-              type: 'custodial',
-              address: account,
-              custodialAddress: response.data,
-            })
-          })
-          .catch((e: AxiosError) => {
-            if (e.name === 'Error' && e.message === 'Network Error') {
-              console.log('Error occured when getting custodial address from server:', e.message)
-            }
-          })
-      }
+        .catch((e: AxiosError) => {
+          if (e.name === 'Error' && e.message === 'Network Error') {
+            console.log('Error occured when getting custodial address from server:', e.message)
+          }
+        })
     } else {
       if (!activeAccount) return
       setWalletType({ type: 'non-custodial', address: activeAccount.address })
     }
-  }, [isCustodial, account, activeAccount, setWalletType, setDevelopmentKeyring, chain])
+  }, [isCustodial, account, activeAccount, setWalletType, chain])
 
   const handleAccountSelection = () => {
     toggleWalletModal()
