@@ -148,24 +148,28 @@ export default function PortfolioBalance({ address, selectedToken }: { address: 
                   </StandardText>
                   {Object.keys(totalDeposited).includes(selectedToken) && (
                     <div style={{ display: 'block' }}>
-                      <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                        <StandardText fontSize="14px" mobileFontSize="10px">
-                          {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
-                        </StandardText>
-                        <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
-                        <StandardText fontSize="14px" mobileFontSize="10px">
-                          {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
-                        </StandardText>
-                      </div>
-                      <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                        <StandardText fontSize="14px" mobileFontSize="10px">
-                          {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
-                        </StandardText>
-                        <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
-                        <StandardText fontSize="14px" mobileFontSize="10px">
-                          {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
-                        </StandardText>
-                      </div>
+                      {totalDeposited[selectedToken].dpoCount && (
+                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                          <StandardText fontSize="14px" mobileFontSize="10px">
+                            {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
+                          </StandardText>
+                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
+                          <StandardText fontSize="14px" mobileFontSize="10px">
+                            {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
+                          </StandardText>
+                        </div>
+                      )}
+                      {totalDeposited[selectedToken].cabinCount > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                          <StandardText fontSize="14px" mobileFontSize="10px">
+                            {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
+                          </StandardText>
+                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
+                          <StandardText fontSize="14px" mobileFontSize="10px">
+                            {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
+                          </StandardText>
+                        </div>
+                      )}
                     </div>
                   )}
                 </FlatCard>
