@@ -27,8 +27,11 @@ interface SignAndSendCoreParams {
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
   setPendingMsg: Dispatcher<string | undefined>
-  toastDispatch: React.Dispatch<ToastAction>
+  queueToast: (item: ToastAction) => void
+  dismissModal: () => void
+  t: any
 }
+
 interface SignAndSendParams extends SignAndSendCoreParams {
   signer?: Signer
 }
@@ -40,7 +43,6 @@ interface SignAndSendCustodialParams extends SignAndSendCoreParams {
 
 export interface SignAndSendTxParams extends SignAndSendParams {
   chain: 'Hammer' | 'Spanner'
-  walletType?: string
   signer?: Signer
   custodialProvider?: Web3Provider
 }
@@ -53,7 +55,9 @@ interface TxStatus {
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
   setPendingMsg: Dispatcher<string | undefined>
-  toastDispatch: React.Dispatch<ToastAction>
+  queueToast: (item: ToastAction) => void
+  dismissModal: () => void
+  t: any
 }
 
 interface TxEventParams {
@@ -61,19 +65,21 @@ interface TxEventParams {
   txInfo: TxInfo
   event: Event
   blockTxMethod?: CallBase<AnyTuple>
-  toastDispatch: React.Dispatch<ToastAction>
+  queueToast: (item: ToastAction) => void
+  dismissModal: () => void
+  t: any
 }
 
-function handleTxEvent({ api, txInfo, event, blockTxMethod, toastDispatch }: TxEventParams) {
+function handleTxEvent({ api, txInfo, event, blockTxMethod, queueToast, t }: TxEventParams) {
   if (
     api.events.system.ExtrinsicSuccess.is(event) &&
     (blockTxMethod ? txInfo.section === blockTxMethod.section && txInfo.method === blockTxMethod.method : true)
   ) {
-    toastDispatch({
+    queueToast({
       type: 'ADD',
       payload: {
         title: `${txInfo.section}.${txInfo.method}`,
-        content: `Transaction Succeeded.`,
+        content: t(`Transaction succeeded`),
         type: 'success',
       },
     })
@@ -87,28 +93,38 @@ function handleTxEvent({ api, txInfo, event, blockTxMethod, toastDispatch }: TxE
       // Other, CannotLookup, BadOrigin, no extra info
       errorInfo = dispatchError.toString()
     }
-    toastDispatch({
+    queueToast({
       type: 'ADD',
       payload: {
         title: `${txInfo.section}.${txInfo.method}`,
-        content: `Transaction Failed. ${errorInfo}`,
+        content: `${t(`Transaction failed`)} ${errorInfo}`,
         type: 'danger',
       },
     })
-  } else {
   }
 }
 
-function handleTxStatus({ api, txInfo, status, events, setErrorMsg, setHash, setPendingMsg, toastDispatch }: TxStatus) {
+function handleTxStatus({
+  api,
+  txInfo,
+  status,
+  events,
+  setErrorMsg,
+  setHash,
+  setPendingMsg,
+  queueToast,
+  dismissModal,
+  t,
+}: TxStatus) {
   if (status.isInBlock) {
     setErrorMsg(undefined)
     setHash(status.asInBlock.toString())
     setPendingMsg('Transaction submitted to block')
-    toastDispatch({
+    queueToast({
       type: 'ADD',
       payload: {
         title: `${txInfo.section}.${txInfo.method}`,
-        content: `Submitted to Block ${truncateString(status.asInBlock.toString(), 16)}`,
+        content: `${t(`Submitted to Block`)} ${truncateString(status.asInBlock.toString(), 16)}`,
       },
     })
     // signAndSendCustodial does not send events
@@ -119,7 +135,7 @@ function handleTxStatus({ api, txInfo, status, events, setErrorMsg, setHash, set
             allRecords
               .filter(({ phase }) => phase.isApplyExtrinsic && phase.asApplyExtrinsic.eq(index))
               .forEach(({ event }) => {
-                handleTxEvent({ api, event, txInfo, blockTxMethod: method, toastDispatch })
+                handleTxEvent({ api, event, txInfo, blockTxMethod: method, queueToast, dismissModal, t })
               })
           })
         })
@@ -128,7 +144,7 @@ function handleTxStatus({ api, txInfo, status, events, setErrorMsg, setHash, set
       // Events are provided via signAndSend
       events.forEach((record) => {
         const { event } = record
-        handleTxEvent({ api, event, txInfo, toastDispatch })
+        handleTxEvent({ api, event, txInfo, queueToast, dismissModal, t })
       })
     }
   } else if (status.isReady || status.isBroadcast) {
@@ -151,21 +167,24 @@ function signAndSend({
   setErrorMsg,
   setHash,
   setPendingMsg,
-  toastDispatch,
+  queueToast,
+  dismissModal,
+  t,
 }: SignAndSendParams) {
   if (!api || !address || !signer || !txInfo) {
-    setErrorMsg('No wallet detected. Please connect to a wallet and try again.')
+    setErrorMsg(t('No wallet detected. Please connect to a wallet and try again.'))
     return
   }
   if (isJsonRpcSigner(signer)) return
   tx.signAndSend(address, { signer }, ({ events = [], status }) => {
-    handleTxStatus({ api, txInfo, status, events, setPendingMsg, setHash, setErrorMsg, toastDispatch })
+    handleTxStatus({ api, txInfo, status, events, setPendingMsg, setHash, setErrorMsg, queueToast, dismissModal, t })
   }).catch((err) => {
     setPendingMsg(undefined)
     setHash(undefined)
-    setErrorMsg(`Transaction failed: ${err}`)
+    setErrorMsg(`${t(`Transaction failed`)}: ${err}`)
     console.log('Transaction failed ', err)
   })
+  dismissModal()
 }
 
 function signAndSendCustodial({
@@ -179,16 +198,18 @@ function signAndSendCustodial({
   setErrorMsg,
   setHash,
   setPendingMsg,
-  toastDispatch,
+  queueToast,
+  dismissModal,
+  t,
 }: SignAndSendCustodialParams) {
   // Section and Method are used to reconstruct the @polkadot/api tx call server-side
   if (!api || !custodialProvider || !address || !txInfo || !wallet || !chain) {
-    setErrorMsg('Unexpected Error with Custodial Signing operation.')
+    setErrorMsg(t('Unexpected Error with Custodial Signing operation.'))
     return
   }
 
   if (!(Object.keys(txInfo).includes('section') && Object.keys(txInfo).includes('method'))) {
-    setErrorMsg('Could not identify transaction info.')
+    setErrorMsg(t('Could not identify transaction info.'))
     return
   }
 
@@ -204,7 +225,7 @@ function signAndSendCustodial({
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
       if (err.code === 4001) {
-        setErrorMsg('Transaction cancelled')
+        setErrorMsg(t('Transaction cancelled'))
         return undefined
       }
     }
@@ -249,7 +270,17 @@ function signAndSendCustodial({
             // Start watching for event first
             api.rpc.author
               .submitAndWatchExtrinsic(submittableTx, (status) =>
-                handleTxStatus({ api, txInfo, status, setPendingMsg, setHash, setErrorMsg, toastDispatch })
+                handleTxStatus({
+                  api,
+                  txInfo,
+                  status,
+                  setPendingMsg,
+                  setHash,
+                  setErrorMsg,
+                  queueToast,
+                  dismissModal,
+                  t,
+                })
               )
               .catch((err) => {
                 console.log(err)
@@ -266,6 +297,7 @@ function signAndSendCustodial({
       console.log(err)
       setErrorMsg(err.message)
     })
+  dismissModal()
 }
 
 export default function signAndSendTx({
@@ -277,10 +309,12 @@ export default function signAndSendTx({
   setErrorMsg,
   setHash,
   setPendingMsg,
-  toastDispatch,
+  queueToast,
+  dismissModal,
+  t,
 }: SignAndSendTxParams) {
   if (!wallet || !wallet.address) {
-    setErrorMsg('No wallet detected. Please connect to a wallet and try again.')
+    setErrorMsg(t('No wallet detected. Please connect to a wallet and try again.'))
     return
   }
 
@@ -296,7 +330,9 @@ export default function signAndSendTx({
       setErrorMsg,
       setHash,
       setPendingMsg,
-      toastDispatch,
+      queueToast,
+      dismissModal,
+      t,
     })
   } else {
     signAndSend({
@@ -308,7 +344,9 @@ export default function signAndSendTx({
       setErrorMsg,
       setHash,
       setPendingMsg,
-      toastDispatch,
+      queueToast,
+      dismissModal,
+      t,
     })
   }
 }
