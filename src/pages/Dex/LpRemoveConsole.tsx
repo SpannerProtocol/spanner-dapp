@@ -114,7 +114,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       <TxModal
         isOpen={modalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Remove Liquidity`)}
         buttonText={t(`Remove`)}
         txError={txErrorMsg}

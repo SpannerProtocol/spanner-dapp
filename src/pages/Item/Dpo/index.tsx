@@ -528,7 +528,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
       <TxModal
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Join DPO`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}
@@ -551,7 +551,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
       <TxModal
         isOpen={crowdfundTxModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Create DPO`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}
