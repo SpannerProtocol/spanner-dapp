@@ -299,7 +299,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       <TxModal
         isOpen={joinTxModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Buy TravelCabin`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}
@@ -315,7 +315,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
       <TxModal
         isOpen={crowdfundTxModalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t(`Create DPO`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}
