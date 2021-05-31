@@ -10,7 +10,7 @@ import TxFee from 'components/TxFee'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
@@ -274,17 +274,17 @@ export default function SwapConsole(): JSX.Element {
     }
   }, [isOnA, amountA, balanceA, balanceB, amountB, pool, fee, chainDecimals, t])
 
-  const dismissModal = () => {
+  const dismissModal = useCallback(() => {
     setModalOpen(false)
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
-  }
+  }, [])
 
   return (
     <>
       <TxModal
         isOpen={modalOpen}
         onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg })}
+        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
         title={t('Confirm Swap')}
         buttonText={t('Confirm')}
         txError={txErrorMsg}

@@ -4,29 +4,24 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: EventCreatedDpoByData
+// GraphQL query operation: UserCreatedDpo
 // ====================================================
 
-export interface EventCreatedDpoByData_events_nodes_extrinsic {
+export interface UserCreatedDpo_events_nodes_extrinsic {
   __typename: "Extrinsic";
-  method: string;
-  section: string;
   args: string;
 }
 
-export interface EventCreatedDpoByData_events_nodes {
+export interface UserCreatedDpo_events_nodes {
   __typename: "Event";
-  id: string;
-  section: string;
-  method: string;
   data: string;
   /**
    * Reads a single `Extrinsic` that is related to this `Event`.
    */
-  extrinsic: EventCreatedDpoByData_events_nodes_extrinsic | null;
+  extrinsic: UserCreatedDpo_events_nodes_extrinsic | null;
 }
 
-export interface EventCreatedDpoByData_events {
+export interface UserCreatedDpo_events {
   __typename: "EventsConnection";
   /**
    * The count of *all* `Event` you could get from the connection.
@@ -35,18 +30,16 @@ export interface EventCreatedDpoByData_events {
   /**
    * A list of `Event` objects.
    */
-  nodes: (EventCreatedDpoByData_events_nodes | null)[];
+  nodes: (UserCreatedDpo_events_nodes | null)[];
 }
 
-export interface EventCreatedDpoByData {
+export interface UserCreatedDpo {
   /**
    * Reads and enables pagination through a set of `Event`.
    */
-  events: EventCreatedDpoByData_events | null;
+  events: UserCreatedDpo_events | null;
 }
 
-export interface EventCreatedDpoByDataVariables {
-  first: number;
-  offset: number;
-  includes: string;
+export interface UserCreatedDpoVariables {
+  address: string;
 }

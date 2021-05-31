@@ -1,17 +1,13 @@
-import React, { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components'
-import { CloseIcon, CustomLightSpinner } from '../../theme/components'
-import { AlertTriangle } from 'react-feather'
 import { ButtonPrimary } from 'components/Button'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { HeavyText, ModalTitle, StandardText } from 'components/Text'
+import { ModalTitle } from 'components/Text'
 import { ModalWrapper, Section } from 'components/Wrapper'
-import Modal from '.'
-import Circle from 'assets/svg/yellow-loader.svg'
+import React, { useContext } from 'react'
+import { AlertTriangle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { CheckCircle } from 'react-feather'
-import { useChainState } from 'state/connections/hooks'
-import { StyledExternalLink } from 'components/Link'
+import { ThemeContext } from 'styled-components'
+import Modal from '.'
+import { CloseIcon } from '../../theme/components'
 
 interface ConfirmModalProps {
   isOpen: boolean
@@ -22,10 +18,10 @@ interface ConfirmModalProps {
   content: JSX.Element
 }
 
-const ImageWrapper = styled.div`
-  text-align: center;
-  width: 100%;
-`
+// const ImageWrapper = styled.div`
+//   text-align: center;
+//   width: 100%;
+// `
 
 export function ConfirmModal({ isOpen, onDismiss, onConfirm, title, buttonText, content }: ConfirmModalProps) {
   return (
@@ -75,7 +71,6 @@ export default function TxModal({
 }: TxModalProps) {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  const { chain } = useChainState()
 
   if (txError) {
     return (
@@ -100,75 +95,7 @@ export default function TxModal({
       </Modal>
     )
   } else if (txPending && !txHash) {
-    return (
-      <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
-        <ModalWrapper>
-          <Section>
-            <RowBetween>
-              <ModalTitle>{t(`Transaction Pending`)}</ModalTitle>
-              <CloseIcon onClick={onDismiss} />
-            </RowBetween>
-          </Section>
-          <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-            <CenteredRow>
-              <CustomLightSpinner src={Circle} alt="loader" size={'45px'} />
-            </CenteredRow>
-            <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>{txPending}</CenteredRow>
-          </Section>
-          <Section>
-            <ButtonPrimary onClick={onConfirm} disabled>
-              {t(`Please wait`)}
-            </ButtonPrimary>
-          </Section>
-        </ModalWrapper>
-      </Modal>
-    )
-  } else if (txHash) {
-    return (
-      <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
-        <ModalWrapper>
-          <Section>
-            <RowBetween>
-              <ModalTitle>{t(`In Block`)}</ModalTitle>
-              <CloseIcon onClick={onDismiss} />
-            </RowBetween>
-          </Section>
-          <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-            <CenteredRow>
-              <ImageWrapper>
-                <CheckCircle size={80} color={'#FFBE2E'} />
-              </ImageWrapper>
-            </CenteredRow>
-          </Section>
-          <Section>
-            <CenteredRow
-              style={{
-                display: 'block',
-                marginTop: '0.5rem',
-                marginBottom: '0.5rem',
-                textAlign: 'center',
-                overflowWrap: 'anywhere',
-              }}
-            >
-              <StandardText style={{ margin: 'auto' }}>{t(`Transaction submitted to block at`)} </StandardText>
-              <HeavyText fontSize={'14px'}>{txHash}</HeavyText>
-            </CenteredRow>
-            {chain && chain.url && (
-              <CenteredRow style={{ marginTop: '1rem', marginBottom: '1rem' }}>
-                <StyledExternalLink href={`${chain.url}/query/${txHash}`} style={{ textDecoration: 'none' }}>
-                  {t(`View on Block Explorer`)}
-                </StyledExternalLink>
-              </CenteredRow>
-            )}
-          </Section>
-          <Section>
-            <RowBetween>
-              <ButtonPrimary onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
-            </RowBetween>
-          </Section>
-        </ModalWrapper>
-      </Modal>
-    )
+    return null
   }
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>

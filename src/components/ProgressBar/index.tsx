@@ -5,6 +5,7 @@ import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/s
 import Typography from '@material-ui/core/Typography'
 import { StandardText } from 'components/Text'
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import './progress.css'
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -64,8 +65,11 @@ export function LinearProgressBar(props: LinearProgressProps & { value: number }
   )
 }
 
-export function CircleProgress(props: CircularProgressProps & { value: number }) {
+export function CircleProgress(
+  props: CircularProgressProps & { value: number; fontSize?: string; mobileFontSize?: string; displayFilled?: boolean }
+) {
   const classes = useStyles()
+  const { t } = useTranslation()
   return (
     <div className={classes.root}>
       <Box position="relative" display="inline-flex">
@@ -99,8 +103,20 @@ export function CircleProgress(props: CircularProgressProps & { value: number })
           justifyContent="center"
         >
           <Typography variant="caption" component="div" color="textSecondary">
-            <StandardText fontSize="10px" style={{ margin: 'auto' }}>{`${Math.round(props.value)}%`}</StandardText>
-            <StandardText fontSize="10px" style={{ margin: 'auto' }}>{`Filled`}</StandardText>
+            <StandardText
+              fontSize={props.fontSize ? props.fontSize : '10px'}
+              mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
+              style={{ margin: 'auto' }}
+            >{`${Math.round(props.value)}%`}</StandardText>
+            {props.displayFilled && (
+              <StandardText
+                fontSize={props.fontSize ? props.fontSize : '10px'}
+                mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
+                style={{ margin: 'auto' }}
+              >
+                {t(`Filled`)}
+              </StandardText>
+            )}
           </Typography>
         </Box>
       </Box>

@@ -1,14 +1,14 @@
+import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
+import { useToastContext } from 'contexts/ToastContext'
 import { useCallback, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useChainState } from 'state/connections/hooks'
+import { Dispatcher } from 'types/dispatcher'
+import { formatToUnit } from 'utils/formatUnit'
 import signAndSendTx from 'utils/signAndSendTx'
 import { useApi } from './useApi'
-import useWallet from './useWallet'
-import { SubmittableExtrinsic } from '@polkadot/api/promise/types'
-import { formatToUnit } from 'utils/formatUnit'
 import { useSubstrate } from './useSubstrate'
-import { useTranslation } from 'react-i18next'
-import { Dispatcher } from 'types/dispatcher'
-import { useToastContext } from 'contexts/ToastContext'
-import { useChainState } from 'state/connections/hooks'
+import useWallet from './useWallet'
 
 export interface CreateTxParams {
   section: string
@@ -24,6 +24,7 @@ interface SubmitTxParams {
   setTxErrorMsg: Dispatcher<string | undefined>
   setTxHash: Dispatcher<string | undefined>
   setTxPendingMsg: Dispatcher<string | undefined>
+  dismissModal: () => void
 }
 
 export interface TxInfo {
@@ -42,8 +43,10 @@ export default function useTxHelpers() {
   const [txMeta, setTxMeta] = useState<TxMeta>()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
-  const { toastDispatch } = useToastContext()
+  const { toast, queueToast } = useToastContext()
   const { chain } = useChainState()
+  // We need to render the side effects inside a useeffect from this queue
+  // Otherwise we get Warning: Cannot update a component while rendering a diff component.
 
   // Create both the transaction and get the estimated payment info
   const createTx = ({
@@ -59,13 +62,13 @@ export default function useTxHelpers() {
       .then((fee) => formatToUnit(fee.partialFee.toString(), chainDecimals, 2))
     // Saving the transaction information in the event submitTx is called
     setTxMeta({ unsignedTx, section, method, params })
-    toastDispatch({ type: 'ADD', payload: { title: `${section}.${method}`, content: `Transaction created` } })
+    queueToast({ type: 'ADD', payload: { title: `${section}.${method}`, content: t(`Transaction created`) } })
     return { unsignedTx, estimatedFee }
   }
 
   // Use signAndSend and output any errors
   const submitTx = useCallback(
-    ({ setTxErrorMsg, setTxHash, setTxPendingMsg }: SubmitTxParams) => {
+    ({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal }: SubmitTxParams) => {
       if (!connected || !chain) return
       if (!wallet || !wallet.address) {
         setTxErrorMsg(t(`No wallet connection detected.`))
@@ -74,6 +77,24 @@ export default function useTxHelpers() {
       if (!txMeta) {
         setTxErrorMsg(t(`There was an error creating the transaction. Please try again.`))
       } else {
+        const filteredToast = toast.find((toastState) => toastState.content === t(`Transaction created`))
+        if (filteredToast && filteredToast.id) {
+          queueToast({
+            type: 'UPDATE',
+            payload: {
+              id: filteredToast.id,
+              title: `${txMeta.section}.${txMeta.method}`,
+              type: 'info',
+              content: t(`Waiting for signature`),
+            },
+          })
+        } else {
+          // If we can't find the toast it normally means its already expired
+          queueToast({
+            type: 'ADD',
+            payload: { title: `${txMeta.section}.${txMeta.method}`, content: t(`Waiting for signature`) },
+          })
+        }
         signAndSendTx({
           api: api,
           chain: chain.chain,
@@ -83,17 +104,18 @@ export default function useTxHelpers() {
           setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
-          toastDispatch: toastDispatch,
-          walletType: wallet.type,
+          queueToast: queueToast,
           custodialProvider: wallet.custodialProvider,
           txInfo: {
             section: txMeta.section,
             method: txMeta.method,
           },
+          dismissModal: dismissModal,
+          t: t,
         })
       }
     },
-    [api, connected, t, toastDispatch, txMeta, wallet, chain]
+    [connected, chain, wallet, txMeta, t, toast, api, queueToast]
   )
 
   return { createTx, submitTx }

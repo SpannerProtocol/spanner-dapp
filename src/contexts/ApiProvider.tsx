@@ -43,48 +43,59 @@ export function ApiProvider({ children }: any): JSX.Element {
         (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
         {}
       )
-      const rpc = rpcDefinitions.default.rpc
-      let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === chainToConnect)
-      chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
-      chainInfo.chain === 'Spanner Mainnet' ? addChain('Spanner') : addChain('Hammer')
-      const provider = new WsProvider(chainInfo.providerSocket)
-      const apiPromise = new ApiPromise({
-        provider,
-        types,
-        rpc,
-      })
+      try {
+        const rpc = rpcDefinitions.default.rpc
+        let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === chainToConnect)
+        chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
+        chainInfo.chain === 'Spanner Mainnet' ? addChain('Spanner') : addChain('Hammer')
+        const provider = new WsProvider(chainInfo.providerSocket)
+        const apiPromise = new ApiPromise({
+          provider,
+          types,
+          rpc,
+        })
 
-      apiPromise.on('disconnected', () => {
-        setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true }))
-      })
-      apiPromise.on('error', () => {
-        setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true, error: true }))
-      })
-      apiPromise.on('connected', () => {
-        setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, loading: true }))
-      })
-      apiPromise.on('ready', () => {
-        setApiState((prev) => ({
-          ...prev,
-          api: apiPromise,
-          loading: false,
-          connected: true,
-          needReconnect: false,
-          error: false,
-        }))
-      })
+        apiPromise.on('disconnected', () => {
+          console.log('disconnect')
+          setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true }))
+        })
+        apiPromise.on('error', () => {
+          console.log('error')
+          setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true, error: true }))
+          apiPromise.disconnect()
+        })
+        apiPromise.on('connected', () => {
+          setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, loading: true }))
+        })
+        apiPromise.on('ready', () => {
+          setApiState((prev) => ({
+            ...prev,
+            api: apiPromise,
+            loading: false,
+            connected: true,
+            needReconnect: false,
+            error: false,
+          }))
+        })
+      } catch (e) {
+        console.log('connection error', e)
+      }
     },
     [addChain]
   )
 
   const connectToNetwork = useCallback(
-    (chain: string) => {
+    async (chain: string) => {
       if (!supportedChains.includes(chain)) return
+      if (Object.keys(apiState.api).length > 0) {
+        const apiInstance = await apiState.api.isReadyOrError
+        apiInstance.disconnect()
+      }
       createApi(chain)
       // Save to component state for reconnect if necessary
       setSelectedChain(chain)
     },
-    [createApi, supportedChains]
+    [apiState, createApi, supportedChains]
   )
 
   const reconnect = useCallback(() => createApi(selectedChain), [selectedChain, createApi])

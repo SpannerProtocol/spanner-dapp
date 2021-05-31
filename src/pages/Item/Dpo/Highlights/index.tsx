@@ -183,7 +183,7 @@ function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoIn
                       </div>
                     </>
                   )}
-                  {targetDpo.state.isActive && (
+                  {targetDpo.state.isActive && dpoInfo.vault_deposit.isZero() && (
                     <>
                       <IconWrapper>
                         <Icon src={WaitingIcon} />
@@ -195,6 +195,20 @@ function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoIn
                           padding="0 0.25rem"
                         >{` ${targetDpo.name.toString()} `}</HeavyText>
                         <HeavyText>{t(`to purchase target`)}</HeavyText>
+                      </div>
+                    </>
+                  )}
+                  {targetDpo.state.isActive && !dpoInfo.vault_deposit.isZero() && (
+                    <>
+                      <IconWrapper>
+                        <Icon src={WaitingIcon} />
+                      </IconWrapper>
+                      <div style={{ display: 'flex' }}>
+                        <HeavyText
+                          color={theme.blue2}
+                          padding="0 0.25rem"
+                        >{` ${targetDpo.name.toString()} `}</HeavyText>
+                        <HeavyText>{t(`is about to purchase target`)}</HeavyText>
                       </div>
                     </>
                   )}
@@ -239,7 +253,7 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
     <>
       <RowBetween>
         <PaddedSection>
-          <CircleProgress value={progress} size={below420 ? 60 : 100} />
+          <CircleProgress value={progress} size={below420 ? 60 : 100} displayFilled={true} mobileFontSize="10px" />
         </PaddedSection>
         {fees && (
           <PaddedSection>

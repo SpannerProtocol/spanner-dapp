@@ -83,9 +83,9 @@ export const Heading = styled.h2`
  `};
 `
 
-export const SectionHeading = styled.h3`
+export const SectionHeading = styled.h3<{ margin?: string }>`
   margin-top: 0rem;
-  margin-bottom: 1rem;
+  margin: ${({ margin }) => (margin ? margin : '0 0 1rem 0')}
   font-size: 17px;
   font-weight: bold;
   text-align: left;
@@ -135,12 +135,18 @@ export const SmallText = styled.div`
  `};
 `
 
-export const DataTokenName = styled.div<{ color?: string; fontSize?: string; mobileFontSize?: string }>`
+export const DataTokenName = styled.div<{
+  color?: string
+  fontSize?: string
+  mobileFontSize?: string
+  padding?: string
+}>`
   display: inline;
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
   font-weight: 700;
   color: ${({ color, theme }) => (color ? color : theme.text3)};
   overflow-wrap: break-word;
+  padding: ${({ padding }) => (padding ? padding : '0')}
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;

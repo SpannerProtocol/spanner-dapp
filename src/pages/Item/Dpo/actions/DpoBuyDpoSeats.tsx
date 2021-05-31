@@ -24,7 +24,7 @@ export default function DpoBuyDpoSeatsAvailable({ dpoInfo, dpoAction }: { dpoInf
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
 
-  // Release Yield Grace Period
+  // Grace Period life sentence
   useEffect(() => {
     if (!expectedBlockTime || !lastBlock) return
     const gp = getLifeSentenceGpLeft(dpoInfo, lastBlock, expectedBlockTime)
