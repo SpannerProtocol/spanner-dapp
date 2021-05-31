@@ -83,9 +83,9 @@ export const Heading = styled.h2`
  `};
 `
 
-export const SectionHeading = styled.h3`
+export const SectionHeading = styled.h3<{ margin?: string }>`
   margin-top: 0rem;
-  margin-bottom: 1rem;
+  margin: ${({ margin }) => (margin ? margin : '0 0 1rem 0')}
   font-size: 17px;
   font-weight: bold;
   text-align: left;

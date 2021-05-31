@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
@@ -9,10 +9,13 @@ import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/U
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
 import userTransferIn from 'queries/graphql/userTransferIn'
 import userTransferOut from 'queries/graphql/userTransferOut'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CustomLightSpinner } from 'theme/components'
 import { formatToUnit } from 'utils/formatUnit'
+import { RefreshCw } from 'react-feather'
+import { ThemeContext } from 'styled-components'
+import { IconWrapper } from 'components/Wrapper'
 
 interface TokenDeposits {
   [token: string]: {
@@ -30,29 +33,39 @@ interface TokenDeposits {
  * @param address: string
  */
 export default function PortfolioSummary({ address, selectedToken }: { address: string; selectedToken: string }) {
-  const { error: outError, loading: inLoading, data: outData } = useQuery<UserTransferOut, UserTransferOutVariables>(
-    userTransferOut,
-    {
-      variables: {
-        address: address,
-      },
-      pollInterval: 3000,
-    }
-  )
-  const { error: inError, loading: outLoading, data: inData } = useQuery<UserTransferIn, UserTransferInVariables>(
-    userTransferIn,
-    {
-      variables: {
-        address: address,
-      },
-      pollInterval: 3000,
-    }
-  )
+  const [loadTransferOut, { error: outError, loading: inLoading, data: outData }] = useLazyQuery<
+    UserTransferOut,
+    UserTransferOutVariables
+  >(userTransferOut, {
+    variables: {
+      address: address,
+    },
+  })
+  const [loadTransferIn, { error: inError, loading: outLoading, data: inData }] = useLazyQuery<
+    UserTransferIn,
+    UserTransferInVariables
+  >(userTransferIn, {
+    variables: {
+      address: address,
+    },
+  })
   // this component might take awhile so use a loader
   const [loading, setLoading] = useState<boolean>(true)
   const { t } = useTranslation()
   const [totalDeposited, setTotalDeposited] = useState<TokenDeposits>({})
   const { chainDecimals } = useSubstrate()
+  const theme = useContext(ThemeContext)
+
+  const getPortfolioSummaryData = useCallback(() => {
+    loadTransferOut()
+    loadTransferIn()
+  }, [loadTransferOut, loadTransferIn])
+
+  // When lazyquery functions are available, use once for init
+  useEffect(() => {
+    loadTransferOut()
+    loadTransferIn()
+  }, [loadTransferOut, loadTransferIn])
 
   useEffect(() => {
     if (inLoading || outLoading) {
@@ -127,7 +140,12 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
           )}
           {!loading && totalDeposited[selectedToken] && (
             <>
-              <SectionHeading>{t(`Portfolio Summary`)}</SectionHeading>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+                <SectionHeading margin="0">{t(`Portfolio Summary`)}</SectionHeading>
+                <IconWrapper margin="0 0.5rem">
+                  <RefreshCw onClick={getPortfolioSummaryData} size={'16px'} color={theme.text3} />
+                </IconWrapper>
+              </div>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                 <FlatCard minHeight="80px" mobileMinHeight="70px" margin="0 0.25rem 0 0" padding="0.75rem">
                   <StandardText mobileFontSize="12px" padding="0 0 0.5rem 0">
