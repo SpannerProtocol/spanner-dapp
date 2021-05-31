@@ -106,7 +106,6 @@ function TransferInRows({
       first: first,
       offset: offset,
     },
-    pollInterval: 5000,
   })
 
   useEffect(() => {
@@ -141,7 +140,6 @@ function TransferOutRows({
       first: first,
       offset: offset,
     },
-    pollInterval: 5000,
   })
 
   useEffect(() => {
