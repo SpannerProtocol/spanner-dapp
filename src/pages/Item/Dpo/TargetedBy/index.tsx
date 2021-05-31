@@ -4,7 +4,7 @@ import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
-import { HeavyText, SectionHeading, StandardText } from 'components/Text'
+import { HeavyText, SectionHeading, SText } from 'components/Text'
 import { ContentWrapper, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -98,36 +98,36 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
                 </HeavyText>
               </div>
               {expectedBlockTime && !targeter.purchasedIndex && !targeter.createdIndex && (
-                <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</StandardText>
+                <SText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</SText>
               )}
               <div style={{ display: 'flex', alignItems: 'center', padding: '0.2rem 0', flexWrap: 'wrap' }}>
                 {expectedBlockTime && targeter.createdIndex && (
                   <>
                     <PlusCircle size={14} strokeWidth={3} color={theme.green2} style={{ marginRight: '0.5rem' }} />
-                    <StandardText padding="0 0.2rem 0 0">{`${t(`Targeting`).toUpperCase()} `}</StandardText>
-                    <StandardText>{` (${targeter.defaultSeats})`}</StandardText>
+                    <SText padding="0 0.2rem 0 0">{`${t(`Targeting`).toUpperCase()} `}</SText>
+                    <SText>{` (${targeter.defaultSeats})`}</SText>
                     {targeter.purchasedIndex && <ChevronRight size={16} strokeWidth={3} color={theme.text4} />}
                   </>
                 )}
                 {targeter.purchasedIndex && dpoInfo.index.eq(targeter.purchasedIndex) && (
                   <div style={{ display: 'flex', alignItems: 'center', padding: '0.2rem 0' }}>
                     <CheckCircle size={14} strokeWidth={3} color={theme.green2} style={{ marginRight: '0.5rem' }} />
-                    <StandardText padding="0 0.2rem 0 0">{t(`Purchased`).toUpperCase()}</StandardText>
-                    <StandardText>{` (${targeter.purchasedSeats})`}</StandardText>
+                    <SText padding="0 0.2rem 0 0">{t(`Purchased`).toUpperCase()}</SText>
+                    <SText>{` (${targeter.purchasedSeats})`}</SText>
                   </div>
                 )}
                 {targeter.purchasedIndex && !dpoInfo.index.eq(targeter.purchasedIndex) && (
                   <div style={{ display: 'flex', alignItems: 'center', padding: '0.2rem 0' }}>
                     <Shuffle size={14} strokeWidth={3} color={theme.text3} style={{ marginRight: '0.5rem' }} />
-                    <StandardText>{`${t(`Switched`).toUpperCase()}`}</StandardText>
+                    <SText>{`${t(`Switched`).toUpperCase()}`}</SText>
                     <ChevronRight size={16} strokeWidth={3} color={theme.text4} />
                   </div>
                 )}
                 {targeter.purchasedIndex && !dpoInfo.index.eq(targeter.purchasedIndex) && (
                   <div style={{ display: 'flex', alignItems: 'center', padding: '0.2rem 0' }}>
                     <Crosshair size={14} strokeWidth={3} color={theme.text3} style={{ marginRight: '0.5rem' }} />
-                    <StandardText padding="0 0.2rem 0 0">{`${targetState.purchasedDpoName}`}</StandardText>
-                    <StandardText>{` (${targeter.purchasedSeats})`}</StandardText>
+                    <SText padding="0 0.2rem 0 0">{`${targetState.purchasedDpoName}`}</SText>
+                    <SText>{` (${targeter.purchasedSeats})`}</SText>
                   </div>
                 )}
               </div>

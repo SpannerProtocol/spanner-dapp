@@ -4,7 +4,7 @@ import Filter from 'components/Filter'
 import { BorderedInput } from 'components/Input'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
@@ -127,13 +127,13 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
       form={
         <>
           <SpacedSection>
-            <StandardText>{`${t(`Your default target is no longer available.`)}`}</StandardText>
+            <SText>{`${t(`Your default target is no longer available.`)}`}</SText>
           </SpacedSection>
           <HeavyText>{t(`Select a new target`)}</HeavyText>
           <Divider />
           <SpacedSection>
             <RowBetween>
-              <StandardText>{t(`Target Type`)}</StandardText>
+              <SText>{t(`Target Type`)}</SText>
               <Filter
                 options={filterTargetTypeOptions}
                 activeOption={targetType}
@@ -145,7 +145,7 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
             <SpacedSection>
               {targetCabinOptions.length > 0 ? (
                 <RowBetween>
-                  <StandardText>{t(`New Cabin`)}</StandardText>
+                  <SText>{t(`New Cabin`)}</SText>
                   <Filter
                     options={targetCabinOptions}
                     activeOption={targetCabin ? targetCabin.name.toString() : 'Select a Cabin'}
@@ -153,14 +153,14 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
                   />
                 </RowBetween>
               ) : (
-                <StandardText>{t(`No Cabins can be purchased by your DPO's Crowdfund Amount.`)}</StandardText>
+                <SText>{t(`No Cabins can be purchased by your DPO's Crowdfund Amount.`)}</SText>
               )}
             </SpacedSection>
           )}
           {targetType === 'DPO' && targetDpoOptions && (
             <SpacedSection>
               <RowBetween>
-                <StandardText>{t(`New DPO`)}</StandardText>
+                <SText>{t(`New DPO`)}</SText>
                 <Filter
                   options={targetDpoOptions}
                   activeOption={targetDpo ? targetDpo.name.toString() : 'Select a DPO'}
@@ -175,16 +175,16 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
               <Divider />
               <SpacedSection>
                 <RowBetween>
-                  <StandardText>{t(`Cost per seat`)}</StandardText>
-                  <StandardText>{formatToUnit(targetDpo.amount_per_seat, chainDecimals, 0)}</StandardText>
+                  <SText>{t(`Cost per seat`)}</SText>
+                  <SText>{formatToUnit(targetDpo.amount_per_seat, chainDecimals, 0)}</SText>
                 </RowBetween>
                 <RowBetween>
-                  <StandardText>{t(`Available Seats`)}</StandardText>
-                  <StandardText>{targetDpo.empty_seats.toString()}</StandardText>
+                  <SText>{t(`Available Seats`)}</SText>
+                  <SText>{targetDpo.empty_seats.toString()}</SText>
                 </RowBetween>
               </SpacedSection>
               <RowFixed>
-                <StandardText>{t(`Seats to Buy`)}</StandardText>
+                <SText>{t(`Seats to Buy`)}</SText>
                 <QuestionHelper
                   text={t(`As a DPO, you can buy a maximum of 30 seats.`)}
                   size={12}
@@ -237,21 +237,21 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
       txContent={
         <>
           <SpacedSection>
-            <StandardText>{t(`Confirm purchase`)}</StandardText>
+            <SText>{t(`Confirm purchase`)}</SText>
           </SpacedSection>
           {targetType === 'TravelCabin' && targetCabin && (
             <BorderedWrapper>
               <RowBetween>
-                <StandardText>{t(`TravelCabin`)}</StandardText>
-                <StandardText>{targetCabin.name.toString()}</StandardText>
+                <SText>{t(`TravelCabin`)}</SText>
+                <SText>{targetCabin.name.toString()}</SText>
               </RowBetween>
               <>
                 <RowBetween>
-                  <StandardText>{t(`Total Deposit`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Total Deposit`)}</SText>
+                  <SText>
                     {formatToUnit(targetCabin.deposit_amount.toBn(), chainDecimals)}{' '}
                     {targetCabin.token_id.asToken.toString()}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
               </>
             </BorderedWrapper>
@@ -259,23 +259,23 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
           {targetType === 'DPO' && targetDpo && (
             <BorderedWrapper>
               <RowBetween>
-                <StandardText>{t(`DPO`)}</StandardText>
-                <StandardText>{targetDpo.name.toString()}</StandardText>
+                <SText>{t(`DPO`)}</SText>
+                <SText>{targetDpo.name.toString()}</SText>
               </RowBetween>
               {seatsToBuy && (
                 <>
                   <RowBetween>
-                    <StandardText>{t(`Seats to Buy`)}</StandardText>
-                    <StandardText>
+                    <SText>{t(`Seats to Buy`)}</SText>
+                    <SText>
                       {seatsToBuy} {t(`Seats`)}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t(`Total Deposit`)}</StandardText>
-                    <StandardText>
+                    <SText>{t(`Total Deposit`)}</SText>
+                    <SText>
                       {formatToUnit(targetDpo.amount_per_seat.mul(new BN(seatsToBuy)), chainDecimals)}{' '}
                       {targetDpo.token_id.asToken.toString()}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                 </>
               )}

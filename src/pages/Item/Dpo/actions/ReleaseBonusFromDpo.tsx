@@ -1,6 +1,6 @@
 import Balance from 'components/Balance'
 import { RowBetween } from 'components/Row'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -24,11 +24,11 @@ export default function ReleaseBonusFromDpo({ dpoInfo, dpoAction }: { dpoInfo: D
     <Action
       txContent={
         <>
-          <StandardText>{t(`Release Bonus Rewards`)}</StandardText>
+          <SText>{t(`Release Bonus Rewards`)}</SText>
           <BorderedWrapper>
             <RowBetween>
-              <StandardText>{t(`Bonus`)}</StandardText>
-              <StandardText>{formatToUnit(dpoInfo.vault_bonus.toBn(), chainDecimals)}</StandardText>
+              <SText>{t(`Bonus`)}</SText>
+              <SText>{formatToUnit(dpoInfo.vault_bonus.toBn(), chainDecimals)}</SText>
             </RowBetween>
           </BorderedWrapper>
           <Balance token={dpoInfo.token_id.asToken.toString()} />

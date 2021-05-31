@@ -1,7 +1,7 @@
 import { ButtonPrimary } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { ContentWrapper, PageWrapper } from 'components/Wrapper'
 import useProjectInfos from 'hooks/useProjectInfo'
 import React from 'react'
@@ -115,7 +115,7 @@ function ProjectCatalogue() {
                       </ProjectIconWrapper>
                       <div style={{ textAlign: 'center' }}>
                         <HeavyText style={{ width: '100%' }}>{projectRegistry.name}</HeavyText>
-                        <StandardText style={{ width: '100%' }}>{project.token}</StandardText>
+                        <SText style={{ width: '100%' }}>{project.token}</SText>
                       </div>
                     </ProjectCard>
                   </ProjectCardPlate>

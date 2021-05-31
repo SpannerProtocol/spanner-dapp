@@ -6,6 +6,7 @@ import { Button as RebassButton } from 'rebass/styled-components'
 const Base = styled(RebassButton)<{
   padding?: string
   width?: string
+  height?: string
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
@@ -13,11 +14,12 @@ const Base = styled(RebassButton)<{
   mobilePadding?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
-  width: ${({ width }) => (width ? width : '100%')};
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-  font-weight: 500;
+  min-width: ${({ width }) => (width ? width : '200px')};
+  min-height: ${({ height }) => (height ? height : '50px')};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')};
+  font-weight: 700;
   text-align: center;
-  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '5px')};
   outline: none;
   border: 1px solid transparent;
   color: white;
@@ -36,6 +38,12 @@ const Base = styled(RebassButton)<{
   > * {
     user-select: none;
   }
+  ${({ mobileFontSize, mobilePadding, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${mobileFontSize ? mobileFontSize : '12px'};
+  padding: ${mobilePadding ? mobilePadding : '0.5rem'};
+  min-width: 150px;
+  min-height: 50px;
+`};
 `
 
 export const ButtonPrimary = styled(Base)`
@@ -61,11 +69,10 @@ export const ButtonPrimary = styled(Base)`
     outline: none;
     opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.7' : '1')};
   }
-
-  ${({ theme, mobileFontSize, mobilePadding }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${mobileFontSize ? mobileFontSize : '10px'};
-    padding: ${mobilePadding ? mobilePadding : '0.5rem'};
-  `};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 12px;
+    padding: 1rem;
+`};
 `
 
 export const FakeButton = styled.div<{
@@ -78,7 +85,7 @@ export const FakeButton = styled.div<{
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
   width: ${({ width }) => (width ? width : '100%')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-  font-weight: 500;
+  font-weight: 900;
   text-align: center;
   border: 1px solid transparent;
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
@@ -119,4 +126,50 @@ export const ButtonSecondary = styled(ButtonPrimary)`
     box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.1, theme.secondary1)};
     background-color: ${({ theme }) => darken(0.1, theme.secondary1)};
   }
+`
+
+export const ButtonLight = styled(ButtonPrimary)`
+  background-color: ${({ theme }) => darken(0.05, theme.white)};
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:hover {
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:active {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.1, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.1, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  color: ${({ theme }) => theme.text1};
+  border: 1px solid transparent;
+`
+
+export const ButtonTrans = styled(ButtonPrimary)`
+  background-color: transparent;
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:hover {
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:active {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.1, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.1, theme.primary1)};
+    border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  color: ${({ theme }) => theme.text1};
+  border: 1px solid #262a41;
 `

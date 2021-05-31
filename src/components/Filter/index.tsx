@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
 import { ChevronDown } from 'react-feather'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 
 const SelectorWrapper = styled.div<{ background?: string; padding?: string; borderColor?: string }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
@@ -87,9 +87,9 @@ export default function Filter({ options, activeOption, modalTitle }: FilterProp
         </StandardModal>
       )}
       <SelectorWrapper onClick={() => setModalOpen(!modalOpen)}>
-        <StandardText>
+        <SText>
           {activeOption} <ChevronDown size={12} />
-        </StandardText>
+        </SText>
       </SelectorWrapper>
     </div>
   )

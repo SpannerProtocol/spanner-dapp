@@ -1,7 +1,7 @@
 import { FlatCard } from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { DataTokenName, HeavyText, SectionTitle, StandardText } from 'components/Text'
+import { DataTokenName, HeavyText, SectionTitle, SText } from 'components/Text'
 import { ContentWrapper, PaddedSection, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useDpoFees from 'hooks/useDpoFees'
@@ -106,9 +106,9 @@ function RunningHighlightsCabinTarget({
                 )}
               </HeavyText>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <StandardText fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
+                <SText fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
                   {t(`Yield in`)}
-                </StandardText>
+                </SText>
                 <HeavyText fontSize={'12px'} mobileFontSize="11px" color={theme.blue2}>{`${t(
                   `TravelCabin`
                 )}: ${cabinInfo.name.toString()}`}</HeavyText>
@@ -260,10 +260,10 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
             <HeavyText fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
-            <StandardText fontSize="9px" style={{ margin: 'auto' }}>
+            <SText fontSize="9px" style={{ margin: 'auto' }}>
               {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
-            </StandardText>
-            <StandardText style={{ margin: 'auto' }}>{t(`Management Fee`)}</StandardText>
+            </SText>
+            <SText style={{ margin: 'auto' }}>{t(`Management Fee`)}</SText>
           </PaddedSection>
         )}
         <PaddedSection>
@@ -271,7 +271,7 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
             {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
             <DataTokenName>{token}</DataTokenName>
           </HeavyText>
-          <StandardText style={{ margin: 'auto' }}>{t(`Cost per Seat`)}</StandardText>
+          <SText style={{ margin: 'auto' }}>{t(`Cost per Seat`)}</SText>
         </PaddedSection>
       </RowBetween>
     </>

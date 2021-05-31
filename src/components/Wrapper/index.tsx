@@ -1,6 +1,12 @@
 import styled from 'styled-components'
 import AutoColumn from '../Column'
 
+export const Wrapper = styled.div<{ maxWidth?: string }>`
+  width: 100%;
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '960px')};
+  margin: auto;
+`
+
 export const PageWrapper = styled(AutoColumn)<{ maxWidth?: string }>`
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '640px')};
   width: 100%;
@@ -31,11 +37,6 @@ export const PaddedSection = styled(AutoColumn)`
   `};
 `
 
-export const Wrapper = styled.div`
-  position: relative;
-  width: 100%;
-`
-
 export const ContentWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -51,15 +52,6 @@ export const SectionContainer = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
   padding: 0.5rem;
   `};
-`
-
-export const FlexWrapper = styled.div`
-  position: relative;
-  max-width: 100%;
-  width: 100%;
-  flex-wrap: wrap;
-  display: inline-flex;
-  justify-content: center;
 `
 
 export const ButtonWrapper = styled.div`
@@ -194,4 +186,64 @@ export const IconWrapper = styled.div<{ padding?: string; margin?: string }>`
   :focus {
     opacity: 0.7;
   }
+`
+
+export const SectionDarkBg = styled.div<{ backgroundColor?: string }>`
+  width: 100%;
+  background: ${({ backgroundColor, theme }) => (backgroundColor ? backgroundColor : theme.bg2)};
+  z-index: -1;
+`
+
+export const SectionImageBg = styled.div<{ height?: string; url?: string }>`
+  width: 100%;
+  height: ${({ height }) => (height ? height : '600px')};
+  background: ${({ url }) => (url ? `transparent url(${url}) center center no-repeat padding-box;` : 'none')};
+  opacity: 1;
+`
+
+export const ContentSection = styled.div<{
+  paddingTop?: string
+  paddingBottom?: string
+}>`
+  width: 100%;
+  padding-top: ${({ paddingTop }) => (paddingTop ? paddingTop : '2rem')};
+  padding-bottom: ${({ paddingTop }) => (paddingTop ? paddingTop : '2rem')};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  `};
+`
+
+export const CenterWrapper = styled.div`
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+export const FlexWrapper = styled.div<{
+  justifyContent?: string
+  alignItems?: string
+}>`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
+  align-items: ${({ alignItems }) => (alignItems ? alignItems : 'center')};
+  width: 100%;
+`
+
+export const ImageWrapper = styled.div<{
+  justifyContent?: string
+  alignItems?: string
+  maxWidth?: string
+  height?: string
+}>`
+  display: flex;
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
+  align-items: ${({ alignItems }) => (alignItems ? alignItems : 'center')};
+  width: 100%;
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '400px')};
+  margin: auto;
+  height: ${({ height }) => (height ? height : 'initial')};
 `

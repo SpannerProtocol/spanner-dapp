@@ -1,5 +1,5 @@
 import Balance from 'components/Balance'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelCabins'
@@ -41,7 +41,7 @@ export default function WithdrawYieldFromTravelCabin({
     <Action
       txContent={
         <>
-          <StandardText>{t(`Withdraw Yield from Cabin`)}</StandardText>
+          <SText>{t(`Withdraw Yield from Cabin`)}</SText>
           <Balance token={dpoInfo.token_id.asToken.toString()} />
           <TxFee fee={estimatedFee} />
         </>

@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { DataTokenName, Heading, SectionHeading, SmallText, StandardText } from 'components/Text'
+import { DataTokenName, Heading, SectionHeading, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -94,46 +94,46 @@ function TravelCabinBuyersInfo({
               {travelCabinInfo && travelCabinInfo.token_id.isToken && (
                 <>
                   <RowBetween>
-                    <StandardText>{t('Total Deposit')}</StandardText>
-                    <StandardText>
+                    <SText>{t('Total Deposit')}</SText>
+                    <SText>
                       {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}{' '}
                       {travelCabinInfo.token_id.asToken.toString()}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t(`Deposit Withdrawn (Fare)`)}</StandardText>
-                    <StandardText>{buyer[1].fare_withdrawn.isTrue ? t(`Yes`) : t(`No`)}</StandardText>
+                    <SText>{t(`Deposit Withdrawn (Fare)`)}</SText>
+                    <SText>{buyer[1].fare_withdrawn.isTrue ? t(`Yes`) : t(`No`)}</SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t('Total Yield')}</StandardText>
-                    <StandardText>
+                    <SText>{t('Total Yield')}</SText>
+                    <SText>
                       {formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)}{' '}
                       {travelCabinInfo.token_id.asToken.toString()}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t(`Yield Withdrawn`)}</StandardText>
-                    <StandardText>
+                    <SText>{t(`Yield Withdrawn`)}</SText>
+                    <SText>
                       {formatToUnit(buyer[1].yield_withdrawn.toString(), chainDecimals, 2)}{' '}
                       {travelCabinInfo.token_id.asToken.toString()}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                 </>
               )}
               <RowBetween>
-                <StandardText>{t(`Last Withdrawal (Block)`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Last Withdrawal (Block)`)}</SText>
+                <SText>
                   {t(`Block`)} #{buyer[1].blk_of_last_withdraw.toString()}
-                </StandardText>
+                </SText>
               </RowBetween>
               {genesisTs && expectedBlockTime && (
                 <RowBetween>
-                  <StandardText>{t(`Last Withdrawal (Date & Time)`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Last Withdrawal (Date & Time)`)}</SText>
+                  <SText>
                     {tsToDateTime(
                       blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
                     )}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
               )}
             </BorderedWrapper>
@@ -142,48 +142,48 @@ function TravelCabinBuyersInfo({
             <SmallText>{t(`General Information`)}</SmallText>
             <BorderedWrapper style={{ margin: '0' }}>
               <RowBetween>
-                <StandardText>{t(`TravelCabin Id`)}</StandardText>
-                <StandardText>{buyer[0][0].toString()}</StandardText>
+                <SText>{t(`TravelCabin Id`)}</SText>
+                <SText>{buyer[0][0].toString()}</SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Inventory Id`)}</StandardText>
-                <StandardText>{buyer[0][1].toString()}</StandardText>
+                <SText>{t(`Inventory Id`)}</SText>
+                <SText>{buyer[0][1].toString()}</SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Purchased at`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Purchased at`)}</SText>
+                <SText>
                   {t(`Block`)} #{buyer[1].purchase_blk.toString()}
-                </StandardText>
+                </SText>
               </RowBetween>
               {travelCabinInfo && (
                 <RowBetween>
-                  <StandardText>{t(`Ride Ends at`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Ride Ends at`)}</SText>
+                  <SText>
                     {t(`Block`)} #{travelCabinInfo.maturity.add(buyer[1].purchase_blk).toString()}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
               )}
               {buyer[1].buyer.isPassenger && (
                 <>
                   <RowBetween>
-                    <StandardText>{t(`Buyer`)}</StandardText>
-                    <StandardText>{truncateString(buyer[1].buyer.asPassenger.toString(), 14)}</StandardText>
+                    <SText>{t(`Buyer`)}</SText>
+                    <SText>{truncateString(buyer[1].buyer.asPassenger.toString(), 14)}</SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t(`User Type`)}</StandardText>
-                    <StandardText>{t(`Passenger`)}</StandardText>
+                    <SText>{t(`User Type`)}</SText>
+                    <SText>{t(`Passenger`)}</SText>
                   </RowBetween>
                 </>
               )}
               {buyer[1].buyer.isDpo && (
                 <>
                   <RowBetween>
-                    <StandardText>{t(`Buyer`)}</StandardText>
-                    <StandardText>{truncateString(buyer[1].buyer.asDpo.toString(), 14)}</StandardText>
+                    <SText>{t(`Buyer`)}</SText>
+                    <SText>{truncateString(buyer[1].buyer.asDpo.toString(), 14)}</SText>
                   </RowBetween>
                   <RowBetween>
-                    <StandardText>{t(`User Type`)}</StandardText>
-                    <StandardText>{t(`DPO`)}</StandardText>
+                    <SText>{t(`User Type`)}</SText>
+                    <SText>{t(`DPO`)}</SText>
                   </RowBetween>
                 </>
               )}
@@ -216,15 +216,15 @@ export function UserActionProvider({
           <Action
             txContent={
               <>
-                <StandardText>
+                <SText>
                   {`Confirm Withdraw Ticket Fare from TravelCabin`}: {getCabinClass(travelCabinIndex)}`
-                </StandardText>
+                </SText>
                 <TxFee fee={estimatedFee} />
               </>
             }
             actionName={`Withdraw Ticket Fare`}
             tip={`Your ride is complete. Withdraw Ticket Fare from TravelCabin (your deposit).`}
-            actionDesc={<StandardText>{`Withdraw Ticket Fare from TravelCabin.`}</StandardText>}
+            actionDesc={<SText>{`Withdraw Ticket Fare from TravelCabin.`}</SText>}
             icon={ACTION_ICONS[action.action]}
             buttonText={`Withdraw`}
             transaction={{
@@ -242,15 +242,15 @@ export function UserActionProvider({
           <Action
             txContent={
               <>
-                <StandardText>
+                <SText>
                   {`Confirm Withdraw Yield from TravelCabin`}: {getCabinClass(travelCabinIndex)}`
-                </StandardText>
+                </SText>
                 <TxFee fee={estimatedFee} />
               </>
             }
             actionName={'Withdraw Yield'}
             tip={`Yield will generate as time passes until your ride ends. Withdraw Ticket Yield from TravelCabin.`}
-            actionDesc={<StandardText>{`Withdraw Yield from TravelCabin.`}</StandardText>}
+            actionDesc={<SText>{`Withdraw Yield from TravelCabin.`}</SText>}
             icon={ACTION_ICONS[action.action]}
             buttonText={'Withdraw'}
             transaction={{

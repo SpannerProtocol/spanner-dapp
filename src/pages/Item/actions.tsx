@@ -3,7 +3,7 @@ import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowFixed } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { Section, SpacedSection } from 'components/Wrapper'
 import useTxHelpers, { CreateTxParams } from 'hooks/useTxHelpers'
 import React, { useCallback, useContext, useState } from 'react'
@@ -165,7 +165,7 @@ export default function Action({
             {gracePeriod && (
               <>
                 <RowFixed>
-                  <StandardText>{t(`Grace Period`)}</StandardText>
+                  <SText>{t(`Grace Period`)}</SText>
                   <QuestionHelper
                     text={gracePeriod.tip}
                     size={12}
@@ -173,7 +173,7 @@ export default function Action({
                     padding="0 0.5rem 0 0.2rem"
                   />
                 </RowFixed>
-                <StandardText
+                <SText
                   color={
                     gracePeriod.alert === 'safe'
                       ? theme.green1
@@ -183,7 +183,7 @@ export default function Action({
                   }
                 >
                   {gracePeriod.timeLeft}
-                </StandardText>
+                </SText>
               </>
             )}
           </Section>

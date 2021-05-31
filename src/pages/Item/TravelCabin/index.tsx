@@ -7,7 +7,7 @@ import { GridCell, GridRow } from 'components/Grid'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading, SmallText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SectionHeading, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -75,49 +75,49 @@ function TravelCabinCrowdfundTxConfirm({
   return (
     <>
       <Section>
-        <StandardText>{t(`Verify DPO details`)}</StandardText>
+        <SText>{t(`Verify DPO details`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
-          <StandardText>{t(`Default Target`)}</StandardText>
-          <StandardText>{target}</StandardText>
+          <SText>{t(`Default Target`)}</SText>
+          <SText>{target}</SText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{t(`DPO Name`)}</StandardText>
-          <StandardText>{dpoName}</StandardText>
+          <SText>{t(`DPO Name`)}</SText>
+          <SText>{dpoName}</SText>
         </RowBetween>
         {targetAmount && (
           <RowBetween>
-            <StandardText>{t(`Crowdfunding Amount`)}</StandardText>
-            <StandardText>
+            <SText>{t(`Crowdfunding Amount`)}</SText>
+            <SText>
               {formatToUnit(targetAmount, chainDecimals, 2)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
         {end && endInDays && (
           <RowBetween>
-            <StandardText>{t(`Crowdfunding Period`)}</StandardText>
-            <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+            <SText>{t(`Crowdfunding Period`)}</SText>
+            <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
           </RowBetween>
         )}
         {managerSeats && baseFee && (
           <RowBetween>
-            <StandardText>{t(`Management Fee`)}</StandardText>
-            <StandardText>
+            <SText>{t(`Management Fee`)}</SText>
+            <SText>
               {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
                 parseFloat(managerSeats) + parseFloat(baseFee)
               ).toString()}%`}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
         {directReferralRate && (
           <RowBetween>
-            <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-            <StandardText>
+            <SText>{t(`Direct Referral Rate`)}</SText>
+            <SText>
               {`${parseInt(directReferralRate)} (${t(`Direct`)}) + ${100 - parseInt(directReferralRate)} (${t(
                 `2nd`
               )}) = 100%`}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
         <Divider />
@@ -134,8 +134,8 @@ function TravelCabinCrowdfundTxConfirm({
       {newReferrer && referrer && (
         <BorderedWrapper>
           <RowBetween>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+            <SText>{t(`Referral Code`)}</SText>
+            <SText>{shortenAddr(referrer, 5)}</SText>
           </RowBetween>
         </BorderedWrapper>
       )}
@@ -150,14 +150,14 @@ function TravelCabinJoinTxConfirm({ deposit, token, estimatedFee }: TravelCabinJ
   return (
     <>
       <Section>
-        <StandardText>{t(`Buy this TravelCabin to start earning Rewards`)}</StandardText>
+        <SText>{t(`Buy this TravelCabin to start earning Rewards`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
-          <StandardText>{t(`Ticket Fare (deposit)`)}</StandardText>
-          <StandardText>
+          <SText>{t(`Ticket Fare (deposit)`)}</SText>
+          <SText>
             {deposit} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
       </BorderedWrapper>
       <Balance token={token} />
@@ -373,26 +373,26 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
                 <RowBetween>
-                  <StandardText>{t(`TravelCabin Id`)}</StandardText>
-                  <StandardText>{travelCabinIndex}</StandardText>
+                  <SText>{t(`TravelCabin Id`)}</SText>
+                  <SText>{travelCabinIndex}</SText>
                 </RowBetween>
                 <RowBetween>
-                  <StandardText>{t(`Travel Class`)}</StandardText>
-                  <StandardText>{travelCabinInfo.name.toString()}</StandardText>
+                  <SText>{t(`Travel Class`)}</SText>
+                  <SText>{travelCabinInfo.name.toString()}</SText>
                 </RowBetween>
                 <RowBetween>
-                  <StandardText>{t(`Ticket Fare`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Ticket Fare`)}</SText>
+                  <SText>
                     {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} {token}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
                 {expectedBlockTime && (
                   <RowBetween>
-                    <StandardText>{t(`Ride Duration`)}</StandardText>
-                    <StandardText>
+                    <SText>{t(`Ride Duration`)}</SText>
+                    <SText>
                       {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
                       {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)})
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                 )}
               </Section>
@@ -403,12 +403,12 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                 <BorderedWrapper style={{ marginTop: '0' }}>
                   <Section>
                     <RowBetween>
-                      <StandardText>{t(`Available`)}</StandardText>
-                      <StandardText>{inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}</StandardText>
+                      <SText>{t(`Available`)}</SText>
+                      <SText>{inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}</SText>
                     </RowBetween>
                     <RowBetween>
-                      <StandardText>{t(`Total`)}</StandardText>
-                      <StandardText>{inventoryCount[1].toNumber()}</StandardText>
+                      <SText>{t(`Total`)}</SText>
+                      <SText>{inventoryCount[1].toNumber()}</SText>
                     </RowBetween>
                   </Section>
                 </BorderedWrapper>
@@ -418,15 +418,15 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
             <BorderedWrapper style={{ marginTop: '0' }}>
               <Section>
                 <RowBetween>
-                  <StandardText>{t(`Total Bonus`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Total Bonus`)}</SText>
+                  <SText>
                     {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals)} {token}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
                 {expectedBlockTime && (
                   <RowBetween>
-                    <StandardText>{t(`Total Yield`)}</StandardText>
-                    <StandardText>
+                    <SText>{t(`Total Yield`)}</SText>
+                    <SText>
                       {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals)} ${token} (${`${getApy({
                         totalYield: travelCabinInfo.yield_total.toBn(),
                         totalDeposit: travelCabinInfo.deposit_amount.toBn(),
@@ -434,7 +434,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                         blockTime: expectedBlockTime,
                         period: travelCabinInfo.maturity,
                       }).toString()}% APY`})`}
-                    </StandardText>
+                    </SText>
                   </RowBetween>
                 )}
               </Section>
@@ -489,14 +489,14 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
                     </GridCell>
                     <GridCell>
                       {buyer[1].buyer.isPassenger && (
-                        <StandardText fontSize="12px">
+                        <SText fontSize="12px">
                           {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
-                        </StandardText>
+                        </SText>
                       )}
                       {buyer[1].buyer.isDpo && (
-                        <StandardText fontSize="12px">
+                        <SText fontSize="12px">
                           {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
-                        </StandardText>
+                        </SText>
                       )}
                     </GridCell>
                   </GridRow>

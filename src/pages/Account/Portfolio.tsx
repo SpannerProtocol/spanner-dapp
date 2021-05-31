@@ -2,7 +2,7 @@ import { useLazyQuery } from '@apollo/client'
 import { FlatCard } from 'components/Card'
 import CabinBuyerCard from 'components/Item/CabinBuyerCard'
 import { DpoProfileCard } from 'components/Item/DpoCard'
-import { WarningMsg, SectionHeading, StandardText } from 'components/Text'
+import { WarningMsg, SectionHeading, SText } from 'components/Text'
 import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
@@ -88,7 +88,7 @@ export default function Portfolio(): JSX.Element {
               textAlign: 'center',
             }}
           >
-            <StandardText>{t(`Connect to your wallet to view your Portfolio.`)}</StandardText>
+            <SText>{t(`Connect to your wallet to view your Portfolio.`)}</SText>
           </FlatCard>
         </>
       ) : (
@@ -108,12 +108,12 @@ export default function Portfolio(): JSX.Element {
                     textAlign: 'center',
                   }}
                 >
-                  <StandardText>
+                  <SText>
                     <Trans>
                       Could not find any Portfolio Items. Check out our <Link to="/bullettrain/dpos">Growth</Link>{' '}
                       section.
                     </Trans>
-                  </StandardText>
+                  </SText>
                 </FlatCard>
               </>
             )}

@@ -2,7 +2,7 @@ import { DialogOverlay } from '@reach/dialog'
 import '@reach/dialog/styles.css'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { ButtonPrimary } from 'components/Button'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import React, { useCallback, useState } from 'react'
@@ -119,7 +119,7 @@ export default function GlobalApiSpinner({ children }: GlobalSpinnerProps) {
               <HeavyText fontSize="18px" mobileFontSize="16px" style={{ margin: '1rem auto' }}>
                 {t(`Spanner Dapp is being upgraded`)}
               </HeavyText>
-              <StandardText style={{ margin: 'auto' }}>{t(`Please check back later`)}</StandardText>
+              <SText style={{ margin: 'auto' }}>{t(`Please check back later`)}</SText>
             </div>
           </div>
         </div>

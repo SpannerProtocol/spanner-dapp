@@ -12,7 +12,7 @@ import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { DataTokenName, Heading, HeavyText, SectionHeading, SmallText, StandardText } from 'components/Text'
+import { DataTokenName, Heading, HeavyText, SectionHeading, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import {
   BorderedWrapper,
@@ -126,50 +126,50 @@ function DpoCrowdfundTxConfirm({
   return (
     <>
       <Section>
-        <StandardText>{t(`Verify DPO details`)}</StandardText>
+        <SText>{t(`Verify DPO details`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
-          <StandardText>{t(`Default Target`)}</StandardText>
-          <StandardText>{target}</StandardText>
+          <SText>{t(`Default Target`)}</SText>
+          <SText>{target}</SText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{t(`DPO Name`)}</StandardText>
-          <StandardText>{dpoName}</StandardText>
+          <SText>{t(`DPO Name`)}</SText>
+          <SText>{dpoName}</SText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{t(`Crowdfund Amount`)}</StandardText>
-          <StandardText>
+          <SText>{t(`Crowdfund Amount`)}</SText>
+          <SText>
             {targetAmount} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
         {end && endInDays && (
           <RowBetween>
-            <StandardText>{t(`Crowdfund Period`)}</StandardText>
-            <StandardText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</StandardText>
+            <SText>{t(`Crowdfund Period`)}</SText>
+            <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
           </RowBetween>
         )}
         <RowBetween>
-          <StandardText>{t(`Target DPO Seats`)}</StandardText>
-          <StandardText>{targetSeats}</StandardText>
+          <SText>{t(`Target DPO Seats`)}</SText>
+          <SText>{targetSeats}</SText>
         </RowBetween>
         {managerSeats && baseFee && (
           <RowBetween>
-            <StandardText>{t(`Management Fee`)}</StandardText>
-            <StandardText>
+            <SText>{t(`Management Fee`)}</SText>
+            <SText>
               {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
                 parseFloat(managerSeats) + parseFloat(baseFee)
               ).toString()}%`}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
         {directReferralRate && (
           <>
             <RowBetween>
-              <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-              <StandardText>
+              <SText>{t(`Direct Referral Rate`)}</SText>
+              <SText>
                 {`${directReferralRate} (${t(`Direct`)}) + ${100 - parseInt(directReferralRate)} (${t(`2nd`)}) = 100%`}
-              </StandardText>
+              </SText>
             </RowBetween>
           </>
         )}
@@ -191,8 +191,8 @@ function DpoCrowdfundTxConfirm({
       {newReferrer && referrer && (
         <BorderedWrapper>
           <RowBetween>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+            <SText>{t(`Referral Code`)}</SText>
+            <SText>{shortenAddr(referrer, 5)}</SText>
           </RowBetween>
         </BorderedWrapper>
       )}
@@ -207,23 +207,23 @@ function DpoJoinTxConfirm({ targetSeats, deposit, estimatedFee, token, referrer,
   return (
     <>
       <Section>
-        <StandardText>{t(`Confirm the details below.`)}</StandardText>
+        <SText>{t(`Confirm the details below.`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
-          <StandardText>{t(`Seats`)}</StandardText>
-          <StandardText>{targetSeats}</StandardText>
+          <SText>{t(`Seats`)}</SText>
+          <SText>{targetSeats}</SText>
         </RowBetween>
         <RowBetween>
-          <StandardText>{t(`Deposit`)}</StandardText>
-          <StandardText>
+          <SText>{t(`Deposit`)}</SText>
+          <SText>
             {deposit} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
         {newReferrer && referrer && (
           <RowBetween>
-            <StandardText>{t(`Referral Code`)}</StandardText>
-            <StandardText>{shortenAddr(referrer, 5)}</StandardText>
+            <SText>{t(`Referral Code`)}</SText>
+            <SText>{shortenAddr(referrer, 5)}</SText>
           </RowBetween>
         )}
       </BorderedWrapper>
@@ -279,43 +279,43 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   return (
     <>
       <Section>
-        <StandardText>{t(`Join this DPO to contribute to their Crowdfunding Target.`)}</StandardText>
+        <SText>{t(`Join this DPO to contribute to their Crowdfunding Target.`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
-          <StandardText>{t(`Balance`)}</StandardText>
-          <StandardText>
+          <SText>{t(`Balance`)}</SText>
+          <SText>
             {formatToUnit(balance, chainDecimals, 2)} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
         <RowBetween>
           <RowFixed>
-            <StandardText>{t(`Remaining Seats`)}</StandardText>
+            <SText>{t(`Remaining Seats`)}</SText>
             <QuestionHelper
               text={t(`Amount of Seats left in DPO. There are 100 seats per DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <StandardText>{dpoInfo.empty_seats.toString()}</StandardText>
+          <SText>{dpoInfo.empty_seats.toString()}</SText>
         </RowBetween>
         <RowBetween>
           <RowFixed>
-            <StandardText>{t(`Total Seat Price`)}</StandardText>
+            <SText>{t(`Total Seat Price`)}</SText>
             <QuestionHelper
               text={t(`The total cost of Seats to buy from this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <StandardText>
+          <SText>
             {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
       </BorderedWrapper>
       <Section>
         <RowFixed>
-          <StandardText>{t(`Seats to Buy`)}</StandardText>
+          <SText>{t(`Seats to Buy`)}</SText>
           <QuestionHelper
             text={t(
               `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
@@ -337,7 +337,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
       {(!referralCode || newReferrer) && (
         <Section>
           <RowFixed>
-            <StandardText>{t(`Referral Code`)}</StandardText>
+            <SText>{t(`Referral Code`)}</SText>
             <QuestionHelper
               text={t(
                 `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
@@ -631,9 +631,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </AnyQuestionHelper>
               {isConnected && userInDpo.inDpo && (
                 <MemberWrapper style={{ background: membershipBg, width: 'auto', margin: '0.25rem' }}>
-                  <StandardText fontSize={'12px'} color={'#fff'} style={{ textAlign: 'center' }}>
+                  <SText fontSize={'12px'} color={'#fff'} style={{ textAlign: 'center' }}>
                     {userInDpo.role}
-                  </StandardText>
+                  </SText>
                 </MemberWrapper>
               )}
             </div>
@@ -699,28 +699,28 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <BorderedWrapper borderColor="#EC3D3D" style={{ marginTop: '0' }}>
             <Section>
               <RowBetween>
-                <StandardText>{t(`Bonus`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Bonus`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.vault_bonus, chainDecimals, 2)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Yield`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Yield`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.vault_yield, chainDecimals, 2)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Deposit`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Deposit`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.vault_deposit.toString(), chainDecimals, 2)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Withdraw`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Withdraw`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.vault_withdraw.toString(), chainDecimals, 2)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
             </Section>
           </BorderedWrapper>
@@ -728,17 +728,17 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
               <RowBetween>
-                <StandardText>{t(`DPO Id`)}</StandardText>
-                <StandardText>{dpoIndex}</StandardText>
+                <SText>{t(`DPO Id`)}</SText>
+                <SText>{dpoIndex}</SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`DPO Name`)}</StandardText>
-                <StandardText>{dpoInfo.name}</StandardText>
+                <SText>{t(`DPO Name`)}</SText>
+                <SText>{dpoInfo.name}</SText>
               </RowBetween>
               {dpoInfo.state.isCreated && expiry && expectedBlockTime && (
                 <RowBetween>
-                  <StandardText>{t(`Crowdfunding Ends`)}</StandardText>
-                  <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</StandardText>
+                  <SText>{t(`Crowdfunding Ends`)}</SText>
+                  <SText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</SText>
                 </RowBetween>
               )}
             </Section>
@@ -747,56 +747,56 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
               <RowBetween>
-                <StandardText>{t(`Target`)}</StandardText>
+                <SText>{t(`Target`)}</SText>
                 {dpoInfo.target.isTravelCabin && (
                   <Link to={`/item/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}>
-                    <StandardText color={theme.blue2}>
+                    <SText color={theme.blue2}>
                       {t(`TravelCabin`)} {dpoInfo.target.asTravelCabin.toString()}
-                    </StandardText>
+                    </SText>
                   </Link>
                 )}
                 {dpoInfo.target.isDpo && (
                   <Link to={`/item/dpo/${dpoInfo.target.asDpo[0].toString()}`}>
-                    <StandardText color={theme.blue2}>
+                    <SText color={theme.blue2}>
                       {t(`DPO`)} {dpoInfo.target.asDpo[0].toString()}
-                    </StandardText>
+                    </SText>
                   </Link>
                 )}
               </RowBetween>
               {dpoInfo.target.isDpo && (
                 <RowBetween>
-                  <StandardText>{t(`Seats Purchased`)}</StandardText>
-                  <StandardText>{dpoInfo.target.asDpo[1].toString()}</StandardText>
+                  <SText>{t(`Seats Purchased`)}</SText>
+                  <SText>{dpoInfo.target.asDpo[1].toString()}</SText>
                 </RowBetween>
               )}
               <RowBetween>
-                <StandardText>{t(`Amount`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Amount`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.target_amount.toString(), chainDecimals)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               {expectedBlockTime && (
                 <RowBetween>
-                  <StandardText>{t(`Maturity`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Maturity`)}</SText>
+                  <SText>
                     {`${t(`Block`)} #${formatToUnit(dpoInfo.target_maturity.toString(), 0)} (${blockToDays(
                       dpoInfo.target_maturity,
                       expectedBlockTime,
                       2
                     )} ${t(`days`)})`}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
               )}
               <RowBetween>
-                <StandardText>{t(`Bonus`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Bonus`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.target_bonus_estimate.toString(), chainDecimals)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               {expectedBlockTime && (
                 <RowBetween>
-                  <StandardText>{t(`Yield`)}</StandardText>
-                  <StandardText>
+                  <SText>{t(`Yield`)}</SText>
+                  <SText>
                     {`${formatToUnit(dpoInfo.target_yield_estimate.toString(), chainDecimals)} ${token} (${getApy({
                       totalYield: dpoInfo.target_yield_estimate.toBn(),
                       totalDeposit: dpoInfo.target_amount.toBn(),
@@ -805,7 +805,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                       period: dpoInfo.target_maturity,
                       precision: 2,
                     }).toString()}% APY)`}
-                  </StandardText>
+                  </SText>
                 </RowBetween>
               )}
             </Section>
@@ -814,20 +814,20 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           <BorderedWrapper style={{ marginTop: '0' }}>
             <Section>
               <RowBetween>
-                <StandardText>{t(`State`)}</StandardText>
-                <StandardText>{t(dpoInfo.state.toString())}</StandardText>
+                <SText>{t(`State`)}</SText>
+                <SText>{t(dpoInfo.state.toString())}</SText>
               </RowBetween>
               {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) && (
                 <RowBetween>
-                  <StandardText>{t(`Crowdfund Period`)}</StandardText>
-                  <StandardText>{t(`EXPIRED`)}</StandardText>
+                  <SText>{t(`Crowdfund Period`)}</SText>
+                  <SText>{t(`EXPIRED`)}</SText>
                 </RowBetween>
               )}
             </Section>
             <Section>
               <RowBetween style={{ paddingBottom: '0.25rem' }}>
-                <StandardText>{t(`Seats Filled`)}</StandardText>
-                <StandardText>{`${100 - dpoInfo.empty_seats.toNumber()} / 100`}</StandardText>
+                <SText>{t(`Seats Filled`)}</SText>
+                <SText>{`${100 - dpoInfo.empty_seats.toNumber()} / 100`}</SText>
               </RowBetween>
               <LinearProgressBar value={100 - dpoInfo.empty_seats.toNumber()} />
             </Section>
@@ -837,29 +837,29 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               {fees && (
                 <RowBetween>
-                  <StandardText>{t(`Management Fee`)}</StandardText>
-                  <StandardText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
+                  <SText>{t(`Management Fee`)}</SText>
+                  <SText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
                     dpoInfo.fee.toNumber() / 10
-                  }%`}</StandardText>
+                  }%`}</SText>
                 </RowBetween>
               )}
               {dpoInfo.fee_slashed && (
                 <RowBetween>
-                  <StandardText>{t(`Manager Slashed`)}</StandardText>
-                  <StandardText>{dpoInfo.fee_slashed.isTrue ? t(`Yes`) : t(`No`)}</StandardText>
+                  <SText>{t(`Manager Slashed`)}</SText>
+                  <SText>{dpoInfo.fee_slashed.isTrue ? t(`Yes`) : t(`No`)}</SText>
                 </RowBetween>
               )}
               <RowBetween>
-                <StandardText>{t(`Cost per Seat`)}</StandardText>
-                <StandardText>
+                <SText>{t(`Cost per Seat`)}</SText>
+                <SText>
                   {formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals, 2)} {token}
-                </StandardText>
+                </SText>
               </RowBetween>
               <RowBetween>
-                <StandardText>{t(`Direct Referral Rate`)}</StandardText>
-                <StandardText>{`${dirRefRate} (${t(`Direct`)}) + ${100 - dirRefRate} (${t(
+                <SText>{t(`Direct Referral Rate`)}</SText>
+                <SText>{`${dirRefRate} (${t(`Direct`)}) + ${100 - dirRefRate} (${t(
                   `2nd`
-                )}) = 100%`}</StandardText>
+                )}) = 100%`}</SText>
               </RowBetween>
             </Section>
           </BorderedWrapper>

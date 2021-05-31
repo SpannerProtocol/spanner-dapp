@@ -3,7 +3,7 @@ import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
@@ -148,9 +148,9 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   return (
     <>
       <Section>
-        <StandardText>
+        <SText>
           {t(`Create DPO for DPO`)}: {dpoInfo.name.toString()}
-        </StandardText>
+        </SText>
       </Section>
       <SpacedSection>
         <Section>
@@ -159,34 +159,34 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         </Section>
         <BorderedWrapper>
           <RowBetween>
-            <StandardText>{t(`Available Balance`)}</StandardText>
-            <StandardText>
+            <SText>{t(`Available Balance`)}</SText>
+            <SText>
               {formatToUnit(balance, chainDecimals, 2)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <StandardText>{t(`Crowdfund Amount`)}</StandardText>
+              <SText>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
                 text={t(`The number of seats to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>
+            <SText>
               {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <StandardText>{t(`Your Deposit`)}</StandardText>
+              <SText>{t(`Your Deposit`)}</SText>
               <QuestionHelper
                 text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
                 size={10}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</StandardText>
+            <SText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
           </RowBetween>
         </BorderedWrapper>
         <DpoDefaultTarget target={dpoInfo.name.toString()} />
@@ -208,29 +208,29 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         <BorderedWrapper>
           <RowBetween>
             <RowFixed>
-              <StandardText>{t(`Management Fee`)}</StandardText>
+              <SText>{t(`Management Fee`)}</SText>
               <QuestionHelper
                 text={t(`Management Fee is charged on all yield releases`)}
                 size={10}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
+            <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
               baseFee + managerSeats
-            )}%`}</StandardText>
+            )}%`}</SText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <StandardText>{t(`Referral Rates`)} (%)</StandardText>
+              <SText>{t(`Referral Rates`)} (%)</SText>
               <QuestionHelper
                 text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}
                 size={10}
                 backgroundColor={'#fff'}
               ></QuestionHelper>
             </RowFixed>
-            <StandardText>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(100 - directReferralRate)} (${t(
+            <SText>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(100 - directReferralRate)} (${t(
               `2nd`
-            )}) = 100%`}</StandardText>
+            )}) = 100%`}</SText>
           </RowBetween>
         </BorderedWrapper>
         <DpoBaseFee baseFee={baseFee} onChange={handleBaseFee} />

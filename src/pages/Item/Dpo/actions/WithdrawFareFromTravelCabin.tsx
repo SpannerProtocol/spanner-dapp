@@ -1,5 +1,5 @@
 import Balance from 'components/Balance'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
@@ -32,9 +32,9 @@ export default function WithdrawFareFromTravelCabin({
             <>
               {targetCabin && (
                 <SpacedSection>
-                  <StandardText>
+                  <SText>
                     {`${t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: ${targetCabin.name.toString()}`}
-                  </StandardText>
+                  </SText>
                 </SpacedSection>
               )}
               <Balance token={dpoInfo.token_id.asToken.toString()} />

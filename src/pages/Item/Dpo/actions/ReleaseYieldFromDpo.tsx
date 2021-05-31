@@ -1,6 +1,6 @@
 import Balance from 'components/Balance'
 import { RowBetween } from 'components/Row'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -36,13 +36,13 @@ export default function ReleaseYieldFromDpo({ dpoInfo, dpoAction }: { dpoInfo: D
     <Action
       txContent={
         <>
-          <StandardText>{t(`Confirm Release Yield rewards to Members of DPO.`)}</StandardText>
+          <SText>{t(`Confirm Release Yield rewards to Members of DPO.`)}</SText>
           <BorderedWrapper>
             <RowBetween>
-              <StandardText>{t(`Total Release Amount`)}</StandardText>
-              <StandardText>
+              <SText>{t(`Total Release Amount`)}</SText>
+              <SText>
                 {formatToUnit(dpoInfo.vault_yield, chainDecimals, 2)} {dpoInfo.token_id.asToken.toString()}
-              </StandardText>
+              </SText>
             </RowBetween>
           </BorderedWrapper>
           <Balance token={dpoInfo.token_id.asToken.toString()} />

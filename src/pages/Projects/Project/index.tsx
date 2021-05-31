@@ -1,5 +1,5 @@
 import { FlatCard } from 'components/Card'
-import { StandardText, SectionHeading, Heading, ItalicText, HeavyText } from 'components/Text'
+import { SText, SectionHeading, Heading, ItalicText, HeavyText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useProjectPath } from 'hooks/useProject'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
@@ -117,18 +117,18 @@ export default function Project(): JSX.Element {
                       <SectionHeading>{projectRegistry.name}</SectionHeading>
                       <ItalicText>{projectRegistry.description}</ItalicText>
                       <SpacedSection>
-                        <StandardText>
+                        <SText>
                           <b>{t(`Token`)}</b>: {projectInfo.token}
-                        </StandardText>
+                        </SText>
                         {projectRegistry.name === 'Spanner' ? (
-                          <StandardText>
+                          <SText>
                             <b>{t(`Total Supply`)}</b>:{` ${'1,000,000,000'}`}
-                          </StandardText>
+                          </SText>
                         ) : (
-                          <StandardText>
+                          <SText>
                             <b>{t(`Total Supply`)}</b>:
                             {` ${formatToUnit(projectInfo.totalIssuance.toString(), chainDecimals)}`}
-                          </StandardText>
+                          </SText>
                         )}
                       </SpacedSection>
                     </SpacedSection>
@@ -150,7 +150,7 @@ export default function Project(): JSX.Element {
                     {latestPrice && (
                       <>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                          <StandardText>{t(`Current Price`)}</StandardText>
+                          <SText>{t(`Current Price`)}</SText>
                         </div>
                         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                           <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
@@ -248,17 +248,17 @@ export default function Project(): JSX.Element {
                                   <HeavyText style={{ width: '100%' }}>{pair}</HeavyText>
                                   <div style={{ display: 'grid' }}>
                                     <TokenGrid>
-                                      <StandardText style={{ textAlign: 'right', width: '100%' }}>
+                                      <SText style={{ textAlign: 'right', width: '100%' }}>
                                         {formatToUnit(pool[1][0], chainDecimals, 2)}
-                                      </StandardText>
-                                      <StandardText style={{ textAlign: 'right' }}>{tokenA}</StandardText>
+                                      </SText>
+                                      <SText style={{ textAlign: 'right' }}>{tokenA}</SText>
                                     </TokenGrid>
                                     <div style={{ display: 'grid' }}>
                                       <TokenGrid>
-                                        <StandardText style={{ textAlign: 'right', width: '100%' }}>
+                                        <SText style={{ textAlign: 'right', width: '100%' }}>
                                           {formatToUnit(pool[1][1], chainDecimals, 2)}
-                                        </StandardText>
-                                        <StandardText style={{ textAlign: 'right' }}>{tokenB}</StandardText>
+                                        </SText>
+                                        <SText style={{ textAlign: 'right' }}>{tokenB}</SText>
                                       </TokenGrid>
                                     </div>
                                   </div>

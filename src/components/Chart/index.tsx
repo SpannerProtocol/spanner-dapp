@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import Circle from 'assets/svg/yellow-loader.svg'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { darken } from 'polished'
@@ -84,7 +84,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
   return (
     <>
       {loading && <CustomLightSpinner src={Circle} alt="loader" size={'28px'} />}
-      {error && <StandardText>{t(`Price data unavailable. Please try again later.`)}</StandardText>}
+      {error && <SText>{t(`Price data unavailable. Please try again later.`)}</SText>}
       {priceData && priceData.length > 0 && (
         <ChartWrapper>
           <ResponsiveContainer aspect={below1080 ? 2.5 / 1 : 3 / 1}>

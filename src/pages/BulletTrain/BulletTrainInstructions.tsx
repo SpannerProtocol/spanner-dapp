@@ -7,7 +7,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import BulletTrainDiagram from '../../assets/images/bullettrain-rules.png'
-import { HeavyText, SectionHeading, SectionTitle, StandardText } from '../../components/Text'
+import { HeavyText, SectionHeading, SectionTitle, SText } from '../../components/Text'
 
 export default function BulletTrainInstructions() {
   const { t } = useTranslation()
@@ -31,7 +31,7 @@ export default function BulletTrainInstructions() {
               backgroundColor={'transparent'}
             />
           </div>
-          <StandardText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</StandardText>
+          <SText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</SText>
         </SpacedSection>
         <SpacedSection>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>

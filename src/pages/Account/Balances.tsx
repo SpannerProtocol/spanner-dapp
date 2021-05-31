@@ -1,6 +1,6 @@
 import { FlatCard } from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, SectionTitle, StandardText } from 'components/Text'
+import { HeavyText, SectionTitle, SText } from 'components/Text'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -91,11 +91,11 @@ function Balance({ icon, token, type, balance }: BalanceRowProps) {
           <HeavyText fontSize="14px">{token}</HeavyText>
         </BalanceCell>
         <BalanceCell style={{ paddingTop: '0' }}>
-          <StandardText fontSize="12px">{type}</StandardText>
+          <SText fontSize="12px">{type}</SText>
         </BalanceCell>
       </div>
       <BalanceCell style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <StandardText>{balance}</StandardText>
+        <SText>{balance}</SText>
       </BalanceCell>
     </BalanceRow>
   )

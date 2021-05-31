@@ -4,7 +4,7 @@ import Filter from 'components/Filter'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SectionHeading, SText } from 'components/Text'
 import { SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
@@ -60,17 +60,17 @@ function TransferRow({ id, amount, token, fromId, toId, timestamp }: TransferPro
                 {wallet.address === toId && (
                   <>
                     <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
                       {` ${shortenAddr(fromId, 11)}`}
-                    </StandardText>
+                    </SText>
                   </>
                 )}
                 {wallet.address === fromId && (
                   <>
                     <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
                       {` ${shortenAddr(toId, 11)}`}
-                    </StandardText>
+                    </SText>
                   </>
                 )}
               </div>

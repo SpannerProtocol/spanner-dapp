@@ -3,7 +3,7 @@ import { ButtonSecondary, FakeButton } from 'components/Button'
 import { FlatCard } from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
-import { Heading, HeavyText, StandardText } from 'components/Text'
+import { Heading, HeavyText, SText } from 'components/Text'
 import { useSelectedProject } from 'hooks/useProject'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
@@ -145,7 +145,7 @@ export default function Account() {
                   <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
                   <CopyWrapper style={{ display: 'flex' }}>
                     <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
-                      <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
+                      <SText fontSize="14px">{shortenAddr(referrer, 8)}</SText>
                     </CopyHelper>
                   </CopyWrapper>
                 </RowBetween>

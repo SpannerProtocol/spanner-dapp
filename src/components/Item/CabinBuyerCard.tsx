@@ -1,4 +1,4 @@
-import { HeavyText, ItalicText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SText } from 'components/Text'
 import { InlineSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -58,34 +58,34 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
               <CabinData1>
                 <InlineSection>
                   <HeavyText fontSize={'12px'}>{t(`Fare`)}:</HeavyText>
-                  <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+                  <SText fontSize={'12px'} padding={'0 0.5rem'}>
                     {formatToUnit(cabinInfo.deposit_amount.toBn(), chainDecimals, 2)} {token}
-                  </StandardText>
+                  </SText>
                 </InlineSection>
                 {expectedBlockTime && (
                   <InlineSection>
                     <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
-                    <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+                    <SText fontSize={'12px'} padding={'0 0.5rem'}>
                       {blockToDays(cabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
-                    </StandardText>
+                    </SText>
                   </InlineSection>
                 )}
               </CabinData1>
               <CabinData2>
                 <InlineSection>
                   <HeavyText fontSize={'12px'}>{t(`Yield`)}:</HeavyText>
-                  <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+                  <SText fontSize={'12px'} padding={'0 0.5rem'}>
                     {`${yieldAvailable} ${token}`}
-                  </StandardText>
+                  </SText>
                 </InlineSection>
                 {buyerInfo && (
                   <InlineSection>
                     <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
-                    <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+                    <SText fontSize={'12px'} padding={'0 0.5rem'}>
                       {!buyerInfo.fare_withdrawn
                         ? `0 ${token}`
                         : formatToUnit(cabinInfo.bonus_total.toString(), chainDecimals, 2) + ` ${token}`}
-                    </StandardText>
+                    </SText>
                   </InlineSection>
                 )}
               </CabinData2>

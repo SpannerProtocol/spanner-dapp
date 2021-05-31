@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { AlertIcon, AlertWrapper } from 'components/Alert'
 import { FlatCard } from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, SText } from 'components/Text'
 import { Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoActions } from 'hooks/useDpoActions'
@@ -139,9 +139,9 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                       {expiry.isZero() ? (
                         <>
                           <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                            <StandardText color="#fff" fontSize="9px">
+                            <SText color="#fff" fontSize="9px">
                               {t(`EXPIRED`)}
-                            </StandardText>
+                            </SText>
                           </StateWrapper>
                         </>
                       ) : (
@@ -158,9 +158,9 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   {!dpoInfo.state.isCreated && (
                     <InlineSection style={{ width: 'auto' }}>
                       <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                        <StandardText color="#fff" fontSize="9px">
+                        <SText color="#fff" fontSize="9px">
                           {t(dpoInfo.state.toString())}
-                        </StandardText>
+                        </SText>
                       </StateWrapper>
                     </InlineSection>
                   )}
@@ -169,23 +169,23 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               <DpoData1>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
-                  </StandardText>
+                  </SText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
                   <InlineSection>
                     <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                       {dpoInfo.empty_seats.toString()} {t(`Seats`)}
-                    </StandardText>
+                    </SText>
                   </InlineSection>
                 )}
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.fee.toNumber() / 10} %
-                  </StandardText>
+                  </SText>
                 </InlineSection>
               </DpoData1>
               <DpoData2>
@@ -193,7 +193,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   {expectedBlockTime && (
                     <>
                       <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
-                      <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -201,21 +201,21 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                           blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
-                      </StandardText>
+                      </SText>
                     </>
                   )}
                 </InlineSection>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {bonusPercent}%
-                  </StandardText>
+                  </SText>
                 </InlineSection>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Direct Referral`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.direct_referral_rate.div(new BN(10)).toString()}%
-                  </StandardText>
+                  </SText>
                 </InlineSection>
               </DpoData2>
             </DpoInnerCard>
@@ -274,17 +274,17 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                         {expiry.isZero() ? (
                           <>
                             <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                              <StandardText color="#fff" fontSize="9px">
+                              <SText color="#fff" fontSize="9px">
                                 {t(`EXPIRED`)}
-                              </StandardText>
+                              </SText>
                             </StateWrapper>
                           </>
                         ) : (
                           <div style={{ display: 'flex', marginRight: '0.5rem' }}>
                             <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
-                            <StandardText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
+                            <SText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
                               `Blocks`
-                            )}`}</StandardText>
+                            )}`}</SText>
                           </div>
                         )}
                       </InlineSection>
@@ -292,9 +292,9 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                     {!dpoInfo.state.isCreated && (
                       <InlineSection style={{ width: 'auto' }}>
                         <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                          <StandardText color="#fff" fontSize="9px">
+                          <SText color="#fff" fontSize="9px">
                             {t(dpoInfo.state.toString())}
-                          </StandardText>
+                          </SText>
                         </StateWrapper>
                       </InlineSection>
                     )}
@@ -322,23 +322,23 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
               <DpoData1>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
-                  </StandardText>
+                  </SText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
                   <InlineSection>
                     <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                       {dpoInfo.empty_seats.toString()} {t(`Seats`)}
-                    </StandardText>
+                    </SText>
                   </InlineSection>
                 )}
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.fee.toNumber() / 10}%
-                  </StandardText>
+                  </SText>
                 </InlineSection>
               </DpoData1>
               <DpoData2>
@@ -346,7 +346,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                   {expectedBlockTime && (
                     <>
                       <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
-                      <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -354,15 +354,15 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                           blockTime: expectedBlockTime,
                           period: dpoInfo.target_maturity,
                         }).toString()} %`}
-                      </StandardText>
+                      </SText>
                     </>
                   )}
                 </InlineSection>
                 <InlineSection>
                   <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
-                  <StandardText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
                     {bonusPercent}%
-                  </StandardText>
+                  </SText>
                 </InlineSection>
               </DpoData2>
             </DpoInnerCard>

@@ -5,7 +5,7 @@ import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
@@ -84,21 +84,21 @@ function ConfirmTransferContent({
   return (
     <>
       <Section>
-        <StandardText>{t(`Confirm details below. Transfers cannot be returned.`)}</StandardText>
+        <SText>{t(`Confirm details below. Transfers cannot be returned.`)}</SText>
       </Section>
       <BorderedWrapper>
         {dest && (
           <RowBetween>
-            <StandardText>{t(`To`)}:</StandardText>
-            <StandardText>{shortenAddr(dest, 8)}</StandardText>
+            <SText>{t(`To`)}:</SText>
+            <SText>{shortenAddr(dest, 8)}</SText>
           </RowBetween>
         )}
         {amount && (
           <RowBetween>
-            <StandardText>{t(`Amount`)}:</StandardText>
-            <StandardText>
+            <SText>{t(`Amount`)}:</SText>
+            <SText>
               {formatToUnit(amount, chainDecimals, 4)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
       </BorderedWrapper>
@@ -150,7 +150,7 @@ function TransferForm({ onSubmit }: TransferFormProps) {
     <>
       <SpacedSection>
         <RowFixed>
-          <StandardText>{t(`Recipient Address`)}</StandardText>
+          <SText>{t(`Recipient Address`)}</SText>
           <QuestionHelper text={t(`The Recipient's Spanner address`)} size={12} backgroundColor={'#fff'} />
         </RowFixed>
         <BorderedInput
@@ -164,10 +164,10 @@ function TransferForm({ onSubmit }: TransferFormProps) {
       </SpacedSection>
       <SpacedSection>
         <RowBetween>
-          <StandardText>{t(`Amount`)}</StandardText>
-          <StandardText>
+          <SText>{t(`Amount`)}</SText>
+          <SText>
             {t(`Balance`)}: {formatToUnit(balance, chainDecimals, 2)} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
         <TokenInputWrapper>
           <TokenInputAmount
@@ -191,9 +191,9 @@ function TransferForm({ onSubmit }: TransferFormProps) {
         ) : (
           <ButtonPrimary onClick={handleSubmit}>
             <Send size={16} />
-            <StandardText mobileFontSize="14px" color="#fff" paddingLeft="1rem">
+            <SText mobileFontSize="14px" color="#fff">
               {t(`Send`)}
-            </StandardText>
+            </SText>
           </ButtonPrimary>
         )}
       </Section>

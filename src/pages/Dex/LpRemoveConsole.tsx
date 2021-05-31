@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import TxModal from 'components/Modal/TxModal'
-import { ModalText, StandardText } from 'components/Text'
+import { ModalText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { LpBalance, useAllLpBalances } from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
@@ -49,8 +49,8 @@ function LpRemoveModalContent({ data }: { data: LpRemoveModalProps }): JSX.Eleme
       </Section>
       <SpacedSection>
         <RowBetween>
-          <StandardText>{t(`Remove LP Tokens`)}</StandardText>
-          <StandardText>{removeAmount}</StandardText>
+          <SText>{t(`Remove LP Tokens`)}</SText>
+          <SText>{removeAmount}</SText>
         </RowBetween>
       </SpacedSection>
       <TxFee fee={estimatedFee} />
@@ -131,7 +131,7 @@ function LpPoolContent(props: LpPoolContentProps): JSX.Element {
       </Section>
       <Section>
         <BorderedWrapper>
-          <StandardText style={{ marginBottom: '1rem' }}>{t(`Pool Info`)}</StandardText>
+          <SText style={{ marginBottom: '1rem' }}>{t(`Pool Info`)}</SText>
           <RowBetween>
             <HeavyHeader>
               {t(`Pooled`)} {pair[0].asToken.toString()}

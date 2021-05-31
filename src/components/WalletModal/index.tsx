@@ -5,7 +5,7 @@ import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AxiosError } from 'axios'
 import { getCustodialAddr } from 'bridge'
-import { HeavyText, SectionHeading, StandardText } from 'components/Text'
+import { HeavyText, SectionHeading, SText } from 'components/Text'
 import { BorderedSelection, Section } from 'components/Wrapper'
 import { useWeb3Accounts } from 'hooks/useWeb3Accounts'
 import React, { useEffect, useState } from 'react'
@@ -164,7 +164,7 @@ function SpannerAccountSelectModal({
         </HeaderRow>
         <ContentWrapper>
           <Section style={{ textAlign: 'center' }}>
-            <StandardText style={{ margin: '0' }}>{t(`Select an address below to use in Spanner Dapp.`)}</StandardText>
+            <SText style={{ margin: '0' }}>{t(`Select an address below to use in Spanner Dapp.`)}</SText>
           </Section>
           {pending && (
             <PendingSection>

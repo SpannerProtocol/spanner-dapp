@@ -1,5 +1,5 @@
 import { FlatCard } from 'components/Card'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { useBlockManager } from 'hooks/useBlocks'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -134,23 +134,23 @@ export default function TravelCabinCard(props: TravelCabinCard) {
           <CabinData1>
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`Fare`)}:</HeavyText>
-              <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+              <SText fontSize={'12px'} padding={'0 0.5rem'}>
                 {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals)} {token}
-              </StandardText>
+              </SText>
             </InlineSection>
             {expectedBlockTime && (
               <InlineSection>
                 <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
-                <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+                <SText fontSize={'12px'} padding={'0 0.5rem'}>
                   {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
-                </StandardText>
+                </SText>
               </InlineSection>
             )}
           </CabinData1>
           <CabinData2>
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`APY`)}:</HeavyText>
-              <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+              <SText fontSize={'12px'} padding={'0 0.5rem'}>
                 {expectedBlockTime && (
                   <>
                     {`${getApy({
@@ -162,13 +162,13 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                     })}%`}
                   </>
                 )}
-              </StandardText>
+              </SText>
             </InlineSection>
             <InlineSection>
               <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
-              <StandardText fontSize={'12px'} padding={'0 0.5rem'}>
+              <SText fontSize={'12px'} padding={'0 0.5rem'}>
                 {bonusPercent}%
-              </StandardText>
+              </SText>
             </InlineSection>
           </CabinData2>
         </CabinCard>

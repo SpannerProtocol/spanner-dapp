@@ -1,6 +1,6 @@
 import Balance from 'components/Balance'
 import { RowBetween } from 'components/Row'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -36,13 +36,13 @@ export default function DpoBuyDpoSeatsAvailable({ dpoInfo, dpoAction }: { dpoInf
       txContent={
         <>
           <SpacedSection>
-            <StandardText>{t(`Confirm Purchase of DPO Seats`)}</StandardText>
+            <SText>{t(`Confirm Purchase of DPO Seats`)}</SText>
           </SpacedSection>
           {targetDpo && (
             <BorderedWrapper>
               <RowBetween>
-                <StandardText>{t(`DPO Name`)}</StandardText>
-                <StandardText>{targetDpo.name.toString()}</StandardText>
+                <SText>{t(`DPO Name`)}</SText>
+                <SText>{targetDpo.name.toString()}</SText>
               </RowBetween>
             </BorderedWrapper>
           )}

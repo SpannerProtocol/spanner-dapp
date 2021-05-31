@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { BorderedInput } from 'components/Input'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { ErrorMsg } from 'pages/Dex/components'
@@ -22,7 +22,7 @@ export function DpoDirectReferralRate({
   return (
     <Section>
       <RowFixed>
-        <StandardText mobileFontSize="10px">{t(`Direct Referral Rate`)} (%)</StandardText>
+        <SText mobileFontSize="10px">{t(`Direct Referral Rate`)} (%)</SText>
         <QuestionHelper
           text={t(`The Referral Bonus (%) given to the Direct Referrer of an Internal Member to this DPO.`)}
           size={10}
@@ -54,7 +54,7 @@ export function DpoBaseFee({
   return (
     <Section>
       <RowFixed>
-        <StandardText mobileFontSize="10px">{t(`Base Fee`)} (%)</StandardText>
+        <SText mobileFontSize="10px">{t(`Base Fee`)} (%)</SText>
         <QuestionHelper
           text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
           size={10}
@@ -90,7 +90,7 @@ export function DpoReferralCode({
       {(!referralCode || newReferrer) && (
         <Section>
           <RowFixed>
-            <StandardText mobileFontSize="10px">{t(`Referral Code`)}</StandardText>
+            <SText mobileFontSize="10px">{t(`Referral Code`)}</SText>
             <QuestionHelper
               text={t(
                 `Referral Codes are permanent and unique for each project on Spanner. If you arrived to Spanner Dapp via a Referral Link then the that Referral Code will be used.`
@@ -139,7 +139,7 @@ export function DpoManagerSeats({
         <Section>
           <RowBetween>
             <RowFixed>
-              <StandardText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</StandardText>
+              <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
               <QuestionHelper
                 text={t(
                   `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
@@ -148,9 +148,9 @@ export function DpoManagerSeats({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <StandardText mobileFontSize="10px">
+            <SText mobileFontSize="10px">
               {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
           <BorderedInput
             required
@@ -183,9 +183,9 @@ export function DpoEnd({
     <Section>
       <RowBetween>
         <RowFixed>
-          <StandardText mobileFontSize="10px">
+          <SText mobileFontSize="10px">
             {t(`Crowdfund Period`)} ({t(`Days`)})
-          </StandardText>
+          </SText>
           <QuestionHelper
             text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
             size={10}
@@ -193,7 +193,7 @@ export function DpoEnd({
           ></QuestionHelper>
         </RowFixed>
         {maxEnd && (
-          <StandardText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</StandardText>
+          <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>
         )}
       </RowBetween>
       <BorderedInput
@@ -230,7 +230,7 @@ export function DpoTargetDpoSeats({
         <Section>
           <RowBetween>
             <RowFixed>
-              <StandardText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</StandardText>
+              <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>
               <QuestionHelper
                 text={t(
                   `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
@@ -239,9 +239,9 @@ export function DpoTargetDpoSeats({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <StandardText mobileFontSize="10px">
+            <SText mobileFontSize="10px">
               {t(`Remaining Seats`)}: {emptySeats}
-            </StandardText>
+            </SText>
           </RowBetween>
           <BorderedInput
             required
@@ -264,7 +264,7 @@ export function DpoDefaultTarget({ target }: { target: string }) {
   return (
     <Section>
       <RowFixed>
-        <StandardText mobileFontSize="10px">{`${t(`Default Target`)}`}</StandardText>
+        <SText mobileFontSize="10px">{`${t(`Default Target`)}`}</SText>
         <QuestionHelper
           text={t(
             `The Default Target is a goal that all members agree to pursue. When the DPO is ACTIVE, the Default Target must be selected if available.`
@@ -291,7 +291,7 @@ export function DpoName({ onChange }: { onChange: (e: React.ChangeEvent<HTMLInpu
   return (
     <Section>
       <RowFixed>
-        <StandardText mobileFontSize="10px">{t(`Name your DPO`)}</StandardText>
+        <SText mobileFontSize="10px">{t(`Name your DPO`)}</SText>
         <QuestionHelper
           text={t(`Name your DPO community to make it easier for others to search for you.`)}
           size={10}

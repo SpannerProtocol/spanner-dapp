@@ -1,6 +1,6 @@
 import Balance from 'components/Balance'
 import { RowBetween } from 'components/Row'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -25,16 +25,16 @@ export default function ReleaseFareFromDpo({ dpoInfo, dpoAction }: { dpoInfo: Dp
       txContent={
         <>
           <SpacedSection>
-            <StandardText>
+            <SText>
               {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.name.toString()}
-            </StandardText>
+            </SText>
           </SpacedSection>
           <BorderedWrapper>
             <RowBetween>
-              <StandardText>{t(`Deposit`)}</StandardText>
-              <StandardText>
+              <SText>{t(`Deposit`)}</SText>
+              <SText>
                 {formatToUnit(dpoInfo.vault_withdraw.toBn(), chainDecimals)} {dpoInfo.token_id.asToken.toString()}
-              </StandardText>
+              </SText>
             </RowBetween>
           </BorderedWrapper>
           <Balance token={dpoInfo.token_id.asToken.toString()} />

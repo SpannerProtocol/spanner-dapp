@@ -1,5 +1,5 @@
 import StandardModal from 'components/Modal/StandardModal'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import { BorderedWrapper } from 'components/Wrapper'
 import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
@@ -74,10 +74,10 @@ function SelectorOptions(props: SelectOptionsProps) {
                       style={{ display: 'block', width: '100%' }}
                     />
                   </div>
-                  <StandardText style={{ paddingLeft: '1rem' }}>{option.label}</StandardText>
+                  <SText style={{ paddingLeft: '1rem' }}>{option.label}</SText>
                 </>
               ) : (
-                <StandardText>{option.label}</StandardText>
+                <SText>{option.label}</SText>
               )}
             </OptionWrapper>
           </SelectorWrapper>
@@ -139,13 +139,13 @@ export default function Selector(props: SelectorProps) {
                 />
               </ActiveIcon>
             )}
-            <StandardText
+            <SText
               fontWeight={'700'}
               color={color}
               style={{ display: 'flex', alignItems: 'center', paddingLeft: '0.5rem', wordBreak: 'initial' }}
             >
               {collaspedTextPrefix} {activeOption.label}
-            </StandardText>
+            </SText>
           </div>
         )}
       </SelectorWrapper>
