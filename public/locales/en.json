@@ -524,5 +524,6 @@
   "Transaction created": "Transaction created",
   "Transaction succeeded": "Transaction succeeded",
   "Submitted to Block": "Submitted to Block",
-  "Waiting for signature": "Waiting for signature"
+  "Waiting for signature": "Waiting for signature",
+  "Assets": "Assets"
 }
