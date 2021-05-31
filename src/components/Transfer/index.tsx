@@ -164,8 +164,8 @@ function TransferForm({ onSubmit }: TransferFormProps) {
       </SpacedSection>
       <SpacedSection>
         <RowBetween>
-          <SText>{t(`Amount`)}</SText>
-          <SText>
+          <SText width="fit-content">{t(`Amount`)}</SText>
+          <SText width="fit-content">
             {t(`Balance`)}: {formatToUnit(balance, chainDecimals, 2)} {token}
           </SText>
         </RowBetween>

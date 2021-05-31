@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import TxModal from 'components/Modal/TxModal'
-import { ModalText, SText } from 'components/Text'
+import { Header2, ModalText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { LpBalance, useAllLpBalances } from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
@@ -179,7 +179,9 @@ export default function LpRemoveConsole(): JSX.Element {
   return (
     <Card>
       <Section>
-        <RowBetween>{t(`Liquidity Pools`)}</RowBetween>
+        <RowBetween>
+          <Header2>{t(`Liquidity Pools`)}</Header2>
+        </RowBetween>
       </Section>
       <Section>
         {balances.length > 0 ? (
@@ -189,7 +191,7 @@ export default function LpRemoveConsole(): JSX.Element {
             </ExpandCard>
           ))
         ) : (
-          <div>{t(`You have not added liquidity to any dexShares.`)}</div>
+          <SText>{t(`You have not added liquidity to any dexShares.`)}</SText>
         )}
       </Section>
     </Card>

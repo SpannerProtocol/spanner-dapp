@@ -23,6 +23,7 @@ const Tab = styled.div`
 
 const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
   width: 100%;
+  color: ${({ theme }) => theme.text1};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '18px')}
   font-weight: 500;
   text-align: left;

@@ -1,4 +1,4 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { HeavyText, SText } from 'components/Text'
 import { useBlockManager } from 'hooks/useBlocks'
 import React from 'react'
@@ -82,7 +82,7 @@ export const IconWrapper = styled.div`
   `};
 `
 
-export const CabinWrapper = styled(FlatCard)`
+export const CabinWrapper = styled(Card)`
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
@@ -128,20 +128,20 @@ export default function TravelCabinCard(props: TravelCabinCard) {
           </IconWrapper>
           <CabinTitle>
             <HeavyText style={{ marginLeft: '0', marginTop: '0', width: '100%' }}>
-              {`${t(`TravelCabin`)} ${travelCabinInfo.name.toString()}`}
+              {`${t(`TravelCabin`)}: ${travelCabinInfo.name.toString()}`}
             </HeavyText>
           </CabinTitle>
           <CabinData1>
             <InlineSection>
-              <HeavyText fontSize={'12px'}>{t(`Fare`)}:</HeavyText>
-              <SText fontSize={'12px'} padding={'0 0.5rem'}>
+              <HeavyText width="fit-content">{t(`Fare`)}:</HeavyText>
+              <SText width="fit-content" padding={'0 0.5rem'}>
                 {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals)} {token}
               </SText>
             </InlineSection>
             {expectedBlockTime && (
               <InlineSection>
-                <HeavyText fontSize={'12px'}>{t(`Trip`)}:</HeavyText>
-                <SText fontSize={'12px'} padding={'0 0.5rem'}>
+                <HeavyText width="fit-content">{t(`Trip`)}:</HeavyText>
+                <SText width="fit-content" padding={'0 0.5rem'}>
                   {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
                 </SText>
               </InlineSection>
@@ -149,8 +149,8 @@ export default function TravelCabinCard(props: TravelCabinCard) {
           </CabinData1>
           <CabinData2>
             <InlineSection>
-              <HeavyText fontSize={'12px'}>{t(`APY`)}:</HeavyText>
-              <SText fontSize={'12px'} padding={'0 0.5rem'}>
+              <HeavyText width="fit-content">{t(`APY`)}:</HeavyText>
+              <SText width="fit-content" padding={'0 0.5rem'}>
                 {expectedBlockTime && (
                   <>
                     {`${getApy({
@@ -165,8 +165,8 @@ export default function TravelCabinCard(props: TravelCabinCard) {
               </SText>
             </InlineSection>
             <InlineSection>
-              <HeavyText fontSize={'12px'}>{t(`Bonus`)}:</HeavyText>
-              <SText fontSize={'12px'} padding={'0 0.5rem'}>
+              <HeavyText width="fit-content">{t(`Bonus`)}:</HeavyText>
+              <SText width="fit-content" padding={'0 0.5rem'}>
                 {bonusPercent}%
               </SText>
             </InlineSection>

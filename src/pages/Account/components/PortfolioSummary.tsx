@@ -2,8 +2,8 @@
 import { useLazyQuery } from '@apollo/client'
 import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
-import { FlatCard } from 'components/Card'
-import { DataTokenName, HeavyText, SectionHeading, SText } from 'components/Text'
+import Card from 'components/Card'
+import { DataTokenName, HeavyText, Header2, SText } from 'components/Text'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/UserTransferIn'
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
@@ -141,13 +141,15 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
           {!loading && totalDeposited[selectedToken] && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <SectionHeading margin="0">{t(`Portfolio Summary`)}</SectionHeading>
+                <Header2 width="fit-content" margin="0">
+                  {t(`Portfolio Summary`)}
+                </Header2>
                 <IconWrapper margin="0 0.5rem">
                   <RefreshCw onClick={getPortfolioSummaryData} size={'16px'} color={theme.text3} />
                 </IconWrapper>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <FlatCard minHeight="80px" mobileMinHeight="70px" margin="0 0.25rem 0 0" padding="0.75rem">
+                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.25rem 0 0" padding="0.75rem">
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Total Deposited`)}
                   </SText>
@@ -159,8 +161,8 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                       <DataTokenName padding="0 0 0 0.5rem">{selectedToken}</DataTokenName>
                     </div>
                   )}
-                </FlatCard>
-                <FlatCard minHeight="80px" mobileMinHeight="70px" margin="0 0 0 0.25rem" padding="0.75rem">
+                </Card>
+                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0 0 0.25rem" padding="0.75rem">
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Deposit by Asset`)}
                   </SText>
@@ -190,7 +192,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                       )}
                     </div>
                   )}
-                </FlatCard>
+                </Card>
               </div>
             </>
           )}

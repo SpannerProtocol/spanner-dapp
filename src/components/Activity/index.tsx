@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import TabBar, { TabMetaData } from 'components/TabBar'
 import { SectionContainer } from 'components/Wrapper'
 import React, { useState } from 'react'
@@ -59,7 +59,7 @@ export default function Activity() {
 
   return (
     <>
-      <FlatCard>
+      <Card>
         <SectionContainer>
           <TabBar
             activeTab={activeTab}
@@ -74,7 +74,7 @@ export default function Activity() {
           {activeTab === 'latest-transactions' && <Transactions />}
           {activeTab === 'transfers' && <Transfers />}
         </SectionContainer>
-      </FlatCard>
+      </Card>
     </>
   )
 }

@@ -14,8 +14,8 @@ const Base = styled(RebassButton)<{
   mobilePadding?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
-  min-width: ${({ width }) => (width ? width : '200px')};
-  min-height: ${({ height }) => (height ? height : '50px')};
+  min-width: ${({ width }) => (width ? width : '120px')};
+  min-height: ${({ height }) => (height ? height : '25px')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')};
   font-weight: 700;
   text-align: center;
@@ -41,8 +41,8 @@ const Base = styled(RebassButton)<{
   ${({ mobileFontSize, mobilePadding, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '12px'};
   padding: ${mobilePadding ? mobilePadding : '0.5rem'};
-  min-width: 150px;
-  min-height: 50px;
+  min-width: 100px;
+  min-height: 25px;
 `};
 `
 
@@ -71,7 +71,7 @@ export const ButtonPrimary = styled(Base)`
   }
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: 12px;
-    padding: 1rem;
+    padding: 0.5rem;
 `};
 `
 

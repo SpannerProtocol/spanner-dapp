@@ -87,7 +87,9 @@ export default function Milestones() {
       {milestoneInfo && nextMilestone && project && chainDecimals && (
         <>
           <div style={{ display: 'flex', paddingBottom: '0.35rem', alignItems: 'center' }}>
-            <HeavyText fontSize="14px">{t(`Global Milestone Reward`)}</HeavyText>
+            <HeavyText fontSize="14px" width="fit-content">
+              {t(`Global Milestone Reward`)}
+            </HeavyText>
             <QuestionHelper
               size={12}
               backgroundColor={'transparent'}
@@ -140,12 +142,14 @@ export default function Milestones() {
             </>
           )}
           <SpacedSection>
-            <HeavyText fontSize="14px">{t(`Next Milestone`)}</HeavyText>
+            <HeavyText fontSize="14px" width="fit-content">
+              {t(`Next Milestone`)}
+            </HeavyText>
             <RowBetween>
-              <SText fontSize="11px">
+              <SText width="fit-content">
                 {`${t(`Progress`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}
               </SText>
-              <SText fontSize="11px">
+              <SText width="fit-content">
                 {`${t(`Milestone`)}: ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)} ${project.token}`}
               </SText>
             </RowBetween>

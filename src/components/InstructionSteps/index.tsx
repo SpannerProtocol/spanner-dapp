@@ -17,9 +17,9 @@ export const Step = styled(Card)<{ background?: string; maxWidth?: string; margi
 export const StepNumber = styled.div<{ size?: string; fontSize?: string }>`
   background: ${({ theme }) => theme.text4};
   color: #fff;
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
-  width: ${({ size }) => (size ? size : '25px')};
-  height: ${({ size }) => (size ? size : '25px')};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '10px')}
+  width: ${({ size }) => (size ? size : '18px')};
+  height: ${({ size }) => (size ? size : '18px')};
   border-radius: 50%;
   display: flex; /* or inline-flex */
   align-items: center;

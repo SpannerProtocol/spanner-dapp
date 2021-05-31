@@ -1,8 +1,8 @@
 import { getFaucet } from 'bridge'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { SectionHeading, SText } from 'components/Text'
+import { Header2, SText } from 'components/Text'
 import { BorderedWrapper, ButtonWrapper, Section } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -35,18 +35,18 @@ export default function Faucet(): JSX.Element {
     <>
       {!wallet?.address ? (
         <>
-          <FlatCard
+          <Card
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
           >
             <SText>{t(`Connect to your Custodial Wallet (for Ethereum) to use the Faucet.`)}</SText>
-          </FlatCard>
+          </Card>
         </>
       ) : (
         <>
-          <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
-                <SectionHeading>{t(`Faucet: Get Hammer BOLT`)}</SectionHeading>
+                <Header2>{t(`Faucet: Get Hammer BOLT`)}</Header2>
               </RowBetween>
             </Section>
             <Section>
@@ -75,7 +75,7 @@ export default function Faucet(): JSX.Element {
                 </ButtonPrimary>
               </ButtonWrapper>
             </Section>
-          </FlatCard>
+          </Card>
         </>
       )}
     </>

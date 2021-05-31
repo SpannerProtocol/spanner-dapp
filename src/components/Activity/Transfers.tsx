@@ -4,7 +4,7 @@ import Filter from 'components/Filter'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, ItalicText, SectionHeading, SText } from 'components/Text'
+import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
 import { SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
@@ -177,8 +177,10 @@ export default function Transfers() {
   return (
     <>
       <SpacedSection>
-        <div style={{ display: 'flex' }}>
-          <SectionHeading style={{ margin: '0' }}>{t(`Transfers`)}</SectionHeading>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Header2 width="fit-content" style={{ margin: '0' }}>
+            {t(`Transfers`)}
+          </Header2>
           <QuestionHelper
             size={12}
             backgroundColor={'transparent'}

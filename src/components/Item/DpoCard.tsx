@@ -1,6 +1,6 @@
 import BN from 'bn.js'
 import { AlertIcon, AlertWrapper } from 'components/Alert'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { HeavyText, ItalicText, SText } from 'components/Text'
 import { Section, StateWrapper } from 'components/Wrapper'
@@ -74,7 +74,7 @@ export const DpoTitle = styled.div`
   `};
 `
 
-export const DpoWrapper = styled(FlatCard)`
+export const DpoWrapper = styled(Card)`
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
@@ -129,7 +129,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               <DpoTitle>
                 <RowBetween>
                   <div style={{ display: 'block' }}>
-                    <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                    <HeavyText>{dpoInfo.name.toString()}</HeavyText>
                     <ItalicText fontSize="10px">
                       {t(`DPO`)} #{dpoInfo.index.toString()}
                     </ItalicText>
@@ -139,18 +139,18 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                       {expiry.isZero() ? (
                         <>
                           <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                            <SText color="#fff" fontSize="9px">
+                            <SText color="#fff" fontSize="12px" mobileFontSize="10px">
                               {t(`EXPIRED`)}
                             </SText>
                           </StateWrapper>
                         </>
                       ) : (
                         <div style={{ display: 'flex', marginRight: '0.5rem' }}>
-                          <HeavyText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${blocksToCountDown(
-                            expiry.toString(),
-                            expectedBlockTime,
-                            t('EXPIRED')
-                          )}`}</HeavyText>
+                          <HeavyText
+                            fontSize="12px"
+                            mobileFontSize="10px"
+                            style={{ paddingLeft: '0.2rem' }}
+                          >{`${blocksToCountDown(expiry.toString(), expectedBlockTime, t('EXPIRED'))}`}</HeavyText>
                         </div>
                       )}
                     </InlineSection>
@@ -158,7 +158,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   {!dpoInfo.state.isCreated && (
                     <InlineSection style={{ width: 'auto' }}>
                       <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                        <SText color="#fff" fontSize="9px">
+                        <SText color="#fff" fontSize="12px" mobileFontSize="10px">
                           {t(dpoInfo.state.toString())}
                         </SText>
                       </StateWrapper>
@@ -168,22 +168,22 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
               </DpoTitle>
               <DpoData1>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Crowdfunding`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
                   </SText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
                   <InlineSection>
-                    <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
-                    <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    <HeavyText width="fit-content">{t(`Seats Open`)}:</HeavyText>
+                    <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                       {dpoInfo.empty_seats.toString()} {t(`Seats`)}
                     </SText>
                   </InlineSection>
                 )}
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Manager Fee`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.fee.toNumber() / 10} %
                   </SText>
                 </InlineSection>
@@ -192,8 +192,8 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                 <InlineSection>
                   {expectedBlockTime && (
                     <>
-                      <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
-                      <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      <HeavyText width="fit-content">{t(`APY`)}:</HeavyText>
+                      <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -206,14 +206,14 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
                   )}
                 </InlineSection>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Bonus`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {bonusPercent}%
                   </SText>
                 </InlineSection>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Direct Referral`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Direct Referral`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.direct_referral_rate.div(new BN(10)).toString()}%
                   </SText>
                 </InlineSection>
@@ -264,7 +264,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                 <Section>
                   <RowBetween>
                     <div style={{ display: 'block' }}>
-                      <HeavyText style={{ marginLeft: '0', marginTop: '0' }}>{dpoInfo.name.toString()}</HeavyText>
+                      <HeavyText>{dpoInfo.name.toString()}</HeavyText>
                       <ItalicText fontSize="10px">
                         {t(`DPO`)} #{dpoInfo.index.toString()}
                       </ItalicText>
@@ -274,16 +274,16 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                         {expiry.isZero() ? (
                           <>
                             <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                              <SText color="#fff" fontSize="9px">
+                              <SText color="#fff" fontSize="12px" mobileFontSize="10px">
                                 {t(`EXPIRED`)}
                               </SText>
                             </StateWrapper>
                           </>
                         ) : (
                           <div style={{ display: 'flex', marginRight: '0.5rem' }}>
-                            <HeavyText fontSize="10px">{t(`Expires in`)}:</HeavyText>
-                            <SText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${expiry.toString()} ${t(
-                              `Blocks`
+                            <SText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${blocksToCountDown(
+                              expiry.toString(),
+                              expectedBlockTime
                             )}`}</SText>
                           </div>
                         )}
@@ -292,7 +292,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                     {!dpoInfo.state.isCreated && (
                       <InlineSection style={{ width: 'auto' }}>
                         <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                          <SText color="#fff" fontSize="9px">
+                          <SText color="#fff" fontSize="12px" mobileFontSize="10px">
                             {t(dpoInfo.state.toString())}
                           </SText>
                         </StateWrapper>
@@ -304,9 +304,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                   <Section>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <InlineSection>
-                        <HeavyText fontSize="12px" style={{ display: 'flex', alignItems: 'center' }}>
-                          {t(`Pending Actions`)}:
-                        </HeavyText>
+                        <HeavyText width="fit-content">{t(`Pending Actions`)}:</HeavyText>
                         <div style={{ display: 'flex' }}>
                           {actions.map((action, index) => (
                             <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
@@ -321,22 +319,22 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
               </DpoTitle>
               <DpoData1>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Crowdfunding`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Crowdfunding`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
                   </SText>
                 </InlineSection>
                 {dpoInfo.state.isCreated && (
                   <InlineSection>
-                    <HeavyText fontSize="12px">{t(`Seats Open`)}:</HeavyText>
-                    <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                    <HeavyText width="fit-content">{t(`Seats Open`)}:</HeavyText>
+                    <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                       {dpoInfo.empty_seats.toString()} {t(`Seats`)}
                     </SText>
                   </InlineSection>
                 )}
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Manager Fee`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Manager Fee`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {dpoInfo.fee.toNumber() / 10}%
                   </SText>
                 </InlineSection>
@@ -345,8 +343,8 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                 <InlineSection>
                   {expectedBlockTime && (
                     <>
-                      <HeavyText fontSize="12px">{t(`APY`)}:</HeavyText>
-                      <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                      <HeavyText width="fit-content">{t(`APY`)}:</HeavyText>
+                      <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                         {`${getApy({
                           totalYield: dpoInfo.target_yield_estimate.toBn(),
                           totalDeposit: dpoInfo.target_amount.toBn(),
@@ -359,8 +357,8 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                   )}
                 </InlineSection>
                 <InlineSection>
-                  <HeavyText fontSize="12px">{t(`Bonus`)}:</HeavyText>
-                  <SText fontSize="12px" style={{ paddingLeft: '0.5rem' }}>
+                  <HeavyText width="fit-content">{t(`Bonus`)}:</HeavyText>
+                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
                     {bonusPercent}%
                   </SText>
                 </InlineSection>

@@ -1,5 +1,5 @@
-import { FlatCard } from 'components/Card'
-import { SText, SectionHeading, Heading, ItalicText, HeavyText } from 'components/Text'
+import Card from 'components/Card'
+import { SText, Header2, Heading, ItalicText, HeavyText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useProjectPath } from 'hooks/useProject'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
@@ -103,7 +103,7 @@ export default function Project(): JSX.Element {
       <PageWrapper style={{ maxWidth: '680px' }}>
         {projectPath && (
           <>
-            <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
               <Heading style={{ paddingTop: '0.5rem' }}>{t(`Project Info`)}</Heading>
               <GridWrapper columns={'2'} mobileColumns={'2'}>
                 <BorderedWrapper style={{ display: 'flex' }}>
@@ -114,7 +114,7 @@ export default function Project(): JSX.Element {
                 {projectInfo && (
                   <ContentWrapper>
                     <SpacedSection>
-                      <SectionHeading>{projectRegistry.name}</SectionHeading>
+                      <Header2>{projectRegistry.name}</Header2>
                       <ItalicText>{projectRegistry.description}</ItalicText>
                       <SpacedSection>
                         <SText>
@@ -135,17 +135,17 @@ export default function Project(): JSX.Element {
                   </ContentWrapper>
                 )}
               </GridWrapper>
-            </FlatCard>
+            </Card>
 
             {projectInfo && (
               <ContentWrapper>
-                <FlatCard>
-                  <SectionHeading style={{ display: 'inline-flex' }}>
+                <Card>
+                  <Header2 style={{ display: 'inline-flex' }}>
                     <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
                       <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
                     </div>
                     {t(`Token Performance`)}
-                  </SectionHeading>
+                  </Header2>
                   <SpacedSection>
                     {latestPrice && (
                       <>
@@ -172,7 +172,7 @@ export default function Project(): JSX.Element {
                     />
                   )}
                   {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
-                </FlatCard>
+                </Card>
               </ContentWrapper>
             )}
 
@@ -186,9 +186,9 @@ export default function Project(): JSX.Element {
                     alignItems: 'center',
                   }}
                 >
-                  <FlatCard>
+                  <Card>
                     <Section style={{ marginBottom: '1rem' }}>
-                      <SectionHeading style={{ display: 'inline-flex' }}>
+                      <Header2 style={{ display: 'inline-flex' }}>
                         <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
                           <img
                             alt="BulletTrain icon"
@@ -197,7 +197,7 @@ export default function Project(): JSX.Element {
                           />
                         </div>
                         {t(`BulletTrain Performance`)}
-                      </SectionHeading>
+                      </Header2>
                     </Section>
                     <Section style={{ width: '100%' }}>
                       <BannerGrid style={{ width: '100%', marginBottom: '1rem' }}>
@@ -207,7 +207,7 @@ export default function Project(): JSX.Element {
                         {projectInfo && <BulletTrainStats token={projectInfo.token} />}
                       </BannerGrid>
                     </Section>
-                  </FlatCard>
+                  </Card>
                 </Wrapper>
               </ContentWrapper>
             )}
@@ -222,14 +222,14 @@ export default function Project(): JSX.Element {
                 }}
               >
                 {dexPools.length > 0 && (
-                  <FlatCard>
+                  <Card>
                     <Section style={{ marginBottom: '1rem' }}>
-                      <SectionHeading style={{ display: 'inline-flex' }}>
+                      <Header2 style={{ display: 'inline-flex' }}>
                         <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
                           <img alt="Decentralized Exchange" style={{ width: '100%' }} src={DexIcon} />
                         </div>
                         {t(`DEX Metrics`)}
-                      </SectionHeading>
+                      </Header2>
                     </Section>
                     <Section>
                       <HeavyText style={{ marginBottom: '1rem' }}>{t(`Liquidity Pools`)}</HeavyText>
@@ -269,7 +269,7 @@ export default function Project(): JSX.Element {
                         )
                       })}
                     </Section>
-                  </FlatCard>
+                  </Card>
                 )}
               </Wrapper>
             </ContentWrapper>

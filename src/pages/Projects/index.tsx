@@ -1,8 +1,8 @@
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
-import { ContentWrapper, PageWrapper } from 'components/Wrapper'
+import { CenterWrapper, ContentWrapper, PageWrapper } from 'components/Wrapper'
 import useProjectInfos from 'hooks/useProjectInfo'
 import React from 'react'
 import { Link } from 'react-router-dom'
@@ -74,7 +74,7 @@ export const ProjectIconWrapper = styled.div`
   `};
 `
 
-const ProjectCardPlate = styled(FlatCard)`
+const ProjectCardPlate = styled(Card)`
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
@@ -134,8 +134,12 @@ export default function Projects() {
     <>
       <PageWrapper>
         <ContentWrapper>
-          <FlatCard padding="2rem">{t(`Project onboarding available Late Q3, 2021`)}</FlatCard>
-          <RowBetween>
+          <Card padding="2rem">
+            <CenterWrapper>
+              <SText>{t(`Project onboarding available Late Q3, 2021`)}</SText>
+            </CenterWrapper>
+          </Card>
+          <RowBetween padding="1rem">
             <div />
             <div style={{ maxWidth: '400px' }}>
               <ButtonPrimary disabled>{t(`Create Project`)}</ButtonPrimary>

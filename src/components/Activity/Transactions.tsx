@@ -4,7 +4,7 @@ import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading } from 'components/Text'
+import { HeavyText, ItalicText, Header2 } from 'components/Text'
 import { SpacedSection, TransferWrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import extrinsics from 'queries/graphql/extrinsics'
@@ -104,8 +104,8 @@ export default function Transactions() {
   return (
     <>
       <SpacedSection>
-        <div style={{ display: 'flex', alignItems: 'vertical' }}>
-          <SectionHeading>{t(`Transactions`)}</SectionHeading>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Header2 width="fit-content">{t(`Transactions`)}</Header2>
           <QuestionHelper
             size={12}
             backgroundColor={'transparent'}

@@ -2,9 +2,9 @@ import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
 import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
-import { HeavyText, SectionHeading, SText } from 'components/Text'
+import { HeavyText, Header2, SText } from 'components/Text'
 import { ContentWrapper, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -283,12 +283,12 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
           )}
           {targeters && getTargeters(targeters) && (
             <ContentWrapper>
-              <FlatCard>
+              <Card>
                 <SpacedSection>
-                  <SectionHeading style={{ margin: '0' }}>{t(`Targeted by`)}</SectionHeading>
+                  <Header2 style={{ margin: '0' }}>{t(`Targeted by`)}</Header2>
                 </SpacedSection>
                 {getTargeters(targeters)}
-              </FlatCard>
+              </Card>
             </ContentWrapper>
           )}
         </>

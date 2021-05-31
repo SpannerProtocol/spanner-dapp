@@ -1,7 +1,7 @@
 import BN from 'bn.js'
 import Balance from 'components/Balance'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import ExpandCard from 'components/Card/ExpandCard'
 import CopyHelper from 'components/Copy/Copy'
 import Divider from 'components/Divider'
@@ -12,7 +12,7 @@ import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { DataTokenName, Heading, HeavyText, SectionHeading, SmallText, SText } from 'components/Text'
+import { DataTokenName, Heading, HeavyText, Header2, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import {
   BorderedWrapper,
@@ -578,9 +578,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           dpoInfo={dpoInfo}
         />
       </TxModal>
-      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
         <Section>
-          <SectionHeading style={{ margin: '0' }}>{`DPO`}</SectionHeading>
+          <Header2 style={{ margin: '0' }}>{`DPO`}</Header2>
           <RowBetween>
             <div style={{ display: 'flex', verticalAlign: 'center' }}>
               <Heading style={{ margin: '0' }}>{dpoInfo.name}</Heading>
@@ -689,12 +689,12 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             </StatDisplayContainer>
           </Section>
         )}
-      </FlatCard>
+      </Card>
       <Highlights dpoInfo={dpoInfo} />
       {isConnected && <DpoActions dpoIndex={dpoIndex} />}
       <ContentWrapper>
-        <FlatCard>
-          <SectionHeading>{t(`Details`)}</SectionHeading>
+        <Card>
+          <Header2>{t(`Details`)}</Header2>
           <SmallText>{t(`DPO Account Vault`)}</SmallText>
           <BorderedWrapper borderColor="#EC3D3D" style={{ marginTop: '0' }}>
             <Section>
@@ -916,7 +916,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               ))}
             </Section>
           </ExpandCard>
-        </FlatCard>
+        </Card>
       </ContentWrapper>
       <TargetedBy dpoInfo={dpoInfo} />
     </>

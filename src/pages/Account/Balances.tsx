@@ -1,6 +1,6 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, SectionTitle, SText } from 'components/Text'
+import { HeavyText, Header3, SText } from 'components/Text'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -112,9 +112,11 @@ export default function Balances() {
 
   return (
     <>
-      <FlatCard>
+      <Card>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-          <SectionTitle style={{ margin: '0' }}>{t(`Balances`)}</SectionTitle>
+          <Header3 width="fit-content" style={{ margin: '0' }}>
+            {t(`Balances`)}
+          </Header3>
           <QuestionHelper
             size={12}
             backgroundColor="transparent"
@@ -131,7 +133,7 @@ export default function Balances() {
               balance={balance.balance}
             />
           ))}
-      </FlatCard>
+      </Card>
     </>
   )
 }

@@ -5,7 +5,7 @@ import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector'
 import { AxiosError } from 'axios'
 import { getCustodialAddr } from 'bridge'
-import { HeavyText, SectionHeading, SText } from 'components/Text'
+import { HeavyText, Header2, SText } from 'components/Text'
 import { BorderedSelection, Section } from 'components/Wrapper'
 import { useWeb3Accounts } from 'hooks/useWeb3Accounts'
 import React, { useEffect, useState } from 'react'
@@ -567,9 +567,9 @@ export default function WalletModal({ ENSName }: { ENSName?: string }) {
             />
           ) : (
             <>
-              <SectionHeading>{t(`Connect to Spanner wallet`)}</SectionHeading>
+              <Header2>{t(`Connect to Spanner wallet`)}</Header2>
               <OptionGrid>{getSpannerOptions({ onClick: handleAccountSelection })}</OptionGrid>
-              <SectionHeading style={{ marginTop: '1rem' }}>{t(`Connect to Ethereum wallet`)}</SectionHeading>
+              <Header2 style={{ marginTop: '1rem' }}>{t(`Connect to Ethereum wallet`)}</Header2>
               <OptionGrid>{getEthOptions()}</OptionGrid>
             </>
           )}

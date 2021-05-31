@@ -1,5 +1,5 @@
-import { FlatCard } from 'components/Card'
-import { SectionHeading } from 'components/Text'
+import Card from 'components/Card'
+import { Header2 } from 'components/Text'
 import { ContentWrapper } from 'components/Wrapper'
 import { useDpoActions } from 'hooks/useDpoActions'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -93,10 +93,10 @@ export default function DpoActions(props: DpoActionsProps) {
     <>
       {dpoActions && dpoActions.length > 0 && (
         <ContentWrapper>
-          <FlatCard margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-            <SectionHeading>{t(`Actions`)}</SectionHeading>
+          <Card margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+            <Header2>{t(`Actions`)}</Header2>
             {dpoInfo && <ActionProvider dpoInfo={dpoInfo} dpoActions={dpoActions} />}
-          </FlatCard>
+          </Card>
         </ContentWrapper>
       )}
     </>

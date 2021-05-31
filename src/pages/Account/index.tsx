@@ -1,6 +1,6 @@
 import Activity from 'components/Activity'
 import { ButtonSecondary, FakeButton } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
 import { Heading, HeavyText, SText } from 'components/Text'
@@ -19,7 +19,7 @@ import {
   PageWrapper,
   Section,
   SectionContainer,
-  Wrapper,
+  CenterWrapper,
 } from '../../components/Wrapper'
 import { DAPP_HOST } from '../../constants'
 import { shortenAddr } from '../../utils/truncateString'
@@ -95,7 +95,7 @@ export default function Account() {
 
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '700px', justifyContent: 'center', alignItems: 'center' }}>
-      <Wrapper
+      <CenterWrapper
         style={{
           display: 'flex',
           width: '100%',
@@ -103,7 +103,7 @@ export default function Account() {
           alignItems: 'center',
         }}
       >
-        <FlatCard>
+        <Card>
           <Section style={{ marginBottom: '1rem' }}>
             <RowBetween>
               <Heading>{t(`Account`)}</Heading>
@@ -153,8 +153,8 @@ export default function Account() {
             </BorderedWrapper>
           )}
           <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
-        </FlatCard>
-      </Wrapper>
+        </Card>
+      </CenterWrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}

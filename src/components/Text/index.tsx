@@ -60,13 +60,15 @@ export const Header1 = styled.h1<{
   color?: string
   width?: string
   padding?: string
+  margin?: string
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '48px')};
   font-weight: 900;
-  width: 100%;
+  width: ${({ width }) => (width ? width : '100%')};
   color: ${({ color, theme }) => (color ? color : theme.text1)};
-
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '28px'};
 `};
@@ -78,14 +80,17 @@ export const Header2 = styled.h2<{
   width?: string
   padding?: string
   mobileFontSize?: string
+  margin?: string
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
   font-weight: 900;
-  width: 100%;
+  width: ${({ width }) => (width ? width : '100%')};
   color: ${({ color, theme }) => (color ? color : theme.text1)};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-  font-size: ${mobileFontSize ? mobileFontSize : '20px'};
+    font-size: ${mobileFontSize ? mobileFontSize : '20px'};
 `};
 `
 
@@ -95,14 +100,17 @@ export const Header3 = styled.h3<{
   color?: string
   width?: string
   padding?: string
+  margin?: string
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
   font-weight: 700;
-  width: 100%;
+  width: ${({ width }) => (width ? width : '100%')};
   color: ${({ color, theme }) => (color ? color : theme.text1)};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-  font-size: ${mobileFontSize ? mobileFontSize : '20px'};
+  font-size: ${mobileFontSize ? mobileFontSize : '16px'};
 `};
 `
 
@@ -112,15 +120,18 @@ export const Header4 = styled.h4<{
   color?: string
   width?: string
   padding?: string
+  margin?: string
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '24px')};
   font-weight: 700;
-  width: 100%;
+  width: ${({ width }) => (width ? width : '100%')};
   margin: 1rem 0;
   color: ${({ color, theme }) => (color ? color : theme.text1)};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-  font-size: ${mobileFontSize ? mobileFontSize : '18px'};
+  font-size: ${mobileFontSize ? mobileFontSize : '14px'};
 `};
 `
 
@@ -278,11 +289,6 @@ export const DataTokenName = styled.div<{
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '10px'}
   `};
-`
-export const SectionTitle = styled.h3`
-  font-weight: 700;
-  margin-top: 0.45rem;
-  margin-bottom: 0.45rem;
 `
 
 export const ErrorMsg = styled.div<{

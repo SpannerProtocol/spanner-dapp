@@ -16,30 +16,34 @@ import { Box } from 'rebass/styled-components'
 // `
 
 const Card = styled(Box)<{
+  width?: string
   padding?: string
   border?: string
   borderRadius?: string
   maxWidth?: string
   height?: string
   margin?: string
-  mobileHeight?: string
+  minHeight?: string
+  mobileMinHeight?: string
 }>`
   box-shadow: 0px 8px 15px #2b2f4a19;
   padding: 1.25rem;
   background: ${({ theme }) => theme.bg1};
   color: ${({ theme }) => theme.white};
+  width: ${({ width }) => (width ? width : '100%')};
   padding: ${({ padding }) => (padding ? padding : '1rem')};
   border: ${({ border }) => (border ? border : '1px solid transparent')};
-  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '15px')};
-  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '380px')};
-  height: ${({ height }) => (height ? height : 'auto')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
+  min-height: ${({ minHeight }) => (minHeight ? minHeight : 'auto')};
   margin: ${({ margin }) => (margin ? margin : '0')};
-  ${({ mobileHeight, theme }) => theme.mediaWidth.upToExtraSmall`
-   height: ${mobileHeight ? mobileHeight : '50px'};
+  ${({ mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
+   min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
   `};
 `
 
 export default Card
+
 
 // Normal Card with surrounding shadows
 export const FlatCard = styled(Card)<{
@@ -62,6 +66,7 @@ export const FlatCard = styled(Card)<{
   min-height: ${mobileMinHeight ? mobileMinHeight : '70px'};
 `};
 `
+
 
 // Normal Card with surrounding shadows
 export const ThinShadowCard = styled(Card)<{ background?: string; maxWidth?: string; margin?: string }>`

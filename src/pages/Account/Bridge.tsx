@@ -1,12 +1,12 @@
 import CopyHelper from 'components/Copy/Copy'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { BorderedInput } from 'components/Input'
 import { StepNumber } from 'components/InstructionSteps'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading, SText } from 'components/Text'
+import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
@@ -304,25 +304,25 @@ export default function Bridge(): JSX.Element {
       </TxModal>
       {!wallet ? (
         <>
-          <FlatCard
+          <Card
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
           >
             <SText>{t(`Connect to your wallet to use the Bridge`)}</SText>
-          </FlatCard>
+          </Card>
         </>
       ) : (
         <>
           {!bridge ? (
             <>
-              <FlatCard
+              <Card
                 style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
               >
                 <SText>{t(`Bridge is currently unavailable. Please check back later.`)}</SText>
-              </FlatCard>
+              </Card>
             </>
           ) : (
             <>
-              <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                 <Section>
                   <div
                     style={{
@@ -330,7 +330,7 @@ export default function Bridge(): JSX.Element {
                       alignItems: 'center',
                     }}
                   >
-                    <SectionHeading style={{ margin: '0' }}>{t(`Bridge`)}</SectionHeading>
+                    <Header2 style={{ margin: '0' }}>{t(`Bridge`)}</Header2>
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
@@ -349,12 +349,12 @@ export default function Bridge(): JSX.Element {
                     </RowBetween>
                   </BorderedWrapper>
                 </SpacedSection>
-              </FlatCard>
+              </Card>
 
               {ethDepositAddr && wallet && (
-                <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                   <Section>
-                    <SectionHeading>{t(`Deposit to Spanner`)}</SectionHeading>
+                    <Header2>{t(`Deposit to Spanner`)}</Header2>
                     <SText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</SText>
                     <BorderedWrapper background="#8CD88C" borderColor="transparent">
                       <HeavyText color="#fff">{t(`Early Bird Landing Bonus`)}</HeavyText>
@@ -424,11 +424,11 @@ export default function Bridge(): JSX.Element {
                       </BorderedWrapper>
                     )}
                   </SpacedSection>
-                </FlatCard>
+                </Card>
               )}
-              <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                 <Section>
-                  <SectionHeading>{t(`Withdraw to Ethereum`)}</SectionHeading>
+                  <Header2>{t(`Withdraw to Ethereum`)}</Header2>
                   <SText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</SText>
                 </Section>
                 {/* {feeData && (
@@ -510,7 +510,7 @@ export default function Bridge(): JSX.Element {
                     {t(`Withdraw`)}
                   </ButtonPrimary>
                 </ButtonWrapper>
-              </FlatCard>
+              </Card>
             </>
           )}
         </>

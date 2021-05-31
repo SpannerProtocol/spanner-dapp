@@ -1,7 +1,7 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { DataTokenName, HeavyText, SectionTitle, SText } from 'components/Text'
+import { DataTokenName, HeavyText, Header3, SText } from 'components/Text'
 import { ContentWrapper, PaddedSection, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useDpoFees from 'hooks/useDpoFees'
@@ -308,10 +308,10 @@ export default function Highlights({ dpoInfo }: HighlightsProps) {
     <>
       {getHighlight() && (
         <ContentWrapper>
-          <FlatCard>
-            <SectionTitle>{t(`Highlights`)}</SectionTitle>
+          <Card>
+            <Header3>{t(`Highlights`)}</Header3>
             {getHighlight()}
-          </FlatCard>
+          </Card>
         </ContentWrapper>
       )}
     </>

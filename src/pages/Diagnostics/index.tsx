@@ -1,10 +1,10 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useReferrer } from 'hooks/useReferrer'
 import React from 'react'
 import { useProjectState } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
-import Text, { Heading, SectionTitle } from '../../components/Text'
+import Text, { Heading, Header3 } from '../../components/Text'
 
 export default function Diagnostics() {
   const referrer = useReferrer()
@@ -23,26 +23,26 @@ export default function Diagnostics() {
           alignItems: 'center',
         }}
       >
-        <FlatCard style={{ textAlign: 'left' }}>
+        <Card style={{ textAlign: 'left' }}>
           <Heading>{`Diagnostics`}</Heading>
           <SpacedSection>
-            <SectionTitle>{`Referral (DynamoDB)`}</SectionTitle>
+            <Header3>{`Referral (DynamoDB)`}</Header3>
             <Text>{referrer}</Text>
           </SpacedSection>
           {referrerState.referrerState && projectState.selectedProject && referrerState.referrerState.referrer && (
             <SpacedSection>
-              <SectionTitle>{`Referrer State (from REDUX)`}</SectionTitle>
+              <Header3>{`Referrer State (from REDUX)`}</Header3>
               <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.referrer}</Text>
               <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.storedRemotely}</Text>
             </SpacedSection>
           )}
           {referrerLocal && (
             <SpacedSection>
-              <SectionTitle>{`Local Storage`}</SectionTitle>
+              <Header3>{`Local Storage`}</Header3>
               <Text>{referrerLocal.toString()}</Text>
             </SpacedSection>
           )}
-        </FlatCard>
+        </Card>
       </Wrapper>
     </PageWrapper>
   )

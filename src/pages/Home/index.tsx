@@ -1,4 +1,4 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { Step, StepNumber } from 'components/InstructionSteps'
 import QuestionHelper from 'components/QuestionHelper'
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import truncateString from 'utils/truncateString'
-import { SText, Heading, HeavyText, SectionTitle } from '../../components/Text'
+import { SText, Heading, HeavyText, Header3 } from '../../components/Text'
 
 const HomePageTitle = styled.h1`
   margin: 0;
@@ -37,13 +37,13 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <FlatCard>
+        <Card>
           <Section style={{ marginBottom: '1rem' }}>
             <HomePageTitle>{t(`Spanner Dapp`)}</HomePageTitle>
             <Heading>{t(`Dapp for Decentralized Collaboration`)}</Heading>
           </Section>
           <SpacedSection style={{ wordBreak: 'break-word' }}>
-            <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
+            <Header3>{t(`Blockchain Info`)}</Header3>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <RowBetween>
                 <HeavyText fontSize="14px">{t(`Connected to`)}:</HeavyText>
@@ -73,9 +73,9 @@ export default function Home() {
               </div>
             )}
           </SpacedSection>
-        </FlatCard>
+        </Card>
         <ContentWrapper>
-          <FlatCard style={{ textAlign: 'left' }}>
+          <Card style={{ textAlign: 'left' }}>
             <div
               style={{
                 display: 'block',
@@ -85,7 +85,7 @@ export default function Home() {
                 paddingBottom: '0.5rem',
               }}
             >
-              <SectionTitle>{t(`Get Started`)}</SectionTitle>
+              <Header3>{t(`Get Started`)}</Header3>
               <SText>
                 {t(`Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.`)}
               </SText>
@@ -154,7 +154,7 @@ export default function Home() {
                 <Step>{t(`Get aboard Spanner's BulletTrain`)}</Step>
               </Link>
             </SpacedSection>
-          </FlatCard>
+          </Card>
         </ContentWrapper>
       </Wrapper>
     </PageWrapper>

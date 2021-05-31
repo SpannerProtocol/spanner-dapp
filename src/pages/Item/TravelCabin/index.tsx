@@ -1,15 +1,22 @@
 import BN from 'bn.js'
 import Balance from 'components/Balance'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import Divider from 'components/Divider'
 import { GridCell, GridRow } from 'components/Grid'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading, SmallText, SText } from 'components/Text'
+import { HeavyText, ItalicText, Header2, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, ButtonWrapper, CollapseWrapper, Section, SpacedSection } from 'components/Wrapper'
+import {
+  BorderedWrapper,
+  ButtonWrapper,
+  CollapseWrapper,
+  ContentWrapper,
+  Section,
+  SpacedSection,
+} from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubTravelCabin, useSubTravelCabinInventory, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -336,112 +343,114 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
           estimatedFee={txInfo?.estimatedFee}
         />
       </TxModal>
-      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-        <Section>
-          <RowBetween>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <div style={{ display: 'flex', maxWidth: '25px', maxHeight: '25px', paddingRight: '0.5rem' }}>
-                {getCabinClassImage(travelCabinInfo.name.toString())}
+      <ContentWrapper>
+        <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <Section>
+            <RowBetween>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div style={{ display: 'flex', maxWidth: '25px', maxHeight: '25px', paddingRight: '0.5rem' }}>
+                  {getCabinClassImage(travelCabinInfo.name.toString())}
+                </div>
+                <Header2 style={{ display: 'flex', margin: '0' }}>
+                  {t(`TravelCabin`)} {travelCabinInfo.name.toString()}
+                </Header2>
               </div>
-              <SectionHeading style={{ display: 'flex', margin: '0' }}>
-                {t(`TravelCabin`)} {travelCabinInfo.name.toString()}
-              </SectionHeading>
-            </div>
-            {isConnected ? (
-              <CollapseWrapper>
-                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                  <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
-                    {t(`Buy`)}
-                  </ButtonPrimary>
-                </ButtonWrapper>
-                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                  <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                    {t(`Crowdfund`)}
-                  </ButtonSecondary>
-                </ButtonWrapper>
-              </CollapseWrapper>
-            ) : (
-              <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
-                <HeavyText fontSize={'12px'} color={theme.primary1}>
-                  {t(`Login for more`)}
-                </HeavyText>
-              </BorderedWrapper>
-            )}
-          </RowBetween>
-          <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
-            <SmallText>{t(`General Information`)}</SmallText>
-            <BorderedWrapper style={{ marginTop: '0' }}>
-              <Section>
-                <RowBetween>
-                  <SText>{t(`TravelCabin Id`)}</SText>
-                  <SText>{travelCabinIndex}</SText>
-                </RowBetween>
-                <RowBetween>
-                  <SText>{t(`Travel Class`)}</SText>
-                  <SText>{travelCabinInfo.name.toString()}</SText>
-                </RowBetween>
-                <RowBetween>
-                  <SText>{t(`Ticket Fare`)}</SText>
-                  <SText>
-                    {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} {token}
-                  </SText>
-                </RowBetween>
-                {expectedBlockTime && (
-                  <RowBetween>
-                    <SText>{t(`Ride Duration`)}</SText>
-                    <SText>
-                      {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
-                      {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)})
-                    </SText>
-                  </RowBetween>
-                )}
-              </Section>
-            </BorderedWrapper>
-            {inventoryCount && (
-              <>
-                <SmallText>{t(`Inventory`)}</SmallText>
-                <BorderedWrapper style={{ marginTop: '0' }}>
-                  <Section>
-                    <RowBetween>
-                      <SText>{t(`Available`)}</SText>
-                      <SText>{inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}</SText>
-                    </RowBetween>
-                    <RowBetween>
-                      <SText>{t(`Total`)}</SText>
-                      <SText>{inventoryCount[1].toNumber()}</SText>
-                    </RowBetween>
-                  </Section>
+              {isConnected ? (
+                <CollapseWrapper>
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleJoin}>
+                      {t(`Buy`)}
+                    </ButtonPrimary>
+                  </ButtonWrapper>
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
+                      {t(`Crowdfund`)}
+                    </ButtonSecondary>
+                  </ButtonWrapper>
+                </CollapseWrapper>
+              ) : (
+                <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
+                  <HeavyText fontSize={'12px'} color={theme.primary1}>
+                    {t(`Login for more`)}
+                  </HeavyText>
                 </BorderedWrapper>
-              </>
-            )}
-            <SmallText>{t(`Rewards`)}</SmallText>
-            <BorderedWrapper style={{ marginTop: '0' }}>
-              <Section>
-                <RowBetween>
-                  <SText>{t(`Total Bonus`)}</SText>
-                  <SText>
-                    {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals)} {token}
-                  </SText>
-                </RowBetween>
-                {expectedBlockTime && (
+              )}
+            </RowBetween>
+            <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
+              <SmallText>{t(`General Information`)}</SmallText>
+              <BorderedWrapper style={{ marginTop: '0' }}>
+                <Section>
                   <RowBetween>
-                    <SText>{t(`Total Yield`)}</SText>
-                    <SText>
-                      {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals)} ${token} (${`${getApy({
-                        totalYield: travelCabinInfo.yield_total.toBn(),
-                        totalDeposit: travelCabinInfo.deposit_amount.toBn(),
-                        chainDecimals: chainDecimals,
-                        blockTime: expectedBlockTime,
-                        period: travelCabinInfo.maturity,
-                      }).toString()}% APY`})`}
+                    <SText width="fit-content">{t(`TravelCabin Id`)}</SText>
+                    <SText width="fit-content">{travelCabinIndex}</SText>
+                  </RowBetween>
+                  <RowBetween>
+                    <SText width="fit-content">{t(`Travel Class`)}</SText>
+                    <SText width="fit-content">{travelCabinInfo.name.toString()}</SText>
+                  </RowBetween>
+                  <RowBetween>
+                    <SText width="fit-content">{t(`Ticket Fare`)}</SText>
+                    <SText width="fit-content">
+                      {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} {token}
                     </SText>
                   </RowBetween>
-                )}
-              </Section>
-            </BorderedWrapper>
-          </SpacedSection>
-        </Section>
-      </FlatCard>
+                  {expectedBlockTime && (
+                    <RowBetween>
+                      <SText width="fit-content">{t(`Ride Duration`)}</SText>
+                      <SText width="fit-content">
+                        {travelCabinInfo.maturity.toString()} {t(`Blocks`)} (~
+                        {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)})
+                      </SText>
+                    </RowBetween>
+                  )}
+                </Section>
+              </BorderedWrapper>
+              {inventoryCount && (
+                <>
+                  <SmallText>{t(`Inventory`)}</SmallText>
+                  <BorderedWrapper style={{ marginTop: '0' }}>
+                    <Section>
+                      <RowBetween>
+                        <SText width="fit-content">{t(`Available`)}</SText>
+                        <SText width="fit-content">{inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}</SText>
+                      </RowBetween>
+                      <RowBetween>
+                        <SText width="fit-content">{t(`Total`)}</SText>
+                        <SText width="fit-content">{inventoryCount[1].toNumber()}</SText>
+                      </RowBetween>
+                    </Section>
+                  </BorderedWrapper>
+                </>
+              )}
+              <SmallText>{t(`Rewards`)}</SmallText>
+              <BorderedWrapper style={{ marginTop: '0' }}>
+                <Section>
+                  <RowBetween>
+                    <SText width="fit-content">{t(`Total Bonus`)}</SText>
+                    <SText width="fit-content">
+                      {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals)} {token}
+                    </SText>
+                  </RowBetween>
+                  {expectedBlockTime && (
+                    <RowBetween>
+                      <SText width="fit-content">{t(`Total Yield`)}</SText>
+                      <SText width="fit-content">
+                        {`${formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals)} ${token} (${`${getApy({
+                          totalYield: travelCabinInfo.yield_total.toBn(),
+                          totalDeposit: travelCabinInfo.deposit_amount.toBn(),
+                          chainDecimals: chainDecimals,
+                          blockTime: expectedBlockTime,
+                          period: travelCabinInfo.maturity,
+                        }).toString()}% APY`})`}
+                      </SText>
+                    </RowBetween>
+                  )}
+                </Section>
+              </BorderedWrapper>
+            </SpacedSection>
+          </Section>
+        </Card>
+      </ContentWrapper>
     </>
   )
 }
@@ -455,56 +464,58 @@ function TravelCabinBuyers({ travelCabinIndex }: { travelCabinIndex: string }) {
 
   return (
     <>
-      <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-        <Section>
-          <div style={{ display: 'flex' }}>
-            <SectionHeading>{t(`Sold to`)}</SectionHeading>
-            <QuestionHelper
-              size={12}
-              backgroundColor={'transparent'}
-              text={t(`Passengers and DPOs that have purchased this TravelCabin class. Click for more information.`)}
-            />
-          </div>
-        </Section>
-        <SpacedSection style={{ marginTop: '0' }}>
-          {genesisTs &&
-            expectedBlockTime &&
-            sortedBuyers.map((buyer, index) => {
-              return (
-                <Link
-                  key={index}
-                  to={{ pathname: `/item/travelCabin/${travelCabinIndex}/inventory/${buyer[0][1]}` }}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <GridRow>
-                    <GridCell>
-                      <HeavyText fontSize="14px">
-                        {t(`Inventory`)} #{buyer[0][1].toString()}
-                      </HeavyText>
-                      <ItalicText fontSize="12px">
-                        {tsToRelative(
-                          blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
+      <ContentWrapper>
+        <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <Section>
+            <div style={{ display: 'flex' }}>
+              <Header2 width="fit-content">{t(`Sold to`)}</Header2>
+              <QuestionHelper
+                size={12}
+                backgroundColor={'transparent'}
+                text={t(`Passengers and DPOs that have purchased this TravelCabin class. Click for more information.`)}
+              />
+            </div>
+          </Section>
+          <SpacedSection style={{ marginTop: '0' }}>
+            {genesisTs &&
+              expectedBlockTime &&
+              sortedBuyers.map((buyer, index) => {
+                return (
+                  <Link
+                    key={index}
+                    to={{ pathname: `/item/travelCabin/${travelCabinIndex}/inventory/${buyer[0][1]}` }}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <GridRow>
+                      <GridCell>
+                        <HeavyText fontSize="14px">
+                          {t(`Inventory`)} #{buyer[0][1].toString()}
+                        </HeavyText>
+                        <ItalicText fontSize="12px">
+                          {tsToRelative(
+                            blockToTs(genesisTs, expectedBlockTime.toNumber(), buyer[1].purchase_blk.toNumber()) / 1000
+                          )}
+                        </ItalicText>
+                      </GridCell>
+                      <GridCell>
+                        {buyer[1].buyer.isPassenger && (
+                          <SText fontSize="12px">
+                            {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
+                          </SText>
                         )}
-                      </ItalicText>
-                    </GridCell>
-                    <GridCell>
-                      {buyer[1].buyer.isPassenger && (
-                        <SText fontSize="12px">
-                          {t(`Buyer`)}: {shortenAddr(buyer[1].buyer.asPassenger.toString(), 7)} ({t(`Passenger`)})
-                        </SText>
-                      )}
-                      {buyer[1].buyer.isDpo && (
-                        <SText fontSize="12px">
-                          {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
-                        </SText>
-                      )}
-                    </GridCell>
-                  </GridRow>
-                </Link>
-              )
-            })}
-        </SpacedSection>
-      </FlatCard>
+                        {buyer[1].buyer.isDpo && (
+                          <SText fontSize="12px">
+                            {t(`Buyer`)}: DPO #{buyer[1].buyer.asDpo.toString()}
+                          </SText>
+                        )}
+                      </GridCell>
+                    </GridRow>
+                  </Link>
+                )
+              })}
+          </SpacedSection>
+        </Card>
+      </ContentWrapper>
     </>
   )
 }

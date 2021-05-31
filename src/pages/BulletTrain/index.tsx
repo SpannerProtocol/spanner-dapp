@@ -1,4 +1,4 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { Heading } from 'components/Text'
 import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
@@ -65,7 +65,7 @@ export default function BulletTrain() {
               alignItems: 'center',
             }}
           >
-            <FlatCard>
+            <Card>
               <Section style={{ marginBottom: '1rem' }}>
                 <Heading>{t(`BulletTrain`)}</Heading>
               </Section>
@@ -75,7 +75,7 @@ export default function BulletTrain() {
                 </Section>
               )}
               <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0px" />
-            </FlatCard>
+            </Card>
           </Wrapper>
 
           <SectionContainer style={{ minHeight: '750px', marginBottom: '0', width: '100%', marginTop: '0' }}>
@@ -95,7 +95,7 @@ export default function BulletTrain() {
             alignItems: 'center',
           }}
         >
-          <FlatCard>
+          <Card>
             <Section style={{ marginBottom: '1rem', padding: '1rem' }}>
               <Heading>
                 {t(`Looks like {{project}} does not have a BulletTrain yet.`, {
@@ -103,7 +103,7 @@ export default function BulletTrain() {
                 })}
               </Heading>
             </Section>
-          </FlatCard>
+          </Card>
         </Wrapper>
       )}
     </PageWrapper>
