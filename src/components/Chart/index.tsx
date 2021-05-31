@@ -53,7 +53,6 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
       first: 60,
       offset: 0,
     },
-    pollInterval: 3000,
   })
   const [priceData, setPriceData] = useState<(ChartParams | undefined)[]>()
   const { t } = useTranslation()
