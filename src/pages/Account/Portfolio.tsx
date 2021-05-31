@@ -1,13 +1,13 @@
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { FlatCard } from 'components/Card'
 import CabinBuyerCard from 'components/Item/CabinBuyerCard'
 import { DpoProfileCard } from 'components/Item/DpoCard'
 import { WarningMsg, SectionHeading, StandardText } from 'components/Text'
-import { GridWrapper, Wrapper } from 'components/Wrapper'
+import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
 import userPortfolio from 'queries/graphql/userPortfolio'
-import React, { useMemo } from 'react'
+import React, { useCallback, useEffect, useContext, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import Circle from 'assets/svg/yellow-loader.svg'
@@ -15,22 +15,45 @@ import { CustomLightSpinner } from 'theme/components'
 import PortfolioSummary from './components/PortfolioSummary'
 import ProjectSettings from 'components/ProjectSettings'
 import { useProjectState } from 'state/project/hooks'
+import { RefreshCw } from 'react-feather'
+import { ThemeContext } from 'styled-components'
+
+interface Asset {
+  dpoIndexes: string[]
+  cabinIndexes: [string, string][]
+}
 
 export default function Portfolio(): JSX.Element {
   const wallet = useWallet()
   const { t } = useTranslation()
   const project = useProjectState()
+  const theme = useContext(ThemeContext)
+  const [loading, setLoading] = useState<boolean>(true)
+  const [assets, setAssets] = useState<Asset>({ dpoIndexes: [], cabinIndexes: [] })
 
-  const { loading, error, data } = useQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
+  const [loadPortfolio, { error, data }] = useLazyQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
     variables: {
       address: wallet && wallet.address ? wallet.address : '',
     },
-    pollInterval: 3000,
   })
 
-  const userItems = useMemo(() => {
+  const getPortfolioData = useCallback(() => {
+    setLoading(true)
+    loadPortfolio()
+  }, [loadPortfolio])
+
+  // on init
+  useEffect(() => {
+    loadPortfolio()
+  }, [loadPortfolio])
+
+  useEffect(() => {
     if (!data || !data.account) return
     let userDpos: string[] = []
+    setAssets({
+      dpoIndexes: [],
+      cabinIndexes: [],
+    })
     if (data.account.dpos) {
       userDpos = data.account.dpos.split(',')
       userDpos = userDpos.sort((a, b) => parseInt(a) - parseInt(b))
@@ -40,11 +63,15 @@ export default function Portfolio(): JSX.Element {
       const cabinPairs = data.account.travelCabins.split(',')
       userCabins = cabinPairs.map<[string, string]>((indexes) => indexes.split('-') as [string, string])
     }
-    return {
+    setAssets({
       dpoIndexes: userDpos,
       cabinIndexes: userCabins,
+    })
+    setLoading(false)
+    return () => {
+      setAssets({ dpoIndexes: [], cabinIndexes: [] })
     }
-  }, [data])
+  }, [data, loading])
 
   return (
     <>
@@ -68,12 +95,7 @@ export default function Portfolio(): JSX.Element {
         <>
           {error && <WarningMsg>{error.message}</WarningMsg>}
           <Wrapper style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-            {loading && (
-              <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-                <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
-              </div>
-            )}
-            {userItems && userItems.dpoIndexes.length === 0 && userItems.cabinIndexes.length === 0 && (
+            {assets.dpoIndexes.length === 0 && assets.cabinIndexes.length === 0 && (
               <>
                 <FlatCard
                   style={{
@@ -88,7 +110,8 @@ export default function Portfolio(): JSX.Element {
                 >
                   <StandardText>
                     <Trans>
-                      Could not find any Portfolio Items. Check out our <Link to="/catalogue">Growth</Link> section.
+                      Could not find any Portfolio Items. Check out our <Link to="/bullettrain/dpos">Growth</Link>{' '}
+                      section.
                     </Trans>
                   </StandardText>
                 </FlatCard>
@@ -101,26 +124,41 @@ export default function Portfolio(): JSX.Element {
               address={wallet.address}
               selectedToken={project.selectedProject ? project.selectedProject.token : 'BOLT'}
             />
-            {userItems && userItems.cabinIndexes.length > 0 && (
-              <>
-                <SectionHeading>{t(`Your TravelCabins`)}</SectionHeading>
-                <GridWrapper columns="2">
-                  {userItems.cabinIndexes.map((inventory, index) => {
-                    return <CabinBuyerCard key={index} cabinIndex={inventory[0]} inventoryIndex={inventory[1]} />
-                  })}
-                </GridWrapper>
-              </>
+            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+              <SectionHeading margin="0">{t(`Assets`)}</SectionHeading>
+              <IconWrapper margin="0 0.5rem" onClick={getPortfolioData}>
+                <RefreshCw size={'16px'} color={theme.text3} />
+              </IconWrapper>
+            </div>
+            {loading && (
+              <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
+                <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
+              </div>
             )}
-            {userItems && userItems.dpoIndexes.length > 0 && (
+            {!loading && (
               <>
-                <div style={{ display: 'flex', paddingTop: '0.5rem' }}>
-                  <SectionHeading>{t(`Your DPOs`)}</SectionHeading>
-                </div>
-                <GridWrapper columns="2">
-                  {userItems.dpoIndexes.map((dpoIndex, index) => (
-                    <DpoProfileCard key={index} dpoIndex={dpoIndex} />
-                  ))}
-                </GridWrapper>
+                {assets.cabinIndexes.length > 0 && (
+                  <>
+                    <SectionHeading>{t(`Your TravelCabins`)}</SectionHeading>
+                    <GridWrapper columns="2">
+                      {assets.cabinIndexes.map((inventory, index) => {
+                        return <CabinBuyerCard key={index} cabinIndex={inventory[0]} inventoryIndex={inventory[1]} />
+                      })}
+                    </GridWrapper>
+                  </>
+                )}
+                {assets.dpoIndexes.length > 0 && (
+                  <>
+                    <div style={{ display: 'flex', paddingTop: '0.5rem' }}>
+                      <SectionHeading>{t(`Your DPOs`)}</SectionHeading>
+                    </div>
+                    <GridWrapper columns="2">
+                      {assets.dpoIndexes.map((dpoIndex, index) => (
+                        <DpoProfileCard key={index} dpoIndex={dpoIndex} />
+                      ))}
+                    </GridWrapper>
+                  </>
+                )}
               </>
             )}
           </Wrapper>

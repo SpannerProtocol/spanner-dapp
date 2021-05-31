@@ -181,18 +181,14 @@ export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string
   `};
 `
 
-export const IconWrapper = styled.div`
+export const IconWrapper = styled.div<{ padding?: string; margin?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.2rem;
-  border: none;
-  background: none;
-  outline: none;
+  padding: ${({ padding }) => (padding ? padding : '0.2rem')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  background: transparent;
   cursor: pointer;
-  border-radius: 36px;
-  background-color: ${({ theme }) => theme.bg2};
-  color: ${({ theme }) => theme.text2};
 
   :hover,
   :focus {
