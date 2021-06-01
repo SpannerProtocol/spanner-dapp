@@ -1,14 +1,14 @@
-import { useQuery } from '@apollo/client'
+import { useLazyQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
-import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import { FlatCard } from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { HeavyText, SectionHeading, StandardText } from 'components/Text'
-import { ContentWrapper, SpacedSection } from 'components/Wrapper'
+import { ContentWrapper, IconWrapper, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
+import { LocalSpinner } from 'pages/Spinner'
 import { createdDpoAllArgsOnly } from 'queries/graphql/createdDpoAllArgsOnly'
 import { dposTargetPurchasedIncludes } from 'queries/graphql/dposTargetPurchasedIncludes'
 import { CreatedDpoAllArgsOnly } from 'queries/graphql/types/CreatedDpoAllArgsOnly'
@@ -17,12 +17,11 @@ import {
   DposTargetPurchasedIncludesVariables,
 } from 'queries/graphql/types/DposTargetPurchasedIncludes'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
-import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
+import { CheckCircle, ChevronRight, Crosshair, PlusCircle, RefreshCw, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
-import { CustomLightSpinner } from 'theme/components'
 import { blocksToCountDown } from 'utils/formatBlocks'
 
 const Row = styled.div`
@@ -143,30 +142,42 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
 
 export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { api, connected } = useApi()
-  const { error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
+  const [
+    getCreatedData,
+    { loading: createdLoading, error: createdError, data: createdData },
+  ] = useLazyQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
     variables: {},
   })
-  const { error: purchasedError, data: purchasedData } = useQuery<
+  const [getPurchasedData, { loading: purchasedLoading, error: purchasedError, data: purchasedData }] = useLazyQuery<
     DposTargetPurchasedIncludes,
     DposTargetPurchasedIncludesVariables
   >(dposTargetPurchasedIncludes, {
     variables: {
       includes: 'dpo',
     },
+    fetchPolicy: 'network-only',
   })
-  // this component might take awhile so use a loader
-  const [loading, setLoading] = useState<boolean>(true)
   const { t } = useTranslation()
   const { lastBlock } = useBlockManager()
   const [purchased, setPurchased] = useState<number[][]>([])
   const [created, setCreated] = useState<{ targeter: number; defaultTarget: number; defaultSeats: number }[]>([])
   const [targeters, setTargeters] = useState<Targeter[] | undefined>([])
+  const theme = useContext(ThemeContext)
+
+  const refreshData = useCallback(() => {
+    getCreatedData()
+    getPurchasedData()
+  }, [getCreatedData, getPurchasedData])
+
+  useEffect(() => {
+    getCreatedData()
+    getPurchasedData()
+  }, [getCreatedData, getPurchasedData])
 
   // Filter all CreatedDpo events
   useEffect(() => {
     // check all createdDpo
     if (!createdData || !createdData.events) return
-    setLoading(true)
     const createdIndexes: { targeter: number; defaultTarget: number; defaultSeats: number }[] = []
     // args: [dpoName, target, managerSeats, baseSeats, directReferralRate, expiry, referrer]
     createdData.events.nodes.forEach((node) => {
@@ -187,7 +198,6 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     })
     setCreated(createdIndexes)
     if (!purchasedData || !purchasedData.events) return
-    setLoading(true)
     const createdDpoIndexes = createdIndexes.map((item) => item.targeter)
     const dposPurchasedTarget: number[][] = []
     purchasedData.events.nodes.forEach((node) => {
@@ -218,12 +228,10 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     let unsubscribe: () => void
     if (createdOrPurchased.length === 0) {
       setTargeters(undefined)
-      setLoading(false)
       return
     }
     api.query.bulletTrain.dpos
       .multi(createdOrPurchased, (results: Option<DpoInfo>[]) => {
-        setLoading(false)
         // Reset targeters if new query
         const allTargets: Targeter[] = []
         results.forEach((result) => {
@@ -275,16 +283,21 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     <>
       {createdError || purchasedError ? null : (
         <>
-          {loading && (
+          {(createdLoading || purchasedLoading) && (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
+              <LocalSpinner />
             </div>
           )}
-          {targeters && getTargeters(targeters) && (
+          {!(createdLoading || purchasedLoading) && targeters && getTargeters(targeters) && (
             <ContentWrapper>
               <FlatCard>
                 <SpacedSection>
-                  <SectionHeading style={{ margin: '0' }}>{t(`Targeted by`)}</SectionHeading>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <SectionHeading style={{ margin: '0' }}>{t(`Targeted by`)}</SectionHeading>
+                    <IconWrapper margin="0 0.5rem">
+                      <RefreshCw onClick={() => refreshData()} size={'16px'} color={theme.text3} />
+                    </IconWrapper>
+                  </div>
                 </SpacedSection>
                 {getTargeters(targeters)}
               </FlatCard>
