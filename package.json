@@ -169,5 +169,6 @@
     "use-count-up": "^2.2.5",
     "wcag-contrast": "^3.0.0",
     "webpack-cli": "^4.3.0"
-  }
+  },
+  "version": "0.0.0"
 }
