@@ -62,11 +62,8 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
       if (entry[1].isNone) return
       const targetDpoInfo = entry[1].unwrapOrDefault()
       if (targetDpoInfo.state.isCreated) {
-        // Only valid on creation dpos. will remove this once it's updated on the chain.
-        if (dpoInfo.expiry_blk.lt(targetDpoInfo.expiry_blk)) {
-          // dpoInfo's deposit amount >= 1 of target's seats
-          dpoInfo.vault_deposit.gte(targetDpoInfo.amount_per_seat) && validDpos.push(targetDpoInfo)
-        }
+        // dpoInfo's deposit amount >= 1 of target's seats
+        dpoInfo.vault_deposit.gte(targetDpoInfo.amount_per_seat) && validDpos.push(targetDpoInfo)
       }
     })
     return validDpos
@@ -80,14 +77,6 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
           if (!cabinOptions) return
           setTargetCabinOptions(
             cabinOptions.map((option) => {
-              console.log(
-                `${option.name.toString()} - ${formatToUnit(
-                  option.deposit_amount.toBn(),
-                  chainDecimals,
-                  0,
-                  true
-                )} ${option.token_id.asToken.toString()}`
-              )
               return {
                 label: `${option.name.toString()} - ${formatToUnit(
                   option.deposit_amount.toBn(),
