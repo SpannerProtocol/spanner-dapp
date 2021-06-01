@@ -433,6 +433,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                         chainDecimals: chainDecimals,
                         blockTime: expectedBlockTime,
                         period: travelCabinInfo.maturity,
+                        precision: 2,
                       }).toString()}% APY`})`}
                     </StandardText>
                   </RowBetween>
