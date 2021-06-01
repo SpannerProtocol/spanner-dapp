@@ -525,5 +525,6 @@
   "Transaction succeeded": "Transaction succeeded",
   "Submitted to Block": "Submitted to Block",
   "Waiting for signature": "Waiting for signature",
-  "Assets": "Assets"
+  "Assets": "Assets",
+  "Seats to Purchase": "Seats to Purchase"
 }

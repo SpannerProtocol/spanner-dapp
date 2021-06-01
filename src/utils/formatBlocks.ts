@@ -43,7 +43,12 @@ export function blockToHours(block: BlockNumber | u32 | string | BN, blockTime: 
  * @param expiredText String to show user if countdown = 0
  * @returns String of time in format 'd h m s' or expiredText
  */
-export function blocksToCountDown(block: BlockNumber | u32 | string | BN, blockTime: Moment, expiredText?: string) {
+export function blocksToCountDown(
+  block: BlockNumber | u32 | string | BN,
+  blockTime: Moment,
+  expiredText?: string,
+  exclude?: string[]
+) {
   let blockBn: BN
   if (typeof block === 'string') {
     blockBn = new BN(block)
@@ -63,6 +68,24 @@ export function blocksToCountDown(block: BlockNumber | u32 | string | BN, blockT
   // If the count down is finished, return expired text
   if (expiredText && nowInMs <= 0) {
     return expiredText
+  }
+
+  if (exclude) {
+    const countDownMap: { [key: string]: number } = {
+      d: days,
+      h: hours,
+      m: minutes,
+      s: seconds,
+    }
+    const include: string[] = ['d', 'h', 'm', 's']
+    exclude.forEach((excluded) => {
+      const excludedIndex = include.indexOf(excluded)
+      if (excludedIndex > -1) {
+        include.splice(excludedIndex, 1)
+      }
+    })
+    const result = include.map((included) => `${countDownMap[included]}${included}`)
+    return result.join(' ')
   }
   return countDown
 }
