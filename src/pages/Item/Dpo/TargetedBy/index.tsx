@@ -67,7 +67,6 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
   const { expectedBlockTime } = useBlockManager()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  // console.log('purchasedIndex', targeter.purchasedIndex)
   const purchasedDpoInfo = useSubDpo(targeter.purchasedIndex)
   const createdDpoInfo = useSubDpo(targeter.createdIndex)
   const [targetState, setTargetState] = useState<{ defaultDpoName?: string; purchasedDpoName?: string }>({})
@@ -92,15 +91,15 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
         <Cell>
           <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
             <div style={{ display: 'block' }}>
-              <div style={{ display: 'flex' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 <HeavyText mobileFontSize="14px" style={{ paddingRight: '0.5rem' }}>
                   {targeter.dpoInfo.name.toString()}
                 </HeavyText>
+                {expectedBlockTime && createdDpoInfo && !targeter.purchasedIndex && targeter.createdIndex && (
+                  <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`), ['m', 's'])}</StandardText>
+                )}
               </div>
-              {expectedBlockTime && !targeter.purchasedIndex && !targeter.createdIndex && (
-                <StandardText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`))}</StandardText>
-              )}
-              <div style={{ display: 'flex', alignItems: 'center', padding: '0.2rem 0', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', padding: '0.4rem 0', flexWrap: 'wrap' }}>
                 {expectedBlockTime && targeter.createdIndex && (
                   <>
                     <PlusCircle size={14} strokeWidth={3} color={theme.green2} style={{ marginRight: '0.5rem' }} />

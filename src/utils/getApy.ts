@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import type { Moment } from '@polkadot/types/interfaces'
 import { blockToDays } from './formatBlocks'
 import { u32 } from '@polkadot/types'
-
+import { Decimal } from 'decimal.js'
 interface GetApyParams {
   totalYield: BN
   totalDeposit: BN
@@ -23,13 +23,23 @@ export default function getApy({
   period,
   precision,
 }: GetApyParams) {
-  const cd = new BN(chainDecimals)
-  const yieldNum = parseFloat(totalYield.div(new BN(10).pow(cd)).toString())
-  const depositNum = parseFloat(totalDeposit.div(new BN(10).pow(cd)).toString())
+  const cd = new Decimal(chainDecimals)
+  const yieldDec = new Decimal(totalYield.toString())
+  const depositDec = new Decimal(totalDeposit.toString())
+  const yieldInUnit = yieldDec.div(new Decimal(10).pow(cd))
+  const depositInUnit = depositDec.div(new Decimal(10).pow(cd))
+  // period is the maturity
   if (period) {
     const periodInDays = parseFloat(blockToDays(period, blockTime, 8))
-    return ((yieldNum / depositNum) * (360 / periodInDays) * 100).toFixed(precision ? precision : 0)
+    return yieldInUnit
+      .div(depositInUnit)
+      .mul(new Decimal(360 / periodInDays))
+      .mul(100)
+      .toFixed(precision ? precision : 0)
   } else {
-    return ((yieldNum / depositNum) * 360).toFixed(precision ? precision : 0)
+    return yieldInUnit
+      .div(depositInUnit)
+      .mul(360)
+      .toFixed(precision ? precision : 0)
   }
 }
