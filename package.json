@@ -1,6 +1,7 @@
 {
   "name": "spanner-dapp",
   "description": "Spanner Dapp",
+  "version": "1.2.1",
   "homepage": ".",
   "private": true,
   "resolutions": {
@@ -169,6 +170,5 @@
     "use-count-up": "^2.2.5",
     "wcag-contrast": "^3.0.0",
     "webpack-cli": "^4.3.0"
-  },
-  "version": "1.2.2"
+  }
 }
