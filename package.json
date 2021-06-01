@@ -1,7 +1,7 @@
 {
   "name": "spanner-dapp",
   "description": "Spanner Dapp",
-  "version": "1.2.4",
+  "version": "1.2.2",
   "homepage": ".",
   "private": true,
   "resolutions": {
