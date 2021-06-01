@@ -74,7 +74,7 @@ export default function BulletTrain() {
                   <Milestones />
                 </Section>
               )}
-              <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0px" />
+              <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0px" level={'primary'} />
             </Card>
           </Wrapper>
 

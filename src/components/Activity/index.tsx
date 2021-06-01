@@ -68,6 +68,7 @@ export default function Activity() {
             margin="0"
             fontSize="18px"
             mobileFontSize="14px"
+            level={'secondary'}
           />
         </SectionContainer>
         <SectionContainer style={{ marginTop: '0' }}>

@@ -69,10 +69,10 @@ export function colors(darkMode: boolean): Colors {
 
     // secondary colors
     secondary1: darkMode ? '#262A41' : '#262A41',
-    secondary2: darkMode ? '#2a2e47' : '#2a2e47',
-    secondary3: darkMode ? '#2c304b' : '#2c304b',
-    secondary4: darkMode ? '#313754' : '#313754',
-    secondary5: darkMode ? '#AD074F' : '#AD074F',
+    secondary2: darkMode ? '#2a2e47' : '#313754',
+    secondary3: darkMode ? '#2c304b' : '#393f61',
+    secondary4: darkMode ? '#313754' : '#424971',
+    secondary5: darkMode ? '#AD074F' : '#5a618b',
 
     // other
     red1: '#EC3D3D',

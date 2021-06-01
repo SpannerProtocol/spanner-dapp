@@ -152,7 +152,7 @@ export default function Account() {
               </Section>
             </BorderedWrapper>
           )}
-          <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
+          <RouteTabBar activeTab={activeTab} tabs={tabData} level={'primary'} margin="0" />
         </Card>
       </CenterWrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
