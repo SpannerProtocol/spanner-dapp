@@ -425,12 +425,6 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
               <SmallText>{t(`Rewards`)}</SmallText>
               <BorderedWrapper style={{ marginTop: '0' }}>
                 <Section>
-                  <RowBetween>
-                    <SText width="fit-content">{t(`Total Bonus`)}</SText>
-                    <SText width="fit-content">
-                      {formatToUnit(travelCabinInfo.bonus_total.toString(), chainDecimals)} {token}
-                    </SText>
-                  </RowBetween>
                   {expectedBlockTime && (
                     <RowBetween>
                       <SText width="fit-content">{t(`Total Yield`)}</SText>
@@ -441,6 +435,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                           chainDecimals: chainDecimals,
                           blockTime: expectedBlockTime,
                           period: travelCabinInfo.maturity,
+                          precision: 2,
                         }).toString()}% APY`})`}
                       </SText>
                     </RowBetween>

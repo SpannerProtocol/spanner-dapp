@@ -212,21 +212,6 @@ function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoIn
                       </div>
                     </>
                   )}
-                  {targetDpo.state.isRunning && (
-                    <>
-                      <IconWrapper>
-                        <Icon src={WaitingIcon} />
-                      </IconWrapper>
-                      <div style={{ display: 'flex' }}>
-                        <HeavyText>{t(`Waiting for`)}</HeavyText>
-                        <HeavyText
-                          color={theme.blue2}
-                          padding="0 0.25rem"
-                        >{` ${targetDpo.name.toString()} `}</HeavyText>
-                        <HeavyText>{t(`to release yield`)}</HeavyText>
-                      </div>
-                    </>
-                  )}
                 </div>
               </CenteredRow>
             </Link>
@@ -284,13 +269,15 @@ interface HighlightsProps {
 
 export default function Highlights({ dpoInfo }: HighlightsProps) {
   const { t } = useTranslation()
+  const targetDpo = useSubDpo(dpoInfo.target.isDpo ? dpoInfo.target.asDpo[0].toString() : null)
+
   if (!(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning)) return null
 
   const getHighlight = () => {
     if (dpoInfo.state.isCreated) {
       return <CreateHighlights dpoInfo={dpoInfo} />
     }
-    if (dpoInfo.state.isActive && dpoInfo.target.isDpo) {
+    if (targetDpo && dpoInfo.state.isActive && dpoInfo.target.isDpo && !targetDpo.empty_seats.isZero()) {
       return <ActiveHighlights dpoInfo={dpoInfo} />
     }
     if (dpoInfo.state.isRunning) {

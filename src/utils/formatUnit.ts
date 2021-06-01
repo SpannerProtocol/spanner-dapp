@@ -1,6 +1,7 @@
 import { formatBalance } from '@polkadot/util'
 import BN from 'bn.js'
 import { bnToHumanNumber, formatPrecision, toHumanNumber } from './formatNumbers'
+import { Decimal } from 'decimal.js'
 
 /**
  * Typeguard for BN
@@ -29,6 +30,11 @@ export function formatToUnit(num: number | BN | string, cd: number, precision = 
     } else {
       return toHumanNumber(num, precision)
     }
+  }
+  if (num.toString().length <= cd) {
+    const numDec = new Decimal(num.toString())
+    const cdDec = new Decimal(10 ** cd)
+    return numDec.div(cdDec).toNumber().toLocaleString()
   }
   const numStr = formatBalance(num.toString(), { withSi: false, withUnit: false, forceUnit: '-', decimals: cd })
   return formatPrecision(numStr, precision)

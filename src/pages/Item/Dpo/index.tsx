@@ -24,9 +24,9 @@ import {
   Section,
   StateWrapper,
 } from 'components/Wrapper'
-import useDpoFees from 'hooks/useDpoFees'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
+import useDpoFees from 'hooks/useDpoFees'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useDpoManager, useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -765,7 +765,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </RowBetween>
               {dpoInfo.target.isDpo && (
                 <RowBetween>
-                  <SText>{t(`Seats Purchased`)}</SText>
+                  <SText>{t(`Seats to Purchase`)}</SText>
                   <SText>{dpoInfo.target.asDpo[1].toString()}</SText>
                 </RowBetween>
               )}
@@ -773,6 +773,12 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <SText>{t(`Amount`)}</SText>
                 <SText>
                   {formatToUnit(dpoInfo.target_amount.toString(), chainDecimals)} {token}
+                </SText>
+              </RowBetween>
+              <RowBetween>
+                <SText>{t(`Cost per Seat`)}</SText>
+                <SText>
+                  {formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} {token}
                 </SText>
               </RowBetween>
               {expectedBlockTime && (
@@ -857,9 +863,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
               </RowBetween>
               <RowBetween>
                 <SText>{t(`Direct Referral Rate`)}</SText>
-                <SText>{`${dirRefRate} (${t(`Direct`)}) + ${100 - dirRefRate} (${t(
-                  `2nd`
-                )}) = 100%`}</SText>
+                <SText>{`${dirRefRate} (${t(`Direct`)}) + ${100 - dirRefRate} (${t(`2nd`)}) = 100%`}</SText>
               </RowBetween>
             </Section>
           </BorderedWrapper>

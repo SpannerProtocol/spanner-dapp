@@ -182,7 +182,6 @@ function signAndSend({
     setPendingMsg(undefined)
     setHash(undefined)
     setErrorMsg(`${t(`Transaction failed`)}: ${err}`)
-    console.log('Transaction failed ', err)
   })
   dismissModal()
 }

@@ -159,6 +159,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                       chainDecimals: chainDecimals,
                       blockTime: expectedBlockTime,
                       period: travelCabinInfo.maturity,
+                      precision: 2,
                     })}%`}
                   </>
                 )}

@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext, useEffect, useCallback, useState, useMemo } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useReducer, useState } from 'react'
 import { createPortal } from 'react-dom'
 import Toast from '../components/Toast'
 
@@ -64,11 +64,12 @@ export const ToastProvider = (props: ToastProviderProps) => {
   // Add queued items to dispatch, then empty queue
   useEffect(() => {
     if (toastQueue.length === 0) return
-    toastQueue.forEach((item) => {
-      toastDispatch(item)
-    })
-    // should be fine to modify state within the same useeffect because it will stay empty
-    setToastQueue([])
+    for (let i = 0; i < toastQueue.length; i++) {
+      const item = toastQueue.pop()
+      if (item) {
+        toastDispatch(item)
+      }
+    }
   }, [toastQueue])
 
   // Remove Items after certain time
