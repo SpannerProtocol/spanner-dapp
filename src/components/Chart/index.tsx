@@ -1,8 +1,8 @@
-import { useQuery } from '@apollo/client'
-import Circle from 'assets/svg/yellow-loader.svg'
+import { useLazyQuery } from '@apollo/client'
 import { StandardText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
+import { LocalSpinner } from 'pages/Spinner'
 import { darken } from 'polished'
 import pairPrice from 'queries/graphql/pairPrice'
 import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
@@ -10,7 +10,6 @@ import React, { useContext, useEffect, useState } from 'react'
 import { useMedia } from 'react-use'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import styled, { ThemeContext } from 'styled-components'
-import { CustomLightSpinner } from 'theme/components'
 import { useTranslation } from 'translate'
 import { Dispatcher } from 'types/dispatcher'
 
@@ -47,15 +46,20 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
   const textColor = theme.text3
   const color = theme.primary1
   const below1080 = useMedia('(max-width: 1080px)')
-  const { loading, error, data } = useQuery<PairPrice, PairPriceVariables>(pairPrice, {
+  const [loadPriceData, { loading, error, data }] = useLazyQuery<PairPrice, PairPriceVariables>(pairPrice, {
     variables: {
       pairId: `${token1}-${token2}`,
       first: 60,
       offset: 0,
     },
+    fetchPolicy: 'network-only',
   })
   const [priceData, setPriceData] = useState<(ChartParams | undefined)[]>()
   const { t } = useTranslation()
+
+  useEffect(() => {
+    loadPriceData()
+  }, [loadPriceData])
 
   useEffect(() => {
     if (!data || !data.pair) return
@@ -83,7 +87,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
 
   return (
     <>
-      {loading && <CustomLightSpinner src={Circle} alt="loader" size={'28px'} />}
+      {loading && <LocalSpinner />}
       {error && <StandardText>{t(`Price data unavailable. Please try again later.`)}</StandardText>}
       {priceData && priceData.length > 0 && (
         <ChartWrapper>

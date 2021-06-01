@@ -10,13 +10,12 @@ import userPortfolio from 'queries/graphql/userPortfolio'
 import React, { useCallback, useEffect, useContext, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import Circle from 'assets/svg/yellow-loader.svg'
-import { CustomLightSpinner } from 'theme/components'
 import PortfolioSummary from './components/PortfolioSummary'
 import ProjectSettings from 'components/ProjectSettings'
 import { useProjectState } from 'state/project/hooks'
 import { RefreshCw } from 'react-feather'
 import { ThemeContext } from 'styled-components'
+import { LocalSpinner } from 'pages/Spinner'
 
 interface Asset {
   dpoIndexes: string[]
@@ -28,17 +27,16 @@ export default function Portfolio(): JSX.Element {
   const { t } = useTranslation()
   const project = useProjectState()
   const theme = useContext(ThemeContext)
-  const [loading, setLoading] = useState<boolean>(true)
   const [assets, setAssets] = useState<Asset>({ dpoIndexes: [], cabinIndexes: [] })
 
-  const [loadPortfolio, { error, data }] = useLazyQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
+  const [loadPortfolio, { loading, error, data }] = useLazyQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
     variables: {
       address: wallet && wallet.address ? wallet.address : '',
     },
+    fetchPolicy: 'network-only',
   })
 
   const getPortfolioData = useCallback(() => {
-    setLoading(true)
     loadPortfolio()
   }, [loadPortfolio])
 
@@ -67,7 +65,6 @@ export default function Portfolio(): JSX.Element {
       dpoIndexes: userDpos,
       cabinIndexes: userCabins,
     })
-    setLoading(false)
     return () => {
       setAssets({ dpoIndexes: [], cabinIndexes: [] })
     }
@@ -130,11 +127,7 @@ export default function Portfolio(): JSX.Element {
                 <RefreshCw size={'16px'} color={theme.text3} />
               </IconWrapper>
             </div>
-            {loading && (
-              <div style={{ display: 'flex', width: '100%', justifyContent: 'center' }}>
-                <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
-              </div>
-            )}
+            {loading && <LocalSpinner />}
             {!loading && (
               <>
                 {assets.cabinIndexes.length > 0 && (
