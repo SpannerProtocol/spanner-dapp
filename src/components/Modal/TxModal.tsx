@@ -1,6 +1,6 @@
 import { ButtonPrimary } from 'components/Button'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { ModalTitle } from 'components/Text'
+import { HeavyText } from 'components/Text'
 import { ModalWrapper, Section } from 'components/Wrapper'
 import React, { useContext } from 'react'
 import { AlertTriangle } from 'react-feather'
@@ -18,25 +18,22 @@ interface ConfirmModalProps {
   content: JSX.Element
 }
 
-// const ImageWrapper = styled.div`
-//   text-align: center;
-//   width: 100%;
-// `
-
 export function ConfirmModal({ isOpen, onDismiss, onConfirm, title, buttonText, content }: ConfirmModalProps) {
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
       <ModalWrapper>
         <Section>
           <RowBetween>
-            <ModalTitle>{title}</ModalTitle>
+            <HeavyText fontSize="16px" mobileFontSize="14px">
+              {title}
+            </HeavyText>
             <CloseIcon onClick={onDismiss} />
           </RowBetween>
         </Section>
         {content}
         <Section>
           <RowBetween>
-            <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>{buttonText}</ButtonPrimary>
           </RowBetween>
         </Section>
       </ModalWrapper>
@@ -78,7 +75,9 @@ export default function TxModal({
         <ModalWrapper>
           <Section>
             <RowBetween>
-              <ModalTitle>{t(`Error`)}</ModalTitle>
+              <HeavyText fontSize="16px" mobileFontSize="14px">
+                {t(`Error`)}
+              </HeavyText>
               <CloseIcon onClick={onDismiss} />
             </RowBetween>
           </Section>
@@ -89,7 +88,7 @@ export default function TxModal({
             <CenteredRow>{txError}</CenteredRow>
           </Section>
           <Section>
-            <ButtonPrimary onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
+            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
           </Section>
         </ModalWrapper>
       </Modal>
@@ -102,7 +101,9 @@ export default function TxModal({
       <ModalWrapper>
         <Section>
           <RowBetween>
-            <ModalTitle>{title}</ModalTitle>
+            <HeavyText fontSize="16px" mobileFontSize="14px">
+              {title}
+            </HeavyText>
             <CloseIcon onClick={onDismiss} />
           </RowBetween>
         </Section>
@@ -114,7 +115,7 @@ export default function TxModal({
                 {buttonText}
               </ButtonPrimary>
             ) : (
-              <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+              <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>{buttonText}</ButtonPrimary>
             )}
           </RowBetween>
         </Section>

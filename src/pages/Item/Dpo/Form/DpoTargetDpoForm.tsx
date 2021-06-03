@@ -165,7 +165,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
             </SText>
           </RowBetween>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
                 text={t(`The number of seats to buy from your Target DPO.`)}
@@ -178,13 +178,13 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
             </SText>
           </RowBetween>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Your Deposit`)}</SText>
               <QuestionHelper
                 text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
                 size={10}
                 backgroundColor={'#fff'}
-              ></QuestionHelper>
+              />
             </RowFixed>
             <SText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
           </RowBetween>
@@ -207,20 +207,20 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         </Section>
         <BorderedWrapper>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Management Fee`)}</SText>
               <QuestionHelper
                 text={t(`Management Fee is charged on all yield releases`)}
                 size={10}
                 backgroundColor={'#fff'}
-              ></QuestionHelper>
+              />
             </RowFixed>
             <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
               baseFee + managerSeats
             )}%`}</SText>
           </RowBetween>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Referral Rates`)} (%)</SText>
               <QuestionHelper
                 text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}

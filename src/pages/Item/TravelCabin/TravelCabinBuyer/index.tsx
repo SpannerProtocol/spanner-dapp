@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import Card from 'components/Card'
 import { RowBetween } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { DataTokenName, Heading, Header2, SmallText, SText } from 'components/Text'
+import { TokenText, Heading, Header2, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -70,7 +70,7 @@ function TravelCabinBuyersInfo({
                       <StatValue small={true}>
                         {formatToUnit(buyer[1].yield_withdrawn.toString(), chainDecimals, 2)} /{' '}
                         {formatToUnit(travelCabinInfo.yield_total.toString(), chainDecimals, 2)}{' '}
-                        <DataTokenName color="#fff"> {travelCabinInfo.token_id.asToken.toString()}</DataTokenName>
+                        <TokenText color="#fff"> {travelCabinInfo.token_id.asToken.toString()}</TokenText>
                       </StatValue>
                       <StatText>{t(`Yield Withdrawn`)}</StatText>
                     </StatContainer>
@@ -78,7 +78,7 @@ function TravelCabinBuyersInfo({
                       <StatContainer maxWidth="none" background={statsBg}>
                         <StatValue small={true}>
                           {yieldAvailable}
-                          <DataTokenName color="#fff"> {travelCabinInfo.token_id.asToken.toString()}</DataTokenName>
+                          <TokenText color="#fff"> {travelCabinInfo.token_id.asToken.toString()}</TokenText>
                         </StatValue>
                         <StatText>{t(`Yield Available`)}</StatText>
                       </StatContainer>

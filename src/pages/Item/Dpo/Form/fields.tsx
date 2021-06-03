@@ -138,7 +138,7 @@ export function DpoManagerSeats({
       {seatCap && (
         <Section>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
               <QuestionHelper
                 text={t(

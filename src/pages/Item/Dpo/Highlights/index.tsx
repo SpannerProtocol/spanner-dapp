@@ -1,7 +1,7 @@
 import Card from 'components/Card'
 import { CircleProgress } from 'components/ProgressBar'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { DataTokenName, HeavyText, Header3, SText } from 'components/Text'
+import { TokenText, HeavyText, Header3, SText } from 'components/Text'
 import { ContentWrapper, PaddedSection, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useDpoFees from 'hooks/useDpoFees'
@@ -99,17 +99,21 @@ function RunningHighlightsCabinTarget({
               to={`/item/travelCabin/${cabinIndex.toString()}/inventory/${inventoryIndex.toString()}`}
               style={{ textDecoration: 'none' }}
             >
-              <HeavyText fontSize={'24px'} mobileFontSize={'20px'} color={theme.green1} style={{ margin: 'auto' }}>
+              <HeavyText
+                width="fit-content"
+                fontSize={'24px'}
+                mobileFontSize={'20px'}
+                color={theme.green1}
+                style={{ margin: 'auto' }}
+              >
                 {`${yieldAvailable} `}
-                {!(yieldAvailable === 'All yield withdrawn') && (
-                  <DataTokenName color={theme.green1}>{token}</DataTokenName>
-                )}
+                {!(yieldAvailable === 'All yield withdrawn') && <TokenText color={theme.green1}>{token}</TokenText>}
               </HeavyText>
               <div style={{ display: 'flex', justifyContent: 'center' }}>
-                <SText fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
+                <SText width="fit-content" fontSize="12px" mobileFontSize="11px" style={{ paddingRight: '0.25rem' }}>
                   {t(`Yield in`)}
                 </SText>
-                <HeavyText fontSize={'12px'} mobileFontSize="11px" color={theme.blue2}>{`${t(
+                <HeavyText width="fit-content" fontSize={'12px'} mobileFontSize="11px" color={theme.blue2}>{`${t(
                   `TravelCabin`
                 )}: ${cabinInfo.name.toString()}`}</HeavyText>
               </div>
@@ -162,8 +166,8 @@ function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoIn
                 <div style={{ display: 'block' }}>
                   {targetDpo.state.isCreated && !dpoInfo.vault_deposit.isZero() && (
                     <>
-                      <HeavyText width="100%">{`${t(`DPO Filled! You can now buy seats from`)}`}</HeavyText>
-                      <HeavyText color={theme.blue2} width="100%">
+                      <HeavyText width="fit-content">{`${t(`DPO Filled! You can now buy seats from`)}`}</HeavyText>
+                      <HeavyText width="fit-content" color={theme.blue2}>
                         {targetDpo.name.toString()}
                       </HeavyText>
                     </>
@@ -174,12 +178,13 @@ function ActiveHighlightsDpoTarget({ dpoInfo, targetDpoIndex }: { dpoInfo: DpoIn
                         <Icon src={WaitingIcon} />
                       </IconWrapper>
                       <div style={{ display: 'flex' }}>
-                        <HeavyText>{t(`Waiting for`)}</HeavyText>
+                        <HeavyText width="fit-content">{t(`Waiting for`)}</HeavyText>
                         <HeavyText
                           color={theme.blue2}
                           padding="0 0.25rem"
+                          width="fit-content"
                         >{` ${targetDpo.name.toString()} `}</HeavyText>
-                        <HeavyText>{t(`to finish crowdfunding`)}</HeavyText>
+                        <HeavyText width="fit-content">{t(`to finish crowdfunding`)}</HeavyText>
                       </div>
                     </>
                   )}
@@ -245,18 +250,22 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
             <HeavyText fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
-            <SText fontSize="9px" style={{ margin: 'auto' }}>
+            <SText width="fit-content" fontSize="9px" style={{ margin: 'auto' }}>
               {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
             </SText>
-            <SText style={{ margin: 'auto' }}>{t(`Management Fee`)}</SText>
+            <SText width="fit-content" style={{ margin: 'auto' }}>
+              {t(`Management Fee`)}
+            </SText>
           </PaddedSection>
         )}
         <PaddedSection>
-          <HeavyText fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
+          <HeavyText width="fit-content" fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
             {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
-            <DataTokenName>{token}</DataTokenName>
+            <TokenText>{token}</TokenText>
           </HeavyText>
-          <SText style={{ margin: 'auto' }}>{t(`Cost per Seat`)}</SText>
+          <SText width="fit-content" style={{ margin: 'auto' }}>
+            {t(`Cost per Seat`)}
+          </SText>
         </PaddedSection>
       </RowBetween>
     </>

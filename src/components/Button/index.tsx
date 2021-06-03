@@ -5,17 +5,19 @@ import { Button as RebassButton } from 'rebass/styled-components'
 
 const Base = styled(RebassButton)<{
   padding?: string
-  width?: string
-  height?: string
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
+  minHeight?: string
+  minWidth?: string
   mobileFontSize?: string
   mobilePadding?: string
+  mobileMinHeight?: string
+  mobileMinWidth?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
-  min-width: ${({ width }) => (width ? width : '120px')};
-  min-height: ${({ height }) => (height ? height : '25px')};
+  min-width: ${({ minWidth }) => (minWidth ? minWidth : '120px')};
+  min-height: ${({ minHeight }) => (minHeight ? minHeight : '25px')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')};
   font-weight: 700;
   text-align: center;
@@ -38,11 +40,11 @@ const Base = styled(RebassButton)<{
   > * {
     user-select: none;
   }
-  ${({ mobileFontSize, mobilePadding, theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '12px'};
   padding: ${mobilePadding ? mobilePadding : '0.5rem'};
-  min-width: 100px;
-  min-height: 25px;
+  min-width: ${mobileMinWidth ? mobileMinWidth : '100px'};
+  min-height: ${mobileMinHeight ? mobileMinHeight : '25px'};
 `};
 `
 
@@ -69,10 +71,6 @@ export const ButtonPrimary = styled(Base)`
     outline: none;
     opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.7' : '1')};
   }
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: 12px;
-    padding: 0.5rem;
-`};
 `
 
 export const FakeButton = styled.div<{

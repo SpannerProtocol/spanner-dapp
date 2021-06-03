@@ -22,7 +22,8 @@ const Base = styled.p<{
 `
 
 export const SText = styled(Base)<{ fontWeight?: string }>`
-  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400px')};
+  width: ${({ width }) => (width ? width : 'fit-content')};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   padding: ${({ padding }) => (padding ? padding : '0')};
 `
 
@@ -34,6 +35,7 @@ export const ThinText = styled(Base)`
 `
 
 export const HeavyText = styled(Base)`
+  width: ${({ width }) => (width ? width : 'fit-content')};
   font-weight: 700;
 `
 
@@ -142,25 +144,6 @@ export const ModalTitle = styled.span`
   margin: 0;
 `
 
-// export const HeavyText = styled.div<{
-//   fontSize?: string
-//   fontWeight?: string
-//   color?: string
-//   padding?: string
-//   mobileFontSize?: string
-//   width?: string
-// }>`
-//   width: ${({ width }) => (width ? width : 'fit-content')};
-//   color: ${({ color, theme }) => (color ? color : theme.text2)};
-//   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
-//   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
-//   margin: 0;
-//   padding: ${({ padding }) => (padding ? padding : '0')};
-//   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-//     font-size: ${mobileFontSize ? mobileFontSize : '12px'};
-// `};
-// `
-
 export const ModalText = styled.div`
   font-size: 1.5rem;
   font-weight: 600;
@@ -226,34 +209,6 @@ export const SectionHeading = styled.h3<{ margin?: string }>`
   color: ${({ theme }) => theme.text2};
 `
 
-// export const LightText = styled.div`
-//   color: ${({ theme }) => theme.text4};
-//   font-weight: 400;
-//   font-size: 14px;
-// `
-
-// export const SText = styled.div<{
-//   fontSize?: string
-//   color?: string
-//   fontWeight?: string
-//   paddingLeft?: string
-//   padding?: string
-//   width?: string
-//   mobileFontSize?: string
-// }>`
-//   width: ${({ width }) => (width ? width : 'fit-content')};
-//   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-//   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
-//   color: ${({ color, theme }) => (color ? color : theme.text2)};
-//   padding: ${({ padding }) => (padding ? padding : '0')};
-//   word-break: break-word;
-//   align-items: center;
-
-//   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-//     font-size: ${mobileFontSize ? mobileFontSize : '11px'};
-//  `};
-// `
-
 export const ItalicText = styled(SText)`
   font-style: italic;
 `
@@ -269,20 +224,20 @@ export const SmallText = styled.div`
  `};
 `
 
-export const DataTokenName = styled.div<{
+export const TokenText = styled.div<{
   color?: string
   fontSize?: string
   mobileFontSize?: string
   padding?: string
+  fontWeight?: string
 }>`
   display: inline;
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
-  font-weight: 700;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   color: ${({ color, theme }) => (color ? color : theme.text3)};
   overflow-wrap: break-word;
   padding: ${({ padding }) => (padding ? padding : '0')}
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+    ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;
  `};
 

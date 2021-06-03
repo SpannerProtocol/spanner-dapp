@@ -104,7 +104,7 @@ function TravelCabinCrowdfundTxConfirm({
         {end && endInDays && (
           <RowBetween>
             <SText>{t(`Crowdfunding Period`)}</SText>
-            <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
+            <SText>{`${endInDays} ${t(`days`)}`}</SText>
           </RowBetween>
         )}
         {managerSeats && baseFee && (

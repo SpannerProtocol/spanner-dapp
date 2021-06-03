@@ -1,5 +1,5 @@
 import { ThinShadowCard } from 'components/Card'
-import { DataTokenName } from 'components/Text'
+import { TokenText } from 'components/Text'
 import useStats from 'hooks/useStats'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -71,14 +71,14 @@ export default function BulletTrainStats({ token }: { token: string }) {
         <ThinShadowCard background={background}>
           <StatValue>
             {formatToUnit(stats.totalYieldWithdrawn, chainDecimals, 0, true)}{' '}
-            <DataTokenName color="white">{token}</DataTokenName>
+            <TokenText color="white">{token}</TokenText>
           </StatValue>
           <StatText>{t(`Yield Distributed`)}</StatText>
         </ThinShadowCard>
         <ThinShadowCard background={background}>
           <StatValue>
             {formatToUnit(stats.totalValueLocked, chainDecimals, 0, true)}{' '}
-            <DataTokenName color="white">{token}</DataTokenName>
+            <TokenText color="white">{token}</TokenText>
           </StatValue>
           <StatText>{t(`Ticket Fares Stored`)}</StatText>
         </ThinShadowCard>

@@ -145,7 +145,7 @@ export default function DpoTargetCabinForm({
             </SText>
           </RowBetween>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
                 text={t(`The number of seats to buy from your Target DPO.`)}
@@ -158,7 +158,7 @@ export default function DpoTargetCabinForm({
             </SText>
           </RowBetween>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Your Deposit`)}</SText>
               <QuestionHelper
                 text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
@@ -181,7 +181,7 @@ export default function DpoTargetCabinForm({
       </SpacedSection>
       <BorderedWrapper>
         <RowBetween>
-          <RowFixed>
+          <RowFixed width="fit-content">
             <SText>{t(`Management Fee`)}</SText>
             <QuestionHelper
               text={t(`Management Fee is charged on all yield releases`)}
@@ -194,7 +194,7 @@ export default function DpoTargetCabinForm({
           )}%`}</SText>
         </RowBetween>
         <RowBetween>
-          <RowFixed>
+          <RowFixed width="fit-content">
             <SText>{t(`Referral Rates`)} (%)</SText>
             <QuestionHelper
               text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}

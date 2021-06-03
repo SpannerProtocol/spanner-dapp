@@ -12,7 +12,7 @@ import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { DataTokenName, Heading, HeavyText, Header2, SmallText, SText } from 'components/Text'
+import { TokenText, Heading, HeavyText, Header2, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import {
   BorderedWrapper,
@@ -146,7 +146,7 @@ function DpoCrowdfundTxConfirm({
         {end && endInDays && (
           <RowBetween>
             <SText>{t(`Crowdfund Period`)}</SText>
-            <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
+            <SText>{`${endInDays} ${t(`days`)}`}</SText>
           </RowBetween>
         )}
         <RowBetween>
@@ -289,24 +289,24 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
           </SText>
         </RowBetween>
         <RowBetween>
-          <RowFixed>
+          <RowFixed width="fit-content">
             <SText>{t(`Remaining Seats`)}</SText>
             <QuestionHelper
               text={t(`Amount of Seats left in DPO. There are 100 seats per DPO.`)}
               size={12}
               backgroundColor={'#fff'}
-            ></QuestionHelper>
+            />
           </RowFixed>
           <SText>{dpoInfo.empty_seats.toString()}</SText>
         </RowBetween>
         <RowBetween>
-          <RowFixed>
+          <RowFixed width="fit-content">
             <SText>{t(`Total Seat Price`)}</SText>
             <QuestionHelper
               text={t(`The total cost of Seats to buy from this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
-            ></QuestionHelper>
+            />
           </RowFixed>
           <SText>
             {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
@@ -314,7 +314,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
         </RowBetween>
       </BorderedWrapper>
       <Section>
-        <RowFixed>
+        <RowFixed width="fit-content">
           <SText>{t(`Seats to Buy`)}</SText>
           <QuestionHelper
             text={t(
@@ -322,7 +322,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
             )}
             size={12}
             backgroundColor={'#fff'}
-          ></QuestionHelper>
+          />
         </RowFixed>
         <BorderedInput
           required
@@ -336,7 +336,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
       </Section>
       {(!referralCode || newReferrer) && (
         <Section>
-          <RowFixed>
+          <RowFixed width="fit-content">
             <SText>{t(`Referral Code`)}</SText>
             <QuestionHelper
               text={t(
@@ -344,7 +344,7 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
               )}
               size={12}
               backgroundColor={'#fff'}
-            ></QuestionHelper>
+            />
           </RowFixed>
           <BorderedInput
             required
@@ -659,18 +659,18 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                 <StatContainer maxWidth="none" background={statsBg}>
                   <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                    <DataTokenName color="#fff" mobileFontSize="8px">
+                    <TokenText color="#fff" mobileFontSize="8px">
                       {token}
-                    </DataTokenName>
+                    </TokenText>
                   </StatValue>
                   <StatText>{t(`Yield`)}</StatText>
                 </StatContainer>
                 <StatContainer maxWidth="none" background={statsBg}>
                   <StatValue small={true}>
                     {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                    <DataTokenName color="#fff" mobileFontSize="8px">
+                    <TokenText color="#fff" mobileFontSize="8px">
                       {token}
-                    </DataTokenName>
+                    </TokenText>
                   </StatValue>
                   <StatText>{t(`Bonus`)}</StatText>
                 </StatContainer>
@@ -678,9 +678,9 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
                   <StatContainer maxWidth="none" background={statsBg}>
                     <StatValue small={true}>
                       {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                      <DataTokenName color="#fff" mobileFontSize="8px">
+                      <TokenText color="#fff" mobileFontSize="8px">
                         {token}
-                      </DataTokenName>
+                      </TokenText>
                     </StatValue>
                     <StatText>{t(`Milestone`)}</StatText>
                   </StatContainer>
