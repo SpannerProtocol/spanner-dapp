@@ -124,7 +124,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
         <DpoWrapper style={{ overflow: 'hidden' }}>
-          <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
             <DpoInnerCard>
               <DpoTitle>
                 <RowBetween>
@@ -258,7 +258,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
         <DpoWrapper style={{ overflow: 'hidden' }}>
-          <Link to={`/item/dpo/${dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
             <DpoInnerCard>
               <DpoTitle>
                 <Section>

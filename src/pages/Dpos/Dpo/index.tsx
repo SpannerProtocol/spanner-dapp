@@ -9,21 +9,12 @@ import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import { LinearProgressBar } from 'components/ProgressBar'
-import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
+import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { StatContainer, StatDisplayContainer, StatDisplayGrid, StatText, StatValue } from 'components/StatDisplay'
-import { TokenText, Heading, HeavyText, Header2, SmallText, SText } from 'components/Text'
+import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
+import { Header2, HeavyText, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import {
-  BorderedWrapper,
-  ButtonWrapper,
-  CollapseWrapper,
-  ContentWrapper,
-  IconWrapper,
-  MemberWrapper,
-  Section,
-  StateWrapper,
-} from 'components/Wrapper'
+import { BorderedWrapper, ContentWrapper, Section } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import useDpoFees from 'hooks/useDpoFees'
@@ -33,32 +24,23 @@ import { useSubDpo } from 'hooks/useQueryDpos'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import { useUserInDpo } from 'hooks/useUser'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
-import React, { useContext, useEffect, useState } from 'react'
-import { Share2 } from 'react-feather'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo, DpoMemberInfo } from 'spanner-interfaces/types'
-import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { blocksToCountDown, blockToDays, daysToBlocks } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
+import { usePathDpoInfoTab } from 'hooks/usePath'
 import { isValidSpannerAddress } from 'utils/validAddress'
-import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../constants'
 import getApy from '../../../utils/getApy'
 import DpoActions from './actions'
 import DpoModalForm from './Form'
 import Highlights from './Highlights/index'
+import Overview from './Overview'
 import TargetedBy from './TargetedBy'
-
-const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
-const membershipBg = 'linear-gradient(90deg, #EC3D3D -11.67%, #AD074F 100%)'
-
-interface DpoItemProps {
-  dpoIndex: string
-}
 
 interface DpoJoinFormProps {
   dpoInfo: DpoInfo
@@ -363,9 +345,8 @@ function DpoJoinForm({ dpoInfo, token, chainDecimals, onSubmit }: DpoJoinFormPro
   )
 }
 
-function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
-  const dpoInfo = useSubDpo(dpoIndex)
-  const dpoMembers = useQueryDpoMembers(dpoIndex)
+function DpoProfile({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
+  const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
   const wallet = useWallet()
   const { chainDecimals } = useSubstrate()
   const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
@@ -378,16 +359,16 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
   const [joinData, setJoinData] = useState<JoinData>({})
-  const userInDpo = useUserInDpo(dpoIndex, wallet?.address)
+  // const userInDpo = useUserInDpo(dpoIndex, wallet?.address)
   const isConnected = useIsConnected()
   const { expectedBlockTime, lastBlock } = useBlockManager()
-  const { projectState } = useProjectManager()
+  // const { projectState } = useProjectManager()
   const [txInfo, setTxInfo] = useState<TxInfo>({})
-  const { t } = useTranslation()
   const { passengerSeatCap } = useConsts()
-  const manager = useDpoManager(dpoIndex, dpoInfo)
+  const manager = useDpoManager(dpoInfo.index.toString(), dpoInfo)
   const theme = useContext(ThemeContext)
-  const fees = useDpoFees(dpoIndex)
+  const fees = useDpoFees(dpoInfo.index.toString())
+  const { t } = useTranslation()
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -427,14 +408,14 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
     seats: string
     newReferrer: boolean
   }) => {
-    if (!dpoIndex) {
+    if (!dpoInfo.index.toString()) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
-    setJoinData({ dpoIndex, targetSeats: seats, referrer, newReferrer })
+    setJoinData({ dpoIndex: dpoInfo.index.toString(), targetSeats: seats, referrer, newReferrer })
     const txData = createTx({
       section: 'bulletTrain',
       method: 'passengerBuyDpoSeats',
-      params: { targetDpoIdx: dpoIndex, numberOfSeats: seats, referrerAccount: referrer },
+      params: { targetDpoIdx: dpoInfo.index.toString(), numberOfSeats: seats, referrerAccount: referrer },
     })
     if (!txData) return
     txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
@@ -475,7 +456,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
       referrer,
       newReferrer,
     })
-    if (!dpoIndex) {
+    if (!dpoInfo.index.toString()) {
       setTxErrorMsg(t(`Information provided was not sufficient.`))
     }
     // baseFee and directReferralRate is per 0.1%
@@ -484,7 +465,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
       method: 'createDpo',
       params: {
         name: dpoName,
-        target: { Dpo: [dpoIndex, seats] },
+        target: { Dpo: [dpoInfo.index.toString(), seats] },
         managerSeats,
         baseFee: baseFee * 10,
         directReferralRate: directReferralRate * 10,
@@ -578,120 +559,34 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
           dpoInfo={dpoInfo}
         />
       </TxModal>
-      <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-        <Section>
-          <Header2 style={{ margin: '0' }}>{`DPO`}</Header2>
-          <RowBetween>
-            <div style={{ display: 'flex', verticalAlign: 'center' }}>
-              <Heading style={{ margin: '0' }}>{dpoInfo.name}</Heading>
-            </div>
-            {isConnected ? (
-              <CollapseWrapper>
-                {passengerSeatCap &&
-                  (!userMemberInfo ||
-                    (userMemberInfo && userMemberInfo.number_of_seats.toNumber() < passengerSeatCap)) &&
-                  dpoInfo.state.isCreated && (
-                    <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                      <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={openJoinFormModal}>
-                        {t(`Join`)}
-                      </ButtonPrimary>
-                    </ButtonWrapper>
-                  )}
-                {dpoInfo.state.isCreated && dpoInfo.empty_seats.gt(new BN(0)) && (
-                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                    <ButtonSecondary padding="0.45rem" fontSize="12px" onClick={openCrowdfundFormModal}>
-                      {t(`Crowdfund`)}
-                    </ButtonSecondary>
-                  </ButtonWrapper>
-                )}
-              </CollapseWrapper>
-            ) : (
-              <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
-                <HeavyText fontSize={'12px'} color={theme.primary1}>
-                  {t(`Login for more`)}
-                </HeavyText>
-              </BorderedWrapper>
-            )}
-          </RowBetween>
-        </Section>
-        <Section>
-          <RowBetween>
-            {/* Action Shortcuts */}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
-                {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) ? (
-                  <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                    {t(`EXPIRED`)}
-                  </StateWrapper>
-                ) : (
-                  <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                    {t(dpoInfo.state.toString())}
-                  </StateWrapper>
-                )}
-              </AnyQuestionHelper>
-              {isConnected && userInDpo.inDpo && (
-                <MemberWrapper style={{ background: membershipBg, width: 'auto', margin: '0.25rem' }}>
-                  <SText fontSize={'12px'} color={'#fff'} style={{ textAlign: 'center' }}>
-                    {userInDpo.role}
-                  </SText>
-                </MemberWrapper>
+
+      <Overview dpoInfo={dpoInfo} />
+      {isConnected ? (
+        <ContentWrapper>
+          <RowFixed justifyContent="center">
+            {passengerSeatCap &&
+              (!userMemberInfo || (userMemberInfo && userMemberInfo.number_of_seats.toNumber() < passengerSeatCap)) &&
+              dpoInfo.state.isCreated && (
+                <ButtonPrimary mobileMinWidth="250px" margin="0 1rem" onClick={openJoinFormModal}>
+                  {t(`Join`)}
+                </ButtonPrimary>
               )}
-            </div>
-            {projectState.selectedProject && wallet && wallet.address && (
-              <CopyHelper
-                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
-                  projectState.selectedProject.token
-                }`}
-                childrenIsIcon={true}
-              >
-                <IconWrapper>
-                  <Share2 />
-                </IconWrapper>
-              </CopyHelper>
+            {dpoInfo.state.isCreated && dpoInfo.empty_seats.gt(new BN(0)) && (
+              <ButtonSecondary mobileMinWidth="250px" margin="0 1rem" onClick={openCrowdfundFormModal}>
+                {t(`Crowdfund`)}
+              </ButtonSecondary>
             )}
-          </RowBetween>
-        </Section>
-        {!dpoInfo.state.isCreated && (
-          <Section style={{ marginTop: '1rem' }}>
-            <HeavyText color={theme.primary1}>{t(`Total Rewards Received`)}</HeavyText>
-            <StatDisplayContainer>
-              <StatDisplayGrid>
-                <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue small={true}>
-                    {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                    <TokenText color="#fff" mobileFontSize="8px">
-                      {token}
-                    </TokenText>
-                  </StatValue>
-                  <StatText>{t(`Yield`)}</StatText>
-                </StatContainer>
-                <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue small={true}>
-                    {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                    <TokenText color="#fff" mobileFontSize="8px">
-                      {token}
-                    </TokenText>
-                  </StatValue>
-                  <StatText>{t(`Bonus`)}</StatText>
-                </StatContainer>
-                {dpoInfo.target.isTravelCabin && (
-                  <StatContainer maxWidth="none" background={statsBg}>
-                    <StatValue small={true}>
-                      {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                      <TokenText color="#fff" mobileFontSize="8px">
-                        {token}
-                      </TokenText>
-                    </StatValue>
-                    <StatText>{t(`Milestone`)}</StatText>
-                  </StatContainer>
-                )}
-              </StatDisplayGrid>
-            </StatDisplayContainer>
-          </Section>
-        )}
-      </Card>
+          </RowFixed>
+        </ContentWrapper>
+      ) : (
+        <BorderedWrapper borderColor={theme.primary1} style={{ padding: '0.5rem', width: 'auto', margin: '0' }}>
+          <HeavyText fontSize={'12px'} color={theme.primary1}>
+            {t(`Login for more`)}
+          </HeavyText>
+        </BorderedWrapper>
+      )}
       <Highlights dpoInfo={dpoInfo} />
-      {isConnected && <DpoActions dpoIndex={dpoIndex} />}
+      {isConnected && <DpoActions dpoIndex={dpoInfo.index.toString()} />}
       <ContentWrapper>
         <Card>
           <Header2>{t(`Details`)}</Header2>
@@ -729,7 +624,7 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
             <Section>
               <RowBetween>
                 <SText>{t(`DPO Id`)}</SText>
-                <SText>{dpoIndex}</SText>
+                <SText>{dpoInfo.index.toString()}</SText>
               </RowBetween>
               <RowBetween>
                 <SText>{t(`DPO Name`)}</SText>
@@ -927,8 +822,51 @@ function SelectedDpo({ dpoIndex }: DpoItemProps): JSX.Element {
   )
 }
 
-export default function DpoItem(props: DpoItemProps): JSX.Element {
-  const { dpoIndex } = props
+export default function Dpo(): JSX.Element {
+  const path = usePathDpoInfoTab()
+  const dpoInfo = useSubDpo(path.dpoIndex)
+  const { t } = useTranslation()
+  const [activeTab, setActiveTab] = useState<string>('profile')
 
-  return <>{dpoIndex && <SelectedDpo dpoIndex={dpoIndex} />}</>
+  // Tabs
+  const tabData = useMemo<Array<RouteTabMetaData>>(() => {
+    if (!dpoInfo) return []
+    return [
+      {
+        id: `profile`,
+        label: t(`Profile`),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/profile`,
+      },
+      {
+        id: `organization`,
+        label: t(`Organization`),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/organization`,
+      },
+      {
+        id: 'manage',
+        label: 'Manage',
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/manage`,
+      },
+    ]
+  }, [dpoInfo, t])
+
+  useEffect(() => {
+    if (!path.section) return
+    setActiveTab(path.section)
+  }, [path.section])
+
+  return (
+    <>
+      {dpoInfo && (
+        <>
+          <ContentWrapper>
+            <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0" />
+          </ContentWrapper>
+          {activeTab === 'profile' && <DpoProfile dpoInfo={dpoInfo} />}
+          {activeTab === 'organization' && <DpoProfile dpoInfo={dpoInfo} />}
+          {activeTab === 'manage' && <DpoProfile dpoInfo={dpoInfo} />}
+        </>
+      )}
+    </>
+  )
 }

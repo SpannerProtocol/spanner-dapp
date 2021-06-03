@@ -173,13 +173,13 @@ export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string
   `};
 `
 
-export const IconWrapper = styled.div<{ padding?: string; margin?: string }>`
+export const IconWrapper = styled.div<{ padding?: string; margin?: string; background?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${({ padding }) => (padding ? padding : '0.2rem')};
   margin: ${({ margin }) => (margin ? margin : '0')};
-  background: transparent;
+  background: ${({ background }) => (background ? background : 'transparent')};
   cursor: pointer;
 
   :hover,

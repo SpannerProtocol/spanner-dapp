@@ -1,4 +1,4 @@
-import DpoCard from 'components/Item/DpoCard'
+import DpoCard from 'components/DpoCard'
 import SearchBar from 'components/SearchBar'
 import { GridWrapper, Section, Wrapper } from 'components/Wrapper'
 import { useDposWithKeys } from 'hooks/useQueryDpos'
@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { useProjectManager } from 'state/project/hooks'
 
 // A list of DPOs with search functionality
-export default function DpoCatalogue() {
+export default function Dpos() {
   const { projectState } = useProjectManager()
   const dposWithIds = useDposWithKeys(projectState.selectedProject?.token)
   const [searchResults, setSearchResults] = useState<typeof dposWithIds>([])
@@ -23,6 +23,7 @@ export default function DpoCatalogue() {
     <>
       <Wrapper style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
         <Section style={{ width: '100%' }}>
+          {/* filters */}
           <SearchBar
             inputType="text"
             placeholder="Search"

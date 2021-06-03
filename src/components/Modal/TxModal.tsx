@@ -33,7 +33,9 @@ export function ConfirmModal({ isOpen, onDismiss, onConfirm, title, buttonText, 
         {content}
         <Section>
           <RowBetween>
-            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>{buttonText}</ButtonPrimary>
+            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>
+              {buttonText}
+            </ButtonPrimary>
           </RowBetween>
         </Section>
       </ModalWrapper>
@@ -88,7 +90,9 @@ export default function TxModal({
             <CenteredRow>{txError}</CenteredRow>
           </Section>
           <Section>
-            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onDismiss}>{t(`Return`)}</ButtonPrimary>
+            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onDismiss}>
+              {t(`Return`)}
+            </ButtonPrimary>
           </Section>
         </ModalWrapper>
       </Modal>
@@ -115,7 +119,9 @@ export default function TxModal({
                 {buttonText}
               </ButtonPrimary>
             ) : (
-              <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>{buttonText}</ButtonPrimary>
+              <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onConfirm}>
+                {buttonText}
+              </ButtonPrimary>
             )}
           </RowBetween>
         </Section>

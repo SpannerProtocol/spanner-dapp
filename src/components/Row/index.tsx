@@ -1,11 +1,19 @@
 import styled from 'styled-components'
 import { Box } from 'rebass/styled-components'
 
-const Row = styled(Box)<{ align?: string; padding?: string; border?: string; borderRadius?: string; width?: string }>`
+const Row = styled(Box)<{
+  align?: string
+  padding?: string
+  border?: string
+  borderRadius?: string
+  width?: string
+  justifyContent?: string
+}>`
   width: ${({ width }) => (width ? width : '100%')};
   display: flex;
   padding: 0;
   align-items: ${({ align }) => (align ? align : 'center')};
+  align-items: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
   padding: ${({ padding }) => padding};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};

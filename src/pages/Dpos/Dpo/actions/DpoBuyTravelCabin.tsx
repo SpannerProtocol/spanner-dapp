@@ -1,15 +1,18 @@
 import Balance from 'components/Balance'
+import Divider from 'components/Divider'
 import { RowBetween } from 'components/Row'
 import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
+import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubDpo } from 'hooks/useQueryDpos'
-import Action from 'pages/Item/actions'
+import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
+import { useSubstrate } from 'hooks/useSubstrate'
+import Action from 'pages/Assets/actions'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
 import { blocksToCountDown, blockToHours } from 'utils/formatBlocks'
+import { formatToUnit } from 'utils/formatUnit'
 import { getLifeSentenceGpLeft } from 'utils/getCabinData'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
@@ -17,7 +20,7 @@ import { ACTION_ICONS } from '../../../../constants'
 /**
  * When the default target is available
  */
-export default function DpoBuyDpoSeatsAvailable({
+export default function DpoBuyTravelCabinAvailable({
   dpoInfo,
   dpoAction,
   isLast,
@@ -28,8 +31,9 @@ export default function DpoBuyDpoSeatsAvailable({
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
-  const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
+  const targetCabin = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
   const { lastBlock, expectedBlockTime } = useBlockManager()
+  const { chainDecimals } = useSubstrate()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
 
   // Grace Period life sentence
@@ -41,26 +45,8 @@ export default function DpoBuyDpoSeatsAvailable({
 
   return (
     <Action
-      txContent={
-        <>
-          <SpacedSection>
-            <SText>{t(`Confirm Purchase of DPO Seats`)}</SText>
-          </SpacedSection>
-          {targetDpo && (
-            <BorderedWrapper>
-              <RowBetween>
-                <SText>{t(`DPO Name`)}</SText>
-                <SText>{targetDpo.name.toString()}</SText>
-              </RowBetween>
-            </BorderedWrapper>
-          )}
-          <Balance token={dpoInfo.token_id.asToken.toString()} />
-          <TxFee fee={estimatedFee} />
-        </>
-      }
-      actionName={t('Buy DPO Seats')}
-      tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
-      buttonText={t(`Buy`)}
+      actionName={t('Buy TravelCabin')}
+      buttonText={t('Buy')}
       icon={ACTION_ICONS[dpoAction.action]}
       gracePeriod={
         lifeSentenceGp && lastBlock && expectedBlockTime
@@ -78,15 +64,43 @@ export default function DpoBuyDpoSeatsAvailable({
             }
           : undefined
       }
+      tip={t(`Use DPO's crowdfund to buy this TravelCabin.`)}
       transaction={{
         section: 'bulletTrain',
-        method: 'dpoBuyDpoSeats',
+        method: 'dpoBuyTravelCabin',
         params: {
           buyerDpoIdx: dpoInfo.index.toString(),
-          targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
-          numberOfSeats: dpoInfo.target.asDpo[1].toString(),
+          travelCabinIdx: dpoInfo.target.asTravelCabin.toString(),
         },
       }}
+      txContent={
+        <>
+          <SpacedSection>
+            <SText>{t(`Confirm purchase of TravelCabin.`)}</SText>
+          </SpacedSection>
+          <Divider />
+          {targetCabin && (
+            <SpacedSection>
+              <RowBetween>
+                <SText>{t(`TravelCabin`)}</SText>
+                <SText>{targetCabin.name.toString()}</SText>
+              </RowBetween>
+              <RowBetween>
+                <SText>{t(`Total Deposit`)}</SText>
+                <SText>
+                  {formatToUnit(targetCabin.deposit_amount.toString(), chainDecimals)}{' '}
+                  {targetCabin.token_id.asToken.toString()}
+                </SText>
+              </RowBetween>
+            </SpacedSection>
+          )}
+          <Divider />
+          <SpacedSection>
+            <Balance token={dpoInfo.token_id.asToken.toString()} />
+            <TxFee fee={estimatedFee} />
+          </SpacedSection>
+        </>
+      }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
     />

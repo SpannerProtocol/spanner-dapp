@@ -39,7 +39,6 @@ import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
 
-
 const HeaderFrame = styled.div`
   display: grid;
   grid-template-columns: 1fr 120px;
@@ -117,15 +116,12 @@ const HeaderRow = styled(RowFixed)`
   top: 0;
   left: 0;
   align-items: flex-start;
-  background: linear-gradient(180deg,
-    ${({ theme }) => theme.bg1} -11.67%,
-  ${({ theme }) => theme.bg1} 100%);
+  background: linear-gradient(180deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
     align-items: center;
     position: inherit;
-    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) =>
-          theme.bg1} 100%);
+    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
     width: 100%;
     height: inherit;
   `};
@@ -247,7 +243,7 @@ const SpannerIcon = styled.div`
 const activeClassName = 'ACTIVE'
 
 const StyledNavLink = styled(NavLink).attrs({
-  activeClassName
+  activeClassName,
 })`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;
@@ -284,7 +280,7 @@ const StyledNavLink = styled(NavLink).attrs({
 `
 
 const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName
+  activeClassName,
 })<{ isActive?: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: left;
@@ -363,7 +359,7 @@ export default function Header(props: HeaderProps) {
       <HeaderRow>
         <Title to={{ pathname: '/' }}>
           <SpannerIcon>
-            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt='logo' />
+            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
@@ -380,7 +376,7 @@ interface DesktopNavProp {
 
 export function DesktopNav(props: DesktopNavProp) {
   const { chain } = useChainState()
-  let icons = props.icons
+  const icons = props.icons
   const { t } = useTranslation()
 
   return (
@@ -391,24 +387,24 @@ export function DesktopNav(props: DesktopNavProp) {
           </StyledNavLink> */}
       {chain && chain.chain === 'Spanner' && (
         <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
-          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt='bridge' />}
+          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
           {t(`Bridge`)}
         </StyledNavLink>
       )}
       <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
-        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt='dex' />}
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
         {t(`DEX`)}
       </StyledNavLink>
       <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
-        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt='projects' />}
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="projects" />}
         {t(`Projects`)}
       </StyledNavLink>
-      <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
-        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt='bullettrain' />}
+      <StyledNavLink id={`dpos-nav-link`} to={'/dpos'}>
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt="dpos" />}
         {t(`DPOs`)}
       </StyledNavLink>
       <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
-        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt='bullettrain' />}
+        {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
         {t(`BulletTrain`)}
       </StyledNavLink>
       {process.env.REACT_APP_DEBUG_MODE === 'true' && (
@@ -418,22 +414,21 @@ export function DesktopNav(props: DesktopNavProp) {
       )}
       {chain && chain.url && (
         <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
-          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt='explorer' />}
+          {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
           {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
         </StyledExternalLink>
       )}
     </HeaderLinks>
   )
-
 }
 
 const useStyles = makeStyles({
   list: {
-    width: 250
+    width: 250,
   },
   fullList: {
-    width: 'auto'
-  }
+    width: 'auto',
+  },
 })
 
 const HamburgerWrapper = styled.div`
@@ -448,38 +443,37 @@ const HamburgerWrapper = styled.div`
   }
 `
 
-
 const navItems = [
   {
     label: 'Bridge',
     link: '/account/bridge',
     iconLink: BridgeIconBlack,
-    internal: true
+    internal: true,
   },
   {
     label: 'DEX',
     link: '/dex',
     iconLink: SwapIconBlack,
-    internal: true
+    internal: true,
   },
   {
     label: 'Projects',
     link: '/projects',
     iconLink: LaunchpadIconBlack,
-    internal: true
+    internal: true,
   },
   {
     label: 'DPOs',
-    link: '/bullettrain/dpos',
+    link: '/dpos',
     iconLink: DpoIconBlack,
-    internal: true
+    internal: true,
   },
   {
     label: 'BulletTrain',
     link: '/bullettrain/travelcabins',
     iconLink: TrainIconBlack,
-    internal: true
-  }
+    internal: true,
+  },
 ]
 
 interface NavItemProps {
@@ -488,26 +482,17 @@ interface NavItemProps {
   link: string
   internal: boolean
   classes: ClassNameMap<'list' | 'fullList'>
-  toggleDrawer: (
-    open: boolean
-  ) => (event: React.MouseEvent | React.KeyboardEvent) => void
+  toggleDrawer: (open: boolean) => (event: React.MouseEvent | React.KeyboardEvent) => void
 }
 
-function NavItem({
-                   iconLink,
-                   text,
-                   link,
-                   classes,
-                   internal,
-                   toggleDrawer
-                 }: NavItemProps) {
+function NavItem({ iconLink, text, link, classes, internal, toggleDrawer }: NavItemProps) {
   return (
     <>
       <div
         className={clsx(classes.list, {
-          [classes.fullList]: false
+          [classes.fullList]: false,
         })}
-        role='presentation'
+        role="presentation"
         onClick={toggleDrawer(false)}
         onKeyDown={toggleDrawer(false)}
       >
@@ -515,18 +500,26 @@ function NavItem({
           <List>
             <SLink to={link}>
               <ListItem button>
-                {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
-                                                 alt={text} /></ListItemIcon>}
+                {iconLink && (
+                  <ListItemIcon>
+                    {' '}
+                    <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
+                  </ListItemIcon>
+                )}
                 <ListItemText primary={text} />
               </ListItem>
             </SLink>
           </List>
         ) : (
           <List>
-            <ExternalLink href={link} target='_blank' download>
+            <ExternalLink href={link} target="_blank" download>
               <ListItem button>
-                {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
-                                                 alt={text} /></ListItemIcon>}
+                {iconLink && (
+                  <ListItemIcon>
+                    {' '}
+                    <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
+                  </ListItemIcon>
+                )}
                 <ListItemText primary={text} />
               </ListItem>
             </ExternalLink>
@@ -543,13 +536,10 @@ export function MobileNav() {
   const { t } = useTranslation()
   const { chain } = useChainState()
 
-  const toggleDrawer = (open: boolean) => (
-    event: React.KeyboardEvent | React.MouseEvent
-  ) => {
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
     if (
       event.type === 'keydown' &&
-      ((event as React.KeyboardEvent).key === 'Tab' ||
-        (event as React.KeyboardEvent).key === 'Shift')
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
     ) {
       return
     }
@@ -560,16 +550,16 @@ export function MobileNav() {
     <HeaderLinks>
       <>
         <HamburgerWrapper onClick={toggleDrawer(true)}>
-          <img src={hamburgerIcon} width='30px' alt='hamburgerIcon' />
+          <img src={hamburgerIcon} width="30px" alt="hamburgerIcon" />
         </HamburgerWrapper>
         <Drawer anchor={'right'} open={isOpen} onClose={toggleDrawer(false)}>
           <Divider />
-          {
-            navItems.map(function(navItem, index) {
-              if (chain && chain.chain !== 'Spanner' && navItem.label === 'Bridge') {
-                return false
-              } else {
-                return <NavItem
+          {navItems.map(function (navItem, index) {
+            if (chain && chain.chain !== 'Spanner' && navItem.label === 'Bridge') {
+              return false
+            } else {
+              return (
+                <NavItem
                   key={index}
                   iconLink={navItem.iconLink}
                   link={navItem.link}
@@ -578,9 +568,9 @@ export function MobileNav() {
                   classes={classes}
                   toggleDrawer={toggleDrawer}
                 />
-              }
-            })
-          }
+              )
+            }
+          })}
           <Divider />
         </Drawer>
         {/* </MobileWrapper> */}
@@ -597,7 +587,7 @@ export function Controls() {
       <HeaderControls>
         <HeaderElement>
           {true && (
-            <Link to='/account/balances' style={{ textDecoration: 'none' }}>
+            <Link to="/account/balances" style={{ textDecoration: 'none' }}>
               <BalanceWrapper>
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                   <User />

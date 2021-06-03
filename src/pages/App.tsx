@@ -18,14 +18,16 @@ import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Account from './Account'
 import AppBody from './AppBody'
 import BulletTrain from './BulletTrain'
+import Dpos from './Dpos'
 import Dex from './Dex'
 import Diagnostics from './Diagnostics'
 import Faq from './Faq'
 import Home from './Home'
-import Item from './Item'
-import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
+import Assets from './Assets'
+import TravelCabinBuyer from './Assets/TravelCabin/TravelCabinBuyer'
 import Launchpad from './Projects'
 import Project from './Projects/Project'
+import Dpo from './Dpos/Dpo'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -60,8 +62,7 @@ const SubControl = styled.div`
     display: flex
     width: 100%;
     justify-content: space-between;
-    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) =>
-    theme.bg1} 100%);
+    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
   `};
 `
 
@@ -114,13 +115,22 @@ export default function App() {
               <Switch>
                 <Route exact strict path="/" component={Home} />
                 <Route exact strict path="/dex" component={Dex} />
-                <Route exact strict path="/item/:name/:index" component={Item} />
-                <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
+                <Route exact strict path="/assets/:name/:index" component={Assets} />
+                <Route exact strict path="/assets/:name/:index/:section" component={Assets} />
+                <Route
+                  exact
+                  strict
+                  path="/assets/:name/:index/inventory/:inventoryIndex"
+                  component={TravelCabinBuyer}
+                />
                 <Route exact strict path="/account" component={Account} />
                 <Route exact strict path="/account/:section" component={Account} />
                 <Route exact strict path="/bullettrain" component={BulletTrain} />
                 <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
                 <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
+                <Route exact strict path="/bullettrain/dpo/:index" component={BulletTrain} />
+                <Route exact strict path="/dpos" component={Dpos} />
+                <Route exact strict path="/dpos/dpo/:index/:section" component={Dpo} />
                 <Route exact strict path="/projects" component={Launchpad} />
                 <Route exact strict path="/projects/:token" component={Project} />
                 <Route exact strict path="/faq" component={Faq} />

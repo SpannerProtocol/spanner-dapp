@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import { useAccount } from 'utils/usePath'
+import { useAccount } from 'hooks/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import {
   BorderedWrapper,

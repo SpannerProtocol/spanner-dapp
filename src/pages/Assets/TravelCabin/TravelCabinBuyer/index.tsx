@@ -6,11 +6,11 @@ import { TokenText, Heading, Header2, SmallText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useItemCabinBuyer } from 'hooks/useItem'
+import { usePathCabinBuyer } from 'hooks/usePath'
 import { useSubTravelCabin, useSubTravelCabinBuyerVerbose, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useUserActions from 'hooks/useUserActions'
-import Action from 'pages/Item/actions'
+import Action from 'pages/Assets/actions'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
@@ -287,7 +287,7 @@ export function UserActionProvider({
 }
 
 export default function TravelCabinBuyer(): JSX.Element {
-  const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
+  const { travelCabinIndex, travelCabinInventoryIndex } = usePathCabinBuyer()
   const userActions = useUserActions(travelCabinIndex, travelCabinInventoryIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
   const [selectedBuyer, setSelectedBuyer] = useState<

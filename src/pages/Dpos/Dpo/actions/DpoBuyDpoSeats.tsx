@@ -5,10 +5,10 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
+import { useSubDpo } from 'hooks/useQueryDpos'
 import { useSubstrate } from 'hooks/useSubstrate'
-import Action from 'pages/Item/actions'
-import React, { useEffect, useState } from 'react'
+import Action from 'pages/Assets/actions'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
 import { blocksToCountDown, blockToHours } from 'utils/formatBlocks'
@@ -20,7 +20,7 @@ import { ACTION_ICONS } from '../../../../constants'
 /**
  * When the default target is available
  */
-export default function DpoBuyTravelCabinAvailable({
+export default function DpoBuyDpoSeatsAvailable({
   dpoInfo,
   dpoAction,
   isLast,
@@ -31,10 +31,10 @@ export default function DpoBuyTravelCabinAvailable({
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
-  const targetCabin = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+  const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
   const { lastBlock, expectedBlockTime } = useBlockManager()
-  const { chainDecimals } = useSubstrate()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
+  const { chainDecimals } = useSubstrate()
 
   // Grace Period life sentence
   useEffect(() => {
@@ -43,10 +43,12 @@ export default function DpoBuyTravelCabinAvailable({
     if (gp) setLifeSentenceGp(gp)
   }, [dpoInfo, expectedBlockTime, lastBlock])
 
+  const token = useMemo(() => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : ''), [dpoInfo])
   return (
     <Action
-      actionName={t('Buy TravelCabin')}
-      buttonText={t('Buy')}
+      actionName={t('Buy DPO Seats')}
+      tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+      buttonText={t(`Buy`)}
       icon={ACTION_ICONS[dpoAction.action]}
       gracePeriod={
         lifeSentenceGp && lastBlock && expectedBlockTime
@@ -64,32 +66,35 @@ export default function DpoBuyTravelCabinAvailable({
             }
           : undefined
       }
-      tip={t(`Use DPO's crowdfund to buy this TravelCabin.`)}
       transaction={{
         section: 'bulletTrain',
-        method: 'dpoBuyTravelCabin',
+        method: 'dpoBuyDpoSeats',
         params: {
           buyerDpoIdx: dpoInfo.index.toString(),
-          travelCabinIdx: dpoInfo.target.asTravelCabin.toString(),
+          targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
+          numberOfSeats: dpoInfo.target.asDpo[1].toString(),
         },
       }}
       txContent={
         <>
           <SpacedSection>
-            <SText>{t(`Confirm purchase of TravelCabin.`)}</SText>
+            <SText>{t(`Confirm Purchase of DPO Seats`)}</SText>
           </SpacedSection>
           <Divider />
-          {targetCabin && (
+          {targetDpo && (
             <SpacedSection>
               <RowBetween>
-                <SText>{t(`TravelCabin`)}</SText>
-                <SText>{targetCabin.name.toString()}</SText>
+                <SText>{t(`DPO Name`)}</SText>
+                <SText>{targetDpo.name.toString()}</SText>
               </RowBetween>
               <RowBetween>
-                <SText>{t(`Total Deposit`)}</SText>
+                <SText>{t(`Seats`)}</SText>
+                <SText>{dpoInfo.target.asDpo[1].toString()}</SText>
+              </RowBetween>
+              <RowBetween>
+                <SText>{t(`Deposit`)}</SText>
                 <SText>
-                  {formatToUnit(targetCabin.deposit_amount.toString(), chainDecimals)}{' '}
-                  {targetCabin.token_id.asToken.toString()}
+                  {formatToUnit(dpoInfo.vault_deposit.toBn(), chainDecimals)} {token}
                 </SText>
               </RowBetween>
             </SpacedSection>

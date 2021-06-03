@@ -27,7 +27,7 @@ export function DpoDirectReferralRate({
           text={t(`The Referral Bonus (%) given to the Direct Referrer of an Internal Member to this DPO.`)}
           size={10}
           backgroundColor={'#fff'}
-        ></QuestionHelper>
+        />
       </RowFixed>
       <BorderedInput
         required
@@ -59,7 +59,7 @@ export function DpoBaseFee({
           text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
           size={10}
           backgroundColor={'#fff'}
-        ></QuestionHelper>
+        />
       </RowFixed>
       <BorderedInput
         required
@@ -97,7 +97,7 @@ export function DpoReferralCode({
               )}
               size={10}
               backgroundColor={'#fff'}
-            ></QuestionHelper>
+            />
           </RowFixed>
           <BorderedInput
             required
@@ -190,11 +190,9 @@ export function DpoEnd({
             text={t(`Number of days to raise funds. When time is up, anyone can close this DPO.`)}
             size={10}
             backgroundColor={'transparent'}
-          ></QuestionHelper>
+          />
         </RowFixed>
-        {maxEnd && (
-          <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>
-        )}
+        {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
       </RowBetween>
       <BorderedInput
         required
@@ -271,7 +269,7 @@ export function DpoDefaultTarget({ target }: { target: string }) {
           )}
           size={10}
           backgroundColor={'#fff'}
-        ></QuestionHelper>
+        />
       </RowFixed>
       <BorderedInput
         required
@@ -296,7 +294,7 @@ export function DpoName({ onChange }: { onChange: (e: React.ChangeEvent<HTMLInpu
           text={t(`Name your DPO community to make it easier for others to search for you.`)}
           size={10}
           backgroundColor={'#fff'}
-        ></QuestionHelper>
+        />
       </RowFixed>
       <BorderedInput
         required
