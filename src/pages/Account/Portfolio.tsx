@@ -1,6 +1,6 @@
 import { useLazyQuery } from '@apollo/client'
 import Card from 'components/Card'
-import CabinBuyerCard from 'components/Item/CabinBuyerCard'
+import CabinBuyerCard from 'components/AssetCards/CabinBuyerCard'
 import { DpoProfileCard } from 'components/DpoCard'
 import { WarningMsg, Header2, SText, Header3 } from 'components/Text'
 import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'

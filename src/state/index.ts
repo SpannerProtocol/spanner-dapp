@@ -4,7 +4,6 @@ import application from './application/reducer'
 import connections from './connections/reducer'
 import device from './device/reducer'
 import { updateVersion } from './global/actions'
-import item from './item/reducer'
 import project from './project/reducer'
 import user from './user/reducer'
 import wallet from './wallet/reducer'
@@ -17,7 +16,6 @@ const store = configureStore({
     application,
     connections,
     device,
-    item,
     project,
     referrer,
     wallet,
