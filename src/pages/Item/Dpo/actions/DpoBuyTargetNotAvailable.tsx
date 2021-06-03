@@ -1,3 +1,4 @@
+import BN from 'bn.js'
 import Balance from 'components/Balance'
 import Divider from 'components/Divider'
 import Filter from 'components/Filter'
@@ -6,7 +7,7 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
+import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useSubstrate } from 'hooks/useSubstrate'
 import Action from 'pages/Item/actions'
@@ -16,12 +17,19 @@ import { DpoInfo, TravelCabinInfo } from 'spanner-interfaces'
 import { formatToUnit } from 'utils/formatUnit'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
-import BN from 'bn.js'
 
 /**
  * When the default target is not available, there is a form to get the user to input a new target.
  */
-export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoInfo: DpoInfo; dpoAction: DpoAction }) {
+export default function DpoBuyTargetNotAvailable({
+  dpoInfo,
+  dpoAction,
+  isLast,
+}: {
+  dpoInfo: DpoInfo
+  dpoAction: DpoAction
+  isLast: boolean
+}) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const [seatsToBuy, setSeatsToBuy] = useState<string>()
   const { t } = useTranslation()
@@ -228,8 +236,9 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
           <SpacedSection>
             <SText>{t(`Confirm purchase`)}</SText>
           </SpacedSection>
+          <Divider />
           {targetType === 'TravelCabin' && targetCabin && (
-            <BorderedWrapper>
+            <SpacedSection>
               <RowBetween>
                 <SText>{t(`TravelCabin`)}</SText>
                 <SText>{targetCabin.name.toString()}</SText>
@@ -243,10 +252,10 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
                   </SText>
                 </RowBetween>
               </>
-            </BorderedWrapper>
+            </SpacedSection>
           )}
           {targetType === 'DPO' && targetDpo && (
-            <BorderedWrapper>
+            <SpacedSection>
               <RowBetween>
                 <SText>{t(`DPO`)}</SText>
                 <SText>{targetDpo.name.toString()}</SText>
@@ -268,12 +277,14 @@ export default function DpoBuyTargetNotAvailable({ dpoInfo, dpoAction }: { dpoIn
                   </RowBetween>
                 </>
               )}
-            </BorderedWrapper>
+            </SpacedSection>
           )}
+          <Divider />
           <Balance token={dpoInfo.token_id.asToken.toString()} />
           <TxFee fee={estimatedFee} />
         </>
       }
+      isLast={isLast}
     />
   )
 }

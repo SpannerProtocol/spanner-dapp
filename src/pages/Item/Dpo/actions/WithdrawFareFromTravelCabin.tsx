@@ -1,4 +1,5 @@
 import Balance from 'components/Balance'
+import Divider from 'components/Divider'
 import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
@@ -16,9 +17,11 @@ import { ACTION_ICONS } from '../../../../constants'
 export default function WithdrawFareFromTravelCabin({
   dpoInfo,
   dpoAction,
+  isLast,
 }: {
   dpoInfo: DpoInfo
   dpoAction: DpoAction
+  isLast: boolean
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
@@ -28,19 +31,6 @@ export default function WithdrawFareFromTravelCabin({
     <>
       {inventoryIndex && (
         <Action
-          txContent={
-            <>
-              {targetCabin && (
-                <SpacedSection>
-                  <SText>
-                    {`${t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: ${targetCabin.name.toString()}`}
-                  </SText>
-                </SpacedSection>
-              )}
-              <Balance token={dpoInfo.token_id.asToken.toString()} />
-              <TxFee fee={estimatedFee} />
-            </>
-          }
           actionName={t(`Withdraw Ticket Fare`)}
           tip={t(`Withdraw Ticket Fare from Target TravelCabin.`)}
           buttonText={t(`Withdraw`)}
@@ -53,7 +43,24 @@ export default function WithdrawFareFromTravelCabin({
               travelCabinNumber: inventoryIndex.toString(),
             },
           }}
+          txContent={
+            <>
+              {targetCabin && (
+                <SpacedSection>
+                  <SText>
+                    {`${t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: ${targetCabin.name.toString()}`}
+                  </SText>
+                </SpacedSection>
+              )}
+              <Divider />
+              <SpacedSection>
+                <Balance token={dpoInfo.token_id.asToken.toString()} />
+                <TxFee fee={estimatedFee} />
+              </SpacedSection>
+            </>
+          }
           setEstimatedFee={setEstimatedFee}
+          isLast={isLast}
         />
       )}
     </>

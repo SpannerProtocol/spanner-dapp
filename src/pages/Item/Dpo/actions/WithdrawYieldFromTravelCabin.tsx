@@ -1,14 +1,19 @@
 import Balance from 'components/Balance'
-import { SText } from 'components/Text'
+import Divider from 'components/Divider'
+import { RowBetween, RowFixed } from 'components/Row'
+import { HeavyText, SText, TokenText } from 'components/Text'
 import TxFee from 'components/TxFee'
+import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelCabins'
+import { useSubstrate } from 'hooks/useSubstrate'
 import Action from 'pages/Item/actions'
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
+import { ThemeContext } from 'styled-components'
 import { blocksToCountDown, blockToHours } from 'utils/formatBlocks'
-import { getTreasureHuntingGpLeft } from 'utils/getCabinData'
+import { getCabinYield, getTreasureHuntingGpLeft } from 'utils/getCabinData'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
 
@@ -18,9 +23,11 @@ import { ACTION_ICONS } from '../../../../constants'
 export default function WithdrawYieldFromTravelCabin({
   dpoInfo,
   dpoAction,
+  isLast,
 }: {
   dpoInfo: DpoInfo
   dpoAction: DpoAction
+  isLast: boolean
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
@@ -29,6 +36,9 @@ export default function WithdrawYieldFromTravelCabin({
   const buyerInfo = useSubTravelCabinBuyer(targetCabin?.index, inventoryIndex)
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const [treasureHuntingGp, setTreasureHuntingGp] = useState<string>()
+  const { chainDecimals } = useSubstrate()
+  const [yieldAvailable, setYieldAvailable] = useState<string>()
+  const theme = useContext(ThemeContext)
 
   // Release Yield Grace Period
   useEffect(() => {
@@ -37,16 +47,33 @@ export default function WithdrawYieldFromTravelCabin({
     if (gp) setTreasureHuntingGp(gp)
   }, [buyerInfo, expectedBlockTime, lastBlock])
 
+  // Yield in cabin
+  useEffect(() => {
+    if (!targetCabin || !buyerInfo || !lastBlock || !expectedBlockTime) return
+    const cabinYield = getCabinYield(targetCabin, buyerInfo, lastBlock, chainDecimals)
+    if (targetCabin.yield_total.eq(buyerInfo.yield_withdrawn)) {
+      setYieldAvailable('All yield withdrawn')
+    } else {
+      setYieldAvailable(cabinYield)
+    }
+  }, [targetCabin, buyerInfo, lastBlock, chainDecimals, expectedBlockTime, dpoInfo])
+
   return (
     <Action
-      txContent={
-        <>
-          <SText>{t(`Withdraw Yield from Cabin`)}</SText>
-          <Balance token={dpoInfo.token_id.asToken.toString()} />
-          <TxFee fee={estimatedFee} />
-        </>
-      }
       actionName={t('Withdraw Yield from Cabin')}
+      actionDesc={
+        <RowFixed>
+          <SText width="fit-content" fontSize="10px" mobileFontSize="10px" style={{ paddingRight: '0.25rem' }}>
+            {t(`Yield`)}:
+          </SText>
+          <HeavyText width="fit-content" mobileFontSize="10px" color={theme.green1}>
+            {`${yieldAvailable} `}
+            {!(yieldAvailable === 'All yield withdrawn') && (
+              <TokenText color={theme.green1}>{dpoInfo.token_id.asToken.toString()}</TokenText>
+            )}
+          </HeavyText>
+        </RowFixed>
+      }
       tip={t(`Withdraw accumulated Yield from TravelCabin to DPO vault.`)}
       buttonText={t('Withdraw')}
       icon={ACTION_ICONS[dpoAction.action]}
@@ -66,6 +93,31 @@ export default function WithdrawYieldFromTravelCabin({
             }
           : undefined
       }
+      txContent={
+        <>
+          {targetCabin && (
+            <SpacedSection>
+              <SText>{`${t(`Withdraw Yield from Cabin`)}: ${targetCabin.name.toString()}`}</SText>
+            </SpacedSection>
+          )}
+          <Divider />
+          {yieldAvailable && (
+            <SpacedSection>
+              <RowBetween>
+                <SText width="fit-content">{t(`Yield`)}</SText>
+                <SText width="fit-content">
+                  {yieldAvailable} {dpoInfo.token_id.asToken.toString()}
+                </SText>
+              </RowBetween>
+            </SpacedSection>
+          )}
+          <Divider />
+          <SpacedSection>
+            <Balance token={dpoInfo.token_id.asToken.toString()} />
+            <TxFee fee={estimatedFee} />
+          </SpacedSection>
+        </>
+      }
       transaction={{
         section: 'bulletTrain',
         method: 'withdrawYieldFromTravelCabin',
@@ -75,6 +127,7 @@ export default function WithdrawYieldFromTravelCabin({
         },
       }}
       setEstimatedFee={setEstimatedFee}
+      isLast={isLast}
     />
   )
 }

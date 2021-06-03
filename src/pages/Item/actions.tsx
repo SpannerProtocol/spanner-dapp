@@ -4,25 +4,23 @@ import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
-import { Section, SpacedSection } from 'components/Wrapper'
 import useTxHelpers, { CreateTxParams } from 'hooks/useTxHelpers'
 import React, { useCallback, useContext, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { ThemeContext } from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
 
-const ActionCard = styled.div<{ borderColor?: string }>`
+const ActionCard = styled.div<{ borderColor?: string; isLast?: boolean }>`
   display: grid;
   grid-template-columns: minmax(60px, 80px) auto max(120px);
   grid-template-areas: 'icon text';
   grid-column-gap: 10px;
   width: 100%;
   font-size: 0.9rem;
-  border: 1.5px solid ${({ theme, borderColor }) => (borderColor ? borderColor : theme.text3)};
-  border-radius: 8px;
+  border-bottom: 1.5px solid
+    ${({ theme, borderColor, isLast }) => (borderColor ? borderColor : isLast ? 'transparent' : theme.gray2)};
   padding: 0.5rem;
   margin: auto;
-  margin-bottom: 0.5rem;
   align-items: center;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -30,7 +28,7 @@ const ActionCard = styled.div<{ borderColor?: string }>`
   `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  grid-template-columns: minmax(20px, 40px) auto max(60px);;
+  grid-template-columns: minmax(20px, 30px) auto max(70px);;
   grid-column-gap: 4px;
   `};
 `
@@ -57,7 +55,7 @@ const ActionIconWrapper = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   padding: 0.25rem;
-  height: 40px;
+  height: 30px;
 `};
 `
 
@@ -79,6 +77,7 @@ interface ActionProps {
   buttonText: string
   transaction: CreateTxParams
   icon?: string
+  isLast?: boolean
 }
 
 /**
@@ -96,6 +95,7 @@ export default function Action({
   transaction,
   icon,
   gracePeriod,
+  isLast,
   setEstimatedFee,
 }: ActionProps) {
   const [commitDpoModalOpen, setCommitDpoModalOpen] = useState<boolean>(false)
@@ -152,28 +152,31 @@ export default function Action({
       >
         {txContent}
       </TxModal>
-      <ActionCard borderColor={theme.text5}>
+      <ActionCard isLast={isLast}>
         <ActionIconWrapper>
           <ActionIcon src={icon} />
         </ActionIconWrapper>
         <ActionDescription>
-          <Section style={{ margin: '0px' }}>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <HeavyText fontSize={'12px'}>{actionName}</HeavyText>
-              {tip && <QuestionHelper text={tip} size={12} backgroundColor={'transparent'} />}
-            </div>
-            {gracePeriod && (
-              <>
-                <RowFixed>
-                  <SText>{t(`Grace Period`)}</SText>
-                  <QuestionHelper
-                    text={gracePeriod.tip}
-                    size={12}
-                    backgroundColor={'transparent'}
-                    padding="0 0.5rem 0 0.2rem"
-                  />
-                </RowFixed>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <HeavyText fontSize={'12px'} width="fit-content">
+              {actionName}
+            </HeavyText>
+            {tip && <QuestionHelper text={tip} size={12} backgroundColor={'transparent'} />}
+          </div>
+          {gracePeriod && (
+            <>
+              <RowFixed>
+                <SText mobileFontSize="10px" width="fit-content">
+                  {t(`Grace Period`)}
+                </SText>
+                <QuestionHelper
+                  text={gracePeriod.tip}
+                  size={10}
+                  backgroundColor={'transparent'}
+                  padding="0 0.5rem 0 0.5rem"
+                />
                 <SText
+                  width="fit-content"
                   color={
                     gracePeriod.alert === 'safe'
                       ? theme.green1
@@ -181,21 +184,23 @@ export default function Action({
                       ? theme.yellow1
                       : theme.red1
                   }
+                  mobileFontSize="10px"
                 >
                   {gracePeriod.timeLeft}
                 </SText>
-              </>
-            )}
-          </Section>
-          {actionDesc && <SpacedSection>{actionDesc}</SpacedSection>}
+              </RowFixed>
+            </>
+          )}
+          {actionDesc && <>{actionDesc}</>}
         </ActionDescription>
         <ButtonPrimary
           onClick={form ? () => setFormModalOpen(!formModalOpen) : handleConfirm}
-          fontSize="12px"
+          fontSize="10px"
           mobileFontSize="10px"
           padding="0.5rem 1rem"
-          mobilePadding="0.35rem 0.5rem"
-          width="fit-content"
+          mobilePadding="0.25rem 0.25rem"
+          minWidth="fit-content"
+          mobileMinWidth="fit-content"
         >
           {buttonText}
         </ButtonPrimary>

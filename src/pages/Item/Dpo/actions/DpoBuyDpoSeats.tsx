@@ -17,7 +17,15 @@ import { ACTION_ICONS } from '../../../../constants'
 /**
  * When the default target is available
  */
-export default function DpoBuyDpoSeatsAvailable({ dpoInfo, dpoAction }: { dpoInfo: DpoInfo; dpoAction: DpoAction }) {
+export default function DpoBuyDpoSeatsAvailable({
+  dpoInfo,
+  dpoAction,
+  isLast,
+}: {
+  dpoInfo: DpoInfo
+  dpoAction: DpoAction
+  isLast: boolean
+}) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
   const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
@@ -80,6 +88,7 @@ export default function DpoBuyDpoSeatsAvailable({ dpoInfo, dpoAction }: { dpoInf
         },
       }}
       setEstimatedFee={setEstimatedFee}
+      isLast={isLast}
     />
   )
 }

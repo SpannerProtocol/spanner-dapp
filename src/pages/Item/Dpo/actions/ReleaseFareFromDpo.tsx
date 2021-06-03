@@ -1,8 +1,9 @@
 import Balance from 'components/Balance'
+import Divider from 'components/Divider'
 import { RowBetween } from 'components/Row'
 import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, SpacedSection } from 'components/Wrapper'
+import { SpacedSection } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import Action from 'pages/Item/actions'
 import React, { useState } from 'react'
@@ -15,32 +16,21 @@ import { ACTION_ICONS } from '../../../../constants'
 /**
  * When the default target is available
  */
-export default function ReleaseFareFromDpo({ dpoInfo, dpoAction }: { dpoInfo: DpoInfo; dpoAction: DpoAction }) {
+export default function ReleaseFareFromDpo({
+  dpoInfo,
+  dpoAction,
+  isLast,
+}: {
+  dpoInfo: DpoInfo
+  dpoAction: DpoAction
+  isLast: boolean
+}) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
   const { chainDecimals } = useSubstrate()
 
   return (
     <Action
-      txContent={
-        <>
-          <SpacedSection>
-            <SText>
-              {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.name.toString()}
-            </SText>
-          </SpacedSection>
-          <BorderedWrapper>
-            <RowBetween>
-              <SText>{t(`Deposit`)}</SText>
-              <SText>
-                {formatToUnit(dpoInfo.vault_withdraw.toBn(), chainDecimals)} {dpoInfo.token_id.asToken.toString()}
-              </SText>
-            </RowBetween>
-          </BorderedWrapper>
-          <Balance token={dpoInfo.token_id.asToken.toString()} />
-          <TxFee fee={estimatedFee} />
-        </>
-      }
       actionName={t('Release Deposit')}
       tip={t(
         `Releasing Deposit will withdraw the deposit in this DPO's Deposit Vault and release it to all members. If target is TravelCabin, deposit is for Ticket Fare. If target is another DPO, deposit is for the DPO Seats.`
@@ -52,7 +42,29 @@ export default function ReleaseFareFromDpo({ dpoInfo, dpoAction }: { dpoInfo: Dp
         method: 'releaseFareFromDpo',
         params: { dpoIdx: dpoInfo.index.toString() },
       }}
+      txContent={
+        <>
+          <SpacedSection>
+            <SText>
+              {t(`Confirm Release Deposit from DPO`)}: {dpoInfo.name.toString()}
+            </SText>
+          </SpacedSection>
+          <Divider />
+          <SpacedSection>
+            <RowBetween>
+              <SText>{t(`Deposit`)}</SText>
+              <SText>
+                {formatToUnit(dpoInfo.vault_withdraw.toBn(), chainDecimals)} {dpoInfo.token_id.asToken.toString()}
+              </SText>
+            </RowBetween>
+          </SpacedSection>
+          <Divider />
+          <Balance token={dpoInfo.token_id.asToken.toString()} />
+          <TxFee fee={estimatedFee} />
+        </>
+      }
       setEstimatedFee={setEstimatedFee}
+      isLast={isLast}
     />
   )
 }

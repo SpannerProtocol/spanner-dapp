@@ -34,11 +34,16 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
   useEffect(() => {
     if (!dpoActions) return
     const filteredDpoActions: JSX.Element[] = []
-    dpoActions.forEach((dpoAction) => {
+    dpoActions.forEach((dpoAction, index) => {
+      const isLast = index === dpoActions.length - 1
       if (dpoAction.action === 'releaseFareFromDpo') {
-        filteredDpoActions.push(<ReleaseFareFromDpo dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+        filteredDpoActions.push(
+          <ReleaseFareFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+        )
       } else if (dpoAction.action === 'withdrawFareFromTravelCabin') {
-        filteredDpoActions.push(<WithdrawFareFromTravelCabin dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+        filteredDpoActions.push(
+          <WithdrawFareFromTravelCabin key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+        )
       } else if (dpoAction.action === 'dpoBuyTravelCabin') {
         // If not available, user needs to set a new target
         if (
@@ -46,25 +51,39 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
           isTravelCabinAvailable(targetTravelCabinInventory) &&
           dpoInfo.target.isTravelCabin
         ) {
-          filteredDpoActions.push(<DpoBuyTravelCabinAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+          filteredDpoActions.push(
+            <DpoBuyTravelCabinAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          )
         } else {
-          filteredDpoActions.push(<DpoBuyTargetNotAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+          filteredDpoActions.push(
+            <DpoBuyTargetNotAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          )
         }
       } else if (dpoAction.action === 'dpoBuyDpoSeats') {
         if (!targetDpo || !dpoInfo.target.isDpo) return
         // If not available, user needs to enter index of cabin that is
         if (isDpoAvailable(dpoInfo, targetDpo)) {
-          filteredDpoActions.push(<DpoBuyDpoSeatsAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+          filteredDpoActions.push(
+            <DpoBuyDpoSeatsAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          )
         } else {
-          filteredDpoActions.push(<DpoBuyTargetNotAvailable dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+          filteredDpoActions.push(
+            <DpoBuyTargetNotAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          )
         }
       } else if (dpoAction.action === 'withdrawYieldFromTravelCabin') {
         if (!dpoInfo.target.isTravelCabin) return
-        filteredDpoActions.push(<WithdrawYieldFromTravelCabin dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+        filteredDpoActions.push(
+          <WithdrawYieldFromTravelCabin key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+        )
       } else if (dpoAction.action === 'releaseYieldFromDpo') {
-        filteredDpoActions.push(<ReleaseYieldFromDpo dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+        filteredDpoActions.push(
+          <ReleaseYieldFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+        )
       } else if (dpoAction.action === 'releaseBonusFromDpo') {
-        filteredDpoActions.push(<ReleaseBonusFromDpo dpoInfo={dpoInfo} dpoAction={dpoAction} />)
+        filteredDpoActions.push(
+          <ReleaseBonusFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+        )
       }
     })
     setUserActions(filteredDpoActions)
