@@ -41,6 +41,7 @@ import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
 import { Collapse } from '@material-ui/core'
+import LanguageSwitch from '../LanguageSwitch'
 
 
 const HeaderFrame = styled.div`
@@ -337,6 +338,12 @@ const LogoText = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: none;
 `};
+`
+
+const MenuBottom = styled.div`
+  position: fixed;
+  bottom: 3rem;
+  width: 100%;
 `
 
 interface HeaderProps {
@@ -668,7 +675,14 @@ export function MobileNav() {
               }
             })
           }
-          <Divider />
+          <MenuBottom>
+            <Divider />
+            <NetworkSelector background={'#fff'} />
+            <HeaderElementWrap>
+              <Transfer />
+              <LanguageSwitch />
+            </HeaderElementWrap>
+          </MenuBottom>
         </Drawer>
         {/* </MobileWrapper> */}
       </>
