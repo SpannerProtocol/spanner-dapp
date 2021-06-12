@@ -94,7 +94,7 @@ export default function LanguageSwitch() {
   const changeLanguage = useCallback((lang: string) => {
     i18n.changeLanguage(lang)
     toggle()
-  }, [])
+  }, [toggle])
 
   return (
     <StyledMenu ref={node as any}>
