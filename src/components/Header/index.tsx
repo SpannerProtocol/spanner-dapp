@@ -7,12 +7,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
-// import BlockIcon from '../../assets/svg/icon-block-black.svg'
-// import BridgeIcon from '../../assets/svg/icon-bridge-black.svg'
-// import DpoIcon from '../../assets/svg/icon-dpo-black.svg'
-// import LaunchpadIcon from '../../assets/svg/icon-launchpad-black.svg'
-// import SwapIcon from '../../assets/svg/icon-swap-arrows-black.svg'
-// import TrainIcon from '../../assets/svg/icon-train-black.svg'
 import Logo from '../../assets/svg/logo-spanner-gradient.svg'
 import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
@@ -35,13 +29,23 @@ import ExpandMore from '@material-ui/icons/ExpandMore'
 import { SLink } from '../Link'
 import { useMedia } from 'react-use'
 
-import BridgeIconBlack from '../../assets/svg/icon-bridge-black.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge-1.svg'
 import DpoIconBlack from '../../assets/svg/icon-dpo-black.svg'
-import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
+// import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
 import { Collapse } from '@material-ui/core'
 import LanguageSwitch from '../LanguageSwitch'
+
+// import DexIcon from '../../assets/svg/icon-dex.svg'
+import EarnIcon from '../../assets/svg/icon-earn.svg'
+import FaqIcon from '../../assets/svg/icon-faq.svg'
+import GuideIcon from '../../assets/svg/icon-guide.svg'
+import InfoIcon from '../../assets/svg/icon-info.svg'
+import NewsIcon from '../../assets/svg/icon-news.svg'
+import ProjectIcon from '../../assets/svg/icon-project.svg'
+import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
+import ExplorIcon from '../../assets/svg/icon-explore.svg'
 
 
 const HeaderFrame = styled.div`
@@ -341,8 +345,8 @@ const LogoText = styled.div`
 `
 
 const MenuBottom = styled.div`
-  position: fixed;
-  bottom: 3rem;
+  //position: fixed;
+  //bottom: 3rem;
   width: 100%;
 `
 
@@ -424,7 +428,10 @@ export function DesktopNav(props: DesktopNavProp) {
 
 const useStyles = makeStyles({
   drawer: {
-    width: '250px'
+    width: '250px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between'
   },
   list: {
     // width: 250
@@ -458,9 +465,9 @@ const navItems: NavItemDefs[] = [
     internal: true
   },
   {
-    text: 'Assets',
+    text: 'Earn',
     link: '',
-    iconLink: DpoIconBlack,
+    iconLink: EarnIcon,
     internal: true,
     children: [
       {
@@ -470,9 +477,9 @@ const navItems: NavItemDefs[] = [
         internal: true
       },
       {
-        text: 'Comming soon',
+        text: 'SpaceShip',
         link: '',
-        iconLink: TrainIconBlack,
+        iconLink: SpaceshipIcon,
         internal: true,
         enable: false
       }
@@ -481,7 +488,7 @@ const navItems: NavItemDefs[] = [
   {
     text: 'Bridge',
     link: '/account/bridge',
-    iconLink: BridgeIconBlack,
+    iconLink: BridgeIcon,
     internal: true
   },
   {
@@ -493,37 +500,37 @@ const navItems: NavItemDefs[] = [
   {
     text: 'Projects',
     link: '/projects',
-    iconLink: LaunchpadIconBlack,
+    iconLink: ProjectIcon,
     internal: true
   },
   {
     text: 'Explorer',
     link: '/projects',
-    iconLink: LaunchpadIconBlack,
+    iconLink: ExplorIcon,
     internal: false
   },
   {
     text: 'Info',
     link: '',
-    iconLink: LaunchpadIconBlack,
+    iconLink: InfoIcon,
     internal: true,
     children: [
       {
         text: 'News',
         link: '/bullettrain/travelcabins',
-        iconLink: TrainIconBlack,
+        iconLink: NewsIcon,
         internal: true
       },
       {
         text: 'FAQ',
         link: '/bullettrain/travelcabins',
-        iconLink: TrainIconBlack,
+        iconLink: FaqIcon,
         internal: true
       },
       {
         text: 'Guides',
         link: '/bullettrain/travelcabins',
-        iconLink: TrainIconBlack,
+        iconLink: GuideIcon,
         internal: true
       }
     ]
@@ -564,12 +571,6 @@ function NavItem({
                    toggleDrawer
                  }: NavItemProps) {
 
-  const [open, setOpen] = React.useState(false)
-
-  const handleClick = () => {
-    setOpen((prevOpen) => !prevOpen)
-  }
-  const { t } = useTranslation()
 
   return (
     <>
@@ -583,33 +584,20 @@ function NavItem({
       >
         {internal ? (
           <List>
-            <SLink to={link}>
-              <ListItem button onClick={handleClick} className={nested ? classes.nested : ''}>
-                {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
-                                                 alt={text} /></ListItemIcon>}
-                <ListItemText primary={text} />
-                {children != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
-              </ListItem>
-              {
-                children && <Collapse component='li' in={open} timeout='auto' unmountOnExit>
-                  <List disablePadding>
-                    {children.map(function(navItem, index) {
-                      return <NavItem
-                        key={index}
-                        iconLink={navItem.iconLink}
-                        link={navItem.link}
-                        text={t(navItem.text)}
-                        internal={navItem.internal}
-                        nested={true}
-                        classes={classes}
-                        toggleDrawer={toggleDrawer}
-                      />
-                    })}
+            {
+              children ? (
+                <NavItemContent iconLink={iconLink} text={text} link={link} internal={internal}
+                                nested={nested}
+                                classes={classes} children={children} toggleDrawer={toggleDrawer} />
+              ) : (
+                <SLink to={link}>
+                  <NavItemContent iconLink={iconLink} text={text} link={link} internal={internal}
+                                  nested={nested}
+                                  classes={classes} toggleDrawer={toggleDrawer} />
+                </SLink>
+              )
+            }
 
-                  </List>
-                </Collapse>
-              }
-            </SLink>
           </List>
         ) : (
           <List>
@@ -623,6 +611,53 @@ function NavItem({
           </List>
         )}
       </div>
+    </>
+  )
+}
+
+export function NavItemContent({
+                                 iconLink,
+                                 text,
+                                 link,
+                                 classes,
+                                 internal,
+                                 nested,
+                                 children,
+                                 toggleDrawer
+                               }: NavItemProps) {
+  const [open, setOpen] = React.useState(false)
+
+  const handleClick = () => {
+    setOpen((prevOpen) => !prevOpen)
+  }
+  const { t } = useTranslation()
+  return (
+    <>
+      <ListItem button onClick={handleClick} className={nested ? classes.nested : ''}>
+        {iconLink && <ListItemIcon> <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink}
+                                         alt={text} /></ListItemIcon>}
+        <ListItemText primary={text} />
+        {children != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
+      </ListItem>
+      {
+        children && <Collapse component='li' in={open} timeout='auto' unmountOnExit>
+          <List disablePadding>
+            {children.map(function(navItem, index) {
+              return <NavItem
+                key={index}
+                iconLink={navItem.iconLink}
+                link={navItem.link}
+                text={t(navItem.text)}
+                internal={navItem.internal}
+                nested={true}
+                classes={classes}
+                toggleDrawer={toggleDrawer}
+              />
+            })}
+
+          </List>
+        </Collapse>
+      }
     </>
   )
 }
@@ -655,26 +690,28 @@ export function MobileNav() {
         <Drawer classes={{
           paper: classes.drawer
         }} anchor={'right'} open={isOpen} onClose={toggleDrawer(false)}>
-          <Divider />
-          {
-            navItems.map(function(navItem, index) {
-              if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
-                return false
-              } else {
-                return <NavItem
-                  key={index}
-                  iconLink={navItem.iconLink}
-                  link={navItem.link}
-                  text={t(navItem.text)}
-                  internal={navItem.internal}
-                  nested={false}
-                  classes={classes}
-                  children={navItem.children ? navItem.children : undefined}
-                  toggleDrawer={toggleDrawer}
-                />
-              }
-            })
-          }
+          <div style={{ overflow: 'auto' }}>
+            < Divider />
+            {
+              navItems.map(function(navItem, index) {
+                if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
+                  return false
+                } else {
+                  return <NavItem
+                    key={index}
+                    iconLink={navItem.iconLink}
+                    link={navItem.link}
+                    text={t(navItem.text)}
+                    internal={navItem.internal}
+                    nested={false}
+                    classes={classes}
+                    children={navItem.children ? navItem.children : undefined}
+                    toggleDrawer={toggleDrawer}
+                  />
+                }
+              })
+            }
+          </div>
           <MenuBottom>
             <Divider />
             <NetworkSelector background={'#fff'} />
