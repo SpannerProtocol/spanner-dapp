@@ -281,7 +281,7 @@ export function SoldToItem(props: CabinSoldToProps) {
         to={{ pathname: `/item/travelCabin/${cabinIndex}/inventory/${cabinInventoryIndex}` }}
         style={{ textDecoration: 'none' }}
       >
-        <FlatCard style={{ textAlign: 'left', padding: '1rem 2rem' }}>
+        <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
           <RowBetween>
             <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
               {`${t(`TravelCabin`)} ${`Diamond`} ${`#`}${cabinInventoryIndex.toString()}`}

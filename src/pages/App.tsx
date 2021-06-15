@@ -20,7 +20,7 @@ import Diagnostics from './Diagnostics'
 import Faq from './Faq'
 import Home from './Home'
 import Item from './Item'
-import TravelCabinBuyer from './Item/TravelCabin/TravelCabinBuyer'
+import TravelCabinBuyer from './CabinBuyer'
 import Launchpad from './Projects'
 import Project from './Projects/Project'
 
