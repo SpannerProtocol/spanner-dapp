@@ -3,7 +3,7 @@ import { useSubstrate } from '../../hooks/useSubstrate'
 import { useSubTravelCabinInventory, useTravelCabins } from '../../hooks/useQueryTravelCabins'
 import React, { useMemo } from 'react'
 import { getCabinClassImage, getCabinOrder } from '../../utils/getCabinClass'
-import { HeavyText, StandardText } from '../../components/Text'
+import { HeavyText, SText } from '../../components/Text'
 import { ButtonWrapper, GridWrapper } from '../../components/Wrapper'
 import { TravelCabinInfo } from 'interfaces/bulletTrain'
 import { useBlockManager } from '../../hooks/useBlocks'
@@ -31,7 +31,7 @@ export function CabinsCatalogue() {
 
   return (
     <>
-      <HeavyText fontWeight={'700'} fontSize={'18px'} mobileFontSize={'18px'}
+      <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
                  padding={'2rem 0rem'}>{'Cabins'}</HeavyText>
       <GridWrapper columns='2'>
         {sortedCabins.map((entry, index) => {
@@ -69,21 +69,21 @@ export function CabinCard(props: TravelCabinCard) {
         <IconWrapper>
           <div style={{ maxWidth: '45px', width: '45px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
         </IconWrapper>
-        <div>
+        <div style={{textAlign:'right'}}>
           <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }}>
             {`${t(`TravelCabin`)} ${travelCabinInfo.name.toString()}`}
           </HeavyText>
-          <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
+          <Row style={{ justifyContent: 'flex-end',textAlign:'right' }} padding={'0.5rem 0rem'}>
             <Ticket />
-            <StandardText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'}>
+            <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'} width={'fit-content'}>
               {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals)} {token}
-            </StandardText>
+            </SText>
           </Row>
         </div>
       </RowBetween>
       <RowBetween padding={'1rem 0.5rem 0.5rem 0.5rem'}>
-        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{t(`APY`)}</HeavyText>
-        <StandardText fontSize={'14px'} mobileFontSize={'14px'}> {expectedBlockTime && (
+        <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>{t(`APY`)}</HeavyText>
+        <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}> {expectedBlockTime && (
           <>
             {`${getApy({
               totalYield: travelCabinInfo.yield_total.toBn(),
@@ -93,26 +93,26 @@ export function CabinCard(props: TravelCabinCard) {
               period: travelCabinInfo.maturity
             })}%`}
           </>
-        )}</StandardText>
+        )}</SText>
       </RowBetween>
       <RowBetween padding={'0.5rem 0.5rem'}>
         <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{t(`Bonus`)}</HeavyText>
-        <StandardText fontSize={'14px'} mobileFontSize={'14px'}>{bonusPercent}%</StandardText>
+        <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>{bonusPercent}%</SText>
       </RowBetween>
       {expectedBlockTime && (
         <RowBetween padding={'0.5rem 0.5rem'}>
-          <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{t(`Trip`)}</HeavyText>
-          <StandardText
+          <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>{t(`Trip`)}</HeavyText>
+          <SText
             fontSize={'14px'}
-            mobileFontSize={'14px'}>  {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}</StandardText>
+            mobileFontSize={'14px'} width={'fit-content'}>  {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}</SText>
         </RowBetween>
       )}
       {inventoryCount && (
         <RowBetween padding={'0.5rem 0.5rem'}>
           <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{t(`Available`)}</HeavyText>
-          <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {`${inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/${inventoryCount[1].toNumber()}`}
-          </StandardText>
+          </SText>
         </RowBetween>
       )}
       <Row style={{ alignItems: 'stretch', justifyContent: 'space-around' }} marginTop={'1.5rem'}>

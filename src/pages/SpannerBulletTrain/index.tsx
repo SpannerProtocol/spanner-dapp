@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import { PageWrapper, Section, Wrapper } from '../../components/Wrapper'
-import { Heading, HeavyText, StandardText } from '../../components/Text'
+import { Heading, HeavyText, SText } from '../../components/Text'
 import styled, { ThemeContext } from 'styled-components'
 import { FlatCard } from '../../components/Card'
 import { RowBetween } from '../../components/Row'
@@ -44,8 +44,8 @@ export default function BulletTrain() {
         <HomeContentWrapper>
           <SpannerBulletTrainStats />
           <GlobalMilestoneReward />
-          <CabinsCatalogue/>
-          <SoldTo/>
+          <CabinsCatalogue />
+          <SoldTo />
         </HomeContentWrapper>
       </Wrapper>
     </PageWrapper>
@@ -59,16 +59,16 @@ export function SpannerBulletTrainStats() {
   return (
     <FlatCard style={{ textAlign: 'left' }}>
       <HeavyText fontSize={'24px'} mobileFontSize={'24px'} color={theme.primary1}
-                 style={{ margin: 'auto' }}>{'100,000,000 BOLT'}</HeavyText>
-      <StandardText fontSize={'16px'} mobileFontSize={'16px'} padding={'0rem 0rem 1rem 0rem'}
-                    style={{ margin: 'auto' }}>{'Total Deposited Value'}</StandardText>
+                 style={{ margin: 'auto', textAlign: 'center' }}>{'100,000,000 BOLT'}</HeavyText>
+      <SText fontSize={'16px'} mobileFontSize={'16px'} padding={'0rem 0rem 1rem 0rem'}
+             style={{ margin: 'auto', textAlign: 'center' }}>{'Total Deposited Value'}</SText>
       <RowBetween>
         <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'10,049,009 BOLT'}</HeavyText>
-        <StandardText>{'Total Yield Distributed'}</StandardText>
+        <SText style={{ textAlign: 'right' }}>{'Total Yield Distributed'}</SText>
       </RowBetween>
       <RowBetween>
         <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'48,948,998 BOLT'}</HeavyText>
-        <StandardText>{'Total Bonus Distributed'}</StandardText>
+        <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>
       </RowBetween>
     </FlatCard>
   )

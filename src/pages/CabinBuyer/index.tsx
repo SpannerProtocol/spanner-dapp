@@ -1,5 +1,5 @@
 import { ButtonWrapper, PageWrapper, Section, Wrapper } from '../../components/Wrapper'
-import { HeavyText, StandardText } from '../../components/Text'
+import { HeavyText, SText } from '../../components/Text'
 import React, { useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from '../../components/Row'
@@ -92,14 +92,14 @@ export function CabinInfo() {
                 }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
               </IconWrapper>
               <div>
-                <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }}>
+                <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }} width={'fit-content'}>
                   {`${t(`TravelCabin`)} ${t(travelCabinInfo.name.toString())} #${travelCabinInventoryIndex.toString()}`}
                 </HeavyText>
                 <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
                   <Ticket />
-                  <StandardText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'}>
+                  <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'} width={'fit-content'}>
                     {`${formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} ${token}`}
-                  </StandardText>
+                  </SText>
                 </Row>
               </div>
             </RowBetween>
@@ -107,10 +107,10 @@ export function CabinInfo() {
         }
         {
           selectedBuyer && (
-            <StandardText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
+            <SText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
               {selectedBuyer[1].buyer.isPassenger && (`${t(`Buyer`)}: ${shortenAddr(selectedBuyer[1].buyer.asPassenger.toString(), 7)} (${t(`Passenger`)})`)}
               {selectedBuyer[1].buyer.isDpo && (`${t(`Buyer`)}: DPO #${selectedBuyer[1].buyer.asDpo.toString()}`)}
-            </StandardText>
+            </SText>
           )
         }
       </FlatCard>
@@ -125,7 +125,7 @@ export function YieldAvailable() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
-        <HeavyText fontWeight={'700'} fontSize={'14px'} mobileFontSize={'14px'}>{'Yield Available'}</HeavyText>
+        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{'Yield Available'}</HeavyText>
         <RowBetween padding={'1.5rem 0rem'}>
           <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'100,000,000 BOLT'}</HeavyText>
           <ButtonWrapper style={{ width: '100px', padding: '0.5rem' }}>
@@ -134,9 +134,9 @@ export function YieldAvailable() {
             </ButtonPrimary>
           </ButtonWrapper>
         </RowBetween>
-        <StandardText fontSize={'12px'} mobileFontSize={'12px'}>
+        <SText fontSize={'12px'} mobileFontSize={'12px'}>
           {`Withdrawn:${'0/70'} BOLT`}
-        </StandardText>
+        </SText>
       </FlatCard>
     </>
   )
@@ -148,7 +148,7 @@ export function FareAvailable() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
-        <HeavyText fontWeight={'700'} fontSize={'14px'} mobileFontSize={'14px'}>{'Fare Available'}</HeavyText>
+        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{'Fare Available'}</HeavyText>
         <RowBetween padding={'1.5rem 0rem'}>
           <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'0 BOLT'}</HeavyText>
           <ButtonWrapper style={{ width: '100px', padding: '0.5rem' }}>
@@ -157,9 +157,9 @@ export function FareAvailable() {
             </ButtonGray>
           </ButtonWrapper>
         </RowBetween>
-        <StandardText fontSize={'12px'} mobileFontSize={'12px'}>
+        <SText fontSize={'12px'} mobileFontSize={'12px'}>
           {`Withdrawn:${'0/70'} BOLT`}
-        </StandardText>
+        </SText>
       </FlatCard>
     </>
   )
@@ -190,16 +190,16 @@ export function Trip() {
 
   return (
     <>
-      <HeavyText fontWeight={'700'} fontSize={'18px'} mobileFontSize={'18px'}
+      <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
                  padding={'2rem 0rem'}>{'Trip'}</HeavyText>
 
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <Row justifyContent={'flex-end'}>
-          <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+          <SText fontSize={'14px'} mobileFontSize={'14px'}>
             {/*{`block:204324`}*/}
-          </StandardText>
+          </SText>
         </Row>
-        <StandardText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>
+        <SText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>
           {
             genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0 ? (
                 `${tsToRelative(
@@ -208,29 +208,29 @@ export function Trip() {
               )
               : (` `)
           }
-        </StandardText>
+        </SText>
         <div>
           {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && (
             <RowBetween>
               <TripDiv>
-                <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+                <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                   {`Start`}
                 </HeavyText>
-                <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+                <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                   {tsToDateTime(
                     blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) / 1000
                   )}
-                </StandardText>
+                </SText>
               </TripDiv>
               <TripDiv>
-                <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+                <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                   {`End`}
                 </HeavyText>
-                <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+                <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                   {tsToDateTime(
                     blockToTs(genesisTs, expectedBlockTime.toNumber(), travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()) / 1000
                   )}
-                </StandardText>
+                </SText>
               </TripDiv>
             </RowBetween>
           )}
@@ -246,7 +246,7 @@ export function Trip() {
 export function Activity() {
   return (
     <>
-      <HeavyText fontWeight={'700'} fontSize={'18px'} mobileFontSize={'18px'}
+      <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
                  padding={'2rem 0rem'}>{'Activity'}</HeavyText>
       <ActivityItem></ActivityItem>
       <ActivityItem></ActivityItem>
@@ -265,20 +265,20 @@ export function ActivityItem() {
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <RowBetween>
-          <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+          <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {`Withdraw`}
           </HeavyText>
-          <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {`0.675 BOLT`}
-          </StandardText>
+          </SText>
         </RowBetween>
         <RowBetween padding={'0.6rem 0rem'}>
-          <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {`5gfdsafe......rewqrewf`}`
-          </StandardText>
-          <StandardText fontSize={'14px'} mobileFontSize={'14px'} padding={'0.6rem 0rem'}>
+          </SText>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0.6rem 0rem'} width={'fit-content'}>
             {`13 mins ago`}
-          </StandardText>
+          </SText>
         </RowBetween>
       </FlatCard>
     </>

@@ -18,11 +18,12 @@ import BulletTrain from './SpannerBulletTrain'
 import Dex from './Dex'
 import Diagnostics from './Diagnostics'
 import Faq from './Faq'
-import Home from './Home'
+// import Home from './Home'
 import Item from './Item'
 import TravelCabinBuyer from './CabinBuyer'
 import Launchpad from './Projects'
 import Project from './Projects/Project'
+import NewHome from './NewHome'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -84,7 +85,7 @@ export default function App() {
             <Popups />
             <Web3ReactManager>
               <Switch>
-                <Route exact strict path="/" component={Home} />
+                <Route exact strict path="/" component={NewHome} />
                 <Route exact strict path="/dex" component={Dex} />
                 <Route exact strict path="/item/:name/:index" component={Item} />
                 <Route exact strict path="/item/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
