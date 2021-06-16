@@ -44,7 +44,7 @@ import GuideIcon from '../../assets/svg/icon-guide.svg'
 import InfoIcon from '../../assets/svg/icon-info.svg'
 import NewsIcon from '../../assets/svg/icon-news.svg'
 import ProjectIcon from '../../assets/svg/icon-project.svg'
-import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
+// import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
 import ExplorIcon from '../../assets/svg/icon-explore.svg'
 
 
@@ -115,6 +115,7 @@ const HeaderElement = styled.div`
 const HeaderElementWrap = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-evenly
 `
 
 const HeaderRow = styled(RowFixed)`
@@ -196,31 +197,6 @@ const BalanceWrapper = styled.span`
   }
 `
 
-// const HideSmall = styled.span`
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     display: none;
-//   `};
-// `
-
-// const NetworkCard = styled(YellowCard)`
-//   border-radius: 12px;
-//   padding: 8px 12px;
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     margin: 0;
-//     margin-right: 0.5rem;
-//     width: initial;
-//     overflow: hidden;
-//     text-overflow: ellipsis;
-//     flex-shrink: 1;
-//   `};
-// `
-
-// const BalanceText = styled(Text)`
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//     display: none;
-//   `};
-// `
-
 const Title = styled(Link)`
   display: flex;
   align-items: center;
@@ -252,85 +228,6 @@ const SpannerIcon = styled.div`
 `};
 `
 
-// const activeClassName = 'ACTIVE'
-//
-// const StyledNavLink = styled(NavLink).attrs({
-//   activeClassName
-// })`
-//   ${({ theme }) => theme.flexRowNoWrap}
-//   align-items: center;
-//   border-radius: 3rem;
-//   outline: none;
-//   cursor: pointer;
-//   text-decoration: none;
-//   color: ${({ theme }) => theme.text1};
-//   font-size: 16px;
-//   width: fit-content;
-//   margin: 1.3rem 1rem 1.3rem 2rem;
-//   font-weight: 500;
-//
-//   &.${activeClassName} {
-//     border-radius: 12px;
-//     font-weight: 700;
-//     color: ${({ theme }) => theme.text1};
-//   }
-//
-//   :hover,
-//   :focus {
-//     color: ${({ theme }) => darken(0.1, theme.text1)};
-//   }
-//
-//   ${({ theme }) => theme.mediaWidth.upToMedium`
-//     display: flex;
-//     color: ${({ theme }) => theme.text1}
-//     font-size: 14px;
-//     padding: 0;
-//     justify-content: flex-end;
-//     margin-left: 0.5rem;
-//     margin-right: 0.5rem;
-// `};
-// `
-//
-// const StyledExternalLink = styled(ExternalLink).attrs({
-//   activeClassName
-// })<{ isActive?: boolean }>`
-//   ${({ theme }) => theme.flexRowNoWrap}
-//   align-items: left;
-//   border-radius: 3rem;
-//   outline: none;
-//   cursor: pointer;
-//   text-decoration: none;
-//   color: ${({ theme }) => theme.text1};
-//   font-size: 16px;
-//   width: fit-content;
-//   margin: 1.3rem 1rem 1.3rem 2rem;
-//   font-weight: 500;
-//
-//   &.${activeClassName} {
-//     border-radius: 12px;
-//     font-weight: 600;
-//     color: ${({ theme }) => theme.text1};
-//   }
-//
-//   :hover,
-//   :focus {
-//     color: ${({ theme }) => darken(0.1, theme.text1)};
-//   }
-//
-//   ${({ theme }) => theme.mediaWidth.upToMedium`
-//   display: flex;
-//   color: ${({ theme }) => theme.text1}
-//   font-size: 14px;
-//   padding: 0;
-//   justify-content: flex-end;
-//   margin-left: 0.5rem;
-//   margin-right: 0.5rem;
-//   `};
-//
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//       display: none;
-//   `}
-// `
 
 const LogoText = styled.div`
   color: ${({ theme }) => theme.text1};
@@ -347,6 +244,7 @@ const LogoText = styled.div`
 const MenuBottom = styled.div`
   //position: fixed;
   //bottom: 3rem;
+  padding: 1rem 0rem;
   width: 100%;
 `
 
@@ -476,13 +374,13 @@ const navItems: NavItemDefs[] = [
         iconLink: TrainIconBlack,
         internal: true
       },
-      {
-        text: 'SpaceShip',
-        link: '',
-        iconLink: SpaceshipIcon,
-        internal: true,
-        enable: false
-      }
+      // {
+      //   text: 'SpaceShip',
+      //   link: '',
+      //   iconLink: SpaceshipIcon,
+      //   internal: true,
+      //   enable: false
+      // }
     ]
   },
   {
@@ -714,7 +612,9 @@ export function MobileNav() {
           </div>
           <MenuBottom>
             <Divider />
-            <NetworkSelector background={'#fff'} />
+            <div style={{padding:'1rem 0rem 1rem 0rem'}}>
+              <NetworkSelector background={'#fff'} />
+            </div>
             <HeaderElementWrap>
               <Transfer />
               <LanguageSwitch />

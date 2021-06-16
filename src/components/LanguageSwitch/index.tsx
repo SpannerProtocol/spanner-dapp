@@ -8,6 +8,8 @@ import { LinkStyledButton } from '../../theme'
 import i18n from '../../i18n'
 
 const StyledEarthIcon = styled(Earth)`
+  height: 30px;
+  width: 30px;
   path {
     stroke: ${({ theme }) => theme.text1};
   }
@@ -20,7 +22,7 @@ const StyledMenuButton = styled.button`
   background-color: transparent;
   margin: 0;
   padding: 0;
-  height: 35px;
+  height: 40px;
   background-color: ${({ theme }) => theme.bg3};
 
   padding: 0.15rem 0.5rem;
@@ -60,17 +62,17 @@ const MenuFlyout = styled.span`
   font-size: 1rem;
   position: absolute;
   top: 4rem;
-  right: 0rem;
   z-index: 100;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    top: -6.25rem;
+    top: -8.25rem;
   `};
 `
 
 const MenuItem = styled(LinkStyledButton)`
+  font-size: 15px;
   flex: 1;
-  padding: 0.5rem 0.5rem;
+  padding: 0.8rem 0.5rem;
   color: ${({ theme }) => theme.text2};
 
   :hover {
