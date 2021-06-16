@@ -1,6 +1,6 @@
 import { ButtonWrapper, PageWrapper, Section, Wrapper } from '../../components/Wrapper'
 import { HeavyText, StandardText } from '../../components/Text'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from '../../components/Row'
 import { IconWrapper } from '../../components/Item/TravelCabinCard'
@@ -9,7 +9,14 @@ import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { FlatCard } from '../../components/Card'
 import { useTranslation } from 'react-i18next'
 import { ButtonGray, ButtonPrimary } from '../../components/Button'
-
+import { useItemCabinBuyer } from '../../hooks/useItem'
+import { useSubTravelCabin, useTravelCabinBuyers } from '../../hooks/useQueryTravelCabins'
+import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'interfaces/bulletTrain'
+import { formatToUnit } from '../../utils/formatUnit'
+import { useSubstrate } from '../../hooks/useSubstrate'
+import { shortenAddr } from '../../utils/truncateString'
+import { useBlockManager } from '../../hooks/useBlocks'
+import { blockToTs, tsToDateTime, tsToRelative } from '../../utils/formatBlocks'
 
 
 export const HomeContentWrapper = styled.div`
@@ -54,30 +61,58 @@ export default function TravelCabinBuyer() {
 
 export function CabinInfo() {
   const { t } = useTranslation()
+  const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
+  const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
+  const buyers = useTravelCabinBuyers(travelCabinIndex)
+  const [selectedBuyer, setSelectedBuyer] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+  const { chainDecimals } = useSubstrate()
+
+  useEffect(() => {
+    if (buyers.length === 0) return
+    setSelectedBuyer(
+      buyers.find((buyer) => buyer[0][0].eq(travelCabinIndex) && buyer[0][1].eq(travelCabinInventoryIndex))
+    )
+  }, [buyers, travelCabinIndex, travelCabinInventoryIndex])
+
+  if (!travelCabinInfo) return <></>
+  const token = travelCabinInfo.token_id.isToken
+    ? travelCabinInfo.token_id.asToken.toString()
+    : travelCabinInfo.token_id.asDexShare.toString()
 
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 2rem' }}>
-        <RowBetween>
-          <IconWrapper>
-            <div style={{ maxWidth: '45px', width: '45px' }}>{getCabinClassImage('Bronze')}</div>
-          </IconWrapper>
-          <div>
-            <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }}>
-              {`${t(`TravelCabin`)} ${'Bronze'} ${'#41'}`}
-            </HeavyText>
-            <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
-              <Ticket />
-              <StandardText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'}>
-                {'1000 BOLT'}
-              </StandardText>
-            </Row>
-          </div>
-        </RowBetween>
-        <StandardText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
-          {'Buyer:DPO#5'}
-        </StandardText>
-
+        {
+          travelCabinInfo && (
+            <RowBetween>
+              <IconWrapper>
+                <div style={{
+                  maxWidth: '45px',
+                  width: '45px'
+                }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
+              </IconWrapper>
+              <div>
+                <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }}>
+                  {`${t(`TravelCabin`)} ${t(travelCabinInfo.name.toString())} #${travelCabinInventoryIndex.toString()}`}
+                </HeavyText>
+                <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
+                  <Ticket />
+                  <StandardText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'}>
+                    {`${formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} ${token}`}
+                  </StandardText>
+                </Row>
+              </div>
+            </RowBetween>
+          )
+        }
+        {
+          selectedBuyer && (
+            <StandardText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
+              {selectedBuyer[1].buyer.isPassenger && (`${t(`Buyer`)}: ${shortenAddr(selectedBuyer[1].buyer.asPassenger.toString(), 7)} (${t(`Passenger`)})`)}
+              {selectedBuyer[1].buyer.isDpo && (`${t(`Buyer`)}: DPO #${selectedBuyer[1].buyer.asDpo.toString()}`)}
+            </StandardText>
+          )
+        }
       </FlatCard>
 
     </>
@@ -137,6 +172,22 @@ const TripDiv = styled.div`
 `
 
 export function Trip() {
+  const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
+  const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
+  const buyers = useTravelCabinBuyers(travelCabinIndex)
+  const [selectedBuyer, setSelectedBuyer] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+  const { expectedBlockTime, genesisTs, lastBlock } = useBlockManager()
+
+  useEffect(() => {
+    if (buyers.length === 0) return
+    setSelectedBuyer(
+      buyers.find((buyer) => buyer[0][0].eq(travelCabinIndex) && buyer[0][1].eq(travelCabinInventoryIndex))
+    )
+  }, [buyers, travelCabinIndex, travelCabinInventoryIndex])
+
+  if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
+  const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
+
   return (
     <>
       <HeavyText fontWeight={'700'} fontSize={'18px'} mobileFontSize={'18px'}
@@ -145,31 +196,44 @@ export function Trip() {
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <Row justifyContent={'flex-end'}>
           <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
-            {`block:204324`}
+            {/*{`block:204324`}*/}
           </StandardText>
         </Row>
         <StandardText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>
-          {`0.5 days remaining`}
+          {
+            genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0 ? (
+                `${tsToRelative(
+                  blockToTs(genesisTs, expectedBlockTime.toNumber(), travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()) / 1000
+                )}`
+              )
+              : (` `)
+          }
         </StandardText>
         <div>
-          <RowBetween>
-            <TripDiv>
-              <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-                {`Start`}
-              </HeavyText>
-              <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
-                {`#325920`}
-              </StandardText>
-            </TripDiv>
-            <TripDiv>
-              <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-                {`End`}
-              </HeavyText>
-              <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
-                {`325920`}
-              </StandardText>
-            </TripDiv>
-          </RowBetween>
+          {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && (
+            <RowBetween>
+              <TripDiv>
+                <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+                  {`Start`}
+                </HeavyText>
+                <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+                  {tsToDateTime(
+                    blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) / 1000
+                  )}
+                </StandardText>
+              </TripDiv>
+              <TripDiv>
+                <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+                  {`End`}
+                </HeavyText>
+                <StandardText fontSize={'14px'} mobileFontSize={'14px'}>
+                  {tsToDateTime(
+                    blockToTs(genesisTs, expectedBlockTime.toNumber(), travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()) / 1000
+                  )}
+                </StandardText>
+              </TripDiv>
+            </RowBetween>
+          )}
         </div>
 
       </FlatCard>

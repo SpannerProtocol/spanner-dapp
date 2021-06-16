@@ -4,9 +4,9 @@ import { Heading, HeavyText, StandardText } from '../../components/Text'
 import styled, { ThemeContext } from 'styled-components'
 import { FlatCard } from '../../components/Card'
 import { RowBetween } from '../../components/Row'
-import { SoldTo } from './soldTo'
-import { CabinsCatalogue } from './cabinCatalogue'
-import { GlobalMilestoneReward } from './milestone'
+import { CabinsCatalogue } from './CabinCatalogue'
+import { GlobalMilestoneReward } from './Milestone'
+import { SoldTo } from './SoldTo'
 
 const PageTitle = styled.h1`
   margin: 0.1rem 0rem;
