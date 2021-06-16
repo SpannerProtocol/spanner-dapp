@@ -70,7 +70,7 @@ export const CabinTitle = styled.div`
 
 export const IconWrapper = styled.div`
   grid-area: icon;
-  width: 100%
+  width: 100%;
   max-width: none;
   justify-content: center;
   margin-left: auto;

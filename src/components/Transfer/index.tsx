@@ -23,8 +23,8 @@ import { isValidSpannerAddress } from '../../utils/validAddress'
 import { RowBetween, RowFixed } from '../Row'
 
 const StyledMenuIcon = styled(Send)`
-  height: 20px;
-  width: 20px;
+  height: 30px;
+  width: 30px;
 
   > * {
     stroke: ${({ theme }) => theme.text1};
@@ -39,9 +39,8 @@ const StyledMenuButton = styled.button`
   background-color: transparent;
   margin: 0;
   padding: 0;
-  height: 35px;
+  height: 40px;
   background-color: ${({ theme }) => theme.bg3};
-
   padding: 0.15rem 0.5rem;
   border-radius: 0.5rem;
 
