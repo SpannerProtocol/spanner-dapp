@@ -9,6 +9,7 @@ import React, { StrictMode } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter } from 'react-router-dom'
+import MuiThemeProvider from 'theme/MuiThemeProvider'
 import { NetworkContextName } from './constants'
 import './i18n'
 import App from './pages/App'
@@ -33,12 +34,14 @@ ReactDOM.render(
               <SubstrateProvider>
                 <SubQLProvider>
                   <ThemeProvider>
-                    <ThemedGlobalStyle />
-                    <HashRouter>
-                      <ToastProvider>
-                        <App />
-                      </ToastProvider>
-                    </HashRouter>
+                    <MuiThemeProvider>
+                      <ThemedGlobalStyle />
+                      <HashRouter>
+                        <ToastProvider>
+                          <App />
+                        </ToastProvider>
+                      </HashRouter>
+                    </MuiThemeProvider>
                   </ThemeProvider>
                 </SubQLProvider>
               </SubstrateProvider>
