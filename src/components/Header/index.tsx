@@ -577,7 +577,8 @@ export function MobileNav() {
                   horizontal: 'right',
                 }}
                 color="secondary"
-                badgeContent={1}
+                badgeContent={0}
+                showZero
               >
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                   <User />
