@@ -4,7 +4,7 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
-import Action from 'pages/Assets/actions'
+import ActionRow from 'components/Actions/ActionRow'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
@@ -18,10 +18,12 @@ export default function WithdrawFareFromTravelCabin({
   dpoInfo,
   dpoAction,
   isLast,
+  selectedState,
 }: {
   dpoInfo: DpoInfo
   dpoAction: DpoAction
   isLast: boolean
+  selectedState?: string
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
@@ -30,7 +32,9 @@ export default function WithdrawFareFromTravelCabin({
   return (
     <>
       {inventoryIndex && (
-        <Action
+        <ActionRow
+          dpoInfo={dpoInfo}
+          selectedState={selectedState}
           actionName={t(`Withdraw Ticket Fare`)}
           tip={t(`Withdraw Ticket Fare from Target TravelCabin.`)}
           buttonText={t(`Withdraw`)}

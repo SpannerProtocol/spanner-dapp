@@ -5,10 +5,10 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubDpo } from 'hooks/useQueryDpos'
+import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
-import Action from 'pages/Assets/actions'
-import React, { useEffect, useMemo, useState } from 'react'
+import ActionRow from 'components/Actions/ActionRow'
+import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
 import { blocksToCountDown, blockToHours } from 'utils/formatBlocks'
@@ -20,21 +20,23 @@ import { ACTION_ICONS } from '../../../../constants'
 /**
  * When the default target is available
  */
-export default function DpoBuyDpoSeatsAvailable({
+export default function DpoBuyTravelCabinAvailable({
   dpoInfo,
   dpoAction,
   isLast,
+  selectedState,
 }: {
   dpoInfo: DpoInfo
   dpoAction: DpoAction
   isLast: boolean
+  selectedState?: string
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
-  const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
+  const targetCabin = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
   const { lastBlock, expectedBlockTime } = useBlockManager()
-  const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
   const { chainDecimals } = useSubstrate()
+  const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
 
   // Grace Period life sentence
   useEffect(() => {
@@ -43,11 +45,11 @@ export default function DpoBuyDpoSeatsAvailable({
     if (gp) setLifeSentenceGp(gp)
   }, [dpoInfo, expectedBlockTime, lastBlock])
 
-  const token = useMemo(() => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : ''), [dpoInfo])
   return (
-    <Action
-      actionName={t('Buy DPO Seats')}
-      tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+    <ActionRow
+      dpoInfo={dpoInfo}
+      selectedState={selectedState}
+      actionName={`${t(`Buy`)} ${t(`TravelCabin`)}: ${targetCabin?.name.toString()}`}
       buttonText={t(`Buy`)}
       icon={ACTION_ICONS[dpoAction.action]}
       gracePeriod={
@@ -66,35 +68,32 @@ export default function DpoBuyDpoSeatsAvailable({
             }
           : undefined
       }
+      tip={t(`Use DPO's crowdfund to buy this TravelCabin.`)}
       transaction={{
         section: 'bulletTrain',
-        method: 'dpoBuyDpoSeats',
+        method: 'dpoBuyTravelCabin',
         params: {
           buyerDpoIdx: dpoInfo.index.toString(),
-          targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
-          numberOfSeats: dpoInfo.target.asDpo[1].toString(),
+          travelCabinIdx: dpoInfo.target.asTravelCabin.toString(),
         },
       }}
       txContent={
         <>
           <SpacedSection>
-            <SText>{t(`Confirm Purchase of DPO Seats`)}</SText>
+            <SText>{t(`Confirm purchase of TravelCabin.`)}</SText>
           </SpacedSection>
           <Divider />
-          {targetDpo && (
+          {targetCabin && (
             <SpacedSection>
               <RowBetween>
-                <SText>{t(`DPO Name`)}</SText>
-                <SText>{targetDpo.name.toString()}</SText>
+                <SText>{t(`TravelCabin`)}</SText>
+                <SText>{targetCabin.name.toString()}</SText>
               </RowBetween>
               <RowBetween>
-                <SText>{t(`Seats`)}</SText>
-                <SText>{dpoInfo.target.asDpo[1].toString()}</SText>
-              </RowBetween>
-              <RowBetween>
-                <SText>{t(`Deposit`)}</SText>
+                <SText>{t(`Total Deposit`)}</SText>
                 <SText>
-                  {formatToUnit(dpoInfo.vault_deposit.toBn(), chainDecimals)} {token}
+                  {formatToUnit(targetCabin.deposit_amount.toString(), chainDecimals)}{' '}
+                  {targetCabin.token_id.asToken.toString()}
                 </SText>
               </RowBetween>
             </SpacedSection>

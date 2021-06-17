@@ -1,12 +1,9 @@
-import Card from 'components/Card'
-import { Header2 } from 'components/Text'
-import { ContentWrapper } from 'components/Wrapper'
+import Divider from 'components/Divider'
+import { Header3 } from 'components/Text'
 import { useDpoActions } from 'hooks/useDpoActions'
-import { useSubDpo } from 'hooks/useQueryDpos'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
-import { DpoAction } from 'utils/getDpoActions'
 import { isDpoAvailable, isTravelCabinAvailable } from 'utils/isTargetAvailable'
 import DpoBuyDpoSeatsAvailable from './DpoBuyDpoSeats'
 import DpoBuyTargetNotAvailable from './DpoBuyTargetNotAvailable'
@@ -19,15 +16,16 @@ import WithdrawYieldFromTravelCabin from './WithdrawYieldFromTravelCabin'
 
 interface ActionProviderProps {
   dpoInfo: DpoInfo
-  dpoActions?: DpoAction[]
+  selectedState: string
 }
 
 /**
  * Provides Action components for a single DPO
  */
-function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
-  const { dpoActions, targetTravelCabinInventory, targetDpo } = useDpoActions(dpoInfo)
+function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.Element {
+  const { dpoActions, targetTravelCabinInventory, targetDpo } = useDpoActions(dpoInfo, selectedState)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
+  const { t } = useTranslation()
 
   // When dpoActions are present, parse the actions and generate Action components
   // Actions assume that the target will be filtered.
@@ -38,11 +36,23 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
       const isLast = index === dpoActions.length - 1
       if (dpoAction.action === 'releaseFareFromDpo') {
         filteredDpoActions.push(
-          <ReleaseFareFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          <ReleaseFareFromDpo
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
         )
       } else if (dpoAction.action === 'withdrawFareFromTravelCabin') {
         filteredDpoActions.push(
-          <WithdrawFareFromTravelCabin key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          <WithdrawFareFromTravelCabin
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
         )
       } else if (dpoAction.action === 'dpoBuyTravelCabin') {
         // If not available, user needs to set a new target
@@ -52,11 +62,23 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
           dpoInfo.target.isTravelCabin
         ) {
           filteredDpoActions.push(
-            <DpoBuyTravelCabinAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+            <DpoBuyTravelCabinAvailable
+              key={index}
+              dpoInfo={dpoInfo}
+              dpoAction={dpoAction}
+              selectedState={selectedState}
+              isLast={isLast}
+            />
           )
         } else {
           filteredDpoActions.push(
-            <DpoBuyTargetNotAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+            <DpoBuyTargetNotAvailable
+              key={index}
+              dpoInfo={dpoInfo}
+              dpoAction={dpoAction}
+              selectedState={selectedState}
+              isLast={isLast}
+            />
           )
         }
       } else if (dpoAction.action === 'dpoBuyDpoSeats') {
@@ -64,60 +86,77 @@ function ActionProvider({ dpoInfo }: ActionProviderProps): JSX.Element {
         // If not available, user needs to enter index of cabin that is
         if (isDpoAvailable(dpoInfo, targetDpo)) {
           filteredDpoActions.push(
-            <DpoBuyDpoSeatsAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+            <DpoBuyDpoSeatsAvailable
+              key={index}
+              dpoInfo={dpoInfo}
+              dpoAction={dpoAction}
+              selectedState={selectedState}
+              isLast={isLast}
+            />
           )
         } else {
           filteredDpoActions.push(
-            <DpoBuyTargetNotAvailable key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+            <DpoBuyTargetNotAvailable
+              key={index}
+              dpoInfo={dpoInfo}
+              dpoAction={dpoAction}
+              selectedState={selectedState}
+              isLast={isLast}
+            />
           )
         }
       } else if (dpoAction.action === 'withdrawYieldFromTravelCabin') {
         if (!dpoInfo.target.isTravelCabin) return
         filteredDpoActions.push(
-          <WithdrawYieldFromTravelCabin key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          <WithdrawYieldFromTravelCabin
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
         )
       } else if (dpoAction.action === 'releaseYieldFromDpo') {
         filteredDpoActions.push(
-          <ReleaseYieldFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          <ReleaseYieldFromDpo
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
         )
       } else if (dpoAction.action === 'releaseBonusFromDpo') {
         filteredDpoActions.push(
-          <ReleaseBonusFromDpo key={index} dpoInfo={dpoInfo} dpoAction={dpoAction} isLast={isLast} />
+          <ReleaseBonusFromDpo
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
         )
       }
     })
     setUserActions(filteredDpoActions)
-  }, [dpoActions, dpoInfo, targetDpo, targetTravelCabinInventory])
+  }, [dpoActions, dpoInfo, selectedState, targetDpo, targetTravelCabinInventory])
 
   return (
     <>
-      {userActions &&
-        userActions.length > 0 &&
-        userActions.map((action, index) => <React.Fragment key={index}>{action}</React.Fragment>)}
-    </>
-  )
-}
-
-interface DpoActionsProps {
-  dpoIndex: number | string
-}
-
-// Need to conditionally render this depending on if users have actions
-export default function DpoActions(props: DpoActionsProps) {
-  const { dpoIndex } = props
-  const dpoInfo = useSubDpo(dpoIndex)
-  const { t } = useTranslation()
-  const { dpoActions } = useDpoActions(dpoInfo)
-  return (
-    <>
-      {dpoActions && dpoActions.length > 0 && (
-        <ContentWrapper>
-          <Card margin="0" style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-            <Header2>{t(`Actions`)}</Header2>
-            {dpoInfo && <ActionProvider dpoInfo={dpoInfo} dpoActions={dpoActions} />}
-          </Card>
-        </ContentWrapper>
+      {userActions && userActions.length > 0 && (
+        <>
+          <Divider margin="0.5rem 0" />
+          <Header3>{t(`Actions`)}</Header3>
+          {userActions.map((action, index) => (
+            <React.Fragment key={index}>{action}</React.Fragment>
+          ))}
+        </>
       )}
     </>
   )
+}
+
+// Need to conditionally render this depending on if users have actions
+export default function DpoActions({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState: string }) {
+  return <ActionProvider dpoInfo={dpoInfo} selectedState={selectedState} />
 }

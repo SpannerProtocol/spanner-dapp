@@ -1,10 +1,13 @@
 import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
+import { SLink } from 'components/Link'
 import { AnyQuestionHelper } from 'components/QuestionHelper'
-import { RowBetween } from 'components/Row'
+import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, Header4, SText } from 'components/Text'
 import { ContentWrapper, IconWrapper, Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
+import { useSubDpo } from 'hooks/useQueryDpos'
+import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useUserInDpo } from 'hooks/useUser'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
 import React, { useContext } from 'react'
@@ -15,17 +18,52 @@ import { ThemeContext } from 'styled-components'
 import { useTranslation } from 'translate'
 import { DAPP_HOST, DPO_STATE_COLORS, DPO_STATE_TOOLTIPS } from '../../../../constants'
 
-// const statsBg = 'linear-gradient(90deg, #FFBE2E -11.67%, #FF9E04 100%)'
+function TargetDpo({ dpoInfo }: { dpoInfo: DpoInfo }) {
+  const { t } = useTranslation()
+  const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
+  if (!target) return null
+  return (
+    <>
+      <RowFixed>
+        <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
+        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0 0 0.25rem">
+          {t(`DPO`)}: {target.name.toString()}
+        </SLink>
+      </RowFixed>
+    </>
+  )
+}
+
+function TargetCabin({ dpoInfo }: { dpoInfo: DpoInfo }) {
+  const { t } = useTranslation()
+  const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+
+  if (!target) return null
+  return (
+    <>
+      <RowFixed>
+        <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
+        <SLink
+          to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
+          colorIsBlue
+          padding="0 0 0 0.25rem"
+        >
+          {t(`TravelCabin`)}: {target.name.toString()}
+        </SLink>
+      </RowFixed>
+    </>
+  )
+}
 
 export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const wallet = useWallet()
   // const { chainDecimals } = useSubstrate()
   const userInDpo = useUserInDpo(dpoInfo.index.toString(), wallet?.address)
   const isConnected = useIsConnected()
-  const { lastBlock } = useBlockManager()
   const { projectState } = useProjectManager()
   const { t } = useTranslation()
   const theme = useContext(ThemeContext)
+  const { lastBlock } = useBlockManager()
 
   // const token = useMemo(() => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : ''), [dpoInfo])
   return (
@@ -49,6 +87,8 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </AnyQuestionHelper>
           </RowBetween>
           <Header4>{`DPO #${dpoInfo.index.toString()}`}</Header4>
+          {dpoInfo.target.isDpo && <TargetDpo dpoInfo={dpoInfo} />}
+          {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
         </Section>
         <Section>
           <RowBetween>
@@ -61,7 +101,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </div>
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}?ref=${wallet.address}&project=${
+                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}/details?ref=${wallet.address}&project=${
                   projectState.selectedProject.token
                 }`}
                 childrenIsIcon={true}

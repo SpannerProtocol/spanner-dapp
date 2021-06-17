@@ -2,10 +2,11 @@ import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
 import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
-import Card from 'components/Card'
+import Divider from 'components/Divider'
+import StandardModal from 'components/Modal/StandardModal'
 import { CircleProgress } from 'components/ProgressBar'
-import { HeavyText, Header2, SText } from 'components/Text'
-import { ContentWrapper, SpacedSection } from 'components/Wrapper'
+import { Header4, HeavyText, SText } from 'components/Text'
+import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -16,7 +17,7 @@ import {
   DposTargetPurchasedIncludes,
   DposTargetPurchasedIncludesVariables,
 } from 'queries/graphql/types/DposTargetPurchasedIncludes'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -24,12 +25,15 @@ import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
 import { CustomLightSpinner } from 'theme/components'
 import { blocksToCountDown } from 'utils/formatBlocks'
+import IconFire from 'assets/images/icon-fire.png'
+import { RowFixed } from 'components/Row'
+import { ListItem, UnorderedList } from 'components/List'
 
 const Row = styled.div`
   display: grid;
   grid-template-columns: auto min(120px);
   grid-column-gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.text5};
+  // border-bottom: 1px solid ${({ theme }) => theme.text5};
   transition: background-color 0.3s ease-in;
   &:hover {
     background: ${({ theme }) => theme.text5};
@@ -86,7 +90,7 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
   }, [createdDpoInfo, dpoInfo, purchasedDpoInfo, t, targeter.defaultTargetIndex, targeter.purchasedIndex])
 
   return (
-    <Link to={`/item/dpo/${targeter.dpoInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+    <Link to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
       <Row>
         <Cell>
           <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
@@ -143,10 +147,13 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
 
 export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { api, connected } = useApi()
-  const { error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
-    variables: {},
-  })
-  const { error: purchasedError, data: purchasedData } = useQuery<
+  const { loading: createdLoading, error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(
+    createdDpoAllArgsOnly,
+    {
+      variables: {},
+    }
+  )
+  const { loading: purchasedLoading, error: purchasedError, data: purchasedData } = useQuery<
     DposTargetPurchasedIncludes,
     DposTargetPurchasedIncludesVariables
   >(dposTargetPurchasedIncludes, {
@@ -155,18 +162,17 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     },
   })
   // this component might take awhile so use a loader
-  const [loading, setLoading] = useState<boolean>(true)
   const { t } = useTranslation()
   const { lastBlock } = useBlockManager()
-  const [purchased, setPurchased] = useState<number[][]>([])
-  const [created, setCreated] = useState<{ targeter: number; defaultTarget: number; defaultSeats: number }[]>([])
   const [targeters, setTargeters] = useState<Targeter[] | undefined>([])
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+  const theme = useContext(ThemeContext)
 
-  // Filter all CreatedDpo events
+  // Getting DpoInfo for those that were created and purchased
   useEffect(() => {
     // check all createdDpo
     if (!createdData || !createdData.events) return
-    setLoading(true)
+    if (!purchasedData || !purchasedData.events) return
     const createdIndexes: { targeter: number; defaultTarget: number; defaultSeats: number }[] = []
     // args: [dpoName, target, managerSeats, baseSeats, directReferralRate, expiry, referrer]
     createdData.events.nodes.forEach((node) => {
@@ -185,9 +191,6 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
         createdIndexes.push({ targeter: targeter[1], defaultTarget: targetDpo[0], defaultSeats: targetDpo[1] })
       }
     })
-    setCreated(createdIndexes)
-    if (!purchasedData || !purchasedData.events) return
-    setLoading(true)
     const createdDpoIndexes = createdIndexes.map((item) => item.targeter)
     const dposPurchasedTarget: number[][] = []
     purchasedData.events.nodes.forEach((node) => {
@@ -202,28 +205,21 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
         dposPurchasedTarget.push(args.map((arg) => parseInt(arg)))
       }
     })
-    setPurchased(dposPurchasedTarget)
-    return () => setCreated([])
-  }, [createdData, dpoInfo, purchasedData])
-
-  // Getting DpoInfo for those that were created and purchased
-  useEffect(() => {
-    if (!connected || !created || !purchased) return
+    const created = createdIndexes
+    const purchased = dposPurchasedTarget
+    if (!connected || created.length === 0 || purchased.length === 0) return
     // get set of all created and purchased dpos that are related to this dpo
     const purchasedOnly = purchased.map((arr) => arr[0])
     const createdOnly = created.map((createdObj) => createdObj.targeter)
     const createdOrPurchased = [...new Set([...createdOnly, ...purchasedOnly])]
-    // get all dpo infos
     // if createdDpo in purchasedTarget then check if the purchase was this dpo.
     let unsubscribe: () => void
     if (createdOrPurchased.length === 0) {
       setTargeters(undefined)
-      setLoading(false)
       return
     }
     api.query.bulletTrain.dpos
       .multi(createdOrPurchased, (results: Option<DpoInfo>[]) => {
-        setLoading(false)
         // Reset targeters if new query
         const allTargets: Targeter[] = []
         results.forEach((result) => {
@@ -251,44 +247,124 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     return () => {
       unsubscribe && unsubscribe()
     }
-  }, [api, connected, created, purchased])
+  }, [api, connected, dpoInfo, createdData, purchasedData])
 
-  const getTargeters = useCallback(
-    (targeters: Targeter[]) => {
-      if (targeters.length === 0) return null
-      let expiry = new BN(0)
-      if (lastBlock) {
-        expiry = dpoInfo.expiry_blk.sub(lastBlock).gte(new BN(0)) ? dpoInfo.expiry_blk.sub(lastBlock) : new BN(0)
+  const targeterRows = useMemo(() => {
+    if (!targeters) return null
+    if (targeters.length === 0) return null
+    let expiry = new BN(0)
+    if (lastBlock) {
+      expiry = dpoInfo.expiry_blk.sub(lastBlock).gte(new BN(0)) ? dpoInfo.expiry_blk.sub(lastBlock) : new BN(0)
+    }
+    return (
+      <>
+        {targeters.map((targeter, index) => {
+          return (
+            <>
+              <TargeterRow key={index} dpoInfo={dpoInfo} targeter={targeter} expiry={expiry} />
+              {index !== targeters.length - 1 && <Divider />}
+            </>
+          )
+        })}
+      </>
+    )
+  }, [dpoInfo, lastBlock, targeters])
+
+  const summaryData = useMemo(() => {
+    if (!targeters) return null
+    let committedDpos = 0
+    let committedSeats = 0
+    let remainingDpos = 0
+    let remainingSeats = 0
+    targeters.forEach((t) => {
+      // All DPO commitments
+      if (t.defaultSeats) {
+        committedDpos = committedDpos + 1
+        committedSeats = committedSeats + t.defaultSeats
       }
-      return (
-        <>
-          {targeters.map((targeter, index) => {
-            return <TargeterRow key={index} dpoInfo={dpoInfo} targeter={targeter} expiry={expiry} />
-          })}
-        </>
-      )
-    },
-    [dpoInfo, lastBlock]
-  )
+      // Remaining DPOs
+      if (!t.purchasedIndex && t.defaultSeats) {
+        remainingDpos = remainingDpos + 1
+        remainingSeats = remainingSeats + t.defaultSeats
+      }
+    })
+    return (
+      <SpacedSection>
+        <Header4 style={{ margin: '0' }}>
+          {t(`DPOs assisting`)} {dpoInfo.name.toString()}
+        </Header4>
+        <UnorderedList>
+          <ListItem>
+            <SText>{`${t(`Total of`)} ${committedDpos} ${t(`DPOs`)} 
+            ${t(`committed to crowdfund`)} ${committedSeats} ${t(`Seats`)}`}</SText>
+          </ListItem>
+          {committedSeats > 100 && (
+            <ListItem>
+              <RowFixed>
+                <SText width="fit-content" padding="0 0.25rem 0 0">{`${t(`Excess commitment of`)} ${
+                  committedSeats - 100
+                } Seats`}</SText>
+                <img src={IconFire} width="16px" alt="fire hot icon" />
+              </RowFixed>
+            </ListItem>
+          )}
+          {committedDpos !== remainingDpos && remainingDpos !== 0 && (
+            <ListItem>
+              <SText width="fit-content" padding="0 0.25rem 0 0">{`${remainingDpos} ${t(`DPOs`)} 
+              ${t(`are still crowdfunding`)} ${remainingSeats} ${t(`Seats`)}`}</SText>
+            </ListItem>
+          )}
+        </UnorderedList>
+      </SpacedSection>
+    )
+  }, [targeters, t, dpoInfo])
+
+  // Sections for SectionNoCard
+  const targetSections = useMemo(() => {
+    const result: JSX.Element[] = []
+    if (summaryData) result.push(summaryData)
+    if (targeterRows) result.push(targeterRows)
+    return result
+  }, [summaryData, targeterRows])
 
   return (
     <>
+      <StandardModal
+        title={t(`Targeting DPO Progress`)}
+        isOpen={modalOpen}
+        onDismiss={() => setModalOpen(false)}
+        desktopScroll={true}
+      >
+        {targetSections}
+      </StandardModal>
       {createdError || purchasedError ? null : (
         <>
-          {loading && (
+          {createdLoading || purchasedLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
               <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
             </div>
-          )}
-          {targeters && getTargeters(targeters) && (
-            <ContentWrapper>
-              <Card>
-                <SpacedSection>
-                  <Header2 style={{ margin: '0' }}>{t(`Targeted by`)}</Header2>
-                </SpacedSection>
-                {getTargeters(targeters)}
-              </Card>
-            </ContentWrapper>
+          ) : (
+            <>
+              {targeterRows && targetSections ? (
+                <>
+                  {summaryData}
+                  <SpacedSection>
+                    <SText textAlign="center" width="100%" color={theme.primary1} onClick={() => setModalOpen(true)}>
+                      {t(`See all DPOs`)}
+                    </SText>
+                  </SpacedSection>
+                </>
+              ) : (
+                <>
+                  <Header4 style={{ margin: '0' }}>
+                    {t(`DPOs assisting`)} {dpoInfo.name.toString()}
+                  </Header4>
+                  <SpacedSection>
+                    <SText>{`${t(`No DPOs are targeting`)} ${dpoInfo.name.toString()}`}</SText>
+                  </SpacedSection>
+                </>
+              )}
+            </>
           )}
         </>
       )}

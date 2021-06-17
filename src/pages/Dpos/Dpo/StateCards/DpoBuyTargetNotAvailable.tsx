@@ -10,7 +10,7 @@ import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useSubstrate } from 'hooks/useSubstrate'
-import Action from 'pages/Assets/actions'
+import ActionRow from 'components/Actions/ActionRow'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo, TravelCabinInfo } from 'spanner-interfaces'
@@ -25,10 +25,12 @@ export default function DpoBuyTargetNotAvailable({
   dpoInfo,
   dpoAction,
   isLast,
+  selectedState,
 }: {
   dpoInfo: DpoInfo
   dpoAction: DpoAction
   isLast: boolean
+  selectedState?: string
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const [seatsToBuy, setSeatsToBuy] = useState<string>()
@@ -118,7 +120,9 @@ export default function DpoBuyTargetNotAvailable({
   }, [chainDecimals, getAvailableCabins, getAvailableDpos, t, targetType])
 
   return (
-    <Action
+    <ActionRow
+      dpoInfo={dpoInfo}
+      selectedState={selectedState}
       actionName={t('Buy Target')}
       tip={`${t(`Use DPO's funds to purchase target.`)} ${dpoInfo.target.asDpo[0].toString()}`}
       form={
