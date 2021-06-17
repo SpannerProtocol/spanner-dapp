@@ -9,7 +9,7 @@ import { GlobalMilestoneReward } from './Milestone'
 import { SoldTo } from './SoldTo'
 
 const PageTitle = styled.h1`
-  margin: 0.1rem 0rem;
+  margin: 0.1rem 0;
   font-size: 24px;
   font-weight: bold;
   padding-bottom: 0.5rem;
@@ -31,7 +31,7 @@ export default function BulletTrain() {
         style={{
           width: '100%',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
@@ -50,7 +50,6 @@ export default function BulletTrain() {
       </Wrapper>
     </PageWrapper>
   )
-
 }
 
 export function SpannerBulletTrainStats() {
@@ -58,30 +57,34 @@ export function SpannerBulletTrainStats() {
 
   return (
     <FlatCard style={{ textAlign: 'left' }}>
-      <HeavyText fontSize={'24px'} mobileFontSize={'24px'} color={theme.primary1}
-                 style={{ margin: 'auto', textAlign: 'center' }}>{'100,000,000 BOLT'}</HeavyText>
-      <SText fontSize={'16px'} mobileFontSize={'16px'} padding={'0rem 0rem 1rem 0rem'}
-             style={{ margin: 'auto', textAlign: 'center' }}>{'Total Deposited Value'}</SText>
+      <HeavyText
+        fontSize={'24px'}
+        mobileFontSize={'24px'}
+        color={theme.primary1}
+        style={{ margin: 'auto', textAlign: 'center' }}
+      >
+        {'100,000,000 BOLT'}
+      </HeavyText>
+      <SText
+        fontSize={'16px'}
+        mobileFontSize={'16px'}
+        padding={'0rem 0rem 1rem 0rem'}
+        style={{ margin: 'auto', textAlign: 'center' }}
+      >
+        {'Total Deposited Value'}
+      </SText>
       <RowBetween>
-        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'10,049,009 BOLT'}</HeavyText>
+        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
+          {'10,049,009 BOLT'}
+        </HeavyText>
         <SText style={{ textAlign: 'right' }}>{'Total Yield Distributed'}</SText>
       </RowBetween>
       <RowBetween>
-        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'48,948,998 BOLT'}</HeavyText>
+        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
+          {'48,948,998 BOLT'}
+        </HeavyText>
         <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>
       </RowBetween>
     </FlatCard>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-

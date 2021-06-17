@@ -19,9 +19,8 @@ import SwiperCore, { Pagination } from 'swiper/core'
 // install Swiper modules
 SwiperCore.use([Pagination])
 
-
 const HomePageTitle = styled.h1`
-  margin: 0.1rem 0rem;
+  margin: 0.1rem 0;
   font-size: 24px;
   font-weight: bold;
   padding-bottom: 0.5rem;
@@ -127,7 +126,7 @@ export default function NewHome() {
         style={{
           width: '100%',
           justifyContent: 'center',
-          alignItems: 'center'
+          alignItems: 'center',
         }}
       >
         <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
@@ -144,7 +143,7 @@ export default function NewHome() {
             <HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>
             <HomeSectionValue1>{'$198.04'}</HomeSectionValue1>
           </FlatCard>
-          <Swiper pagination={true} spaceBetween={50} className='mySwiper'>
+          <Swiper pagination={true} spaceBetween={50} className="mySwiper">
             <SwiperSlide>
               <DPOV1 />
             </SwiperSlide>
@@ -156,7 +155,7 @@ export default function NewHome() {
             <HomeSectionTitle>{'DPO V1 Stats'}</HomeSectionTitle>
             <DPOV1Stats />
           </FlatCard>
-          <Swiper pagination={true} spaceBetween={50} className='mySwiper'>
+          <Swiper pagination={true} spaceBetween={50} className="mySwiper">
             <SwiperSlide>
               <BulletTrain />
             </SwiperSlide>
@@ -183,9 +182,9 @@ export function DPOV1() {
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
         <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
-        <SText fontSize={'18px'}
-                      mobileFontSize={'18px'}>
-          {'DPO is a novel crowdfunding model extending from affiliate marketing'}</SText>
+        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+          {'DPO is a novel crowdfunding model extending from affiliate marketing'}
+        </SText>
         <CircleNextIconWrapper>
           <StyledCircleNext />
         </CircleNextIconWrapper>
@@ -199,12 +198,11 @@ export function DPOV2() {
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
         <HomeSectionTitle>{'DPO V2'}</HomeSectionTitle>
-        <SText fontSize={'18px'}
-                      mobileFontSize={'18px'}>{'DPO is a novel crowdfunding model extending from affiliate marketing'}</SText>
+        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+          {'DPO is a novel crowdfunding model extending from affiliate marketing'}
+        </SText>
         <div style={{ textAlign: 'center', margin: 'auto' }}>
-          <h4>
-            {'(Coming soon)'}
-          </h4>
+          <h4>{'(Coming soon)'}</h4>
         </div>
       </FlatCard>
     </>
@@ -226,15 +224,16 @@ export function DPOV1Stats() {
   )
 }
 
-
 export function BulletTrain() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
         <HomeSectionTitle>{'Spanner BulletTrain'}</HomeSectionTitle>
-        <SText fontSize={'18px'}
-                      mobileFontSize={'18px'}>
-          {'BulletTrain (a Growth Template) is an evolutionary viral growth marketing model running on the Spanner Blockchain'}</SText>
+        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+          {
+            'BulletTrain (a Growth Template) is an evolutionary viral growth marketing model running on the Spanner Blockchain'
+          }
+        </SText>
         <CircleNextIconWrapper>
           <StyledCircleNext />
         </CircleNextIconWrapper>
@@ -248,12 +247,11 @@ export function SpannerNFT() {
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
         <HomeSectionTitle>{'Spanner NFT'}</HomeSectionTitle>
-        <SText fontSize={'18px'}
-                      mobileFontSize={'18px'}>{'DPO V2 is a novel crowdfunding model extending from affiliate marketing'}</SText>
+        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+          {'DPO V2 is a novel crowdfunding model extending from affiliate marketing'}
+        </SText>
         <div style={{ textAlign: 'center', margin: 'auto' }}>
-          <h4>
-            {'(Coming soon)'}
-          </h4>
+          <h4>{'(Coming soon)'}</h4>
         </div>
       </FlatCard>
     </>
@@ -310,4 +308,3 @@ export function Blockchain() {
     </>
   )
 }
-
