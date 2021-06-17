@@ -10,7 +10,7 @@ import { usePathCabinBuyer } from 'hooks/usePath'
 import { useSubTravelCabin, useSubTravelCabinBuyerVerbose, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useUserActions from 'hooks/useUserActions'
-import Action from 'pages/Assets/actions'
+import ActionRow from 'components/Actions/ActionRow'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
@@ -213,7 +213,7 @@ export function UserActionProvider({
       if (action.action === 'withdrawFareFromTravelCabin') {
         if (!travelCabinInfo) return undefined
         return (
-          <Action
+          <ActionRow
             txContent={
               <>
                 <SText>
@@ -239,7 +239,7 @@ export function UserActionProvider({
       if (action.action === 'withdrawYieldFromTravelCabin') {
         if (!travelCabinInfo) return undefined
         return (
-          <Action
+          <ActionRow
             txContent={
               <>
                 <SText>

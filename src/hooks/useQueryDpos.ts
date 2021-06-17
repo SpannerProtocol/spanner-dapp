@@ -1,39 +1,40 @@
 import { useEffect, useState } from 'react'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import { useApi } from './useApi'
-import { Option } from '@polkadot/types'
 
 /**
- * Get all dpos, optionally filter by project token
+ * Get all DPOs filtered by a token
+ * @param token Token symbol in caps
+ * @returns DPOS
  */
-export function useDposWithKeys(token?: string): [DpoIndex, DpoInfo][] {
+export function useDpos(token?: string): DpoInfo[] {
   const { api, connected } = useApi()
-  const [dpoEntries, setDpoEntries] = useState<[DpoIndex, DpoInfo][]>([])
+  const [dpos, setDpos] = useState<DpoInfo[]>([])
 
   useEffect(() => {
     if (!connected) return
-    setDpoEntries([])
-    api.query.bulletTrain.dpos
-      .entries()
-      .then((entries) => {
-        entries.forEach((entry) => {
-          if (entry[1].isSome) {
-            const dpoInfo = entry[1].unwrapOrDefault()
-            // Filter for token
-            if (token) {
-              if (dpoInfo.token_id.eq(token)) {
-                setDpoEntries((prev) => [...prev, [entry[0].args[0], dpoInfo]])
-              }
-            } else {
-              setDpoEntries((prev) => [...prev, [entry[0].args[0], dpoInfo]])
+    setDpos([])
+    ;(async () => {
+      const allDpos: DpoInfo[] = []
+      const entries = await api.query.bulletTrain.dpos.entries()
+      entries.forEach((entry) => {
+        if (entry[1].isSome) {
+          const dpoInfo = entry[1].unwrapOrDefault()
+          // Filter for token
+          if (token) {
+            if (dpoInfo.token_id.eq(token)) {
+              allDpos.push(dpoInfo)
             }
+          } else {
+            allDpos.push(dpoInfo)
           }
-        })
+        }
       })
-      .catch((err) => console.log(err))
+      setDpos(allDpos)
+    })().catch((err) => console.log(err))
   }, [api, connected, token])
 
-  return dpoEntries
+  return dpos
 }
 
 export function useSubDpo(dpoIndex: number | string | DpoIndex | null | undefined): DpoInfo | undefined {
@@ -54,73 +55,26 @@ export function useSubDpo(dpoIndex: number | string | DpoIndex | null | undefine
   return dpoInfo
 }
 
-// Replace with spanfura
-export function useRpcUserDpos(address: string | null | undefined) {
+export function useDpoInTargetDpo(dpoInfo: DpoInfo) {
   const { api, connected } = useApi()
-  const [indexes, setIndexes] = useState<string[]>([])
-  const [dpos, setDpos] = useState<DpoInfo[]>([])
+  const target = useSubDpo(dpoInfo.target.asDpo[0])
+  const [inTarget, setInTarget] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!connected || !address) return
-    api?.rpc?.bulletTrain
-      ?.getDposOfAccount(address)
-      .then((result) => {
-        setIndexes(result.map((dpoIndex) => dpoIndex.toString()))
-      })
-      .catch((err) => console.log(err))
-  }, [api, address, connected])
-
-  useEffect(() => {
-    if (!indexes || !connected) return
-    setDpos([])
-    api.query.bulletTrain.dpos.multi(indexes, (results: Option<DpoInfo>[]) => {
-      results.forEach((result) => {
-        if (result.isSome) {
-          setDpos((prev) => [...prev, result.unwrapOrDefault()])
+    if (!target || !connected) return
+    ;(async () => {
+      const entries = await api.query.bulletTrain.dpoMembers.entries(target.index)
+      entries.forEach((entry) => {
+        if (entry[1].isNone) return
+        const member = entry[1].unwrapOrDefault()
+        if (member.buyer.isDpo) {
+          if (dpoInfo.index.eq(member.buyer.asDpo)) {
+            setInTarget(true)
+          }
         }
       })
-    })
-  }, [api, connected, indexes])
+    })()
+  }, [target, connected, api, dpoInfo])
 
-  return dpos
-}
-
-export function useQueryDpo(dpoIndex?: number | string | DpoIndex): DpoInfo | undefined {
-  const { api } = useApi()
-  const [dpoInfo, setDpoInfo] = useState<DpoInfo | undefined>()
-
-  useEffect(() => {
-    if (!api || !dpoIndex) return
-    api?.query?.bulletTrain
-      .dpos(dpoIndex)
-      .then((result) => {
-        if (result.isNone) {
-          setDpoInfo(undefined)
-        } else {
-          setDpoInfo(result.unwrap())
-        }
-      })
-      .catch((err) => console.log(err))
-  }, [api, dpoIndex])
-
-  return dpoInfo
-}
-
-export function useQuerySubscribeDpoCount(): DpoIndex | undefined {
-  const { api } = useApi()
-  const [dpoCount, setDpoCount] = useState<DpoIndex>()
-
-  useEffect(() => {
-    if (!api) return
-    api?.query?.bulletTrain.dpoCount((result) => {
-      setDpoCount(result)
-    })
-  }, [api])
-
-  return dpoCount
-}
-
-export interface DpoState {
-  totalDpos: string
-  totalMembers: string
+  return inTarget
 }

@@ -31,7 +31,7 @@ import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
 import { getCabinClassImage } from '../../../utils/getCabinClass'
 import { shortenAddr } from '../../../utils/truncateString'
-import DpoModalForm from '../../Dpos/Dpo/Form'
+import DpoModalForm from '../../Dpos/Dpo/FormCreateDpo'
 
 interface TravelCabinItemProps {
   travelCabinIndex: string
