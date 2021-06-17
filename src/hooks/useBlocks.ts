@@ -19,8 +19,8 @@ export function useSubLastBlock(): BlockNumber | undefined {
   const [lastBlock, setLastBlock] = useState<BlockNumber>()
 
   useEffect(() => {
-    if (!api || !connected) return
-    api?.rpc?.chain.subscribeNewHeads((header) => {
+    if (!connected) return
+    api.rpc.chain.subscribeNewHeads((header) => {
       setLastBlock(header.number.unwrap())
     })
   }, [api, connected])
