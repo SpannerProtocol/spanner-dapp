@@ -54,12 +54,14 @@ export const StyledExternalLink = styled(ExternalLink)<{
 export const SLink = styled(Link)<{
   fontWeight?: number
   color?: string
+  colorIsBlue?: boolean
   fontSize?: string
   width?: string
   padding?: string
+  mobileFontSize?: string
 }>`
   text-decoration: none;
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsBlue, theme }) => (color ? color : colorIsBlue ? theme.blue2 : theme.text1)};
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : 400)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
@@ -67,4 +69,7 @@ export const SLink = styled(Link)<{
   margin: 0;
   padding: ${({ padding }) => (padding ? padding : '0.1rem 0')};
   cursor: pointer;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${mobileFontSize ? mobileFontSize : '12px'};
+`};
 `

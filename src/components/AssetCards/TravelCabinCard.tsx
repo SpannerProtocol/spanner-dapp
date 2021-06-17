@@ -121,7 +121,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
 
   return (
     <CabinWrapper>
-      <Link to={`/item/travelcabin/${travelCabinInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
+      <Link to={`/assets/travelcabin/${travelCabinInfo.index.toString()}`} style={{ textDecoration: 'none' }}>
         <CabinCard>
           <IconWrapper>
             <div style={{ maxWidth: '25px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>

@@ -11,7 +11,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoIndex } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-interfaces'
 import styled from 'styled-components'
 import cdDivide from 'utils/cdDivide'
 import { blocksToCountDown } from 'utils/formatBlocks'
@@ -95,8 +95,7 @@ const InlineSection = styled.div`
 `};
 `
 
-export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
-  const dpoInfo = useSubDpo(dpoIndex)
+export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
   const { lastBlock } = useBlockManager()
   const { expectedBlockTime, genesisTs } = useBlockManager()
@@ -124,7 +123,7 @@ export default function DpoCard({ dpoIndex }: { dpoIndex: DpoIndex }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
         <DpoWrapper style={{ overflow: 'hidden' }}>
-          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
+          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
             <DpoInnerCard>
               <DpoTitle>
                 <RowBetween>
@@ -258,7 +257,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && genesisTs && (
         <DpoWrapper style={{ overflow: 'hidden' }}>
-          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
+          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
             <DpoInnerCard>
               <DpoTitle>
                 <Section>

@@ -8,6 +8,7 @@ const Base = styled.p<{
   color?: string
   width?: string
   padding?: string
+  textAlign?: string
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
@@ -16,6 +17,7 @@ const Base = styled.p<{
   margin: 0;
   padding: ${({ padding }) => (padding ? padding : '0.1rem 0')};
   line-height: 1.5;
+  text-align: ${({ textAlign }) => (textAlign ? textAlign : 'left')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '12px'};
   `};
@@ -73,6 +75,7 @@ export const Header1 = styled.h1<{
   padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '28px'};
+  line-height: 1.5;
 `};
 `
 
@@ -91,6 +94,7 @@ export const Header2 = styled.h2<{
   color: ${({ color, theme }) => (color ? color : theme.text1)};
   padding: ${({ padding }) => (padding ? padding : '0')};
   margin: ${({ margin }) => (margin ? margin : '0')};
+  line-height: 1.5;
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '20px'};
 `};
@@ -111,8 +115,9 @@ export const Header3 = styled.h3<{
   color: ${({ color, theme }) => (color ? color : theme.text1)};
   margin: ${({ margin }) => (margin ? margin : '0')};
   padding: ${({ padding }) => (padding ? padding : '0')};
+  line-height: 1.5;
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-  font-size: ${mobileFontSize ? mobileFontSize : '16px'};
+    font-size: ${mobileFontSize ? mobileFontSize : '16px'};
 `};
 `
 
@@ -132,6 +137,7 @@ export const Header4 = styled.h4<{
   color: ${({ color, theme }) => (color ? color : theme.text1)};
   margin: ${({ margin }) => (margin ? margin : '0')};
   padding: ${({ padding }) => (padding ? padding : '0')};
+  line-height: 1.5;
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '14px'};
 `};

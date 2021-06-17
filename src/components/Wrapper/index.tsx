@@ -17,8 +17,15 @@ export const Section = styled(AutoColumn)`
   margin-bottom: 5px;
 `
 
+export const ClickableSection = styled(AutoColumn)`
+  :hover,
+  :focus {
+    opacity: 0.7;
+  }
+`
+
 export const InlineSection = styled.div`
-  display: inline-flex;
+  display: flex;
 `
 
 export const SpacedSection = styled(AutoColumn)<{ margin?: string; mobileMargin?: string }>`
@@ -81,6 +88,7 @@ export const BorderedWrapper = styled.div<{
   borderColor?: string
   background?: string
   padding?: string
+  margin?: string
   marginTop?: string
   marginBottom?: string
 }>`
@@ -88,8 +96,7 @@ export const BorderedWrapper = styled.div<{
   align-items: center;
   font-size: 0.9rem;
   width: 100%;
-  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '0.7rem')};
-  margin-bottom:${({ marginBottom }) => (marginBottom ? marginBottom : '0.7rem')};
+  margin: ${({ margin }) => (margin ? margin : '0.5rem')};
   color: ${({ color, theme }) => (color ? color : theme.text1)}
   background: ${({ background }) => (background ? background : 'transparent')}
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#e6ebf2')} !important;
@@ -216,6 +223,7 @@ export const ContentSection = styled.div<{
 `
 
 export const CenterWrapper = styled.div`
+  display: flex;
   text-align: center;
   justify-content: center;
   align-items: center;

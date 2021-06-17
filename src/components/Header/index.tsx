@@ -9,7 +9,6 @@ import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
 import BlockIcon from '../../assets/svg/icon-block-black.svg'
 import BridgeIcon from '../../assets/svg/icon-bridge-black.svg'
-import DpoIcon from '../../assets/svg/icon-dpo-black.svg'
 import LaunchpadIcon from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIcon from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIcon from '../../assets/svg/icon-train-black.svg'
@@ -34,7 +33,7 @@ import { SLink } from '../Link'
 import { useMedia } from 'react-use'
 
 import BridgeIconBlack from '../../assets/svg/icon-bridge-black.svg'
-import DpoIconBlack from '../../assets/svg/icon-dpo-black.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
@@ -465,7 +464,7 @@ const navItems = [
   {
     label: 'DPOs',
     link: '/dpos',
-    iconLink: DpoIconBlack,
+    iconLink: DpoIcon,
     internal: true,
   },
   {
