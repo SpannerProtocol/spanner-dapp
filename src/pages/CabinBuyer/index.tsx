@@ -25,7 +25,6 @@ export const HomeContentWrapper = styled.div`
     padding: 1rem;
   `};
 `
-
 export default function TravelCabinBuyer() {
   return (
     <>
@@ -46,11 +45,11 @@ export default function TravelCabinBuyer() {
           </div>
 
           <HomeContentWrapper>
-            <CabinInfo></CabinInfo>
-            <YieldAvailable></YieldAvailable>
-            <FareAvailable></FareAvailable>
-            <Trip></Trip>
-            <Activity></Activity>
+            <CabinInfo />
+            <YieldAvailable />
+            <FareAvailable />
+            <Trip />
+            <Activity />
           </HomeContentWrapper>
         </Wrapper>
       </PageWrapper>
@@ -263,11 +262,16 @@ export function Activity() {
       <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
         {'Activity'}
       </HeavyText>
-      <ActivityItem></ActivityItem>
-      <ActivityItem></ActivityItem>
-      <ActivityItem></ActivityItem>
-      <ActivityItem></ActivityItem>
-      <ActivityItem></ActivityItem>
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
+      <ActivityItem />
     </>
   )
 }

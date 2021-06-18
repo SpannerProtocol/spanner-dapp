@@ -34,7 +34,7 @@ import DpoIcon from '../../assets/svg/icon-dpo.svg'
 // import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
-import { Collapse } from '@material-ui/core'
+import { Badge, Collapse } from '@material-ui/core'
 import LanguageSwitch from '../LanguageSwitch'
 
 // import DexIcon from '../../assets/svg/icon-dex.svg'
@@ -52,7 +52,6 @@ const HeaderFrame = styled.div`
   grid-template-columns: 1fr 120px;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
   width: 100%;
   top: 0;
@@ -165,16 +164,16 @@ const BOLTAmount = styled(AccountElement)`
   color: white;
   padding: 0.5rem;
   font-weight: 500;
-  background-color: ${({ theme }) => theme.secondary1};
+  background-color: ${({ theme }) => theme.primary1};
   max-width: 35px;
   max-height: 35px;
 
   :hover {
-    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+    background-color: ${({ theme }) => darken(0.15, theme.primary1)};
   }
 
   :focus {
-    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+    background-color: ${({ theme }) => darken(0.15, theme.primary1)};
   }
 `
 
@@ -239,9 +238,51 @@ const LogoText = styled.div`
 const MenuBottom = styled.div`
   //position: fixed;
   //bottom: 3rem;
-  padding: 1rem 0rem;
+  padding: 1rem 0;
   width: 100%;
 `
+
+interface HeaderProps {
+  width?: number
+}
+
+export default function Header(props: HeaderProps) {
+  const { width } = props
+  const { t } = useTranslation()
+
+  const [icons, setIcons] = useState<boolean>(false)
+  const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
+  const isMobile = useMedia('(max-width: 720px)')
+
+  useEffect(() => {
+    if (width && width > MEDIA_WIDTHS.upToMedium) {
+      setIcons(true)
+      setSubNavNetworkSelector(true)
+    } else {
+      setIcons(false)
+      setSubNavNetworkSelector(false)
+    }
+  }, [width])
+
+  return (
+    <HeaderFrame>
+      <HeaderRow>
+        <Title to={{ pathname: '/' }}>
+          <SpannerIcon>
+            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
+          </SpannerIcon>
+          <LogoText>{t(`Spanner Protocol`)}</LogoText>
+        </Title>
+        {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
+        <>{isMobile ? <MobileNav /> : <DesktopNav icons={icons} />}</>
+      </HeaderRow>
+    </HeaderFrame>
+  )
+}
+
+interface DesktopNavProp {
+  icons?: boolean
+}
 
 const useStyles = makeStyles({
   drawer: {
@@ -261,22 +302,10 @@ const useStyles = makeStyles({
   },
 })
 
-const HamburgerWrapper = styled.div`
-  cursor: pointer;
-
-  :hover {
-    opacity: 0.8;
-  }
-
-  :active {
-    opacity: 0.9;
-  }
-`
-
 const navItems: NavItemDefs[] = [
   {
     text: 'DPOs',
-    link: '/dpos',
+    link: '/dpos/dpos',
     iconLink: DpoIcon,
     internal: true,
   },
@@ -353,6 +382,51 @@ const navItems: NavItemDefs[] = [
   },
 ]
 
+export function DesktopNav(props: DesktopNavProp) {
+  const { chain } = useChainState()
+  // let icons = props.icons
+  const { t } = useTranslation()
+  const classes = useStyles()
+
+  return (
+    <HeaderLinks>
+      <Divider />
+      {navItems.map(function (navItem, index) {
+        if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
+          return false
+        } else {
+          return (
+            <NavItem
+              key={index}
+              iconLink={navItem.iconLink}
+              link={navItem.link}
+              text={t(navItem.text)}
+              internal={navItem.internal}
+              nested={false}
+              classes={classes}
+              subs={navItem.children ? navItem.children : undefined}
+              toggleDrawer={undefined}
+            />
+          )
+        }
+      })}
+      <Divider />
+    </HeaderLinks>
+  )
+}
+
+const HamburgerWrapper = styled.div`
+  cursor: pointer;
+
+  :hover {
+    opacity: 0.8;
+  }
+
+  :active {
+    opacity: 0.9;
+  }
+`
+
 interface NavItemDefs {
   iconLink: string
   text: string
@@ -368,12 +442,12 @@ interface NavItemProps {
   link: string
   internal: boolean
   nested: boolean
-  children?: NavItemDefs[]
+  subs?: NavItemDefs[]
   classes: ClassNameMap<'list' | 'fullList' | 'nested'>
   toggleDrawer?: (open: boolean) => (event: React.MouseEvent | React.KeyboardEvent) => void
 }
 
-function NavItem({ iconLink, text, link, classes, internal, nested, children, toggleDrawer }: NavItemProps) {
+function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
   return (
     <>
       <div
@@ -381,12 +455,12 @@ function NavItem({ iconLink, text, link, classes, internal, nested, children, to
           [classes.fullList]: false,
         })}
         role="presentation"
-        onClick={children ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
-        onKeyDown={children ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
+        onClick={subs ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
+        onKeyDown={subs ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
       >
         {internal ? (
           <List>
-            {children ? (
+            {subs ? (
               <NavItemContent
                 iconLink={iconLink}
                 text={text}
@@ -394,6 +468,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, children, to
                 internal={internal}
                 nested={nested}
                 classes={classes}
+                subs={subs}
                 toggleDrawer={toggleDrawer}
               />
             ) : (
@@ -430,16 +505,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, children, to
   )
 }
 
-export function NavItemContent({
-  iconLink,
-  text,
-  link,
-  classes,
-  internal,
-  nested,
-  children,
-  toggleDrawer,
-}: NavItemProps) {
+export function NavItemContent({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
   const [open, setOpen] = React.useState(false)
 
   const handleClick = () => {
@@ -456,12 +522,12 @@ export function NavItemContent({
           </ListItemIcon>
         )}
         <ListItemText primary={text} />
-        {children != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
+        {subs != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
       </ListItem>
-      {children && (
+      {subs && (
         <Collapse component="li" in={open} timeout="auto" unmountOnExit>
           <List disablePadding>
-            {children.map(function (navItem, index) {
+            {subs.map(function (navItem, index) {
               return (
                 <NavItem
                   key={index}
@@ -497,10 +563,31 @@ export function MobileNav() {
     }
     setIsOpen(open)
   }
+  const { account } = useActiveWeb3React()
 
   return (
     <HeaderLinks>
       <>
+        <HeaderElement style={{ paddingRight: '0.5rem' }}>
+          <Link to="/account/balances" style={{ textDecoration: 'none' }}>
+            <BalanceWrapper>
+              <Badge
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                color="secondary"
+                badgeContent={0}
+                showZero
+              >
+                <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
+                  <User />
+                </BOLTAmount>
+              </Badge>
+            </BalanceWrapper>
+          </Link>
+          <Web3Status />
+        </HeaderElement>
         <HamburgerWrapper onClick={toggleDrawer(true)}>
           <img src={hamburgerIcon} width="30px" alt="hamburgerIcon" />
         </HamburgerWrapper>
@@ -527,7 +614,7 @@ export function MobileNav() {
                     internal={navItem.internal}
                     nested={false}
                     classes={classes}
-                    children={navItem.children ? navItem.children : undefined}
+                    subs={navItem.children ? navItem.children : undefined}
                     toggleDrawer={toggleDrawer}
                   />
                 )
@@ -553,77 +640,6 @@ export function MobileNav() {
 
 interface HeaderProps {
   width?: number
-}
-
-export default function Header(props: HeaderProps) {
-  const { width } = props
-  const { t } = useTranslation()
-
-  const [icons, setIcons] = useState<boolean>(false)
-  const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
-  const isMobile = useMedia('(max-width: 720px)')
-
-  useEffect(() => {
-    if (width && width > MEDIA_WIDTHS.upToMedium) {
-      setIcons(true)
-      setSubNavNetworkSelector(true)
-    } else {
-      setIcons(false)
-      setSubNavNetworkSelector(false)
-    }
-  }, [width])
-
-  return (
-    <HeaderFrame>
-      <HeaderRow>
-        <Title to={{ pathname: '/' }}>
-          <SpannerIcon>
-            <img width={'40px'} src={(width as number) <= MEDIA_WIDTHS.upToMedium ? Logo : Logo} alt="logo" />
-          </SpannerIcon>
-          <LogoText>{t(`Spanner Protocol`)}</LogoText>
-        </Title>
-        {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
-        <>{isMobile ? <MobileNav /> : <DesktopNav icons={icons} />}</>
-      </HeaderRow>
-    </HeaderFrame>
-  )
-}
-
-interface DesktopNavProp {
-  icons?: boolean
-}
-
-export function DesktopNav(props: DesktopNavProp) {
-  const { chain } = useChainState()
-  // let icons = props.icons
-  const { t } = useTranslation()
-  const classes = useStyles()
-
-  return (
-    <HeaderLinks>
-      <Divider />
-      {navItems.map(function (navItem, index) {
-        if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
-          return false
-        } else {
-          return (
-            <NavItem
-              key={index}
-              iconLink={navItem.iconLink}
-              link={navItem.link}
-              text={t(navItem.text)}
-              internal={navItem.internal}
-              nested={false}
-              classes={classes}
-              children={navItem.children ? navItem.children : undefined}
-              toggleDrawer={undefined}
-            />
-          )
-        }
-      })}
-      <Divider />
-    </HeaderLinks>
-  )
 }
 
 export function Controls() {
