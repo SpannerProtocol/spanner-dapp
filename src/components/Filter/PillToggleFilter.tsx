@@ -4,16 +4,11 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 const ToggleElement = styled.span<{ isActive?: boolean; isOnSwitch?: boolean }>`
-  border-radius: 14px;
-  background: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.primary1 : theme.text4) : 'none')};
-  color: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.white : theme.text2) : theme.text3)};
-  font-size: 1rem;
-  font-weight: 400;
-  padding: 0.7rem 1rem;
+  padding: 0.5rem 0.8rem;
   border-radius: 12px;
   background: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.primary1 : theme.text4) : 'none')};
   color: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.white : theme.text2) : theme.text2)};
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-weight: ${({ isOnSwitch }) => (isOnSwitch ? '500' : '400')};
   :hover {
     user-select: ${({ isOnSwitch }) => (isOnSwitch ? 'none' : 'initial')};

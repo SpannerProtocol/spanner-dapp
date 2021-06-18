@@ -1,24 +1,24 @@
-import DpoCard from 'components/DpoCard'
-import SearchBar from 'components/SearchBar'
-import Filter from 'components/Filter'
-import { GridWrapper, Section, Wrapper } from 'components/Wrapper'
-import { useDpos } from 'hooks/useQueryDpos'
-import React, { useEffect, useMemo, useState } from 'react'
-import { useProjectManager } from 'state/project/hooks'
-import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
-import { SText } from 'components/Text'
-// import { useBlockManager } from 'hooks/useBlocks'
-import { RowFixed } from 'components/Row'
-import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useQuery } from '@apollo/client'
-import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
-import userPortfolio from 'queries/graphql/userPortfolio'
-import useWallet from 'hooks/useWallet'
+import DpoCard from 'components/DpoCard'
+import Filter from 'components/Filter'
 import { MultiFilter } from 'components/Filter/MultiFilter'
 import PillToggleFilter from 'components/Filter/PillToggleFilter'
-import { firstBy } from 'thenby'
+import { RowFixed } from 'components/Row'
+import SearchBar from 'components/SearchBar'
+import { SText } from 'components/Text'
+import { GridWrapper, Section, Wrapper } from 'components/Wrapper'
 import Decimal from 'decimal.js'
+import { useBlockManager } from 'hooks/useBlocks'
+import useSubscribeBalance from 'hooks/useQueryBalance'
+import { useDpos } from 'hooks/useQueryDpos'
+import useWallet from 'hooks/useWallet'
+import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
+import userPortfolio from 'queries/graphql/userPortfolio'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { DpoInfo } from 'spanner-interfaces'
+import { useProjectManager } from 'state/project/hooks'
+import { firstBy } from 'thenby'
 
 /**
  * Doesn't actually sort by APY but sorts by yield / deposit to keep it lightweight
@@ -56,10 +56,14 @@ export function sortById(a: DpoInfo, b: DpoInfo) {
 }
 
 export function sortByName(a: DpoInfo, b: DpoInfo) {
-  const aName = a.name.toString()
-  const bName = b.name.toString()
-  if (aName < bName) return -1
-  if (aName > bName) return 1
+  const aName = a.name.toString().toLowerCase()
+  const bName = b.name.toString().toLowerCase()
+  if (aName < bName) {
+    return -1
+  }
+  if (aName > bName) {
+    return 1
+  }
   return 0
 }
 
@@ -85,7 +89,7 @@ export default function Dpos() {
 
   const [primaryFilteredDpos, setPrimaryFilteredDpos] = useState<DpoInfo[]>([])
   const [finalDpos, setFinalDpos] = useState<DpoInfo[]>([])
-  // const { lastBlock } = useBlockManager()
+  const { lastBlock, lastBlockReady } = useBlockManager()
   const { t } = useTranslation()
   const balance = useSubscribeBalance(token)
   const wallet = useWallet()
@@ -108,23 +112,29 @@ export default function Dpos() {
     setSearchResults(results)
   }, [unfilteredDpos, searchTerm])
 
-  // Primary Filters
-  // Renders often because of lastBlock. Could be an area for optimization.
+  const getLastBlock = useCallback(() => lastBlock, [lastBlock])
+
+  // Primary Filters - State and Asset
+  // Optimized to only fetch the lastBlock when State or Asset filters rerender
+  // Secondary Filters like Balance and UserDpos filter ontop of Primary to avoid too much rerendering
   useEffect(() => {
-    // if (!lastBlock) return
+    if (!lastBlockReady) return
+    const currentBlock = getLastBlock()
+    console.log('lastBlockReady', lastBlockReady, 'currentBlock', currentBlock?.toHuman())
+    if (!currentBlock) return
     const primaryFiltered: DpoInfo[] = []
     unfilteredDpos.forEach((dpo) => {
       if (filteredState !== 'ALL') {
         if (dpo.state.isCreated) {
           // If user filtered EXPIRED which is still CREATED state in DpoInfo
-          // if (filteredState === 'EXPIRED') {
-          //   if (dpo.expiry_blk.sub(lastBlock).isNeg()) {
-          //     primaryFiltered.push(dpo)
-          //     return
-          //   }
-          // }
+          if (filteredState === 'EXPIRED') {
+            if (dpo.expiry_blk.sub(currentBlock).isNeg()) {
+              primaryFiltered.push(dpo)
+              return
+            }
+          }
           // Otherwise it is CREATED and we will filter out any expired DPOs
-          // if (dpo.expiry_blk.sub(lastBlock).isNeg()) return
+          if (dpo.expiry_blk.sub(currentBlock).isNeg()) return
         }
         if (!dpo.state.eq(filteredState)) return
       }
@@ -139,7 +149,10 @@ export default function Dpos() {
       primaryFiltered.push(dpo)
     })
     setPrimaryFilteredDpos(primaryFiltered)
-  }, [unfilteredDpos, unfilteredDpos.length, filteredState, filteredAsset])
+
+    // disabled because we don't want lastBlock to on triggering a rerender
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [unfilteredDpos, unfilteredDpos.length, filteredState, filteredAsset, lastBlockReady])
 
   // Final after all Filters, Sorts and Searches
   useEffect(() => {
@@ -148,14 +161,20 @@ export default function Dpos() {
     let filteredDpos: DpoInfo[] = []
     if (filteredAffordable || filteredOwned) {
       primaryFilteredDpos.forEach((dpo) => {
-        if (filteredAffordable) {
-          if (dpo.amount_per_seat.lte(balance)) {
+        if (filteredAffordable && filteredOwned) {
+          if (dpo.amount_per_seat.lte(balance) && userDpos.includes(dpo.index.toString())) {
             filteredDpos.push(dpo)
           }
-        }
-        if (filteredOwned) {
-          if (userDpos.includes(dpo.index.toString())) {
-            filteredDpos.push(dpo)
+        } else {
+          if (filteredAffordable) {
+            if (dpo.amount_per_seat.lte(balance)) {
+              filteredDpos.push(dpo)
+            }
+          }
+          if (filteredOwned) {
+            if (userDpos.includes(dpo.index.toString())) {
+              filteredDpos.push(dpo)
+            }
           }
         }
       })
@@ -165,6 +184,7 @@ export default function Dpos() {
     // Sort the filtered results
     let sortedDpos = filteredDpos
     if (sortBy.length > 0) {
+      console.log('Starting sort')
       // Primary sort (first element in Array)
       let sortFn = firstBy(sortMap[sortBy[0]], -1)
       // Multi sort (remaining sortKeys need to be chained to firstBy method)
@@ -214,24 +234,30 @@ export default function Dpos() {
               activeOption={filteredState}
               modalTitle={t(`Filter Dpo State`)}
               margin="0.5rem"
+              filterLabel="State"
             />
             <Filter
               options={assetFilterOptions}
               activeOption={filteredAsset}
               modalTitle={t(`Filter Targeted Asset`)}
               margin="0.5rem"
+              filterLabel="Asset"
             />
             <PillToggleFilter
               isActive={filteredAffordable}
               toggle={() => setFilteredAfforable(!filteredAffordable)}
               margin="0.5rem"
               toggleLabel="Enough Balance"
+              labelActive="ON"
+              labelInactive="OFF"
             />
             <PillToggleFilter
               isActive={filteredOwned}
               toggle={() => setFilteredOwned(!filteredOwned)}
               margin="0.5rem"
               toggleLabel="My DPOs"
+              labelActive="ON"
+              labelInactive="OFF"
             />
           </RowFixed>
           <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />

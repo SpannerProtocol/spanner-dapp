@@ -102,24 +102,23 @@ export default function Filter({
   }
 
   return (
-    <div>
+    <div style={{ display: 'block', margin: margin ? margin : '0.5rem' }}>
       {activeOption && (
         <StandardModal title={modalTitle} isOpen={modalOpen} onDismiss={dismissModal} desktopScroll={true}>
           <FilterOptions options={options} activeOption={activeOption} dismissModal={dismissModal} />
         </StandardModal>
       )}
+      {filterLabel && (
+        <SText fontSize="12px" mobileFontSize="9px" padding="0 0 0.25rem 0">
+          {t(filterLabel)}
+        </SText>
+      )}
       <SelectorWrapper
         onClick={() => setModalOpen(!modalOpen)}
         background={background}
         padding={padding}
-        margin={margin}
         borderColor={borderColor}
       >
-        {filterLabel && (
-          <SText fontSize="12px" mobileFontSize="10px">
-            {t(filterLabel)}
-          </SText>
-        )}
         <RowFixed margin="0">
           <SText padding="0 0.25rem 0 0" color="#fff" fontWeight="700">
             {activeOption}

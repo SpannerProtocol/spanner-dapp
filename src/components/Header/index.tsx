@@ -30,7 +30,7 @@ import { SLink } from '../Link'
 import { useMedia } from 'react-use'
 
 import BridgeIcon from '../../assets/svg/icon-bridge-1.svg'
-import DpoIconBlack from '../../assets/svg/icon-dpo-black.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 // import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
@@ -276,8 +276,8 @@ const HamburgerWrapper = styled.div`
 const navItems: NavItemDefs[] = [
   {
     text: 'DPOs',
-    link: '/bullettrain/dpos',
-    iconLink: DpoIconBlack,
+    link: '/dpos',
+    iconLink: DpoIcon,
     internal: true,
   },
   {

@@ -3,7 +3,7 @@ import { HeavyText, SText } from '../../components/Text'
 import React, { useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from '../../components/Row'
-import { IconWrapper } from '../../components/Item/TravelCabinCard'
+import { IconWrapper } from '../../components/AssetCards/TravelCabinCard'
 import { getCabinClassImage } from '../../utils/getCabinClass'
 import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { FlatCard } from '../../components/Card'
@@ -18,7 +18,6 @@ import { shortenAddr } from '../../utils/truncateString'
 import { useBlockManager } from '../../hooks/useBlocks'
 import { blockToTs, tsToDateTime, tsToRelative } from '../../utils/formatBlocks'
 
-
 export const HomeContentWrapper = styled.div`
   position: relative;
   width: 100%;
@@ -26,7 +25,6 @@ export const HomeContentWrapper = styled.div`
     padding: 1rem;
   `};
 `
-
 
 export default function TravelCabinBuyer() {
   return (
@@ -36,13 +34,14 @@ export default function TravelCabinBuyer() {
           style={{
             width: '100%',
             justifyContent: 'center',
-            alignItems: 'center'
+            alignItems: 'center',
           }}
         >
           <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
             <Section>
-              <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
-                         style={{ margin: 'auto' }}>{'Spanner TravelCabin Inventory'}</HeavyText>
+              <HeavyText fontSize={'18px'} mobileFontSize={'18px'} style={{ margin: 'auto' }}>
+                {'Spanner TravelCabin Inventory'}
+              </HeavyText>
             </Section>
           </div>
 
@@ -64,7 +63,9 @@ export function CabinInfo() {
   const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
-  const [selectedBuyer, setSelectedBuyer] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+  const [selectedBuyer, setSelectedBuyer] = useState<
+    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+  >()
   const { chainDecimals } = useSubstrate()
 
   useEffect(() => {
@@ -82,39 +83,39 @@ export function CabinInfo() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 2rem' }}>
-        {
-          travelCabinInfo && (
-            <RowBetween>
-              <IconWrapper>
-                <div style={{
+        {travelCabinInfo && (
+          <RowBetween>
+            <IconWrapper>
+              <div
+                style={{
                   maxWidth: '45px',
-                  width: '45px'
-                }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
-              </IconWrapper>
-              <div>
-                <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }} width={'fit-content'}>
-                  {`${t(`TravelCabin`)} ${t(travelCabinInfo.name.toString())} #${travelCabinInventoryIndex.toString()}`}
-                </HeavyText>
-                <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
-                  <Ticket />
-                  <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'} width={'fit-content'}>
-                    {`${formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} ${token}`}
-                  </SText>
-                </Row>
+                  width: '45px',
+                }}
+              >
+                {getCabinClassImage(travelCabinInfo.name.toString())}
               </div>
-            </RowBetween>
-          )
-        }
-        {
-          selectedBuyer && (
-            <SText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
-              {selectedBuyer[1].buyer.isPassenger && (`${t(`Buyer`)}: ${shortenAddr(selectedBuyer[1].buyer.asPassenger.toString(), 7)} (${t(`Passenger`)})`)}
-              {selectedBuyer[1].buyer.isDpo && (`${t(`Buyer`)}: DPO #${selectedBuyer[1].buyer.asDpo.toString()}`)}
-            </SText>
-          )
-        }
+            </IconWrapper>
+            <div>
+              <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }} width={'fit-content'}>
+                {`${t(`TravelCabin`)} ${t(travelCabinInfo.name.toString())} #${travelCabinInventoryIndex.toString()}`}
+              </HeavyText>
+              <Row style={{ justifyContent: 'flex-end' }} padding={'0.5rem 0rem'}>
+                <Ticket />
+                <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'} width={'fit-content'}>
+                  {`${formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals)} ${token}`}
+                </SText>
+              </Row>
+            </div>
+          </RowBetween>
+        )}
+        {selectedBuyer && (
+          <SText fontSize={'16px'} mobileFontSize={'16px'} padding={'1rem 0rem'}>
+            {selectedBuyer[1].buyer.isPassenger &&
+              `${t(`Buyer`)}: ${shortenAddr(selectedBuyer[1].buyer.asPassenger.toString(), 7)} (${t(`Passenger`)})`}
+            {selectedBuyer[1].buyer.isDpo && `${t(`Buyer`)}: DPO #${selectedBuyer[1].buyer.asDpo.toString()}`}
+          </SText>
+        )}
       </FlatCard>
-
     </>
   )
 }
@@ -125,11 +126,15 @@ export function YieldAvailable() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
-        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{'Yield Available'}</HeavyText>
+        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+          {'Yield Available'}
+        </HeavyText>
         <RowBetween padding={'1.5rem 0rem'}>
-          <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'100,000,000 BOLT'}</HeavyText>
+          <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
+            {'100,000,000 BOLT'}
+          </HeavyText>
           <ButtonWrapper style={{ width: '100px', padding: '0.5rem' }}>
-            <ButtonPrimary padding='1rem' fontSize='14px' mobileFontSize='14px'>
+            <ButtonPrimary padding="1rem" fontSize="14px" mobileFontSize="14px">
               {t(`Withdraw`)}
             </ButtonPrimary>
           </ButtonWrapper>
@@ -148,11 +153,15 @@ export function FareAvailable() {
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
-        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>{'Fare Available'}</HeavyText>
+        <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+          {'Fare Available'}
+        </HeavyText>
         <RowBetween padding={'1.5rem 0rem'}>
-          <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>{'0 BOLT'}</HeavyText>
+          <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
+            {'0 BOLT'}
+          </HeavyText>
           <ButtonWrapper style={{ width: '100px', padding: '0.5rem' }}>
-            <ButtonGray padding='1rem' fontSize='14px' mobileFontSize='14px'>
+            <ButtonGray padding="1rem" fontSize="14px" mobileFontSize="14px">
               {t(`Withdraw`)}
             </ButtonGray>
           </ButtonWrapper>
@@ -175,7 +184,9 @@ export function Trip() {
   const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
-  const [selectedBuyer, setSelectedBuyer] = useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+  const [selectedBuyer, setSelectedBuyer] = useState<
+    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+  >()
   const { expectedBlockTime, genesisTs, lastBlock } = useBlockManager()
 
   useEffect(() => {
@@ -190,8 +201,9 @@ export function Trip() {
 
   return (
     <>
-      <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
-                 padding={'2rem 0rem'}>{'Trip'}</HeavyText>
+      <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
+        {'Trip'}
+      </HeavyText>
 
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <Row justifyContent={'flex-end'}>
@@ -200,14 +212,15 @@ export function Trip() {
           </SText>
         </Row>
         <SText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>
-          {
-            genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0 ? (
-                `${tsToRelative(
-                  blockToTs(genesisTs, expectedBlockTime.toNumber(), travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()) / 1000
-                )}`
-              )
-              : (` `)
-          }
+          {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0
+            ? `${tsToRelative(
+                blockToTs(
+                  genesisTs,
+                  expectedBlockTime.toNumber(),
+                  travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                ) / 1000
+              )}`
+            : ` `}
         </SText>
         <div>
           {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && (
@@ -228,17 +241,18 @@ export function Trip() {
                 </HeavyText>
                 <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                   {tsToDateTime(
-                    blockToTs(genesisTs, expectedBlockTime.toNumber(), travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()) / 1000
+                    blockToTs(
+                      genesisTs,
+                      expectedBlockTime.toNumber(),
+                      travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                    ) / 1000
                   )}
                 </SText>
               </TripDiv>
             </RowBetween>
           )}
         </div>
-
       </FlatCard>
-
-
     </>
   )
 }
@@ -246,19 +260,17 @@ export function Trip() {
 export function Activity() {
   return (
     <>
-      <HeavyText fontSize={'18px'} mobileFontSize={'18px'}
-                 padding={'2rem 0rem'}>{'Activity'}</HeavyText>
+      <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
+        {'Activity'}
+      </HeavyText>
       <ActivityItem></ActivityItem>
       <ActivityItem></ActivityItem>
       <ActivityItem></ActivityItem>
       <ActivityItem></ActivityItem>
       <ActivityItem></ActivityItem>
-
-
     </>
   )
 }
-
 
 export function ActivityItem() {
   return (

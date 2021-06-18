@@ -1,15 +1,17 @@
 import Card from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useReferrer } from 'hooks/useReferrer'
+import useWallet from 'hooks/useWallet'
 import React from 'react'
 import { useProjectState } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
-import Text, { Heading, Header3 } from '../../components/Text'
+import { SText, Heading, Header3 } from '../../components/Text'
 
 export default function Diagnostics() {
   const referrer = useReferrer()
   const referrerState = useReferrerManager()
   const projectState = useProjectState()
+  const wallet = useWallet()
 
   const referrerLocal = window.localStorage.getItem('redux_localstorage_simple_referrer')
 
@@ -27,21 +29,25 @@ export default function Diagnostics() {
           <Heading>{`Diagnostics`}</Heading>
           <SpacedSection>
             <Header3>{`Referral (DynamoDB)`}</Header3>
-            <Text>{referrer}</Text>
+            <SText>{referrer}</SText>
           </SpacedSection>
           {referrerState.referrerState && projectState.selectedProject && referrerState.referrerState.referrer && (
             <SpacedSection>
               <Header3>{`Referrer State (from REDUX)`}</Header3>
-              <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.referrer}</Text>
-              <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.storedRemotely}</Text>
+              <SText>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.referrer}</SText>
+              <SText>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.storedRemotely}</SText>
             </SpacedSection>
           )}
           {referrerLocal && (
             <SpacedSection>
               <Header3>{`Local Storage`}</Header3>
-              <Text>{referrerLocal.toString()}</Text>
+              <SText>{referrerLocal.toString()}</SText>
             </SpacedSection>
           )}
+          <SpacedSection>
+            <Header3>{`Address`}</Header3>
+            <SText>{wallet?.address}</SText>
+          </SpacedSection>
         </Card>
       </Wrapper>
     </PageWrapper>
