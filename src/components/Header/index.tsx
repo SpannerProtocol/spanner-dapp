@@ -11,9 +11,7 @@ import Logo from '../../assets/svg/logo-spanner-gradient.svg'
 import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
-import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
-import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
 import { makeStyles } from '@material-ui/core/styles'
 import Divider from '@material-ui/core/Divider'
@@ -82,20 +80,7 @@ const HeaderControls = styled.div`
   padding-right: 1rem;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    flex-direction: row;
-    justify-content: space-between;
-    justify-self: center;
-    width: 100%;
-    max-width: 960px;
-    padding: 1rem;
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    z-index: 99;
-    height: 72px;
-    border-radius: 12px 12px 0 0;
-    background-color: ${({ theme }) => theme.bg1};
+    display: none;
   `};
 `
 
@@ -645,22 +630,25 @@ export function Controls() {
     <>
       <HeaderControls>
         <HeaderElement>
-          {true && (
-            <Link to="/account/balances" style={{ textDecoration: 'none' }}>
-              <BalanceWrapper>
+          <Web3Status />
+          <Link to="/account/balances" style={{ textDecoration: 'none' }}>
+            <BalanceWrapper>
+              <Badge
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                color="secondary"
+                badgeContent={0}
+                showZero
+              >
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                   <User />
                 </BOLTAmount>
-              </BalanceWrapper>
-            </Link>
-          )}
-          <Web3Status />
+              </Badge>
+            </BalanceWrapper>
+          </Link>
         </HeaderElement>
-        <HeaderElementWrap>
-          <Transfer />
-          <Settings />
-          <Menu />
-        </HeaderElementWrap>
       </HeaderControls>
     </>
   )

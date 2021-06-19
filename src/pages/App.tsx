@@ -8,7 +8,7 @@ import { useWindowSize } from 'hooks/useWindowSize'
 import React, { createContext, Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
-import Header from '../components/Header'
+import Header, { Controls } from '../components/Header'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
@@ -81,6 +81,7 @@ export default function App() {
           <HeaderWrapper>
             <Header width={width} />
           </HeaderWrapper>
+          <Controls />
           <AppBody>
             <Popups />
             <Web3ReactManager>
