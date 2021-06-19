@@ -15,6 +15,7 @@ import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 
 import SwiperCore, { Pagination } from 'swiper/core'
+import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -65,16 +66,21 @@ export function DPOV2() {
 }
 
 export function DPOV1Stats() {
+  const dpoCount = useQuerySubscribeDpoCount()
+  const runningDpoCount = useQueryRunningDpoCount()
+
   return (
     <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
       <HomeSectionTitle>{'DPO V1 Stats'}</HomeSectionTitle>
+      {dpoCount && (
+        <RowBetween>
+          <HomeSectionLabel2>Total DPOs Quantity</HomeSectionLabel2>
+          <HomeSectionValue2>{dpoCount.toString()}</HomeSectionValue2>
+        </RowBetween>
+      )}
       <RowBetween>
-        <HomeSectionLabel2>Total DPOs Quantity</HomeSectionLabel2>
-        <HomeSectionValue2>208</HomeSectionValue2>
-      </RowBetween>
-      <RowBetween>
-        <HomeSectionLabel2>Crowdfunding Dpos Quantity</HomeSectionLabel2>
-        <HomeSectionValue2>107</HomeSectionValue2>
+        <HomeSectionLabel2>Running Dpos Quantity</HomeSectionLabel2>
+        <HomeSectionValue2>{runningDpoCount.toString()}</HomeSectionValue2>
       </RowBetween>
     </FlatCard>
   )

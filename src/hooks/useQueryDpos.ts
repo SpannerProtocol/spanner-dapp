@@ -124,3 +124,29 @@ export interface DpoState {
   totalDpos: string
   totalMembers: string
 }
+
+export function useQueryRunningDpoCount(): number {
+  const { api, connected } = useApi()
+  const [dpoCount, setDpoCount] = useState<number>(0)
+
+  useEffect(() => {
+    if (!connected) return
+    setDpoCount(0)
+    api.query.bulletTrain.dpos
+      .entries()
+      .then((entries) => {
+        entries.forEach((entry) => {
+          if (entry[1].isSome) {
+            const dpoInfo = entry[1].unwrapOrDefault()
+            // Filter for token
+            if (!dpoInfo.state.isFailed && !dpoInfo.state.isCompleted) {
+              setDpoCount((prev) => ++prev)
+            }
+          }
+        })
+      })
+      .catch((err) => console.log(err))
+  }, [api, connected])
+
+  return dpoCount
+}
