@@ -110,11 +110,13 @@ export default function TxModal({
         <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
           <RowBetween>
             {isDisabled ? (
-              <ButtonPrimary onClick={onConfirm} disabled>
+              <ButtonPrimary width={'100%'} onClick={onConfirm} disabled>
                 {buttonText}
               </ButtonPrimary>
             ) : (
-              <ButtonPrimary onClick={onConfirm}>{buttonText}</ButtonPrimary>
+              <ButtonPrimary width={'100%'} onClick={onConfirm}>
+                {buttonText}
+              </ButtonPrimary>
             )}
           </RowBetween>
         </Section>

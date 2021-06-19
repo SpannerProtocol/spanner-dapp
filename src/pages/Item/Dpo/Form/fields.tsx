@@ -139,7 +139,7 @@ export function DpoManagerSeats({
         <Section>
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
+              <SText mobileFontSize="10px" width={'fit-content'}>{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
               <QuestionHelper
                 text={t(
                   `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
@@ -148,7 +148,7 @@ export function DpoManagerSeats({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText mobileFontSize="10px">
+            <SText mobileFontSize="10px" width={'fit-content'}>
               {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
             </SText>
           </RowBetween>
@@ -192,9 +192,7 @@ export function DpoEnd({
             backgroundColor={'transparent'}
           ></QuestionHelper>
         </RowFixed>
-        {maxEnd && (
-          <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>
-        )}
+        {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
       </RowBetween>
       <BorderedInput
         required

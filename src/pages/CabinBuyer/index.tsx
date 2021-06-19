@@ -8,7 +8,7 @@ import { getCabinClassImage } from '../../utils/getCabinClass'
 import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { FlatCard } from '../../components/Card'
 import { useTranslation } from 'react-i18next'
-import { ButtonGray, ButtonPrimary } from '../../components/Button'
+import { ButtonPrimary } from '../../components/Button'
 import { useItemCabinBuyer } from '../../hooks/useItem'
 import { useSubTravelCabin, useTravelCabinBuyers } from '../../hooks/useQueryTravelCabins'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'interfaces/bulletTrain'
@@ -160,9 +160,9 @@ export function FareAvailable() {
             {'0 BOLT'}
           </HeavyText>
           <ButtonWrapper style={{ width: '100px', padding: '0.5rem' }}>
-            <ButtonGray padding="1rem" fontSize="14px" mobileFontSize="14px">
+            <ButtonPrimary padding="1rem" fontSize="14px" mobileFontSize="14px" disabled={true}>
               {t(`Withdraw`)}
-            </ButtonGray>
+            </ButtonPrimary>
           </ButtonWrapper>
         </RowBetween>
         <SText fontSize={'12px'} mobileFontSize={'12px'}>

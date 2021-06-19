@@ -10,6 +10,7 @@ import React, { useMemo } from 'react'
 import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'interfaces/bulletTrain'
 import { useTravelCabinBuyers } from '../../hooks/useQueryTravelCabins'
 import { getCabinClassByIndex } from '../../utils/getCabinClass'
+import { Moment } from '@polkadot/types/interfaces'
 
 export function SoldTo() {
   const bronzeBuyers = useTravelCabinBuyers('0')
@@ -18,7 +19,7 @@ export function SoldTo() {
   const platinumBuyers = useTravelCabinBuyers('3')
   const diamondBuyers = useTravelCabinBuyers('4')
   const buyers = bronzeBuyers.concat(sliverBuyers, goldBuyers, platinumBuyers, diamondBuyers)
-
+  const { expectedBlockTime, genesisTs } = useBlockManager()
   const sortedBuyers = useMemo(
     () => buyers.sort((b1, b2) => b2[1].purchase_blk.toNumber() - b1[1].purchase_blk.toNumber()),
     [buyers]
@@ -31,7 +32,15 @@ export function SoldTo() {
         {'Sold To'}
       </HeavyText>
       {sortedBuyers.map((buyer, index) => {
-        return <SoldToItem key={index} buyer={buyer} index={index} />
+        return (
+          <SoldToItem
+            key={index}
+            buyer={buyer}
+            index={index}
+            expectedBlockTime={expectedBlockTime}
+            genesisTs={genesisTs}
+          />
+        )
       })}
     </>
   )
@@ -40,11 +49,12 @@ export function SoldTo() {
 interface CabinSoldToProps {
   buyer: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   index: number
+  expectedBlockTime?: Moment
+  genesisTs?: number
 }
 
 export function SoldToItem(props: CabinSoldToProps) {
-  const { expectedBlockTime, genesisTs } = useBlockManager()
-  const { buyer, index } = props
+  const { buyer, index, genesisTs, expectedBlockTime } = props
   const buyerInfo = buyer[1]
   const cabinIndex = buyer[0][0]
   const cabinInventoryIndex = buyer[0][1]

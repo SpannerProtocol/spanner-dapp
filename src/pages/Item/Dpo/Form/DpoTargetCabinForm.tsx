@@ -139,34 +139,34 @@ export default function DpoTargetCabinForm({
         </Section>
         <BorderedWrapper>
           <RowBetween>
-            <SText>{t(`Available Balance`)}</SText>
-            <SText>
+            <SText width={'fit-content'}>{t(`Available Balance`)}</SText>
+            <SText width={'fit-content'}>
               {formatToUnit(balance, chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <SText>{t(`Crowdfund Amount`)}</SText>
+              <SText width={'fit-content'}>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
                 text={t(`The number of seats to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText>
+            <SText width={'fit-content'}>
               {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <SText>{t(`Your Deposit`)}</SText>
+              <SText width={'fit-content'}>{t(`Your Deposit`)}</SText>
               <QuestionHelper
                 text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
                 size={10}
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
+            <SText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
           </RowBetween>
         </BorderedWrapper>
         <DpoDefaultTarget target={travelCabinInfo.name.toString()} />
@@ -182,29 +182,29 @@ export default function DpoTargetCabinForm({
       <BorderedWrapper>
         <RowBetween>
           <RowFixed>
-            <SText>{t(`Management Fee`)}</SText>
+            <SText width={'fit-content'}>{t(`Management Fee`)}</SText>
             <QuestionHelper
               text={t(`Management Fee is charged on all yield releases`)}
               size={10}
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
-            baseFee + managerSeats
-          )}%`}</SText>
+          <SText width={'fit-content'}>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(
+            `Seats`
+          )}) = ${noNan(baseFee + managerSeats)}%`}</SText>
         </RowBetween>
         <RowBetween>
           <RowFixed>
-            <SText>{t(`Referral Rates`)} (%)</SText>
+            <SText width={'fit-content'}>{t(`Referral Rates`)} (%)</SText>
             <QuestionHelper
               text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}
               size={10}
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <SText>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(100 - directReferralRate)} (${t(
-            `2nd`
-          )}) = 100%`}</SText>
+          <SText width={'fit-content'}>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(
+            100 - directReferralRate
+          )} (${t(`2nd`)}) = 100%`}</SText>
         </RowBetween>
       </BorderedWrapper>
       <DpoManagerSeats
