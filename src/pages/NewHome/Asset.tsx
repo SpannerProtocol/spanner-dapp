@@ -16,6 +16,9 @@ import 'swiper/swiper.min.css'
 import 'swiper/components/pagination/pagination.min.css'
 
 import SwiperCore, { Pagination } from 'swiper/core'
+import useStats from '../../hooks/useStats'
+import { useSubstrate } from '../../hooks/useSubstrate'
+import { formatToUnit } from '../../utils/formatUnit'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -68,21 +71,25 @@ export function SpannerNFT() {
 }
 
 export function BulletTrainStats() {
+  const token = 'BOLT'
+  const stats = useStats(token)
+  const { chainDecimals } = useSubstrate()
+
   return (
     <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
       <HomeSectionTitle>{'Spanner BulletTrain Stats'}</HomeSectionTitle>
       <RowBetween>
         <HomeSectionLabel2>Total Deposited Value</HomeSectionLabel2>
-        <HomeSectionValue3>100,000,000 BOLT</HomeSectionValue3>
+        <HomeSectionValue3> {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}</HomeSectionValue3>
       </RowBetween>
       <RowBetween>
         <HomeSectionLabel2>Total Yield Distributed</HomeSectionLabel2>
-        <HomeSectionValue3>10,049,009 BOLT</HomeSectionValue3>
+        <HomeSectionValue3>{`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}</HomeSectionValue3>
       </RowBetween>
-      <RowBetween>
-        <HomeSectionLabel2>Total Bonus Distributed</HomeSectionLabel2>
-        <HomeSectionValue3>10,049,009 BOLT</HomeSectionValue3>
-      </RowBetween>
+      {/*<RowBetween>*/}
+      {/*  <HomeSectionLabel2>Total Bonus Distributed</HomeSectionLabel2>*/}
+      {/*  <HomeSectionValue3>10,049,009 BOLT</HomeSectionValue3>*/}
+      {/*</RowBetween>*/}
     </FlatCard>
   )
 }

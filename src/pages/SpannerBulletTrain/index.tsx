@@ -7,6 +7,9 @@ import { RowBetween } from '../../components/Row'
 import { CabinsCatalogue } from './CabinCatalogue'
 import { GlobalMilestoneReward } from './Milestone'
 import { SoldTo } from './SoldTo'
+import useStats from '../../hooks/useStats'
+import { useSubstrate } from '../../hooks/useSubstrate'
+import { formatToUnit } from '../../utils/formatUnit'
 
 const PageTitle = styled.h1`
   margin: 0.1rem 0;
@@ -54,7 +57,9 @@ export default function BulletTrain() {
 
 export function SpannerBulletTrainStats() {
   const theme = useContext(ThemeContext)
-
+  const token = 'BOLT'
+  const stats = useStats(token)
+  const { chainDecimals } = useSubstrate()
   return (
     <FlatCard style={{ textAlign: 'left' }}>
       <HeavyText
@@ -63,7 +68,7 @@ export function SpannerBulletTrainStats() {
         color={theme.primary1}
         style={{ margin: 'auto', textAlign: 'center' }}
       >
-        {'100,000,000 BOLT'}
+        {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}
       </HeavyText>
       <SText
         fontSize={'16px'}
@@ -75,16 +80,16 @@ export function SpannerBulletTrainStats() {
       </SText>
       <RowBetween>
         <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
-          {'10,049,009 BOLT'}
+          {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}
         </HeavyText>
         <SText style={{ textAlign: 'right' }}>{'Total Yield Distributed'}</SText>
       </RowBetween>
-      <RowBetween>
-        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
-          {'48,948,998 BOLT'}
-        </HeavyText>
-        <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>
-      </RowBetween>
+      {/*<RowBetween>*/}
+      {/*  <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>*/}
+      {/*    {'48,948,998 BOLT'}*/}
+      {/*  </HeavyText>*/}
+      {/*  <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>*/}
+      {/*</RowBetween>*/}
     </FlatCard>
   )
 }
