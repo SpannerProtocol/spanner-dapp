@@ -38,6 +38,7 @@ function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
   const inventoryCount = useSubTravelCabinInventory(dpoInfo.target.asTravelCabin.toString())
+  const dpoStateIsSelectedState = isDpoStateSelectedState(dpoInfo, selectedState)
 
   if (!target || !inventoryCount) return null
   return (
@@ -46,7 +47,13 @@ function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
         {stateCompleted ? (
           <SText width="fit-content">{`${t(`All yield rewards withdrawn`)} ${t(`from`)}`}</SText>
         ) : (
-          <SText width="fit-content">{`${t(`Yield rewards accumulating`)} ${t(`in`)}`}</SText>
+          <>
+            {dpoStateIsSelectedState ? (
+              <SText width="fit-content">{`${t(`Yield rewards accumulating`)} ${t(`in`)}`}</SText>
+            ) : (
+              <SText width="fit-content">{`${t(`Yield rewards will be withdrawn`)} ${t(`from`)}`}</SText>
+            )}
+          </>
         )}
         <SLink
           to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}

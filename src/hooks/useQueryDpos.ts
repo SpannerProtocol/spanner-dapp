@@ -78,3 +78,37 @@ export function useDpoInTargetDpo(dpoInfo: DpoInfo) {
 
   return inTarget
 }
+
+/**
+ * Returns dpo count. If token is passed then it will filter it by token.
+ * @param token token in capitals (e.g. BOLT)
+ * @returns number
+ */
+export function useDpoCount(token?: string): number {
+  const { api, connected } = useApi()
+  const [count, setCount] = useState<number>(0)
+
+  useEffect(() => {
+    if (!connected) return
+    ;(async () => {
+      const entries = await api.query.bulletTrain.dpos.entries()
+      if (!token) {
+        setCount(entries.length)
+      } else {
+        let filteredCount = 0
+        entries.forEach((entry) => {
+          if (entry[1].isSome) {
+            const dpoInfo = entry[1].unwrapOrDefault()
+            if (!dpoInfo.token_id.isToken) return
+            if (dpoInfo.token_id.asToken.eq(token)) {
+              filteredCount = filteredCount + 1
+            }
+          }
+        })
+        setCount(filteredCount)
+      }
+    })().catch(console.error)
+  }, [api, connected, token])
+
+  return count
+}

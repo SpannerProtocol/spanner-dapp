@@ -87,18 +87,9 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </AnyQuestionHelper>
           </RowBetween>
           <Header4>{`DPO #${dpoInfo.index.toString()}`}</Header4>
-          {dpoInfo.target.isDpo && <TargetDpo dpoInfo={dpoInfo} />}
-          {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
-        </Section>
-        <Section>
           <RowBetween>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              {isConnected && userInDpo.inDpo && (
-                <SText color={theme.secondary1} style={{ textAlign: 'center' }}>
-                  {t(`You are this DPO's`)} {userInDpo.role}
-                </SText>
-              )}
-            </div>
+            {dpoInfo.target.isDpo && <TargetDpo dpoInfo={dpoInfo} />}
+            {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
                 toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}/details?ref=${wallet.address}&project=${
@@ -111,6 +102,17 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
                 </IconWrapper>
               </CopyHelper>
             )}
+          </RowBetween>
+        </Section>
+        <Section>
+          <RowBetween>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              {isConnected && userInDpo.inDpo && (
+                <SText color={theme.secondary1} style={{ textAlign: 'center' }}>
+                  {t(`You are this DPO's`)} {userInDpo.role}
+                </SText>
+              )}
+            </div>
           </RowBetween>
         </Section>
         {/* {!dpoInfo.state.isCreated && (

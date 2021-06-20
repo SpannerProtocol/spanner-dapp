@@ -1,24 +1,93 @@
 import { useQuery } from '@apollo/client'
+import LightBanner from 'assets/images/banner-spanner-light.png'
+import Card, { BannerCard } from 'components/Card'
 import DpoCard from 'components/DpoCard'
 import Filter from 'components/Filter'
 import { MultiFilter } from 'components/Filter/MultiFilter'
 import PillToggleFilter from 'components/Filter/PillToggleFilter'
-import { RowFixed } from 'components/Row'
+import QuestionHelper from 'components/QuestionHelper'
+import { RowBetween, RowFixed } from 'components/Row'
 import SearchBar from 'components/SearchBar'
-import { SText } from 'components/Text'
-import { GridWrapper, Section, Wrapper } from 'components/Wrapper'
+import { Header1, Header3, Header4, HeavyText, TokenText } from 'components/Text'
+import { CenterWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import Decimal from 'decimal.js'
 import { useBlockManager } from 'hooks/useBlocks'
+import { useTotalCrowdfundedAmount } from 'hooks/useDpoStats'
 import useSubscribeBalance from 'hooks/useQueryBalance'
-import { useDpos } from 'hooks/useQueryDpos'
+import { useDpoCount, useDpos } from 'hooks/useQueryDpos'
+import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
 import userPortfolio from 'queries/graphql/userPortfolio'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
 import { useProjectManager } from 'state/project/hooks'
+import { ThemeContext } from 'styled-components'
 import { firstBy } from 'thenby'
+import { formatToUnit } from 'utils/formatUnit'
+
+function SortDirection({ toggle, isActive }: { toggle: () => void; isActive: boolean }) {
+  const theme = useContext(ThemeContext)
+  return (
+    <PillToggleFilter
+      isActive={isActive}
+      toggle={toggle}
+      margin="0.5rem"
+      labelActive="ASC"
+      labelInactive="DESC"
+      inActiveColor={theme.white}
+      inActiveBg={theme.primary1}
+    />
+  )
+}
+
+export function DpoOverviewCard({ token }: { token: string }) {
+  const { t } = useTranslation()
+  const dpoCount = useDpoCount(token)
+  const crowdfundedAmount = useTotalCrowdfundedAmount(token)
+  const { chainDecimals } = useSubstrate()
+  return (
+    <BannerCard url={LightBanner}>
+      <ContentWrapper>
+        <Header1 colorIsPrimary>{t(`DPOs`)}</Header1>
+        <Header3>
+          {t(`Organizations crowdfunding for crypto assets. Participate to Earn!`)}{' '}
+          <QuestionHelper
+            text={t(
+              `Earn Yield on Deposits, Management Fee for Creating a DPO, Bonus for Referrals and Milestone Rewards just for participating`
+            )}
+            size={14}
+            backgroundColor={'transparent'}
+            padding="0 0.25rem 0 0.25rem"
+          />
+        </Header3>
+        <SpacedSection>
+          <RowBetween>
+            <Card margin="0 1rem" mobileMargin="0 0.5rem">
+              <CenterWrapper display="block">
+                <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" width="100%" textAlign="center">
+                  {dpoCount}
+                </HeavyText>
+                <Header4>{t(`Total DPOs`)}</Header4>
+              </CenterWrapper>
+            </Card>
+            <Card margin="0 0.25rem">
+              <CenterWrapper display="block">
+                <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" width="100%" textAlign="center">
+                  {formatToUnit(crowdfundedAmount, chainDecimals)} <TokenText>{token}</TokenText>
+                </HeavyText>
+                <Header4>{t(`Total Crowdfunded`)}</Header4>
+              </CenterWrapper>
+            </Card>
+          </RowBetween>
+        </SpacedSection>
+      </ContentWrapper>
+    </BannerCard>
+  )
+}
+
+// SORTING FUNCTIONS
 
 /**
  * Doesn't actually sort by APY but sorts by yield / deposit to keep it lightweight
@@ -79,13 +148,14 @@ export default function Dpos() {
   const { projectState: project } = useProjectManager()
   const token = useMemo(() => (project.selectedProject ? project.selectedProject.token : 'BOLT'), [project])
   const unfilteredDpos = useDpos(token)
-  const [searchResults, setSearchResults] = useState<typeof unfilteredDpos>([])
+  const [searchResults, setSearchResults] = useState<DpoInfo[]>([])
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [filteredState, setFilteredState] = useState<string>('CREATED')
   const [filteredAsset, setFilteredAsset] = useState<string>('ALL')
   const [filteredAffordable, setFilteredAfforable] = useState<boolean>(false)
   const [filteredOwned, setFilteredOwned] = useState<boolean>(false)
   const [sortBy, setSortBy] = useState<string[]>(['APY'])
+  const [sortedOptions, setSortedOptions] = useState<{ [index: string]: boolean }>({})
 
   const [primaryFilteredDpos, setPrimaryFilteredDpos] = useState<DpoInfo[]>([])
   const [finalDpos, setFinalDpos] = useState<DpoInfo[]>([])
@@ -106,12 +176,6 @@ export default function Dpos() {
     return []
   }, [userAssetData])
 
-  // Search all
-  useEffect(() => {
-    const results = unfilteredDpos.filter((dpo) => dpo.name.toString().toLowerCase().includes(searchTerm.toLowerCase()))
-    setSearchResults(results)
-  }, [unfilteredDpos, searchTerm])
-
   const getLastBlock = useCallback(() => lastBlock, [lastBlock])
 
   // Primary Filters - State and Asset
@@ -120,7 +184,6 @@ export default function Dpos() {
   useEffect(() => {
     if (!lastBlockReady) return
     const currentBlock = getLastBlock()
-    console.log('lastBlockReady', lastBlockReady, 'currentBlock', currentBlock?.toHuman())
     if (!currentBlock) return
     const primaryFiltered: DpoInfo[] = []
     unfilteredDpos.forEach((dpo) => {
@@ -184,19 +247,40 @@ export default function Dpos() {
     // Sort the filtered results
     let sortedDpos = filteredDpos
     if (sortBy.length > 0) {
-      console.log('Starting sort')
       // Primary sort (first element in Array)
-      let sortFn = firstBy(sortMap[sortBy[0]], -1)
+      const firstSortDir = sortedOptions[sortBy[0]] ? 1 : -1
+      let sortFn = firstBy(sortMap[sortBy[0]], firstSortDir)
       // Multi sort (remaining sortKeys need to be chained to firstBy method)
       if (sortBy.length > 1) {
         sortBy.forEach((sortKey) => {
-          sortFn = sortFn.thenBy(sortMap[sortKey], -1)
+          const sortDir = sortedOptions[sortKey] ? 1 : -1
+          sortFn = sortFn.thenBy(sortMap[sortKey], sortDir)
         })
       }
       sortedDpos = sortedDpos.sort(sortFn)
     }
     setFinalDpos(sortedDpos)
-  }, [primaryFilteredDpos, balance, filteredAffordable, filteredOwned, userDpos, sortBy, sortBy.length])
+  }, [
+    primaryFilteredDpos,
+    primaryFilteredDpos.length,
+    balance,
+    filteredAffordable,
+    filteredOwned,
+    userDpos,
+    userDpos.length,
+    sortBy,
+    sortBy.length,
+    sortedOptions,
+    sortedOptions.length,
+  ])
+
+  const sortedOptionsStr = JSON.stringify(sortedOptions)
+
+  // Search after sorted and filtered results
+  useEffect(() => {
+    const results = finalDpos.filter((dpo) => dpo.name.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+    setSearchResults(results)
+  }, [finalDpos, finalDpos.length, searchTerm, sortBy.length, sortedOptionsStr])
 
   const stateFilterOptions = useMemo(() => {
     const options = ['ALL', 'CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED', 'EXPIRED', 'FAILED']
@@ -220,12 +304,20 @@ export default function Dpos() {
           return [...prev, label]
         })
       },
+      subElement: (
+        <SortDirection
+          isActive={sortedOptions[label]}
+          toggle={() => setSortedOptions((prev) => ({ ...prev, [label]: !sortedOptions[label] }))}
+        />
+      ),
+      subOnlyActive: true,
     }))
-  }, [])
+  }, [sortedOptions])
 
   return (
     <>
-      <Wrapper style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+      <DpoOverviewCard token={token} />
+      <ContentWrapper>
         <Section style={{ width: '100%' }}>
           {/* filters */}
           <RowFixed>
@@ -233,14 +325,14 @@ export default function Dpos() {
               options={stateFilterOptions}
               activeOption={filteredState}
               modalTitle={t(`Filter Dpo State`)}
-              margin="0.5rem"
+              margin="0.25rem"
               filterLabel="State"
             />
             <Filter
               options={assetFilterOptions}
               activeOption={filteredAsset}
               modalTitle={t(`Filter Targeted Asset`)}
-              margin="0.5rem"
+              margin="0.25rem"
               filterLabel="Asset"
             />
             <PillToggleFilter
@@ -263,19 +355,16 @@ export default function Dpos() {
           <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />
           <SearchBar
             inputType="text"
-            placeholder="Search"
+            placeholder="Search for Name"
             keyword={searchTerm}
             setKeyword={setSearchTerm}
             backgroundColor={'#fff'}
           />
         </Section>
-        <SText>{searchResults.length}</SText>
-        <GridWrapper columns="2">
-          {finalDpos.map((dpoInfo, index) => {
-            return <DpoCard key={index} dpoInfo={dpoInfo} />
-          })}
-        </GridWrapper>
-      </Wrapper>
+        {searchResults.map((dpoInfo, index) => {
+          return <DpoCard key={index} dpoInfo={dpoInfo} />
+        })}
+      </ContentWrapper>
     </>
   )
 }

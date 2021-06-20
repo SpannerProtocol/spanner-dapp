@@ -9,7 +9,7 @@ import { CircleProgress } from 'components/ProgressBar'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, HeavyText, ItalicText, SText, TokenText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, ContentWrapper, InlineSection, PaddedSection, Section } from 'components/Wrapper'
+import { BorderedWrapper, ContentWrapper, InlineSection, PaddedSection, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import useDpoFees from 'hooks/useDpoFees'
@@ -347,6 +347,7 @@ function MainSection({
   const { expectedBlockTime, lastBlock } = useBlockManager()
   const theme = useContext(ThemeContext)
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
+  const { chainDecimals } = useSubstrate()
 
   const expiry = useMemo(() => {
     let expiryBlk = new BN(0)
@@ -355,6 +356,11 @@ function MainSection({
     }
     return expiryBlk
   }, [dpoInfo, lastBlock])
+
+  const token = useMemo(
+    () => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()),
+    [dpoInfo]
+  )
 
   return (
     <>
@@ -366,9 +372,8 @@ function MainSection({
             <Header2 width="fit-content">{t(`Crowdfunding`)}</Header2>
           )}
           <InlineSection>
-            <SText width="fit-content" padding="0 0.25rem 0 0">
-              {t(`For`)}:
-            </SText>
+            <SText padding="0 0.25rem 0 0">{`${formatToUnit(dpoInfo.target_amount, chainDecimals)} ${token}`}</SText>
+            <SText padding="0 0.25rem 0 0">{t(`For`).toLowerCase()}</SText>
             {dpoInfo.target.isDpo ? <TargetDpoName dpoInfo={dpoInfo} /> : <TargetCabinName dpoInfo={dpoInfo} />}
           </InlineSection>
           {expectedBlockTime && dpoInfo.state.isCreated && !expiry.isZero() && (
@@ -385,9 +390,11 @@ function MainSection({
           )}
         </div>
       </RowBetween>
-      <ItalicText>{t(`Join this DPO by Buying its Seats as a User or DPO`)}</ItalicText>
-      <CreateHighlights dpoInfo={dpoInfo} />
-      <CreateDpoOrBuy dpoInfo={dpoInfo} onBuy={openBuyFormModal} onCreateDpo={openCreateDpoFormModal} />
+      <SpacedSection>
+        <ItalicText>{t(`Join this DPO by Buying its Seats as a User or DPO`)}</ItalicText>
+        <CreateHighlights dpoInfo={dpoInfo} />
+        <CreateDpoOrBuy dpoInfo={dpoInfo} onBuy={openBuyFormModal} onCreateDpo={openCreateDpoFormModal} />
+      </SpacedSection>
     </>
   )
 }

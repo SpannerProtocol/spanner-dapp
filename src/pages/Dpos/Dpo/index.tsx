@@ -60,28 +60,30 @@ export default function Dpo(): JSX.Element {
       {dpoInfo && selectedState && (
         <>
           <Overview dpoInfo={dpoInfo} />
-          <DetailCard
-            details={
-              selectedState === 'CREATED' ? (
-                <CreatedDetails dpoInfo={dpoInfo} />
-              ) : selectedState === 'RUNNING' ? (
-                <RunningDetails dpoInfo={dpoInfo} />
-              ) : undefined
-            }
-          >
-            <SpacedSection>
-              <DpoStateFilter
-                dpoInfo={dpoInfo}
-                defaultState={dpoInfo.state.toString()}
-                setSelectedState={setSelectedState}
-              />
-            </SpacedSection>
-            <Divider margin="0.5rem 0" />
-            <CreatedCard selectedState={selectedState} dpoInfo={dpoInfo} />
-            <ActiveCard selectedState={selectedState} dpoInfo={dpoInfo} />
-            <RunningCard selectedState={selectedState} dpoInfo={dpoInfo} />
-            <CompletedCard selectedState={selectedState} dpoInfo={dpoInfo} />
-          </DetailCard>
+          <ContentWrapper>
+            <DetailCard
+              details={
+                selectedState === 'CREATED' ? (
+                  <CreatedDetails dpoInfo={dpoInfo} />
+                ) : selectedState === 'RUNNING' ? (
+                  <RunningDetails dpoInfo={dpoInfo} />
+                ) : undefined
+              }
+            >
+              <SpacedSection>
+                <DpoStateFilter
+                  dpoInfo={dpoInfo}
+                  defaultState={dpoInfo.state.toString()}
+                  setSelectedState={setSelectedState}
+                />
+              </SpacedSection>
+              <Divider margin="0.5rem 0" />
+              <CreatedCard selectedState={selectedState} dpoInfo={dpoInfo} />
+              <ActiveCard selectedState={selectedState} dpoInfo={dpoInfo} />
+              <RunningCard selectedState={selectedState} dpoInfo={dpoInfo} />
+              <CompletedCard selectedState={selectedState} dpoInfo={dpoInfo} />
+            </DetailCard>
+          </ContentWrapper>
           <ContentWrapper>
             <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0" />
           </ContentWrapper>
