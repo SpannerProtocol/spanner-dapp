@@ -13,7 +13,7 @@ const Row = styled(Box)<{
   display: flex;
   padding: 0;
   align-items: ${({ align }) => (align ? align : 'center')};
-  align-items: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : 'left')};
   padding: ${({ padding }) => padding};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};

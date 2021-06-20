@@ -23,6 +23,7 @@ const Card = styled(Box)<{
   maxWidth?: string
   height?: string
   margin?: string
+  mobileMargin?: string
   minHeight?: string
   mobileMinHeight?: string
 }>`
@@ -36,8 +37,9 @@ const Card = styled(Box)<{
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
   min-height: ${({ minHeight }) => (minHeight ? minHeight : 'auto')};
-  ${({ mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ mobileMinHeight, mobileMargin, theme }) => theme.mediaWidth.upToExtraSmall`
    min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
+   margin: ${mobileMargin ? mobileMargin : '0'};
   `};
 `
 
@@ -121,4 +123,25 @@ export const CardIconGrid = styled(Card)<{ columns?: string }>`
 export const SecondaryGradientCard = styled(Card)`
   background: transparent linear-gradient(180deg, #3f4564 0%, #262a41 100%) 0% 0% no-repeat padding-box;
   opacity: 1;
+`
+
+export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; darkenBackground?: boolean }>`
+  background: ${({ darkenBackground }) =>
+      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),`}
+    ${({ url }) => (url ? `url(${url}) no-repeat center center` : `#fff`)};
+  background-size: ${({ backgroundSize }) => (backgroundSize ? backgroundSize : 'cover')};
+  box-shadow: none;
+  border: ${({ border }) => (border ? border : 'none')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
+`
+
+export const DetailGridCard = styled(Card)`
+  display: grid;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: 0;
+  background: transparent;
+  grid-template-columns: auto max(20px);
+  width: 100%;
 `

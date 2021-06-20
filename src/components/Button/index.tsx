@@ -10,14 +10,17 @@ const Base = styled(RebassButton)<{
   fontSize?: string
   minHeight?: string
   minWidth?: string
+  maxWidth?: string
   mobileFontSize?: string
   mobilePadding?: string
   mobileMinHeight?: string
   mobileMinWidth?: string
+  mobileMaxWidth?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
   min-width: ${({ minWidth }) => (minWidth ? minWidth : '120px')};
   min-height: ${({ minHeight }) => (minHeight ? minHeight : '25px')};
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '160px')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')};
   font-weight: 700;
   text-align: center;
@@ -40,11 +43,12 @@ const Base = styled(RebassButton)<{
   > * {
     user-select: none;
   }
-  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, mobileMaxWidth, theme }) => theme.mediaWidth.upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '12px'};
   padding: ${mobilePadding ? mobilePadding : '0.5rem'};
   min-width: ${mobileMinWidth ? mobileMinWidth : '100px'};
   min-height: ${mobileMinHeight ? mobileMinHeight : '25px'};
+  max-width: ${mobileMaxWidth ? mobileMaxWidth : '125px'};
 `};
 `
 

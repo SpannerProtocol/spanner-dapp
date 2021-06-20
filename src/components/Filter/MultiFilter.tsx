@@ -1,8 +1,8 @@
 import StandardModal from 'components/Modal/StandardModal'
 import { Pill } from 'components/Pill'
-import { RowFixed } from 'components/Row'
+import { RowBetween, RowFixed } from 'components/Row'
 import { SText } from 'components/Text'
-import { BorderedWrapper, ContentWrapper } from 'components/Wrapper'
+import { BorderedWrapper } from 'components/Wrapper'
 import React, { useContext, useState } from 'react'
 import { Check } from 'react-feather'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +25,7 @@ const SelectorWrapper = styled.div<{ background?: string; padding?: string; marg
 const Option = styled(BorderedWrapper)`
   display: flex;
   justify-content: center;
+  text-align: left;
   margin: 0.25rem 0;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
 `
@@ -32,6 +33,8 @@ const Option = styled(BorderedWrapper)`
 interface FilterOption {
   label: string
   callback: Dispatcher<any>
+  subElement?: JSX.Element
+  subOnlyActive?: boolean
 }
 
 interface MultiFilterProps {
@@ -44,18 +47,32 @@ function MultiFilterOptions({ options, activeOptions }: { options: FilterOption[
   const theme = useContext(ThemeContext)
   return (
     <>
-      {options.map((option, index) => (
-        <>
-          <Option
-            key={index}
-            onClick={() => option.callback(option.label)}
-            borderColor={activeOptions.includes(option.label) ? '#FFBE2E' : 'transparent'}
-          >
-            {option.label}
-            {activeOptions.includes(option.label) && <Check size={12} color={theme.green1} />}
-          </Option>
-        </>
-      ))}
+      {options.map((option, index) => {
+        const isActive = activeOptions.includes(option.label)
+        return (
+          <RowBetween key={index}>
+            <Option
+              onClick={() => option.callback(option.label)}
+              borderColor={isActive ? 'transparent' : 'transparent'}
+              background={isActive ? theme.primary1 : theme.gray3}
+            >
+              <RowBetween>
+                <SText padding="0 1rem" color={isActive ? theme.white : theme.text1}>
+                  {option.label}
+                </SText>
+                {isActive && (
+                  <div style={{ display: 'flex', alignItems: 'center', padding: '0 1rem' }}>
+                    <Check size={12} color={theme.white} />
+                  </div>
+                )}
+              </RowBetween>
+            </Option>
+            {option.subElement && (
+              <>{option.subOnlyActive ? <>{isActive ? option.subElement : null}</> : <>{option.subElement}</>}</>
+            )}
+          </RowBetween>
+        )
+      })}
     </>
   )
 }
@@ -68,7 +85,7 @@ export function MultiFilter({ options, activeOptions, modalTitle }: MultiFilterP
     setModalOpen(false)
   }
   return (
-    <ContentWrapper>
+    <>
       {activeOptions && (
         <StandardModal title={modalTitle} isOpen={modalOpen} onDismiss={dismissModal} desktopScroll={true}>
           <MultiFilterOptions options={options} activeOptions={activeOptions} />
@@ -84,9 +101,8 @@ export function MultiFilter({ options, activeOptions, modalTitle }: MultiFilterP
               {activeOption}
             </Pill>
           ))}
-          {/* <ChevronDown size={12} /> */}
         </RowFixed>
       </SelectorWrapper>
-    </ContentWrapper>
+    </>
   )
 }

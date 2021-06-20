@@ -3,18 +3,26 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
-const ToggleElement = styled.span<{ isActive?: boolean; isOnSwitch?: boolean }>`
+const ToggleElement = styled.span<{
+  isActive?: boolean
+  isOnSwitch?: boolean
+  inActiveBg?: string
+  inActiveColor?: string
+}>`
   padding: 0.5rem 0.8rem;
   border-radius: 12px;
-  background: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.primary1 : theme.text4) : 'none')};
-  color: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.white : theme.text2) : theme.text2)};
+  background: ${({ theme, isActive, isOnSwitch, inActiveBg }) =>
+    isActive ? (isOnSwitch ? theme.primary1 : inActiveBg ? inActiveBg : theme.text4) : 'none'};
+  color: ${({ theme, isActive, isOnSwitch, inActiveColor }) =>
+    isActive ? (isOnSwitch ? theme.white : inActiveColor ? inActiveColor : theme.text2) : theme.text2};
   font-size: 0.7rem;
   font-weight: ${({ isOnSwitch }) => (isOnSwitch ? '500' : '400')};
   :hover {
     user-select: ${({ isOnSwitch }) => (isOnSwitch ? 'none' : 'initial')};
-    background: ${({ theme, isActive, isOnSwitch }) =>
-      isActive ? (isOnSwitch ? theme.primary1 : theme.text3) : 'none'};
-    color: ${({ theme, isActive, isOnSwitch }) => (isActive ? (isOnSwitch ? theme.white : theme.text2) : theme.text3)};
+    background: ${({ theme, isActive, isOnSwitch, inActiveBg }) =>
+      isActive ? (isOnSwitch ? theme.primary1 : inActiveBg ? inActiveBg : theme.text3) : 'none'};
+    color: ${({ theme, isActive, isOnSwitch, inActiveColor }) =>
+      isActive ? (isOnSwitch ? theme.white : inActiveColor ? inActiveColor : theme.text2) : theme.text3};
   }
 `
 
@@ -40,6 +48,8 @@ export interface ToggleProps {
   labelInactive?: string
   toggleLabel?: string
   margin?: string
+  inActiveColor?: string
+  inActiveBg?: string
 }
 
 export default function PillToggleFilter({
@@ -50,6 +60,8 @@ export default function PillToggleFilter({
   labelInactive,
   margin,
   toggleLabel,
+  inActiveColor,
+  inActiveBg,
 }: ToggleProps) {
   const { t } = useTranslation()
   return (
@@ -63,7 +75,7 @@ export default function PillToggleFilter({
         <ToggleElement isActive={isActive} isOnSwitch={true}>
           {labelActive}
         </ToggleElement>
-        <ToggleElement isActive={!isActive} isOnSwitch={false}>
+        <ToggleElement isActive={!isActive} isOnSwitch={false} inActiveColor={inActiveColor} inActiveBg={inActiveBg}>
           {labelInactive}
         </ToggleElement>
       </StyledToggle>

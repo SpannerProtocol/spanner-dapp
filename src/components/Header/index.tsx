@@ -56,7 +56,7 @@ const HeaderFrame = styled.div`
   width: 100%;
   top: 0;
   position: relative;
-  // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 6px 15px #2b2f4a19;
   padding: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;
@@ -305,7 +305,7 @@ const useStyles = makeStyles({
 const navItems: NavItemDefs[] = [
   {
     text: 'DPOs',
-    link: '/dpos/dpos',
+    link: '/dpos',
     iconLink: DpoIcon,
     internal: true,
   },

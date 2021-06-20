@@ -18,6 +18,7 @@ export const Section = styled(AutoColumn)`
 `
 
 export const ClickableSection = styled(AutoColumn)`
+  cursor: pointer;
   :hover,
   :focus {
     opacity: 0.7;
@@ -222,8 +223,8 @@ export const ContentSection = styled.div<{
   `};
 `
 
-export const CenterWrapper = styled.div`
-  display: flex;
+export const CenterWrapper = styled.div<{ display?: string }>`
+  display: ${({ display }) => (display ? display : 'flex')};
   text-align: center;
   justify-content: center;
   align-items: center;

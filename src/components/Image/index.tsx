@@ -2,6 +2,7 @@ import styled from 'styled-components'
 
 export const Icon = styled.img<{
   size?: string
+  mobileSize?: string
   padding?: string
   margin?: string
   withBackground?: boolean
@@ -17,4 +18,8 @@ export const Icon = styled.img<{
   border: ${({ withBackground }) => (withBackground ? `1px solid transparent` : 'none')};
   border-radius: ${({ withBackground, borderRadius }) =>
     withBackground ? (borderRadius ? borderRadius : '50%') : 'none'};
+  ${({ mobileSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  width: ${mobileSize ? mobileSize : '24px'};
+  height: ${mobileSize ? mobileSize : '24px'};
+  `};
 `

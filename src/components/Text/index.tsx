@@ -9,14 +9,16 @@ const Base = styled.p<{
   width?: string
   padding?: string
   textAlign?: string
+  lineHeight?: string
+  colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
   width: ${({ width }) => (width ? width : '100%')};
   margin: 0;
   padding: ${({ padding }) => (padding ? padding : '0.1rem 0')};
-  line-height: 1.5;
+  line-height: ${({ lineHeight }) => (lineHeight ? lineHeight : '1.5')};
   text-align: ${({ textAlign }) => (textAlign ? textAlign : 'left')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '12px'};
@@ -65,12 +67,13 @@ export const Header1 = styled.h1<{
   width?: string
   padding?: string
   margin?: string
+  colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '48px')};
   font-weight: 900;
   width: ${({ width }) => (width ? width : '100%')};
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
   margin: ${({ margin }) => (margin ? margin : '0')};
   padding: ${({ padding }) => (padding ? padding : '0')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
@@ -86,12 +89,13 @@ export const Header2 = styled.h2<{
   padding?: string
   mobileFontSize?: string
   margin?: string
+  colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
   font-weight: 900;
   width: ${({ width }) => (width ? width : '100%')};
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
   padding: ${({ padding }) => (padding ? padding : '0')};
   margin: ${({ margin }) => (margin ? margin : '0')};
   line-height: 1.5;
@@ -107,12 +111,13 @@ export const Header3 = styled.h3<{
   width?: string
   padding?: string
   margin?: string
+  colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
   font-weight: 700;
   width: ${({ width }) => (width ? width : '100%')};
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
   margin: ${({ margin }) => (margin ? margin : '0')};
   padding: ${({ padding }) => (padding ? padding : '0')};
   line-height: 1.5;
@@ -128,13 +133,14 @@ export const Header4 = styled.h4<{
   width?: string
   padding?: string
   margin?: string
+  colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '24px')};
   font-weight: 700;
   width: ${({ width }) => (width ? width : '100%')};
   margin: 1rem 0;
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
   margin: ${({ margin }) => (margin ? margin : '0')};
   padding: ${({ padding }) => (padding ? padding : '0')};
   line-height: 1.5;
