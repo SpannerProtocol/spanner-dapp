@@ -120,6 +120,8 @@ const HeaderRow = styled(RowFixed)`
     background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
     width: 100%;
     height: inherit;
+    flex-direction: row;
+    justify-content: flex-start;
   `};
 `
 

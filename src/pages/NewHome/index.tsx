@@ -99,6 +99,13 @@ export const StyledCircleNext = styled(CircleNext)`
   margin: 20px;
 `
 
+export const StyledCircleNextWhite = styled(CircleNext)`
+  width: 30px;
+  height: 30px;
+  margin: 20px;
+  fill: white;
+`
+
 export const CircleNextIconWrapper = styled.div`
   text-align: center;
   margin: 10px;

@@ -8,7 +8,7 @@ import {
   HomeSectionLabel2,
   HomeSectionTitle,
   HomeSectionValue3,
-  StyledCircleNext,
+  StyledCircleNextWhite,
 } from './index'
 
 // Import Swiper styles
@@ -19,6 +19,7 @@ import SwiperCore, { Pagination } from 'swiper/core'
 import useStats from '../../hooks/useStats'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit } from '../../utils/formatUnit'
+import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -39,15 +40,21 @@ export function AssetSwiper() {
 export function BulletTrain() {
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
-        <HomeSectionTitle>{'Spanner BulletTrain'}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+      <FlatCard
+        style={{
+          textAlign: 'left',
+          minHeight: '270px',
+          background: `transparent url(${bulletTrainBg}) center center no-repeat padding-box`,
+        }}
+      >
+        <HomeSectionTitle color={'white'}>{'Spanner BulletTrain'}</HomeSectionTitle>
+        <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
           {
             'BulletTrain (a Growth Template) is an evolutionary viral growth marketing model running on the Spanner Blockchain'
           }
         </SText>
         <CircleNextIconWrapper>
-          <StyledCircleNext />
+          <StyledCircleNextWhite />
         </CircleNextIconWrapper>
       </FlatCard>
     </>

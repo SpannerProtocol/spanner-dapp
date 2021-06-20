@@ -16,6 +16,7 @@ import 'swiper/components/pagination/pagination.min.css'
 
 import SwiperCore, { Pagination } from 'swiper/core'
 import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
+import heroBannerBg from '../../assets/images/hero-banner-desktop.jpg'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -36,7 +37,13 @@ export function DPOSwiper() {
 export function DPOV1() {
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
+      <FlatCard
+        style={{
+          textAlign: 'left',
+          minHeight: '220px',
+          background: `transparent url(${heroBannerBg}) center center no-repeat padding-box`,
+        }}
+      >
         <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
           {'DPO is a novel crowdfunding model extending from affiliate marketing'}
