@@ -38,9 +38,9 @@ import LanguageSwitch from '../LanguageSwitch'
 // import DexIcon from '../../assets/svg/icon-dex.svg'
 import EarnIcon from '../../assets/svg/icon-earn.svg'
 import FaqIcon from '../../assets/svg/icon-faq.svg'
-import GuideIcon from '../../assets/svg/icon-guide.svg'
+// import GuideIcon from '../../assets/svg/icon-guide.svg'
 import InfoIcon from '../../assets/svg/icon-info.svg'
-import NewsIcon from '../../assets/svg/icon-news.svg'
+// import NewsIcon from '../../assets/svg/icon-news.svg'
 import ProjectIcon from '../../assets/svg/icon-project.svg'
 // import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
 import ExplorIcon from '../../assets/svg/icon-explore.svg'
@@ -102,7 +102,7 @@ const HeaderElementWrap = styled.div`
 `
 
 const HeaderRow = styled(RowFixed)`
-  display: block;
+  //display: block;
   height: 100%;
   width: 280px;
   position: fixed;
@@ -110,6 +110,9 @@ const HeaderRow = styled(RowFixed)`
   left: 0;
   align-items: flex-start;
   background: linear-gradient(180deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
     align-items: center;
@@ -236,18 +239,99 @@ export default function Header(props: HeaderProps) {
   const { t } = useTranslation()
 
   const [icons, setIcons] = useState<boolean>(false)
-  const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
+  // const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
   const isMobile = useMedia('(max-width: 720px)')
+  const { chain } = useChainState()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
       setIcons(true)
-      setSubNavNetworkSelector(true)
+      // setSubNavNetworkSelector(true)
     } else {
       setIcons(false)
-      setSubNavNetworkSelector(false)
+      // setSubNavNetworkSelector(false)
     }
   }, [width])
+
+  const navItems: NavItemDefs[] = [
+    {
+      text: 'DPOs',
+      link: '/bullettrain/dpos',
+      iconLink: DpoIconBlack,
+      internal: true,
+    },
+    {
+      text: 'Earn',
+      link: '',
+      iconLink: EarnIcon,
+      internal: true,
+      children: [
+        {
+          text: 'BulletTrain',
+          link: '/bullettrain/travelcabins',
+          iconLink: TrainIconBlack,
+          internal: true,
+        },
+        // {
+        //   text: 'SpaceShip',
+        //   link: '',
+        //   iconLink: SpaceshipIcon,
+        //   internal: true,
+        //   enable: false
+        // }
+      ],
+    },
+    {
+      text: 'Bridge',
+      link: '/account/bridge',
+      iconLink: BridgeIcon,
+      internal: true,
+    },
+    {
+      text: 'DEX',
+      link: '/dex',
+      iconLink: SwapIconBlack,
+      internal: true,
+    },
+    {
+      text: 'Projects',
+      link: '/projects',
+      iconLink: ProjectIcon,
+      internal: true,
+    },
+    {
+      text: 'Explorer',
+      link: chain ? (chain.url ? chain.url : '') : '',
+      iconLink: ExplorIcon,
+      internal: false,
+    },
+    {
+      text: 'Info',
+      link: '',
+      iconLink: InfoIcon,
+      internal: true,
+      children: [
+        // {
+        //   text: 'News',
+        //   link: '/bullettrain/travelcabins',
+        //   iconLink: NewsIcon,
+        //   internal: true,
+        // },
+        {
+          text: 'FAQ',
+          link: '/faq',
+          iconLink: FaqIcon,
+          internal: true,
+        },
+        // {
+        //   text: 'Guides',
+        //   link: '/bullettrain/travelcabins',
+        //   iconLink: GuideIcon,
+        //   internal: true,
+        // },
+      ],
+    },
+  ]
 
   return (
     <HeaderFrame>
@@ -258,8 +342,8 @@ export default function Header(props: HeaderProps) {
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
-        {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
-        <>{isMobile ? <MobileNav /> : <DesktopNav icons={icons} />}</>
+        {/*{subNavNetworkSelector && <NetworkSelector background={'#fff'} />}*/}
+        <>{isMobile ? <MobileNav navItems={navItems} /> : <DesktopNav icons={icons} navItems={navItems} />}</>
       </HeaderRow>
     </HeaderFrame>
   )
@@ -267,6 +351,7 @@ export default function Header(props: HeaderProps) {
 
 interface DesktopNavProp {
   icons?: boolean
+  navItems: NavItemDefs[]
 }
 
 const useStyles = makeStyles({
@@ -287,115 +372,56 @@ const useStyles = makeStyles({
   },
 })
 
-const navItems: NavItemDefs[] = [
-  {
-    text: 'DPOs',
-    link: '/bullettrain/dpos',
-    iconLink: DpoIconBlack,
-    internal: true,
-  },
-  {
-    text: 'Earn',
-    link: '',
-    iconLink: EarnIcon,
-    internal: true,
-    children: [
-      {
-        text: 'BulletTrain',
-        link: '/bullettrain/travelcabins',
-        iconLink: TrainIconBlack,
-        internal: true,
-      },
-      // {
-      //   text: 'SpaceShip',
-      //   link: '',
-      //   iconLink: SpaceshipIcon,
-      //   internal: true,
-      //   enable: false
-      // }
-    ],
-  },
-  {
-    text: 'Bridge',
-    link: '/account/bridge',
-    iconLink: BridgeIcon,
-    internal: true,
-  },
-  {
-    text: 'DEX',
-    link: '/dex',
-    iconLink: SwapIconBlack,
-    internal: true,
-  },
-  {
-    text: 'Projects',
-    link: '/projects',
-    iconLink: ProjectIcon,
-    internal: true,
-  },
-  {
-    text: 'Explorer',
-    link: '/projects',
-    iconLink: ExplorIcon,
-    internal: false,
-  },
-  {
-    text: 'Info',
-    link: '',
-    iconLink: InfoIcon,
-    internal: true,
-    children: [
-      {
-        text: 'News',
-        link: '/bullettrain/travelcabins',
-        iconLink: NewsIcon,
-        internal: true,
-      },
-      {
-        text: 'FAQ',
-        link: '/bullettrain/travelcabins',
-        iconLink: FaqIcon,
-        internal: true,
-      },
-      {
-        text: 'Guides',
-        link: '/bullettrain/travelcabins',
-        iconLink: GuideIcon,
-        internal: true,
-      },
-    ],
-  },
-]
+const DesktopHeaderWrpper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+`
 
 export function DesktopNav(props: DesktopNavProp) {
   const { chain } = useChainState()
   // let icons = props.icons
   const { t } = useTranslation()
   const classes = useStyles()
+  const { navItems } = props
 
   return (
-    <HeaderLinks>
-      <Divider />
-      {navItems.map(function (navItem, index) {
-        if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
-          return false
-        } else {
-          return (
-            <NavItem
-              key={index}
-              iconLink={navItem.iconLink}
-              link={navItem.link}
-              text={t(navItem.text)}
-              internal={navItem.internal}
-              nested={false}
-              classes={classes}
-              subs={navItem.children ? navItem.children : undefined}
-              toggleDrawer={undefined}
-            />
-          )
-        }
-      })}
-      <Divider />
+    <HeaderLinks style={{ flex: 1 }}>
+      <DesktopHeaderWrpper>
+        <div style={{ overflow: 'auto', flex: 1, width: '100%' }}>
+          <Divider />
+          {navItems.map(function (navItem, index) {
+            if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
+              return false
+            } else {
+              return (
+                <NavItem
+                  key={index}
+                  iconLink={navItem.iconLink}
+                  link={navItem.link}
+                  text={t(navItem.text)}
+                  internal={navItem.internal}
+                  nested={false}
+                  classes={classes}
+                  subs={navItem.children ? navItem.children : undefined}
+                  toggleDrawer={undefined}
+                />
+              )
+            }
+          })}
+        </div>
+        <MenuBottom>
+          <Divider />
+          <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
+            <NetworkSelector background={'#fff'} />
+          </div>
+          <HeaderElementWrap>
+            <Transfer />
+            <LanguageSwitch />
+          </HeaderElementWrap>
+        </MenuBottom>
+      </DesktopHeaderWrpper>
     </HeaderLinks>
   )
 }
@@ -533,7 +559,7 @@ export function NavItemContent({ iconLink, text, link, classes, internal, nested
   )
 }
 
-export function MobileNav() {
+export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
   const classes = useStyles()
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
   const { t } = useTranslation()
