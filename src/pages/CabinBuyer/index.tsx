@@ -25,12 +25,13 @@ import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { shortenAddr } from '../../utils/truncateString'
 import { useBlockManager } from '../../hooks/useBlocks'
-import { blockToTs, tsToDateTime, tsToRelative } from '../../utils/formatBlocks'
+import { blockToTs, tsToDateTime } from '../../utils/formatBlocks'
 import BN from 'bn.js'
 import useUserActions from '../../hooks/useUserActions'
 import TxModal from '../../components/Modal/TxModal'
 import TxFee from '../../components/TxFee'
 import useTxHelpers from '../../hooks/useTxHelpers'
+import { Step, StepLabel, Stepper } from '@material-ui/core'
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -99,7 +100,13 @@ export default function TravelCabinBuyer() {
                 token={token}
                 selectedBuyer={selectedBuyer}
               />
-              <Trip />
+              <Trip
+                travelCabinInfo={travelCabinInfo}
+                travelCabinInventoryIndex={travelCabinInventoryIndex}
+                chainDecimals={chainDecimals}
+                token={token}
+                selectedBuyer={selectedBuyer}
+              />
               {/*<Activity />*/}
             </HomeContentWrapper>
           )}
@@ -385,24 +392,17 @@ const TripDiv = styled.div`
   align-items: center;
 `
 
-export function Trip() {
-  const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
-  const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
-  const buyers = useTravelCabinBuyers(travelCabinIndex)
-  const [selectedBuyer, setSelectedBuyer] = useState<
-    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  >()
+export function Trip(props: CabinInfoProps) {
+  const { travelCabinInfo, selectedBuyer } = props
   const { expectedBlockTime, genesisTs, lastBlock } = useBlockManager()
-
-  useEffect(() => {
-    if (buyers.length === 0) return
-    setSelectedBuyer(
-      buyers.find((buyer) => buyer[0][0].eq(travelCabinIndex) && buyer[0][1].eq(travelCabinInventoryIndex))
-    )
-  }, [buyers, travelCabinIndex, travelCabinInventoryIndex])
+  const [activeStep, setActiveStep] = useState<number>(1)
 
   if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
   const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
+
+  if (remainBlock > 0) {
+    setActiveStep(2)
+  }
 
   return (
     <>
@@ -416,45 +416,56 @@ export function Trip() {
             {/*{`block:204324`}*/}
           </SText>
         </Row>
-        <SText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>
-          {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0
-            ? `${tsToRelative(
-                blockToTs(
-                  genesisTs,
-                  expectedBlockTime.toNumber(),
-                  travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
-                ) / 1000
-              )}`
-            : ` `}
-        </SText>
+        {/*<SText fontSize={'14px'} mobileFontSize={'14px'} style={{ margin: 'auto' }}>*/}
+        {/*  {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && remainBlock > 0*/}
+        {/*    ? `${tsToRelative(*/}
+        {/*        blockToTs(*/}
+        {/*          genesisTs,*/}
+        {/*          expectedBlockTime.toNumber(),*/}
+        {/*          travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()*/}
+        {/*        ) / 1000*/}
+        {/*      )}`*/}
+        {/*    : ` `}*/}
+        {/*</SText>*/}
         <div>
           {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && (
-            <RowBetween>
-              <TripDiv>
-                <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                  {`Start`}
-                </HeavyText>
-                <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                  {tsToDateTime(
-                    blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) / 1000
-                  )}
-                </SText>
-              </TripDiv>
-              <TripDiv>
-                <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                  {`End`}
-                </HeavyText>
-                <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                  {tsToDateTime(
-                    blockToTs(
-                      genesisTs,
-                      expectedBlockTime.toNumber(),
-                      travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
-                    ) / 1000
-                  )}
-                </SText>
-              </TripDiv>
-            </RowBetween>
+            <div>
+              <Stepper alternativeLabel activeStep={activeStep}>
+                <Step>
+                  <StepLabel>
+                    <TripDiv>
+                      <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {`Start`}
+                      </HeavyText>
+                      <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {tsToDateTime(
+                          blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) /
+                            1000
+                        )}
+                      </SText>
+                    </TripDiv>
+                  </StepLabel>
+                </Step>
+                <Step>
+                  <StepLabel>
+                    <TripDiv>
+                      <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {`End`}
+                      </HeavyText>
+                      <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {tsToDateTime(
+                          blockToTs(
+                            genesisTs,
+                            expectedBlockTime.toNumber(),
+                            travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                          ) / 1000
+                        )}
+                      </SText>
+                    </TripDiv>
+                  </StepLabel>
+                </Step>
+              </Stepper>
+            </div>
           )}
         </div>
       </FlatCard>
