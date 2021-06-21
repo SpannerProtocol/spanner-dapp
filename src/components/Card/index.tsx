@@ -127,7 +127,7 @@ export const SecondaryGradientCard = styled(Card)`
 
 export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; darkenBackground?: boolean }>`
   background: ${({ darkenBackground }) =>
-      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5) ),`}
+      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ),`}
     ${({ url }) => (url ? `url(${url}) no-repeat center center` : `#fff`)};
   background-size: ${({ backgroundSize }) => (backgroundSize ? backgroundSize : 'cover')};
   box-shadow: none;
