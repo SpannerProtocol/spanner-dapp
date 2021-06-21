@@ -270,7 +270,7 @@ export default function Header(props: HeaderProps) {
       children: [
         {
           text: 'BulletTrain',
-          link: '/bullettrain/travelcabins',
+          link: '/bullettrain',
           iconLink: TrainIconBlack,
           internal: true,
         },
