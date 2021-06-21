@@ -4,7 +4,7 @@ import { Header1, Header2, HeavyText, SText } from '../../components/Text'
 import styled, { ThemeContext } from 'styled-components'
 import { BannerCard, FlatCard } from '../../components/Card'
 import { RowBetween } from '../../components/Row'
-import { CabinsCatalogue } from './CabinCatalogue'
+import { CabinsSection } from './Cabins'
 import { GlobalMilestoneReward } from './Milestone'
 import { SoldTo } from './SoldTo'
 import useStats from '../../hooks/useStats'
@@ -51,7 +51,7 @@ export default function BulletTrain() {
         </BannerCard>
         <HomeContentWrapper>
           <GlobalMilestoneReward />
-          <CabinsCatalogue />
+          <CabinsSection />
           <SoldTo />
         </HomeContentWrapper>
       </Wrapper>

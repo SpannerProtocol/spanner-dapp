@@ -1,17 +1,15 @@
 import { useProjectManager } from '../../state/project/hooks'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { useSubTravelCabinInventory, useTravelCabins } from '../../hooks/useQueryTravelCabins'
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { getCabinClassImage, getCabinOrder } from '../../utils/getCabinClass'
 import { HeavyText, SText } from '../../components/Text'
-import { ButtonWrapper, GridWrapper } from '../../components/Wrapper'
+import { GridWrapper } from '../../components/Wrapper'
 import { TravelCabinInfo } from 'interfaces/bulletTrain'
 import { useBlockManager } from '../../hooks/useBlocks'
 import { useTranslation } from 'react-i18next'
 import cdDivide from '../../utils/cdDivide'
-import { FlatCard } from '../../components/Card'
-import Row, { RowBetween } from '../../components/Row'
-import { IconWrapper } from '../../components/AssetCards/TravelCabinCard'
+import Row, { RowBetween, RowFixed } from '../../components/Row'
 import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { formatToUnit } from '../../utils/formatUnit'
 import getApy from '../../utils/getApy'
@@ -23,8 +21,10 @@ import TxModal from '../../components/Modal/TxModal'
 import { TravelCabinJoinTxConfirm } from './modal/TravelCabinJoinTxConfirm'
 import { TravelCabinCrowdfundTxConfirm } from './modal/TravelCabinCrowdfundTxConfirm'
 import DpoModalForm from '../Dpos/Dpo/FormCreateDpo'
+import { DetailCardSimple } from '../../components/Card/DetailCard'
+import styled, { ThemeContext } from 'styled-components'
 
-export function CabinsCatalogue() {
+export function Cabins() {
   const { projectState } = useProjectManager()
   const { chainDecimals } = useSubstrate()
   const travelCabins = useTravelCabins(projectState.selectedProject?.token)
@@ -33,24 +33,54 @@ export function CabinsCatalogue() {
     () => travelCabins.sort((t1, t2) => getCabinOrder(t1[1].name.toString()) - getCabinOrder(t2[1].name.toString())),
     [travelCabins]
   )
+  return (
+    <GridWrapper columns="1">
+      {sortedCabins.map((entry, index) => {
+        const travelCabinInfo = entry[1]
+        const token = travelCabinInfo.token_id.isToken
+          ? travelCabinInfo.token_id.asToken.toString()
+          : travelCabinInfo.token_id.asDexShare.toString()
+        return <CabinCard key={index} item={entry[1]} token={token} chainDecimals={chainDecimals} />
+      })}
+    </GridWrapper>
+  )
+}
 
+export function CabinsSection() {
   return (
     <>
       <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
         {'Cabins'}
       </HeavyText>
-      <GridWrapper columns="2">
-        {sortedCabins.map((entry, index) => {
-          const travelCabinInfo = entry[1]
-          const token = travelCabinInfo.token_id.isToken
-            ? travelCabinInfo.token_id.asToken.toString()
-            : travelCabinInfo.token_id.asDexShare.toString()
-          return <CabinCard key={index} item={entry[1]} token={token} chainDecimals={chainDecimals} />
-        })}
-      </GridWrapper>
+      <Cabins />
     </>
   )
 }
+
+export const CabinCardGrid = styled.div`
+  display: grid;
+  grid-template-areas: 'state info apy bonus';
+  background: transparent;
+  grid-template-columns: minmax(40px, 50px) 3fr 1fr 1fr;
+  grid-column-gap: 0.5rem;
+  align-items: center;
+  padding: 1rem;
+  justify-content: flex-start;
+  text-align: left;
+  margin: 0;
+  width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    grid-template-areas: 'state info apy bonus';
+    background: transparent;
+    grid-template-columns: minmax(40px, 50px) 3fr 1fr 1fr;
+    grid-column-gap: 0.25rem;
+    text-align: left;
+    justify-content: flex-start;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  `};
+`
 
 interface TravelCabinCard {
   item: TravelCabinInfo
@@ -69,16 +99,13 @@ interface CrowdfundData {
   newReferrer?: boolean
 }
 
-export function CabinCard(props: TravelCabinCard) {
+function CabinCardDetails(props: TravelCabinCard) {
   const { item, chainDecimals, token } = props
   const travelCabinInfo = item
-  const { expectedBlockTime, lastBlock } = useBlockManager()
   const { t } = useTranslation()
-  const inventoryCount = useSubTravelCabinInventory(travelCabinInfo.index)
+  const { expectedBlockTime, lastBlock } = useBlockManager()
 
-  const bonusPercent = Math.floor(
-    cdDivide(travelCabinInfo.bonus_total, travelCabinInfo.deposit_amount, chainDecimals) * 100
-  )
+  const inventoryCount = useSubTravelCabinInventory(travelCabinInfo.index)
 
   const [crowdfundFormModalOpen, setCrowdfundFormModalOpen] = useState<boolean>(false)
   const [joinTxModalOpen, setJoinTxModalOpen] = useState<boolean>(false)
@@ -178,8 +205,6 @@ export function CabinCard(props: TravelCabinCard) {
     openJoinTxModal()
   }, [createTx, t, travelCabinIndex])
 
-  if (!travelCabinInfo) return <></>
-
   return (
     <>
       <DpoModalForm
@@ -229,96 +254,116 @@ export function CabinCard(props: TravelCabinCard) {
           estimatedFee={txInfo?.estimatedFee}
         />
       </TxModal>
-      <FlatCard style={{ textAlign: 'left', padding: '1rem 2rem' }}>
-        <RowBetween>
-          <IconWrapper>
-            <div style={{ maxWidth: '45px', width: '45px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
-          </IconWrapper>
-          <div style={{ textAlign: 'right' }}>
-            <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }}>
+      {expectedBlockTime && (
+        <RowBetween padding={'0.5rem 0.5rem'}>
+          <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+            {t(`Trip`)}
+          </HeavyText>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+            {' '}
+            {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
+          </SText>
+        </RowBetween>
+      )}
+      {inventoryCount && (
+        <RowBetween padding={'0.5rem 0.5rem'}>
+          <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
+            {t(`Available`)}
+          </HeavyText>
+          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+            {`${inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/${inventoryCount[1].toNumber()}`}
+          </SText>
+        </RowBetween>
+      )}
+      <Row style={{ alignItems: 'stretch', justifyContent: 'space-around' }} marginTop={'1.5rem'}>
+        <ButtonPrimary
+          padding="1rem"
+          fontSize="14px"
+          disabled={!isConnected}
+          mobileFontSize="14px"
+          onClick={openCrowdfundFormModal}
+        >
+          {t(`Buy with DPO`)}
+        </ButtonPrimary>
+        <ButtonSecondary
+          padding="1rem"
+          fontSize="14px"
+          disabled={!isConnected}
+          mobileFontSize="14px"
+          onClick={handleJoin}
+        >
+          {t(`Buy`)}
+        </ButtonSecondary>
+      </Row>
+    </>
+  )
+}
+
+export function CabinCard(props: TravelCabinCard) {
+  const { item, chainDecimals, token } = props
+  const travelCabinInfo = item
+  const { expectedBlockTime } = useBlockManager()
+  const { t } = useTranslation()
+
+  const theme = useContext(ThemeContext)
+
+  const bonusPercent = Math.floor(
+    cdDivide(travelCabinInfo.bonus_total, travelCabinInfo.deposit_amount, chainDecimals) * 100
+  )
+
+  if (!travelCabinInfo) return <></>
+
+  return (
+    <>
+      <DetailCardSimple
+        smallDetails
+        details={<CabinCardDetails item={item} token={token} chainDecimals={chainDecimals} />}
+      >
+        <CabinCardGrid>
+          <div style={{ maxWidth: '30px', width: '30px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
+          <div>
+            <HeavyText fontSize={'18px'} mobileFontSize={'14px'}>
               {`${t(`TravelCabin`)} ${travelCabinInfo.name.toString()}`}
             </HeavyText>
-            <Row style={{ justifyContent: 'flex-end', textAlign: 'right' }} padding={'0.5rem 0rem'}>
-              <Ticket />
+            <Row style={{ justifyContent: 'flex-start', textAlign: 'left' }} padding={'0.5rem 0rem'}>
+              <Ticket width="20px" height="20px" />
               <SText fontSize={'14px'} mobileFontSize={'14px'} padding={'0 0 0 0.5rem'} width={'fit-content'}>
                 {formatToUnit(travelCabinInfo.deposit_amount.toBn(), chainDecimals)} {token}
               </SText>
             </Row>
           </div>
-        </RowBetween>
-        <RowBetween padding={'1rem 0.5rem 0.5rem 0.5rem'}>
-          <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-            {t(`APY`)}
-          </HeavyText>
-          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-            {' '}
-            {expectedBlockTime && (
-              <>
-                {`${getApy({
-                  totalYield: travelCabinInfo.yield_total.toBn(),
-                  totalDeposit: travelCabinInfo.deposit_amount.toBn(),
-                  chainDecimals: chainDecimals,
-                  blockTime: expectedBlockTime,
-                  period: travelCabinInfo.maturity,
-                })}%`}
-              </>
-            )}
-          </SText>
-        </RowBetween>
-        <RowBetween padding={'0.5rem 0.5rem'}>
-          <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-            {t(`Bonus`)}
-          </HeavyText>
-          <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-            {bonusPercent}%
-          </SText>
-        </RowBetween>
-        {expectedBlockTime && (
-          <RowBetween padding={'0.5rem 0.5rem'}>
-            <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-              {t(`Trip`)}
-            </HeavyText>
-            <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-              {' '}
-              {blockToDays(travelCabinInfo.maturity, expectedBlockTime, 2)} {t(`days`)}
-            </SText>
-          </RowBetween>
-        )}
-        {inventoryCount && (
-          <RowBetween padding={'0.5rem 0.5rem'}>
-            <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-              {t(`Available`)}
-            </HeavyText>
-            <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-              {`${inventoryCount[1].toNumber() - inventoryCount[0].toNumber()}/${inventoryCount[1].toNumber()}`}
-            </SText>
-          </RowBetween>
-        )}
-        <Row style={{ alignItems: 'stretch', justifyContent: 'space-around' }} marginTop={'1.5rem'}>
-          <ButtonWrapper style={{ width: '100px', padding: '0.5rem', flexGrow: 3 }}>
-            <ButtonPrimary
-              padding="1rem"
-              fontSize="14px"
-              disabled={!isConnected}
-              mobileFontSize="14px"
-              onClick={openCrowdfundFormModal}
-            >
-              {t(`Crowdfund`)}
-            </ButtonPrimary>
-          </ButtonWrapper>
-          <ButtonWrapper style={{ width: '100px', padding: '0.5rem', flexGrow: 1 }}>
-            <ButtonSecondary
-              padding="1rem"
-              fontSize="14px"
-              disabled={!isConnected}
-              mobileFontSize="14px"
-              onClick={handleJoin}
-            >
-              {t(`Buy`)}
-            </ButtonSecondary>
-          </ButtonWrapper>
-        </Row>
-      </FlatCard>
+          {expectedBlockTime && (
+            <div style={{ display: 'block', width: '100%' }}>
+              <HeavyText width="100%" textAlign="left" color={theme.text3} padding="0">
+                {t(`APY`)}
+              </HeavyText>
+              <HeavyText width="100%" fontSize="18px" mobileFontSize="14px" colorIsPrimary textAlign="left" padding="0">
+                {expectedBlockTime && (
+                  <>
+                    {`${getApy({
+                      totalYield: travelCabinInfo.yield_total.toBn(),
+                      totalDeposit: travelCabinInfo.deposit_amount.toBn(),
+                      chainDecimals: chainDecimals,
+                      blockTime: expectedBlockTime,
+                      period: travelCabinInfo.maturity,
+                    })}%`}
+                  </>
+                )}
+              </HeavyText>
+            </div>
+          )}
+          <RowFixed>
+            <div style={{ display: 'block', width: '100%' }}>
+              <HeavyText width="100%" textAlign="left" color={theme.text3} padding="0">
+                {t(`Bonus`)}
+              </HeavyText>
+              <HeavyText width="100%" fontSize="18px" mobileFontSize="14px" colorIsPrimary textAlign="left" padding="0">
+                {bonusPercent}%
+              </HeavyText>
+            </div>
+          </RowFixed>
+        </CabinCardGrid>
+      </DetailCardSimple>
     </>
   )
 }
