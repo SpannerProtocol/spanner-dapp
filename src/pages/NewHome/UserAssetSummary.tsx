@@ -169,7 +169,7 @@ export function UserAssetSummaryContainer() {
   const wallet = useWallet()
   const project = useProjectState()
 
-  if (wallet == undefined || wallet.address == undefined) {
+  if (wallet === undefined || wallet.address === undefined) {
     return <UserAssetSummary totalDeposited={'0'} />
   }
 

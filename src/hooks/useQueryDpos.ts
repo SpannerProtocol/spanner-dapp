@@ -112,6 +112,19 @@ export function useDpoCount(token?: string): number {
 
   return count
 }
+export function useQuerySubscribeDpoCount(): DpoIndex | undefined {
+  const { api } = useApi()
+  const [dpoCount, setDpoCount] = useState<DpoIndex>()
+
+  useEffect(() => {
+    if (!api) return
+    api?.query?.bulletTrain.dpoCount((result) => {
+      setDpoCount(result)
+    })
+  }, [api])
+
+  return dpoCount
+}
 
 export function useQueryRunningDpoCount(): number {
   const { api, connected } = useApi()

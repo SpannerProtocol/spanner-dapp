@@ -19,10 +19,10 @@ import { blockToDays, daysToBlocks } from '../../utils/formatBlocks'
 import { ButtonPrimary, ButtonSecondary } from '../../components/Button'
 import useTxHelpers, { TxInfo } from '../../hooks/useTxHelpers'
 import { useIsConnected } from '../../hooks/useWallet'
-import DpoModalForm from '../Item/Dpo/Form'
 import TxModal from '../../components/Modal/TxModal'
 import { TravelCabinJoinTxConfirm } from './modal/TravelCabinJoinTxConfirm'
 import { TravelCabinCrowdfundTxConfirm } from './modal/TravelCabinCrowdfundTxConfirm'
+import DpoModalForm from '../Dpos/Dpo/FormCreateDpo'
 
 export function CabinsCatalogue() {
   const { projectState } = useProjectManager()
