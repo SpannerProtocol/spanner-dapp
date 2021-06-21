@@ -4,20 +4,25 @@ export const Pill = styled.div<{
   borderColor?: string
   background?: string
   padding?: string
-  marginTop?: string
-  marginBottom?: string
+  margin?: string
+  fontWeight?: string
+  fontSize?: string
+  mobileFontSize?: string
 }>`
-  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '1rem')};
-  margin-bottom: ${({ marginBottom }) => (marginBottom ? marginBottom : '1rem')};
-  color: ${({ color, theme }) => (color ? color : theme.text1)};
-  background: ${({ background }) => (background ? background : 'transparent')};
+  display: block;
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  margin: ${({ margin }) => (margin ? margin : '1rem')};
+  color: ${({ color, theme }) => (color ? color : theme.white)};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
+  background: ${({ background, theme }) => (background ? background : theme.primary1)};
   padding: ${({ padding }) => (padding ? padding : '0.35rem 1rem')};
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')};
   border-radius: 18px;
   width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  align-items: center;
+  text-align: center;
   overflow-wrap: anywhere;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '12px'};
+  `};
 `

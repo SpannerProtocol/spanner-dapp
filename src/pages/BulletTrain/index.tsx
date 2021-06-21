@@ -4,11 +4,11 @@ import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useProjectManager } from 'state/project/hooks'
-import { useBulletTrain } from 'utils/usePath'
+import { useBulletTrain } from 'hooks/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import { PageWrapper, Section, SectionContainer, SpacedSection, Wrapper } from '../../components/Wrapper'
 import BulletTrainInstructions from './BulletTrainInstructions'
-import DpoCatalogue from './Dpo'
+import Dpos from '../Dpos'
 import Milestones from './Milestones'
 import TravelCabinCatalogue from './TravelCabin'
 
@@ -82,7 +82,7 @@ export default function BulletTrain() {
             <SpacedSection style={{ marginTop: '0' }}>
               {activeTab === 'instructions' && <BulletTrainInstructions />}
               {activeTab === 'travelcabins' && <TravelCabinCatalogue />}
-              {activeTab === 'dpos' && <DpoCatalogue />}
+              {activeTab === 'dpos' && <Dpos />}
             </SpacedSection>
           </SectionContainer>
         </>

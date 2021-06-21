@@ -1,13 +1,26 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!-- Generator: Adobe Illustrator 19.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 55 55" style="enable-background:new 0 0 55 55;" xml:space="preserve">
-<path fill="#fff" d="M49,0c-3.309,0-6,2.691-6,6c0,1.035,0.263,2.009,0.726,2.86l-9.829,9.829C32.542,17.634,30.846,17,29,17
-	s-3.542,0.634-4.898,1.688l-7.669-7.669C16.785,10.424,17,9.74,17,9c0-2.206-1.794-4-4-4S9,6.794,9,9s1.794,4,4,4
-	c0.74,0,1.424-0.215,2.019-0.567l7.669,7.669C21.634,21.458,21,23.154,21,25s0.634,3.542,1.688,4.897L10.024,42.562
-	C8.958,41.595,7.549,41,6,41c-3.309,0-6,2.691-6,6s2.691,6,6,6s6-2.691,6-6c0-1.035-0.263-2.009-0.726-2.86l12.829-12.829
-	c1.106,0.86,2.44,1.436,3.898,1.619v10.16c-2.833,0.478-5,2.942-5,5.91c0,3.309,2.691,6,6,6s6-2.691,6-6c0-2.967-2.167-5.431-5-5.91
-	v-10.16c1.458-0.183,2.792-0.759,3.898-1.619l7.669,7.669C41.215,39.576,41,40.26,41,41c0,2.206,1.794,4,4,4s4-1.794,4-4
-	s-1.794-4-4-4c-0.74,0-1.424,0.215-2.019,0.567l-7.669-7.669C36.366,28.542,37,26.846,37,25s-0.634-3.542-1.688-4.897l9.665-9.665
-	C46.042,11.405,47.451,12,49,12c3.309,0,6-2.691,6-6S52.309,0,49,0z"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="54.626" height="52.946" viewBox="0 0 54.626 52.946">
+  <g id="DPO_icon" transform="translate(1.05 1)">
+    <g id="Group_101" data-name="Group 101" transform="translate(-1437.248 -975.133)">
+      <g id="Group_57" data-name="Group 57" transform="translate(1454.764 975.133)">
+        <path id="Path_55" data-name="Path 55" d="M5.4,0A5.4,5.4,0,1,1,0,5.4,5.4,5.4,0,0,1,5.4,0Z" transform="translate(3.352 0)" fill="none" stroke="#ffa521" stroke-width="2"/>
+        <path id="Path_56" data-name="Path 56" d="M3208.916,798.017a7.936,7.936,0,0,1,2.444-6.608c1.072-.967,3.121-1.814,6.32-1.78,10,.105,8.647,8.388,8.647,8.388" transform="translate(-3208.873 -778.219)" fill="none" stroke="#ffa521" stroke-linecap="round" stroke-width="2"/>
+      </g>
+    </g>
+    <g id="Group_102" data-name="Group 102" transform="translate(-1454.764 -944.133)">
+      <g id="Group_57-2" data-name="Group 57" transform="translate(1454.764 975.133)">
+        <path id="Path_55-2" data-name="Path 55" d="M5.4,0A5.4,5.4,0,1,1,0,5.4,5.4,5.4,0,0,1,5.4,0Z" transform="translate(3.352 0)" fill="none" stroke="#ffa521" stroke-width="2"/>
+        <path id="Path_56-2" data-name="Path 56" d="M3208.916,798.017a7.936,7.936,0,0,1,2.444-6.608c1.072-.967,3.121-1.814,6.32-1.78,10,.105,8.647,8.388,8.647,8.388" transform="translate(-3208.873 -778.219)" fill="none" stroke="#ffa521" stroke-linecap="round" stroke-width="2"/>
+      </g>
+    </g>
+    <g id="Group_103" data-name="Group 103" transform="translate(-1419.733 -944.133)">
+      <g id="Group_57-3" data-name="Group 57" transform="translate(1454.764 975.133)">
+        <path id="Path_55-3" data-name="Path 55" d="M5.4,0A5.4,5.4,0,1,1,0,5.4,5.4,5.4,0,0,1,5.4,0Z" transform="translate(3.352 0)" fill="none" stroke="#ffa521" stroke-width="2"/>
+        <path id="Path_56-3" data-name="Path 56" d="M3208.916,798.017a7.936,7.936,0,0,1,2.444-6.608c1.072-.967,3.121-1.814,6.32-1.78,10,.105,8.647,8.388,8.647,8.388" transform="translate(-3208.873 -778.219)" fill="none" stroke="#ffa521" stroke-linecap="round" stroke-width="2"/>
+      </g>
+    </g>
+    <path id="Path_96" data-name="Path 96" d="M5172.868,1010.013a9.264,9.264,0,0,1,5.351-8.593" transform="translate(-5166.781 -985.918)" fill="none" stroke="#262a41" stroke-linecap="round" stroke-width="2"/>
+    <path id="Path_99" data-name="Path 99" d="M5178.21,1010.013a9.264,9.264,0,0,0-5.351-8.593" transform="translate(-5131.751 -985.918)" fill="none" stroke="#262a41" stroke-linecap="round" stroke-width="2"/>
+    <path id="Path_100" data-name="Path 100" d="M5178.21,1010.013a9.264,9.264,0,0,0-5.351-8.593" transform="translate(3485.019 -3938.391) rotate(120)" fill="none" stroke="#262a41" stroke-linecap="round" stroke-width="2"/>
+    <circle id="Ellipse_28" data-name="Ellipse 28" cx="3" cy="3" r="3" transform="translate(23 24.899)" fill="#262a41"/>
+  </g>
 </svg>

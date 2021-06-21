@@ -3,7 +3,7 @@ import { useLazyQuery } from '@apollo/client'
 import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import Card from 'components/Card'
-import { DataTokenName, HeavyText, Header2, SText } from 'components/Text'
+import { TokenText, HeavyText, Header2, SText } from 'components/Text'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/UserTransferIn'
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
@@ -158,7 +158,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                       <HeavyText fontSize="20px" mobileFontSize="18px">
                         {formatToUnit(totalDeposited[selectedToken].total, chainDecimals)}
                       </HeavyText>
-                      <DataTokenName padding="0 0 0 0.5rem">{selectedToken}</DataTokenName>
+                      <TokenText padding="0 0 0 0.5rem">{selectedToken}</TokenText>
                     </div>
                   )}
                 </Card>
@@ -173,7 +173,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                           <SText fontSize="14px" mobileFontSize="10px">
                             {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
                           </SText>
-                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
+                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
                           <SText fontSize="14px" mobileFontSize="10px">
                             {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
                           </SText>
@@ -184,7 +184,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                           <SText fontSize="14px" mobileFontSize="10px">
                             {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
                           </SText>
-                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
+                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
                           <SText fontSize="14px" mobileFontSize="10px">
                             {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
                           </SText>

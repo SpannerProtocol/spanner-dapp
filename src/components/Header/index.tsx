@@ -28,7 +28,7 @@ import { SLink } from '../Link'
 import { useMedia } from 'react-use'
 
 import BridgeIcon from '../../assets/svg/icon-bridge-1.svg'
-import DpoIconBlack from '../../assets/svg/icon-dpo-black.svg'
+import DpoIcon from '../../assets/svg/icon-dpo.svg'
 // import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
 import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
 import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
@@ -54,7 +54,7 @@ const HeaderFrame = styled.div`
   width: 100%;
   top: 0;
   position: relative;
-  // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 6px 15px #2b2f4a19;
   padding: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;
@@ -258,8 +258,8 @@ export default function Header(props: HeaderProps) {
   const navItems: NavItemDefs[] = [
     {
       text: 'DPOs',
-      link: '/bullettrain/dpos',
-      iconLink: DpoIconBlack,
+      link: '/dpos',
+      iconLink: DpoIcon,
       internal: true,
     },
     {
@@ -649,6 +649,10 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
       </>
     </HeaderLinks>
   )
+}
+
+interface HeaderProps {
+  width?: number
 }
 
 export function Controls() {

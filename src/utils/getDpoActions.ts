@@ -24,6 +24,7 @@ interface GetDpoActionsParams {
   dpoInfo: DpoInfo
   isMember: boolean
   lastBlock: BlockNumber
+  selectedState?: string
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
@@ -33,25 +34,10 @@ interface GetDpoActionsParams {
   walletInfo: WalletInfo
 }
 
-/**
- * Get all actions for a DPO.
- * Since non-DPO members can also perform actions on behalf of a DPO, actions are generated generally
- * while alerts are catered towards user types.
- * Rules are as follows:
- * CREATE
- * - If expired, any user can withdraw from target DPO or travelCabin
- * FILLED
- * - If expired, any user can withdraw from target DPO or travelCabin
- * - Anyone can commit but Manager has until grace period to commit otherwise his fee gets slashed
- * COMMITTED
- * - Someone needs to help the Lead DPO withdraw from the travelCabin to activate rewards
- * - Whenever there is money in the DPO vault, someone can withdraw from it
- * - If manager does not release rewards within grace period his fee will get slashed
- * COMPLETED
- * - Someone needs to withdarw from the target
- */
-export default function getDpoActions({
+function actionParser({
   dpoInfo,
+  dpoState,
+  dpoStateType,
   isMember,
   lastBlock,
   targetTravelCabin,
@@ -59,21 +45,43 @@ export default function getDpoActions({
   targetTravelCabinBuyer,
   targetDpo,
   dpoIsMemberOfTargetDpo,
-}: GetDpoActionsParams): Array<DpoAction> | undefined {
-  // const userIsManager = walletInfo.address === manager.buyer.asIndividual.toString()
-
+}: {
+  dpoInfo: DpoInfo
+  dpoState: string
+  dpoStateType: string
+  isMember: boolean
+  lastBlock: BlockNumber
+  targetTravelCabin?: TravelCabinInfo
+  targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+  targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
+  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
+  targetDpo?: DpoInfo
+  dpoIsMemberOfTargetDpo?: boolean
+  walletInfo: WalletInfo
+}) {
   const actions: Array<DpoAction> = []
 
-  if (dpoInfo.state.isCreated) {
+  if (dpoState === 'CREATED') {
     // If expired then anyone can withdraw from target [Verified]
     if (lastBlock.gte(dpoInfo.expiry_blk)) {
       if (!dpoInfo.vault_deposit.isZero()) {
         actions.push({ role: 'any', hasGracePeriod: false, action: 'releaseFareFromDpo', dpoIndex: dpoInfo.index })
       }
     }
+
+    if (dpoStateType === 'selected' && dpoInfo.state.isFailed) {
+      if (!dpoInfo.vault_deposit.isZero()) {
+        actions.push({
+          role: 'any',
+          hasGracePeriod: false,
+          action: 'releaseFareFromDpo',
+          dpoIndex: dpoInfo.index,
+        })
+      }
+    }
   }
 
-  if (dpoInfo.state.isActive) {
+  if (dpoState === 'ACTIVE') {
     const blockFilled = dpoInfo.blk_of_dpo_filled.unwrapOrDefault()
     const gracePeriodEnd = blockFilled.toBn().add(new BN(DPO_COMMIT_GRACE_BLOCKS))
 
@@ -196,7 +204,7 @@ export default function getDpoActions({
   }
 
   // At Committed state, manager or user has to release rewards
-  if (dpoInfo.state.isRunning) {
+  if (dpoState === 'RUNNING') {
     // Can withdraw whenever they want
     if (dpoInfo.target.isTravelCabin) {
       if (!targetTravelCabinBuyer || !targetTravelCabin) return
@@ -222,44 +230,40 @@ export default function getDpoActions({
       }
     }
 
-    // Release bonus if there is bonus in vault
-    if (!dpoInfo.vault_bonus.isZero()) {
-      actions.push({
-        role: 'any',
-        hasGracePeriod: false,
-        action: 'releaseBonusFromDpo',
-        dpoIndex: dpoInfo.index,
-      })
-    }
+    // Release bonus
+    actions.push({
+      role: 'any',
+      hasGracePeriod: false,
+      action: 'releaseBonusFromDpo',
+      dpoIndex: dpoInfo.index,
+    })
 
     const dropGracePeriod = dpoInfo.blk_of_last_yield
       .unwrapOrDefault()
       .toBn()
       .add(new BN(DPO_RELEASE_DROP_GRACE_BLOCKS))
 
-    if (!dpoInfo.vault_yield.isZero()) {
-      // Within grace period
-      if (lastBlock.lt(dropGracePeriod)) {
-        actions.push({
-          role: 'any',
-          hasGracePeriod: true,
-          inGracePeriod: true,
-          action: 'releaseYieldFromDpo',
-          dpoIndex: dpoInfo.index,
-        })
-      } else {
-        actions.push({
-          role: 'any',
-          hasGracePeriod: true,
-          inGracePeriod: false,
-          action: 'releaseYieldFromDpo',
-          dpoIndex: dpoInfo.index,
-        })
-      }
+    // Within grace period
+    if (lastBlock.lt(dropGracePeriod)) {
+      actions.push({
+        role: 'any',
+        hasGracePeriod: true,
+        inGracePeriod: true,
+        action: 'releaseYieldFromDpo',
+        dpoIndex: dpoInfo.index,
+      })
+    } else {
+      actions.push({
+        role: 'any',
+        hasGracePeriod: true,
+        inGracePeriod: false,
+        action: 'releaseYieldFromDpo',
+        dpoIndex: dpoInfo.index,
+      })
     }
   }
 
-  if (dpoInfo.state.isCompleted) {
+  if (dpoState === 'COMPLETED') {
     if (dpoInfo.fare_withdrawn.isFalse) {
       actions.push({
         role: 'any',
@@ -270,17 +274,42 @@ export default function getDpoActions({
     }
   }
 
-  if (dpoInfo.state.isFailed) {
-    if (!dpoInfo.vault_deposit.isZero()) {
-      actions.push({
-        role: 'any',
-        hasGracePeriod: false,
-        action: 'releaseFareFromDpo',
-        dpoIndex: dpoInfo.index,
-      })
-    }
+  if (dpoStateType === 'dpoInfo' && dpoInfo.state.isFailed) {
+    actions.push({
+      role: 'any',
+      hasGracePeriod: false,
+      action: 'releaseFareFromDpo',
+      dpoIndex: dpoInfo.index,
+    })
   }
+
   return actions
+}
+
+/**
+ * Get all actions for a DPO.
+ * Since non-DPO members can also perform actions on behalf of a DPO, actions are generated generally
+ * while alerts are catered towards user types.
+ * Rules are as follows:
+ * CREATE
+ * - If expired, any user can withdraw from target DPO or travelCabin
+ * FILLED
+ * - If expired, any user can withdraw from target DPO or travelCabin
+ * - Anyone can commit but Manager has until grace period to commit otherwise his fee gets slashed
+ * COMMITTED
+ * - Someone needs to help the Lead DPO withdraw from the travelCabin to activate rewards
+ * - Whenever there is money in the DPO vault, someone can withdraw from it
+ * - If manager does not release rewards within grace period his fee will get slashed
+ * COMPLETED
+ * - Someone needs to withdarw from the target
+ */
+export default function getDpoActions(props: GetDpoActionsParams): Array<DpoAction> | undefined {
+  const { selectedState, dpoInfo } = props
+  if (selectedState) {
+    return actionParser({ ...props, dpoState: selectedState, dpoStateType: 'selected' })
+  } else {
+    return actionParser({ ...props, dpoState: dpoInfo.state.toString(), dpoStateType: 'dpoinfo' })
+  }
 }
 
 /**

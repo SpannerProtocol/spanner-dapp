@@ -1,4 +1,4 @@
-import TravelCabinCard from 'components/Item/TravelCabinCard'
+import TravelCabinCard from 'components/AssetCards/TravelCabinCard'
 import { GridWrapper, Wrapper } from 'components/Wrapper'
 import { useTravelCabins } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'

@@ -3,6 +3,7 @@ import type { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
 import { Decimal } from 'decimal.js'
 import moment from 'moment'
+import { DefaultTheme } from 'styled-components'
 import { isBN } from './formatUnit'
 
 /**
@@ -151,4 +152,14 @@ export function isoToTs(iso: string) {
   const withOffset = myDate.getTime()
   const withoutOffset = withOffset - offset
   return withoutOffset
+}
+
+export function formatBlocksCountdown(blocks: BN, expectedBlockTime: Moment, theme: DefaultTheme) {
+  if (parseInt(blocks.toString()) <= 0) {
+    return theme.red1
+  } else if (parseInt(blockToHours(blocks, expectedBlockTime, 0)) <= 24) {
+    return theme.yellow1
+  } else {
+    return theme.green1
+  }
 }

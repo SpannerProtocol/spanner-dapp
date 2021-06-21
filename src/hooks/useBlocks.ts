@@ -14,18 +14,20 @@ export function useExpectedBlockTime(): Moment | undefined {
   return time
 }
 
-export function useSubLastBlock(): BlockNumber | undefined {
+export function useSubLastBlock() {
   const { api, connected } = useApi()
   const [lastBlock, setLastBlock] = useState<BlockNumber>()
+  const [isReady, setIsReady] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!api || !connected) return
-    api?.rpc?.chain.subscribeNewHeads((header) => {
+    if (!connected) return
+    api.rpc.chain.subscribeNewHeads((header) => {
       setLastBlock(header.number.unwrap())
     })
+    setIsReady(true)
   }, [api, connected])
 
-  return lastBlock
+  return { lastBlock, isReady }
 }
 
 export function useCurrentTime(): Moment | undefined {
@@ -69,11 +71,12 @@ interface BlockState {
   expectedBlockTime?: Moment
   currentTime?: Moment
   genesisTs?: number
+  lastBlockReady: boolean
 }
 
 export function useBlockManager(): BlockState {
   const expectedBlockTime = useExpectedBlockTime()
-  const lastBlock = useSubLastBlock()
+  const { lastBlock, isReady: lastBlockReady } = useSubLastBlock()
   const currentTime = useCurrentTime()
   const genesisTs = useGenesisTime()
 
@@ -82,5 +85,6 @@ export function useBlockManager(): BlockState {
     expectedBlockTime,
     currentTime,
     genesisTs,
+    lastBlockReady,
   }
 }
