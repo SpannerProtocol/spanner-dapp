@@ -39,7 +39,7 @@ const Card = styled(Box)<{
   min-height: ${({ minHeight }) => (minHeight ? minHeight : 'auto')};
   ${({ mobileMinHeight, mobileMargin, theme }) => theme.mediaWidth.upToExtraSmall`
    min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
-   margin: ${mobileMargin ? mobileMargin : '0 0 1rem 0'};
+   margin: ${mobileMargin ? mobileMargin : '0 0 0.5rem 0'};
   `};
 `
 

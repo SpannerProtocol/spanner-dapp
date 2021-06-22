@@ -70,6 +70,8 @@ export default function DpoTargetCabinForm({
     const name = event.target.value
     if (name.length <= 0) {
       setErrNameTooShort(true)
+    } else {
+      setErrNameTooShort(false)
     }
     setDpoName(event.target.value)
   }

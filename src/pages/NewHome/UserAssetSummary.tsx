@@ -15,6 +15,7 @@ import { formatToUnit } from '../../utils/formatUnit'
 import { PairPrice, PairPriceVariables } from '../../queries/graphql/types/PairPrice'
 import pairPrice from '../../queries/graphql/pairPrice'
 import { useTranslation } from 'react-i18next'
+import { SText } from '../../components/Text'
 
 interface TokenDeposits {
   [token: string]: {
@@ -171,7 +172,7 @@ export function UserAssetSummaryContainer() {
   const project = useProjectState()
 
   if (wallet === undefined || wallet.address === undefined) {
-    return <UserAssetSummary totalDeposited={'0'} />
+    return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
   }
 
   const address = wallet.address
@@ -197,25 +198,33 @@ export function UserAssetSummaryFetch({ address, token }: { address: string; tok
   const price = useFetchLastPrice(token1, token2)
 
   if (loading || error) {
-    return <UserAssetSummary totalDeposited={'0'} />
+    return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
   }
 
   if (!totalDeposited[token]) {
-    return <UserAssetSummary totalDeposited={'0'} />
+    return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
   }
   const depositedToken = totalDeposited[token].total
-  const totalDepositedAmountBn = depositedToken.muln(price * 100000).divn(100000)
-  const totalDepositedAmount = formatToUnit(totalDepositedAmountBn, chainDecimals)
-  return <UserAssetSummary totalDeposited={totalDepositedAmount} />
+  const totalDepositedUsdBn = depositedToken.muln(price * 100000).divn(100000)
+  const totalDepositedUsd = formatToUnit(totalDepositedUsdBn, chainDecimals)
+  const totalDepositedBolt = formatToUnit(depositedToken, chainDecimals)
+  return <UserAssetSummary totalDepositedBOLT={totalDepositedBolt} totalDepositedUSD={totalDepositedUsd} />
 }
 
-export function UserAssetSummary({ totalDeposited }: { totalDeposited: string }) {
+export function UserAssetSummary({
+  totalDepositedBOLT,
+  totalDepositedUSD,
+}: {
+  totalDepositedBOLT: string
+  totalDepositedUSD: string
+}) {
   const { t } = useTranslation()
   return (
     <FlatCard style={{ textAlign: 'left' }}>
-      <HomeSectionTitle>{t('User Asset')}</HomeSectionTitle>
+      <HomeSectionTitle>{t('Your portfolio value')}</HomeSectionTitle>
       <HomeSectionLabel1>{t('Total Deposited')}</HomeSectionLabel1>
-      <HomeSectionValue1>{`≈ $${totalDeposited}`}</HomeSectionValue1>
+      <HomeSectionValue1>{`${totalDepositedBOLT} BOLT`}</HomeSectionValue1>
+      <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
       {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}
       {/*<HomeSectionValue1>{'$198.04'}</HomeSectionValue1>*/}
     </FlatCard>
