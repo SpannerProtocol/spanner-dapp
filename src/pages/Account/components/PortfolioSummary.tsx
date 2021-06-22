@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { useLazyQuery } from '@apollo/client'
 import BN from 'bn.js'
-import { FlatCard } from 'components/Card'
-import { DataTokenName, HeavyText, SectionHeading, StandardText } from 'components/Text'
+import Card from 'components/Card'
+import { TokenText, HeavyText, Header2, SText } from 'components/Text'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/UserTransferIn'
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
@@ -134,56 +134,70 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
           {!(inLoading || outLoading) && totalDeposited[selectedToken] && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <SectionHeading margin="0">{t(`Portfolio Summary`)}</SectionHeading>
+                <Header2 width="fit-content" margin="0">
+                  {t(`Portfolio Summary`)}
+                </Header2>
                 <IconWrapper margin="0 0.5rem">
                   <RefreshCw onClick={getPortfolioSummaryData} size={'16px'} color={theme.text3} />
                 </IconWrapper>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <FlatCard minHeight="80px" mobileMinHeight="70px" margin="0 0.25rem 0 0" padding="0.75rem">
-                  <StandardText mobileFontSize="12px" padding="0 0 0.5rem 0">
+                <Card
+                  minHeight="80px"
+                  mobileMinHeight="70px"
+                  margin="0 0.5rem"
+                  mobileMargin="0 0.25rem 0 0"
+                  padding="0.75rem"
+                >
+                  <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Total Deposited`)}
-                  </StandardText>
+                  </SText>
                   {Object.keys(totalDeposited).includes(selectedToken) && (
                     <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                      <HeavyText fontSize="20px" mobileFontSize="18px">
+                      <HeavyText fontSize="20px" mobileFontSize="18px" colorIsPrimary>
                         {formatToUnit(totalDeposited[selectedToken].total, chainDecimals)}
                       </HeavyText>
-                      <DataTokenName padding="0 0 0 0.5rem">{selectedToken}</DataTokenName>
+                      <TokenText padding="0 0 0 0.5rem">{selectedToken}</TokenText>
                     </div>
                   )}
-                </FlatCard>
-                <FlatCard minHeight="80px" mobileMinHeight="70px" margin="0 0 0 0.25rem" padding="0.75rem">
-                  <StandardText mobileFontSize="12px" padding="0 0 0.5rem 0">
+                </Card>
+                <Card
+                  minHeight="80px"
+                  mobileMinHeight="70px"
+                  margin="0 0.5rem"
+                  mobileMargin="0 0 0 0.25rem"
+                  padding="0.75rem"
+                >
+                  <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Deposit by Asset`)}
-                  </StandardText>
+                  </SText>
                   {Object.keys(totalDeposited).includes(selectedToken) && (
                     <div style={{ display: 'block' }}>
                       {totalDeposited[selectedToken].dpoCount > 0 && (
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <StandardText fontSize="14px" mobileFontSize="10px">
+                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
                             {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
-                          </StandardText>
-                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
-                          <StandardText fontSize="14px" mobileFontSize="10px">
+                          </SText>
+                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
+                          <SText fontSize="14px" mobileFontSize="10px">
                             {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
-                          </StandardText>
+                          </SText>
                         </div>
                       )}
                       {totalDeposited[selectedToken].cabinCount > 0 && (
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <StandardText fontSize="14px" mobileFontSize="10px">
+                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
                             {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
-                          </StandardText>
-                          <DataTokenName padding="0 0.25rem 0 0.25rem">{selectedToken}</DataTokenName>
-                          <StandardText fontSize="14px" mobileFontSize="10px">
+                          </SText>
+                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
+                          <SText fontSize="14px" mobileFontSize="10px">
                             {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
-                          </StandardText>
+                          </SText>
                         </div>
                       )}
                     </div>
                   )}
-                </FlatCard>
+                </Card>
               </div>
             </>
           )}

@@ -1,12 +1,12 @@
 import CopyHelper from 'components/Copy/Copy'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { BorderedInput } from 'components/Input'
 import { StepNumber } from 'components/InstructionSteps'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
+import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
@@ -56,9 +56,9 @@ function BridgeTxConfirm({
   return (
     <>
       <Section>
-        <StandardText>
+        <SText>
           {t(`Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.`)}
-        </StandardText>
+        </SText>
       </Section>
       <SpacedSection>
         <ItalicText fontSize="12px">
@@ -72,37 +72,37 @@ function BridgeTxConfirm({
           <BorderedWrapper>
             {withdrawAddress && (
               <RowBetween>
-                <StandardText>{t(`Withdraw Address`)}</StandardText>
-                <StandardText>{shortenAddress(withdrawAddress, 10)}</StandardText>
+                <SText>{t(`Withdraw Address`)}</SText>
+                <SText>{shortenAddress(withdrawAddress, 10)}</SText>
               </RowBetween>
             )}
             <RowBetween>
-              <StandardText>{t(`Withdraw Amount`)}</StandardText>
-              <StandardText>{withdrawAmount} WUSD</StandardText>
+              <SText>{t(`Withdraw Amount`)}</SText>
+              <SText>{withdrawAmount} WUSD</SText>
             </RowBetween>
             {feeData && bridgeFee && (
               <>
                 <RowBetween>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <StandardText>{t(`Bridge Fee`)}</StandardText>
+                    <SText>{t(`Bridge Fee`)}</SText>
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
                       text={`${t(`Minimum of`)} ${feeData.feeMinUsd} USDT`}
                     />
                   </div>
-                  <StandardText>{bridgeFee} USDT</StandardText>
+                  <SText>{bridgeFee} USDT</SText>
                 </RowBetween>
                 <RowBetween>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <StandardText>{t(`Net Amount (est)`)}</StandardText>
+                    <SText>{t(`Net Amount (est)`)}</SText>
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
                       text={t(`Estimated USDT transferred to provided Ethereum address after fees.`)}
                     />
                   </div>
-                  <StandardText>{(withdrawAmount - bridgeFee).toFixed(4)} USDT</StandardText>
+                  <SText>{(withdrawAmount - bridgeFee).toFixed(4)} USDT</SText>
                 </RowBetween>
               </>
             )}
@@ -111,24 +111,24 @@ function BridgeTxConfirm({
           {bridgeFee && <TxFee fee={estimatedFee} />}
           {bridgeFee && withdrawAmount && withdrawAmount < bridgeFee && (
             <BorderedWrapper background="#F82D3A">
-              <StandardText color="#fff">
+              <SText color="#fff">
                 {t(`Cannot Proceed. Your Withdraw Amount cannot be lower than the Bridge Fee`)}: {bridgeFee} USDT
-              </StandardText>
+              </SText>
             </BorderedWrapper>
           )}
           {balanceNum && bridgeFee && balanceNum < bridgeFee && (
             <BorderedWrapper background="#F82D3A">
-              <StandardText color="#fff">
+              <SText color="#fff">
                 {t(`Cannot Proceed. Your Balance cannot be lower than the Bridge Fee`)}: {bridgeFee.toFixed(4)} USDT
-              </StandardText>
+              </SText>
             </BorderedWrapper>
           )}
           {balanceNum && withdrawAmount && balanceNum < withdrawAmount && (
             <BorderedWrapper background="#F82D3A">
-              <StandardText color="#fff">
+              <SText color="#fff">
                 {t(`Cannot Proceed. Your Balance cannot be lower than the Withdraw Amount`)}:{' '}
                 {withdrawAmount.toFixed(4)} USDT
-              </StandardText>
+              </SText>
             </BorderedWrapper>
           )}
         </>
@@ -304,25 +304,25 @@ export default function Bridge(): JSX.Element {
       </TxModal>
       {!wallet ? (
         <>
-          <FlatCard
+          <Card
             style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
           >
-            <StandardText>{t(`Connect to your wallet to use the Bridge`)}</StandardText>
-          </FlatCard>
+            <SText>{t(`Connect to your wallet to use the Bridge`)}</SText>
+          </Card>
         </>
       ) : (
         <>
           {!bridge ? (
             <>
-              <FlatCard
+              <Card
                 style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
               >
-                <StandardText>{t(`Bridge is currently unavailable. Please check back later.`)}</StandardText>
-              </FlatCard>
+                <SText>{t(`Bridge is currently unavailable. Please check back later.`)}</SText>
+              </Card>
             </>
           ) : (
             <>
-              <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                 <Section>
                   <div
                     style={{
@@ -330,7 +330,7 @@ export default function Bridge(): JSX.Element {
                       alignItems: 'center',
                     }}
                   >
-                    <SectionHeading style={{ margin: '0' }}>{t(`Bridge`)}</SectionHeading>
+                    <Header2 style={{ margin: '0' }}>{t(`Bridge`)}</Header2>
                     <QuestionHelper
                       size={12}
                       backgroundColor={'transparent'}
@@ -341,26 +341,26 @@ export default function Bridge(): JSX.Element {
                   </div>
                 </Section>
                 <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
-                  <StandardText fontSize="12px">{t(`Balance`)}</StandardText>
+                  <SText fontSize="12px">{t(`Balance`)}</SText>
                   <BorderedWrapper style={{ margin: '0' }}>
                     <RowBetween>
-                      <StandardText>{`WUSD`}</StandardText>
-                      <StandardText>{formatToUnit(wusdBalance, chainDecimals, 2)}</StandardText>
+                      <SText>{`WUSD`}</SText>
+                      <SText>{formatToUnit(wusdBalance, chainDecimals, 2)}</SText>
                     </RowBetween>
                   </BorderedWrapper>
                 </SpacedSection>
-              </FlatCard>
+              </Card>
 
               {ethDepositAddr && wallet && (
-                <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+                <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                   <Section>
-                    <SectionHeading>{t(`Deposit to Spanner`)}</SectionHeading>
-                    <StandardText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</StandardText>
+                    <Header2>{t(`Deposit to Spanner`)}</Header2>
+                    <SText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</SText>
                     <BorderedWrapper background="#8CD88C" borderColor="transparent">
                       <HeavyText color="#fff">{t(`Early Bird Landing Bonus`)}</HeavyText>
-                      <StandardText color="#fff">
+                      <SText color="#fff">
                         {t(`10 BOLT giveaway for first time deposits of at least 100 USDT.`)}
-                      </StandardText>
+                      </SText>
                     </BorderedWrapper>
                   </Section>
                   <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
@@ -383,10 +383,10 @@ export default function Bridge(): JSX.Element {
                       />
                     </div>
                     <SpacedSection>
-                      <StandardText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</StandardText>
+                      <SText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</SText>
                       <BorderedWrapper style={{ margin: '0' }}>
                         <CopyHelper toCopy={ethDepositAddr} childrenIsIcon={true}>
-                          <StandardText>{ethDepositAddr}</StandardText>
+                          <SText>{ethDepositAddr}</SText>
                         </CopyHelper>
                       </BorderedWrapper>
                     </SpacedSection>
@@ -403,7 +403,7 @@ export default function Bridge(): JSX.Element {
                       <HeavyText fontSize={'14px'}>{t(`Check your WUSD balance in 5 minutes`)}</HeavyText>
                     </div>
                     <SpacedSection>
-                      <StandardText fontSize="12px">{t(`Manually request a deposit check`)}</StandardText>
+                      <SText fontSize="12px">{t(`Manually request a deposit check`)}</SText>
                       <div style={{ maxWidth: '160px', paddingTop: '0.5rem' }}>
                         {canE2s() ? (
                           <ButtonPrimary onClick={handleE2sCheck} fontSize="12px">
@@ -418,18 +418,18 @@ export default function Bridge(): JSX.Element {
                     </SpacedSection>
                     {e2sMsg && !canE2s() && (
                       <BorderedWrapper background="#8CD88C" borderColor="transparent">
-                        <StandardText fontSize="12px" color="#fff">
+                        <SText fontSize="12px" color="#fff">
                           {e2sMsg}
-                        </StandardText>
+                        </SText>
                       </BorderedWrapper>
                     )}
                   </SpacedSection>
-                </FlatCard>
+                </Card>
               )}
-              <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
                 <Section>
-                  <SectionHeading>{t(`Withdraw to Ethereum`)}</SectionHeading>
-                  <StandardText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</StandardText>
+                  <Header2>{t(`Withdraw to Ethereum`)}</Header2>
+                  <SText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</SText>
                 </Section>
                 {/* {feeData && (
                   <SpacedSection>
@@ -444,7 +444,7 @@ export default function Bridge(): JSX.Element {
                           )}
                         />
                       </div>
-                      <StandardText>{feeData.ethPriceUsd}</StandardText>
+                      <SText>{feeData.ethPriceUsd}</SText>
                     </RowBetween>
                   </SpacedSection>
                 )} */}
@@ -460,7 +460,7 @@ export default function Bridge(): JSX.Element {
                     <StepNumber size={'18px'} fontSize={'12px'}>{`1`}</StepNumber>
                     <HeavyText fontSize={'14px'}>{t(`Enter WUSD amount to withdraw`)}</HeavyText>
                   </div>
-                  <StandardText fontSize="12px">{t(`Withdraw Amount`)}</StandardText>
+                  <SText fontSize="12px">{t(`Withdraw Amount`)}</SText>
                   <BorderedInput
                     required
                     id="eth-withdraw-amount-input"
@@ -490,7 +490,7 @@ export default function Bridge(): JSX.Element {
                       )}
                     />
                   </div>
-                  <StandardText fontSize="12px">{t(`Withdrawal Address (Ethereum USDT)`)}</StandardText>
+                  <SText fontSize="12px">{t(`Withdrawal Address (Ethereum USDT)`)}</SText>
                   <BorderedInput
                     required
                     id="eth-withdraw-addr-input"
@@ -510,7 +510,7 @@ export default function Bridge(): JSX.Element {
                     {t(`Withdraw`)}
                   </ButtonPrimary>
                 </ButtonWrapper>
-              </FlatCard>
+              </Card>
             </>
           )}
         </>

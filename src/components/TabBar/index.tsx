@@ -1,34 +1,42 @@
-import React, { useContext, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import styled, { ThemeContext } from 'styled-components'
+import styled from 'styled-components'
 
-const TabBarWrapper = styled.div<{ margin?: string }>`
-  display: flex;
+const TabBarWrapper = styled.div<{ margin?: string; level?: string }>`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  background: ${({ level, theme }) => (level === 'primary' ? theme.bg3 : theme.bg4)};
+  border: 2px solid transparent;
+  border-radius: 10px;
   width: 100%;
   justify-content: flex-start;
   align-items: flex-start;
   text-align: left;
-  margin: ${({ margin }) => (margin ? margin : '0 0rem 2rem 0')};
+  margin: ${({ margin }) => (margin ? margin : '0 0rem 1rem 0')};
 `
 
-const TabWrapper = styled.div`
-  display: flex;
-  margin-right: 0.8rem;
+const TabWrapper = styled.div<{ active?: boolean; level?: string }>`
+  background: ${({ active, level, theme }) => (active ? theme.primary1 : level === 'primary' ? theme.bg3 : theme.bg4)};
+  padding: 0.5rem;
+  border: 3px solid ${({ active }) => (active ? 'transparent' : 'transparent')};
+  border-radius: 10px;
+  cursor: pointer;
 `
 
 const Tab = styled.div`
   width: 100%;
 `
 
-const TabText = styled.div<{ fontSize?: string; mobileFontSize?: string }>`
+const TabText = styled.p<{ fontSize?: string; mobileFontSize?: string; active?: boolean; level?: string }>`
   width: 100%;
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '18px')}
-  font-weight: 500;
-  text-align: left;
-  cursor: pointer;
+  color: ${({ active, level, theme }) => (active ? theme.white : level === 'primary' ? theme.text1 : theme.text1)};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
+  font-weight: ${(active) => (active ? 900 : 300)};
+  text-align: center;
+  margin: 0;
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${mobileFontSize ? `${mobileFontSize}` : '16px'};
+    font-size: ${mobileFontSize ? `${mobileFontSize}` : '12px'};
   `}
 `
 
@@ -38,6 +46,7 @@ interface TabBarCoreProps {
   fontSize?: string
   mobileFontSize?: string
   margin?: string
+  level?: 'primary' | 'secondary'
 }
 
 interface TabBarProps extends TabBarCoreProps {
@@ -65,8 +74,8 @@ export default function TabBar({
   margin,
   fontSize,
   mobileFontSize,
+  level,
 }: TabBarProps): JSX.Element {
-  const theme = useContext(ThemeContext)
   const { t } = useTranslation()
 
   const handleClick = (indexClicked: number) => {
@@ -80,22 +89,14 @@ export default function TabBar({
   }, [activeTab, onClick])
 
   return (
-    <TabBarWrapper margin={margin}>
+    <TabBarWrapper margin={margin} level={level}>
       {tabs &&
         tabs.map((tab, index) => {
           const active = tabs.findIndex((tab) => tab.id === activeTab) === index
           return (
-            <TabWrapper key={index}>
+            <TabWrapper key={index} active={active} level={level}>
               <Tab key={index} onClick={() => handleClick(index)}>
-                <TabText
-                  fontSize={fontSize}
-                  mobileFontSize={mobileFontSize}
-                  style={{
-                    color: active ? `${theme.black}` : `${theme.text3}`,
-                    borderBottom: active ? `3px solid ${theme.primary1}` : `none`,
-                    fontWeight: active ? 700 : 500,
-                  }}
-                >
+                <TabText fontSize={fontSize} mobileFontSize={mobileFontSize} active={active} level={level}>
                   {t(tab.label)}
                 </TabText>
               </Tab>
@@ -111,8 +112,14 @@ export default function TabBar({
  * to change the pathname. The parent component should detect changes to path to
  * decide the activeTab. Pass the activeTab to RouteTabBar to change the activeTab visually.
  */
-export function RouteTabBar({ tabs, activeTab, margin, fontSize, mobileFontSize }: RouteTabBarProps): JSX.Element {
-  const theme = useContext(ThemeContext)
+export function RouteTabBar({
+  tabs,
+  activeTab,
+  margin,
+  fontSize,
+  mobileFontSize,
+  level,
+}: RouteTabBarProps): JSX.Element {
   const { t } = useTranslation()
 
   // Parent check path
@@ -121,23 +128,15 @@ export function RouteTabBar({ tabs, activeTab, margin, fontSize, mobileFontSize 
   // If new tab gets clicked, changes path
 
   return (
-    <TabBarWrapper margin={margin}>
+    <TabBarWrapper margin={margin} level={level}>
       {tabs &&
         tabs.map((tab, index) => {
           const active = tabs.findIndex((tab) => tab.id === activeTab) === index
           return (
-            <TabWrapper key={index}>
+            <TabWrapper key={index} active={active} level={level}>
               <Link to={{ pathname: tab.path }} style={{ textDecoration: 'none' }}>
                 <Tab>
-                  <TabText
-                    fontSize={fontSize}
-                    mobileFontSize={mobileFontSize}
-                    style={{
-                      color: active ? `${theme.black}` : `${theme.text3}`,
-                      borderBottom: active ? `3px solid ${theme.primary1}` : `none`,
-                      fontWeight: active ? 700 : 500,
-                    }}
-                  >
+                  <TabText fontSize={fontSize} mobileFontSize={mobileFontSize} active={active} level={level}>
                     {t(tab.label)}
                   </TabText>
                 </Tab>

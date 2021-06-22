@@ -3,7 +3,7 @@ import CircularProgress, { CircularProgressProps } from '@material-ui/core/Circu
 import LinearProgress, { LinearProgressProps } from '@material-ui/core/LinearProgress'
 import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import './progress.css'
@@ -103,19 +103,19 @@ export function CircleProgress(
           justifyContent="center"
         >
           <Typography variant="caption" component="div" color="textSecondary">
-            <StandardText
+            <SText
               fontSize={props.fontSize ? props.fontSize : '10px'}
               mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
               style={{ margin: 'auto' }}
-            >{`${Math.round(props.value)}%`}</StandardText>
+            >{`${Math.round(props.value)}%`}</SText>
             {props.displayFilled && (
-              <StandardText
+              <SText
                 fontSize={props.fontSize ? props.fontSize : '10px'}
                 mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
                 style={{ margin: 'auto' }}
               >
                 {t(`Filled`)}
-              </StandardText>
+              </SText>
             )}
           </Typography>
         </Box>

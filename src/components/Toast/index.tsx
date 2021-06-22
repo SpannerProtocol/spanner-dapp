@@ -1,5 +1,5 @@
 import { RowBetween } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { darken } from 'polished'
 import React from 'react'
@@ -101,9 +101,9 @@ export default function Toast({ toast }: { toast: ToastState[] }) {
                     </HeavyText>
                   </RowBetween>
                   <Section style={{ margin: '0' }}>
-                    <StandardText color="#fff" fontSize="12px">
+                    <SText color="#fff" fontSize="12px">
                       {item.content}
-                    </StandardText>
+                    </SText>
                   </Section>
                 </Section>
               </ToastInnerGrid>

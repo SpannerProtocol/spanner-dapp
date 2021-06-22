@@ -143,6 +143,17 @@ export function useDpoTravelCabinInventoryIndex(
 }
 
 /**
+ * Convenience function to check if DPO has purchased the cabin
+ * @param dpoIndex current dpo's index
+ * @param travelCabinIndex index of travelcabin that current dpo is targeting
+ * @returns boolean
+ */
+export function useDpoPurchasedCabin(dpoIndex: string, travelCabinIndex?: TravelCabinIndex | number | string) {
+  const inventoryIndex = useDpoTravelCabinInventoryIndex(dpoIndex, travelCabinIndex)
+  return inventoryIndex ? true : false
+}
+
+/**
  * Get an array of all TravelCabin
  * @param travelCabinIndex Index of TravelCabin
  */

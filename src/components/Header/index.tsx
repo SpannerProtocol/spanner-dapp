@@ -1,36 +1,58 @@
+import { Badge, Collapse } from '@material-ui/core'
+import Divider from '@material-ui/core/Divider'
+import Drawer from '@material-ui/core/Drawer'
+import List from '@material-ui/core/List'
+import ListItem from '@material-ui/core/ListItem'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
+import { makeStyles } from '@material-ui/core/styles'
+import ExpandLess from '@material-ui/icons/ExpandLess'
+import ExpandMore from '@material-ui/icons/ExpandMore'
+import { ClassNameMap } from '@material-ui/styles'
+import clsx from 'clsx'
 import NetworkSelector from 'components/Network'
 import Transfer from 'components/Transfer'
 import { darken } from 'polished'
 import React, { useEffect, useState } from 'react'
 import { User } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
+import { useMedia } from 'react-use'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import BlockIcon from '../../assets/svg/icon-block-white.svg'
-import BridgeIcon from '../../assets/svg/icon-bridge.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge-1.svg'
 import DpoIcon from '../../assets/svg/icon-dpo.svg'
-import LaunchpadIcon from '../../assets/svg/icon-launchpad-white.svg'
-import SwapIcon from '../../assets/svg/icon-swap-arrows-white.svg'
-import TrainIcon from '../../assets/svg/icon-train-white.svg'
-import Logo from '../../assets/svg/logo-spanner-white.svg'
+// import DexIcon from '../../assets/svg/icon-dex.svg'
+import EarnIcon from '../../assets/svg/icon-earn.svg'
+// import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
+import ExplorIcon from '../../assets/svg/icon-explore.svg'
+import FaqIcon from '../../assets/svg/icon-faq.svg'
+import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
+// import GuideIcon from '../../assets/svg/icon-guide.svg'
+import InfoIcon from '../../assets/svg/icon-info.svg'
+// import NewsIcon from '../../assets/svg/icon-news.svg'
+import ProjectIcon from '../../assets/svg/icon-project.svg'
+// import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
+import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
+import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
+import Logo from '../../assets/svg/logo-spanner-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
-import Menu from '../Menu'
+import LanguageSwitch from '../LanguageSwitch'
+import { SLink } from '../Link'
 import Row, { RowFixed } from '../Row'
-import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
+
 const HeaderFrame = styled.div`
   display: grid;
   grid-template-columns: 1fr 120px;
   align-items: center;
   justify-content: space-between;
-  align-items: center;
   flex-direction: row;
   width: 100%;
   top: 0;
   position: relative;
-  // border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 6px 15px #2b2f4a19;
   padding: 1rem;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;
@@ -56,20 +78,7 @@ const HeaderControls = styled.div`
   padding-right: 1rem;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    flex-direction: row;
-    justify-content: space-between;
-    justify-self: center;
-    width: 100%;
-    max-width: 960px;
-    padding: 1rem;
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    z-index: 99;
-    height: 72px;
-    border-radius: 12px 12px 0 0;
-    background-color: ${({ theme }) => theme.bg1};
+    display: none;
   `};
 `
 
@@ -87,29 +96,30 @@ const HeaderElement = styled.div`
 const HeaderElementWrap = styled.div`
   display: flex;
   align-items: center;
+  justify-content: space-evenly;
 `
 
 const HeaderRow = styled(RowFixed)`
-  display: block;
+  //display: block;
   height: 100%;
   width: 280px;
   position: fixed;
   top: 0;
   left: 0;
   align-items: flex-start;
-  background: linear-gradient(
-    180deg,
-    ${({ theme }) => theme.primary1} -11.67%,
-    ${({ theme }) => theme.secondary1} 100%
-  );
+  background: linear-gradient(180deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: flex;
     align-items: center;
     position: inherit;
-    background: linear-gradient(90deg, ${({ theme }) => theme.primary1} -11.67%, ${({ theme }) =>
-    theme.secondary1} 100%);
+    background: linear-gradient(90deg, ${({ theme }) => theme.bg1} -11.67%, ${({ theme }) => theme.bg1} 100%);
     width: 100%;
     height: inherit;
+    flex-direction: row;
+    justify-content: flex-start;
   `};
 `
 
@@ -142,16 +152,16 @@ const BOLTAmount = styled(AccountElement)`
   color: white;
   padding: 0.5rem;
   font-weight: 500;
-  background-color: ${({ theme }) => theme.secondary1};
+  background-color: ${({ theme }) => theme.primary1};
   max-width: 35px;
   max-height: 35px;
 
   :hover {
-    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+    background-color: ${({ theme }) => darken(0.15, theme.primary1)};
   }
 
   :focus {
-    background-color: ${({ theme }) => darken(0.15, theme.secondary1)};
+    background-color: ${({ theme }) => darken(0.15, theme.primary1)};
   }
 `
 
@@ -170,31 +180,6 @@ const BalanceWrapper = styled.span`
   }
 `
 
-// const HideSmall = styled.span`
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     display: none;
-//   `};
-// `
-
-// const NetworkCard = styled(YellowCard)`
-//   border-radius: 12px;
-//   padding: 8px 12px;
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     margin: 0;
-//     margin-right: 0.5rem;
-//     width: initial;
-//     overflow: hidden;
-//     text-overflow: ellipsis;
-//     flex-shrink: 1;
-//   `};
-// `
-
-// const BalanceText = styled(Text)`
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//     display: none;
-//   `};
-// `
-
 const Title = styled(Link)`
   display: flex;
   align-items: center;
@@ -206,6 +191,7 @@ const Title = styled(Link)`
     margin-left: 0.5rem;
     justify-self: center;
   `};
+
   :hover {
     cursor: pointer;
   }
@@ -214,97 +200,19 @@ const Title = styled(Link)`
 const SpannerIcon = styled.div`
   margin: 1rem;
   transition: transform 0.3s ease;
+
   :hover {
     transform: rotate(-5deg);
   }
+
   ${({ theme }) => theme.mediaWidth.upToMedium`
   margin: 0.25rem;
   color: ${({ theme }) => theme.primary1}
 `};
 `
 
-const activeClassName = 'ACTIVE'
-
-const StyledNavLink = styled(NavLink).attrs({
-  activeClassName,
-})`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: center;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: #fff;
-  font-size: 16px;
-  width: fit-content;
-  margin: 1.1rem 1rem 1.1rem 1rem;
-  font-weight: 500;
-
-  &.${activeClassName} {
-    border-radius: 12px;
-    font-weight: 700;
-    color: ${({ theme }) => theme.white};
-  }
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.white)};
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    display: flex;
-    color: ${({ theme }) => theme.white}
-    font-size: 14px;
-    padding: 0;
-    justify-content: flex-end;
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
-`};
-`
-
-const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName,
-})<{ isActive?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: #fff;
-  font-size: 16px;
-  width: fit-content;
-  margin: 1.1rem 1rem 1.1rem 1rem;
-  font-weight: 500;
-
-  &.${activeClassName} {
-    border-radius: 12px;
-    font-weight: 600;
-    color: ${({ theme }) => theme.white};
-  }
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.white)};
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-  display: flex;
-  color: ${({ theme }) => theme.white}
-  font-size: 14px;
-  padding: 0;
-  justify-content: flex-end;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
-  `};
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      display: none;
-  `}
-`
-
 const LogoText = styled.div`
-  color: #fff;
+  color: ${({ theme }) => theme.text1};
   font-size: 22px;
   font-weight: 900;
   font-family: avenir;
@@ -313,6 +221,13 @@ const LogoText = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
     display: none;
 `};
+`
+
+const MenuBottom = styled.div`
+  //position: fixed;
+  //bottom: 3rem;
+  padding: 1rem 0;
+  width: 100%;
 `
 
 interface HeaderProps {
@@ -324,18 +239,99 @@ export default function Header(props: HeaderProps) {
   const { t } = useTranslation()
 
   const [icons, setIcons] = useState<boolean>(false)
-  const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
+  // const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
+  const isMobile = useMedia('(max-width: 960px)')
   const { chain } = useChainState()
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
       setIcons(true)
-      setSubNavNetworkSelector(true)
+      // setSubNavNetworkSelector(true)
     } else {
       setIcons(false)
-      setSubNavNetworkSelector(false)
+      // setSubNavNetworkSelector(false)
     }
   }, [width])
+
+  const navItems: NavItemDefs[] = [
+    {
+      text: 'DPOs',
+      link: '/dpos',
+      iconLink: DpoIcon,
+      internal: true,
+    },
+    {
+      text: 'Earn',
+      link: '',
+      iconLink: EarnIcon,
+      internal: true,
+      children: [
+        {
+          text: 'BulletTrain',
+          link: '/bullettrain',
+          iconLink: TrainIconBlack,
+          internal: true,
+        },
+        // {
+        //   text: 'SpaceShip',
+        //   link: '',
+        //   iconLink: SpaceshipIcon,
+        //   internal: true,
+        //   enable: false
+        // }
+      ],
+    },
+    {
+      text: 'Bridge',
+      link: '/account/bridge',
+      iconLink: BridgeIcon,
+      internal: true,
+    },
+    {
+      text: 'DEX',
+      link: '/dex',
+      iconLink: SwapIconBlack,
+      internal: true,
+    },
+    {
+      text: 'Projects',
+      link: '/projects',
+      iconLink: ProjectIcon,
+      internal: true,
+    },
+    {
+      text: 'Explorer',
+      link: chain ? (chain.url ? chain.url : '') : '',
+      iconLink: ExplorIcon,
+      internal: false,
+    },
+    {
+      text: 'Info',
+      link: '',
+      iconLink: InfoIcon,
+      internal: true,
+      children: [
+        // {
+        //   text: 'News',
+        //   link: '/bullettrain/travelcabins',
+        //   iconLink: NewsIcon,
+        //   internal: true,
+        // },
+        {
+          text: 'FAQ',
+          link: '/faq',
+          iconLink: FaqIcon,
+          internal: true,
+        },
+        // {
+        //   text: 'Guides',
+        //   link: '/bullettrain/travelcabins',
+        //   iconLink: GuideIcon,
+        //   internal: true,
+        // },
+      ],
+    },
+  ]
 
   return (
     <HeaderFrame>
@@ -346,49 +342,314 @@ export default function Header(props: HeaderProps) {
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
-        {subNavNetworkSelector && <NetworkSelector background={'#fff'} />}
-        <HeaderLinks>
-          {/* <StyledNavLink id={`account-nav-link`} to={'/account'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={AccountIcon} alt="account nav icon" />}
-            Account
-          </StyledNavLink> */}
-          {chain && chain.chain === 'Spanner' && (
-            <StyledNavLink id={`bridge-nav-link`} to={'/account/bridge'}>
-              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BridgeIcon} alt="bridge" />}
-              {t(`Bridge`)}
-            </StyledNavLink>
-          )}
-          <StyledNavLink id={`dex-nav-link`} to={'/dex'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={SwapIcon} alt="dex" />}
-            {t(`DEX`)}
-          </StyledNavLink>
-          <StyledNavLink id={`projects-nav-link`} to={'/projects'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={LaunchpadIcon} alt="projects" />}
-            {t(`Projects`)}
-          </StyledNavLink>
-          <StyledNavLink id={`dpos-nav-link`} to={'/bullettrain/dpos'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={DpoIcon} alt="bullettrain" />}
-            {t(`DPOs`)}
-          </StyledNavLink>
-          <StyledNavLink id={`bullettrain-nav-link`} to={'/bullettrain/travelcabins'}>
-            {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={TrainIcon} alt="bullettrain" />}
-            {t(`BulletTrain`)}
-          </StyledNavLink>
-          {process.env.REACT_APP_DEBUG_MODE === 'true' && (
-            <StyledNavLink id={`diagnostics-nav-link`} to={'/diagnostics'}>
-              {`Debug`}
-            </StyledNavLink>
-          )}
-          {chain && chain.url && (
-            <StyledExternalLink id={`scan-nav-link`} href={chain.url}>
-              {icons && <img width={'18px'} style={{ marginRight: '0.5rem' }} src={BlockIcon} alt="explorer" />}
-              {t(`Explorer`)} <span style={{ fontSize: '11px' }}>↗</span>
-            </StyledExternalLink>
-          )}
-        </HeaderLinks>
+        {/*{subNavNetworkSelector && <NetworkSelector background={'#fff'} />}*/}
+        <>{isMobile ? <MobileNav navItems={navItems} /> : <DesktopNav icons={icons} navItems={navItems} />}</>
       </HeaderRow>
     </HeaderFrame>
   )
+}
+
+interface DesktopNavProp {
+  icons?: boolean
+  navItems: NavItemDefs[]
+}
+
+const useStyles = makeStyles({
+  drawer: {
+    width: '250px',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  list: {
+    // width: 250
+  },
+  fullList: {
+    width: 'auto',
+  },
+  nested: {
+    paddingLeft: '3rem',
+  },
+})
+
+const DesktopHeaderWrpper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+`
+
+export function DesktopNav(props: DesktopNavProp) {
+  const { chain } = useChainState()
+  // let icons = props.icons
+  const classes = useStyles()
+  const { navItems } = props
+
+  return (
+    <HeaderLinks style={{ flex: 1 }}>
+      <DesktopHeaderWrpper>
+        <div style={{ overflow: 'auto', flex: 1, width: '100%' }}>
+          <Divider />
+          {navItems.map(function (navItem, index) {
+            if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
+              return false
+            } else {
+              return (
+                <NavItem
+                  key={index}
+                  iconLink={navItem.iconLink}
+                  link={navItem.link}
+                  text={navItem.text}
+                  internal={navItem.internal}
+                  nested={false}
+                  classes={classes}
+                  subs={navItem.children ? navItem.children : undefined}
+                  toggleDrawer={undefined}
+                />
+              )
+            }
+          })}
+        </div>
+        <MenuBottom>
+          <Divider />
+          <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
+            <NetworkSelector background={'#fff'} />
+          </div>
+          <HeaderElementWrap>
+            <Transfer />
+            <LanguageSwitch />
+          </HeaderElementWrap>
+        </MenuBottom>
+      </DesktopHeaderWrpper>
+    </HeaderLinks>
+  )
+}
+
+const HamburgerWrapper = styled.div`
+  cursor: pointer;
+
+  :hover {
+    opacity: 0.8;
+  }
+
+  :active {
+    opacity: 0.9;
+  }
+`
+
+interface NavItemDefs {
+  iconLink: string
+  text: string
+  link: string
+  internal: boolean
+  children?: NavItemDefs[]
+  enable?: boolean
+}
+
+interface NavItemProps {
+  iconLink: string
+  text: string
+  link: string
+  internal: boolean
+  nested: boolean
+  subs?: NavItemDefs[]
+  classes: ClassNameMap<'list' | 'fullList' | 'nested'>
+  toggleDrawer?: (open: boolean) => (event: React.MouseEvent | React.KeyboardEvent) => void
+}
+
+function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
+  const { t } = useTranslation()
+  return (
+    <>
+      <div
+        className={clsx(classes.list, {
+          [classes.fullList]: false,
+        })}
+        role="presentation"
+        onClick={subs ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
+        onKeyDown={subs ? undefined : toggleDrawer ? toggleDrawer(false) : undefined}
+      >
+        {internal ? (
+          <List>
+            {subs ? (
+              <NavItemContent
+                iconLink={iconLink}
+                text={text}
+                link={link}
+                internal={internal}
+                nested={nested}
+                classes={classes}
+                subs={subs}
+                toggleDrawer={toggleDrawer}
+              />
+            ) : (
+              <SLink to={link}>
+                <NavItemContent
+                  iconLink={iconLink}
+                  text={text}
+                  link={link}
+                  internal={internal}
+                  nested={nested}
+                  classes={classes}
+                  toggleDrawer={toggleDrawer}
+                />
+              </SLink>
+            )}
+          </List>
+        ) : (
+          <List>
+            <ExternalLink href={link} target="_blank" download>
+              <ListItem button>
+                {iconLink && (
+                  <ListItemIcon>
+                    {' '}
+                    <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
+                  </ListItemIcon>
+                )}
+                <ListItemText primary={t(text)} />
+              </ListItem>
+            </ExternalLink>
+          </List>
+        )}
+      </div>
+    </>
+  )
+}
+
+export function NavItemContent({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
+  const [open, setOpen] = React.useState(false)
+  const handleClick = () => {
+    setOpen((prevOpen) => !prevOpen)
+  }
+  const { t } = useTranslation()
+  return (
+    <>
+      <ListItem button onClick={handleClick} className={nested ? classes.nested : ''}>
+        {iconLink && (
+          <ListItemIcon>
+            {' '}
+            <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
+          </ListItemIcon>
+        )}
+        <ListItemText primary={t(text)} />
+        {subs != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
+      </ListItem>
+      {subs && (
+        <Collapse component="li" in={open} timeout="auto" unmountOnExit>
+          <List disablePadding>
+            {subs.map(function (navItem, index) {
+              return (
+                <NavItem
+                  key={index}
+                  iconLink={navItem.iconLink}
+                  link={navItem.link}
+                  text={t(navItem.text)}
+                  internal={navItem.internal}
+                  nested={true}
+                  classes={classes}
+                  toggleDrawer={toggleDrawer}
+                />
+              )
+            })}
+          </List>
+        </Collapse>
+      )}
+    </>
+  )
+}
+
+export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
+  const classes = useStyles()
+  const [isOpen, setIsOpen] = React.useState<boolean>(false)
+  const { chain } = useChainState()
+
+  const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
+    if (
+      event.type === 'keydown' &&
+      ((event as React.KeyboardEvent).key === 'Tab' || (event as React.KeyboardEvent).key === 'Shift')
+    ) {
+      return
+    }
+    setIsOpen(open)
+  }
+  const { account } = useActiveWeb3React()
+
+  return (
+    <HeaderLinks>
+      <>
+        <HeaderElement style={{ paddingRight: '0.5rem' }}>
+          <Link to="/account/balances" style={{ textDecoration: 'none' }}>
+            <BalanceWrapper>
+              <Badge
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                color="secondary"
+                badgeContent={0}
+                showZero
+              >
+                <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
+                  <User />
+                </BOLTAmount>
+              </Badge>
+            </BalanceWrapper>
+          </Link>
+          <Web3Status />
+        </HeaderElement>
+        <HamburgerWrapper onClick={toggleDrawer(true)}>
+          <img src={hamburgerIcon} width="30px" alt="hamburgerIcon" />
+        </HamburgerWrapper>
+        <Drawer
+          classes={{
+            paper: classes.drawer,
+          }}
+          anchor={'right'}
+          open={isOpen}
+          onClose={toggleDrawer(false)}
+          disableEnforceFocus
+        >
+          <div style={{ overflow: 'auto' }}>
+            <Divider />
+            {navItems.map(function (navItem, index) {
+              if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
+                return false
+              } else {
+                return (
+                  <NavItem
+                    key={index}
+                    iconLink={navItem.iconLink}
+                    link={navItem.link}
+                    text={navItem.text}
+                    internal={navItem.internal}
+                    nested={false}
+                    classes={classes}
+                    subs={navItem.children ? navItem.children : undefined}
+                    toggleDrawer={toggleDrawer}
+                  />
+                )
+              }
+            })}
+          </div>
+          <MenuBottom>
+            <Divider />
+            <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
+              <NetworkSelector background={'#fff'} />
+            </div>
+            <HeaderElementWrap>
+              <Transfer />
+              <LanguageSwitch />
+            </HeaderElementWrap>
+          </MenuBottom>
+        </Drawer>
+        {/* </MobileWrapper> */}
+      </>
+    </HeaderLinks>
+  )
+}
+
+interface HeaderProps {
+  width?: number
 }
 
 export function Controls() {
@@ -398,22 +659,25 @@ export function Controls() {
     <>
       <HeaderControls>
         <HeaderElement>
-          {true && (
-            <Link to="/account/balances" style={{ textDecoration: 'none' }}>
-              <BalanceWrapper>
+          <Web3Status />
+          <Link to="/account/balances" style={{ textDecoration: 'none' }}>
+            <BalanceWrapper>
+              <Badge
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                color="secondary"
+                badgeContent={0}
+                showZero
+              >
                 <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
                   <User />
                 </BOLTAmount>
-              </BalanceWrapper>
-            </Link>
-          )}
-          <Web3Status />
+              </Badge>
+            </BalanceWrapper>
+          </Link>
         </HeaderElement>
-        <HeaderElementWrap>
-          <Transfer />
-          <Settings />
-          <Menu />
-        </HeaderElementWrap>
       </HeaderControls>
     </>
   )

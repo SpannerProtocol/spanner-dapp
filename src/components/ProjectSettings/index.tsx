@@ -1,5 +1,5 @@
 import Selector, { SelectorOption } from 'components/Selector'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import { BorderedWrapper } from 'components/Wrapper'
 import { ProjectData, useProject } from 'hooks/useProject'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
@@ -56,9 +56,9 @@ export default function ProjectSettings({ backgroundColor }: { backgroundColor?:
   return (
     <AutoColumn>
       <RowFixed>
-        <StandardText fontSize={'12px'} color={theme.text2}>
+        <SText fontSize={'12px'} color={theme.text2}>
           {t(`Filter Project`)}
-        </StandardText>
+        </SText>
         <QuestionHelper
           text={t(`You can switch projects to view data specific to that project (in most views).`)}
           backgroundColor="transparent"

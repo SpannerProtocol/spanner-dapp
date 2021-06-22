@@ -4,8 +4,8 @@ import Filter from 'components/Filter'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, ItalicText, SectionHeading, StandardText } from 'components/Text'
 import { IconWrapper, SpacedSection, TransferWrapper } from 'components/Wrapper'
+import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
 import transferIn from 'queries/graphql/transferIn'
@@ -60,17 +60,17 @@ function TransferRow({ id, amount, token, fromId, toId, timestamp }: TransferPro
                 {wallet.address === toId && (
                   <>
                     <HeavyText fontSize="12px">{t(`From`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
                       {` ${shortenAddr(fromId, 11)}`}
-                    </StandardText>
+                    </SText>
                   </>
                 )}
                 {wallet.address === fromId && (
                   <>
                     <HeavyText fontSize="12px">{t(`To`)}:</HeavyText>
-                    <StandardText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
+                    <SText fontSize="12px" style={{ marginLeft: '0.5rem' }}>
                       {` ${shortenAddr(toId, 11)}`}
-                    </StandardText>
+                    </SText>
                   </>
                 )}
               </div>
@@ -204,8 +204,10 @@ export default function Transfers() {
   return (
     <>
       <SpacedSection>
-        <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-          <SectionHeading style={{ margin: '0' }}>{t(`Transfers`)}</SectionHeading>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Header2 width="fit-content" style={{ margin: '0' }}>
+            {t(`Transfers`)}
+          </Header2>
           <QuestionHelper
             size={12}
             backgroundColor={'transparent'}

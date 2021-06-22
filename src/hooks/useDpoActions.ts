@@ -21,6 +21,7 @@ import { useChainState } from 'state/connections/hooks'
 
 interface ActionReq {
   dpoInfo?: DpoInfo
+  selectedState?: string
   lastBlock?: BlockNumber
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
@@ -46,7 +47,7 @@ interface NewActionReq {
 const travelCabinKeys = ['targetTravelCabin', 'targetTravelCabinInventory']
 
 // Get all actions for a single DPO
-export function useDpoActions(dpoInfo: DpoInfo | undefined) {
+export function useDpoActions(dpoInfo: DpoInfo | undefined, selectedState?: string) {
   const { api, connected } = useApi()
   const { lastBlock } = useBlockManager()
   const wallet = useWallet()
@@ -123,6 +124,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
     ) {
       const allActions = getDpoActions({
         dpoInfo,
+        selectedState,
         lastBlock,
         walletInfo: wallet,
         isMember,
@@ -130,7 +132,7 @@ export function useDpoActions(dpoInfo: DpoInfo | undefined) {
       })
       setDpoActions(allActions)
     }
-  }, [lastBlock, wallet, actionsReq, dpoInfo, isMember])
+  }, [lastBlock, wallet, actionsReq, dpoInfo, isMember, selectedState])
 
   return {
     dpoActions,

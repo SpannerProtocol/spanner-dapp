@@ -3,30 +3,35 @@
     "name": "Spanner",
     "token": "bolt",
     "icon": "logo-spanner-gradient.svg",
-    "description": "A Blockchain for Decentralized Programmable Organizations."
+    "description": "A Blockchain for Decentralized Programmable Organizations.",
+    "assets": ["TravelCabin"]
   },
   "ncat": {
     "name": "Nyan Cats",
     "token": "ncat",
     "icon": "nyancats-ncat.svg",
-    "description": "Crazy cat loving NFT scientists."
+    "description": "Crazy cat loving NFT scientists.",
+    "assets": []
   },
   "bbot": {
     "name": "Bebot",
     "token": "bbot",
     "icon": "bbot-bbot.svg",
-    "description": "Crosschain Decentralized robotrading."
+    "description": "Crosschain Decentralized robotrading.",
+    "assets": []
   },
   "plkt": {
     "name": "Plankton",
     "token": "plkt",
     "icon": "plankton-plkt.svg",
-    "description": "Unhappy with being fish food so decided to become an NFT."
+    "description": "Unhappy with being fish food so decided to become an NFT.",
+    "assets": []
   },
   "zero": {
     "name": "Zero",
     "token": "zero",
     "icon": "zero-zero.svg",
-    "description": "Experiment on Spanner"
+    "description": "Experiment on Spanner",
+    "assets": []
   }
 }

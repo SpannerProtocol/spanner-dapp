@@ -105,7 +105,7 @@ export const DPO_STATE_TOOLTIPS: { [index: string]: any } = {
 }
 
 export const DPO_STATE_COLORS: { [index: string]: any } = {
-  CREATED: `#FF9E04`,
+  CREATED: `#3498DB`,
   ACTIVE: `#FFBE2E`,
   RUNNING: `#8CD88C`,
   COMPLETED: `#5BC85B`,

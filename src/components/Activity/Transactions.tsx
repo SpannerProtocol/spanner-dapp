@@ -4,7 +4,7 @@ import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, SectionHeading } from 'components/Text'
+import { HeavyText, ItalicText, Header2 } from 'components/Text'
 import { IconWrapper, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import extrinsics from 'queries/graphql/extrinsics'
@@ -35,7 +35,11 @@ function TransactionRow({ id, section, method, timestamp, isSuccess, block }: Ex
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StyledExternalLink fontSize="12px" href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}>
+          <StyledExternalLink
+            color={theme.blue2}
+            fontSize="12px"
+            href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}
+          >
             {truncateString(id, 26)}
           </StyledExternalLink>
         </RowBetween>
@@ -115,8 +119,8 @@ export default function Transactions() {
     <>
       <SpacedSection>
         <RowBetween>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-            <SectionHeading margin="0">{t(`Transactions`)}</SectionHeading>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Header2 width="fit-content">{t(`Transactions`)}</Header2>
             <QuestionHelper
               size={12}
               backgroundColor={'transparent'}

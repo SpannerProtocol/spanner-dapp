@@ -13,6 +13,7 @@ interface ApiInternalState {
   chain: string
   needReconnect: boolean
 }
+
 export interface ApiState extends ApiInternalState {
   reconnect: () => void
   connectToNetwork: (chain: string) => void

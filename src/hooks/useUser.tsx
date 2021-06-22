@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { DpoIndex } from 'spanner-interfaces/bulletTrain'
 import { useApi } from './useApi'
 
@@ -46,10 +47,11 @@ export function useUserIsDpoManager(dpoIndex: number | string | DpoIndex, addres
 export function useUserInDpo(dpoIndex: number | string | DpoIndex, address: string | undefined) {
   const isMember = useUserIsDpoMember(dpoIndex, address)
   const isManager = useUserIsDpoManager(dpoIndex, address)
+  const { t } = useTranslation()
   if (isMember || isManager) {
     return {
       inDpo: true,
-      role: isManager ? 'Manager' : isMember ? 'Member' : undefined,
+      role: isManager ? t('Manager') : isMember ? t('Member') : undefined,
     }
   } else {
     return { inDpo: false, role: undefined }

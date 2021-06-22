@@ -1,30 +1,159 @@
 import styled from 'styled-components'
 import { Text } from 'rebass'
 
+// p
+const Base = styled.p<{
+  fontSize?: string
+  mobileFontSize?: string
+  color?: string
+  width?: string
+  padding?: string
+  textAlign?: string
+  lineHeight?: string
+  colorIsPrimary?: boolean
+}>`
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
+  width: ${({ width }) => (width ? width : '100%')};
+  margin: 0;
+  padding: ${({ padding }) => (padding ? padding : '0.1rem 0')};
+  line-height: ${({ lineHeight }) => (lineHeight ? lineHeight : '1.5')};
+  text-align: ${({ textAlign }) => (textAlign ? textAlign : 'left')};
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '12px'};
+  `};
+`
+
+export const SText = styled(Base)<{ fontWeight?: string }>`
+  width: ${({ width }) => (width ? width : 'fit-content')};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+`
+
+export const ThinText = styled(Base)`
+  font-weight: 300;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${mobileFontSize ? mobileFontSize : '12px'};
+`};
+`
+
+export const HeavyText = styled(Base)`
+  width: ${({ width }) => (width ? width : 'fit-content')};
+  font-weight: 700;
+`
+
+export const LightText = styled(Base)`
+  font-weight: 400;
+  color: ${({ theme }) => theme.text5};
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '14px'};
+`};
+`
+
+export const BigText = styled(Base)`
+  font-weight: 900;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '45px')};
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  line-height: 1;
+`};
+`
+
+// H1 - H5
+export const Header1 = styled.h1<{
+  fontSize?: string
+  mobileFontSize?: string
+  color?: string
+  width?: string
+  padding?: string
+  margin?: string
+  colorIsPrimary?: boolean
+}>`
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '48px')};
+  font-weight: 900;
+  width: ${({ width }) => (width ? width : '100%')};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${mobileFontSize ? mobileFontSize : '28px'};
+  line-height: 1.5;
+`};
+`
+
+export const Header2 = styled.h2<{
+  fontSize?: string
+  color?: string
+  width?: string
+  padding?: string
+  mobileFontSize?: string
+  margin?: string
+  colorIsPrimary?: boolean
+}>`
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
+  font-weight: 900;
+  width: ${({ width }) => (width ? width : '100%')};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  line-height: 1.5;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '20px'};
+`};
+`
+
+export const Header3 = styled.h3<{
+  fontSize?: string
+  mobileFontSize?: string
+  color?: string
+  width?: string
+  padding?: string
+  margin?: string
+  colorIsPrimary?: boolean
+}>`
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '24px')};
+  font-weight: 700;
+  width: ${({ width }) => (width ? width : '100%')};
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  line-height: 1.5;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: ${mobileFontSize ? mobileFontSize : '16px'};
+`};
+`
+
+export const Header4 = styled.h4<{
+  fontSize?: string
+  mobileFontSize?: string
+  color?: string
+  width?: string
+  padding?: string
+  margin?: string
+  colorIsPrimary?: boolean
+}>`
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '20px')};
+  font-weight: 700;
+  width: ${({ width }) => (width ? width : '100%')};
+  margin: 1rem 0;
+  color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  line-height: 1.5;
+  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${mobileFontSize ? mobileFontSize : '14px'};
+`};
+`
+
 export const ModalTitle = styled.span`
   width: 100%;
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
-`
-
-export const HeavyText = styled.div<{
-  fontSize?: string
-  fontWeight?: string
-  color?: string
-  padding?: string
-  mobileFontSize?: string
-  width?: string
-}>`
-  width: ${({ width }) => (width ? width : 'fit-content')};
-  color: ${({ color, theme }) => (color ? color : theme.text2)};
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')}
-  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
-  margin: 0;
-  padding: ${({ padding }) => (padding ? padding : '0')};
-  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${mobileFontSize ? mobileFontSize : '12px'};
-`};
 `
 
 export const ModalText = styled.div`
@@ -92,35 +221,7 @@ export const SectionHeading = styled.h3<{ margin?: string }>`
   color: ${({ theme }) => theme.text2};
 `
 
-export const LightText = styled.div`
-  color: ${({ theme }) => theme.text4};
-  font-weight: 400;
-  font-size: 14px;
-`
-
-export const StandardText = styled.div<{
-  fontSize?: string
-  color?: string
-  fontWeight?: string
-  paddingLeft?: string
-  padding?: string
-  width?: string
-  mobileFontSize?: string
-}>`
-  width: ${({ width }) => (width ? width : 'fit-content')};
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
-  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
-  color: ${({ color, theme }) => (color ? color : theme.text2)};
-  padding: ${({ padding }) => (padding ? padding : '0')};
-  word-break: break-word;
-  align-items: center;
-
-  ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${mobileFontSize ? mobileFontSize : '11px'};
- `};
-`
-
-export const ItalicText = styled(StandardText)`
+export const ItalicText = styled(SText)`
   font-style: italic;
 `
 
@@ -135,31 +236,26 @@ export const SmallText = styled.div`
  `};
 `
 
-export const DataTokenName = styled.div<{
+export const TokenText = styled.div<{
   color?: string
   fontSize?: string
   mobileFontSize?: string
   padding?: string
+  fontWeight?: string
 }>`
   display: inline;
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
-  font-weight: 700;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   color: ${({ color, theme }) => (color ? color : theme.text3)};
   overflow-wrap: break-word;
   padding: ${({ padding }) => (padding ? padding : '0')}
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
+    ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;
  `};
 
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? mobileFontSize : '10px'}
   `};
-`
-export const SectionTitle = styled.h3`
-  font-weight: 700;
-  margin-top: 0.45rem;
-  margin-bottom: 0.45rem;
 `
 
 export const ErrorMsg = styled.div<{

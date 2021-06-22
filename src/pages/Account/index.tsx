@@ -1,9 +1,9 @@
 import Activity from 'components/Activity'
 import { ButtonSecondary, FakeButton } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { RowBetween } from 'components/Row'
-import { Heading, HeavyText, StandardText } from 'components/Text'
+import { Heading, HeavyText, SText } from 'components/Text'
 import { useSelectedProject } from 'hooks/useProject'
 import { useReferrer } from 'hooks/useReferrer'
 import useWallet from 'hooks/useWallet'
@@ -11,7 +11,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import { useAccount } from 'utils/usePath'
+import { useAccount } from 'hooks/usePath'
 import { RouteTabBar, RouteTabMetaData } from '../../components/TabBar'
 import {
   BorderedWrapper,
@@ -19,7 +19,7 @@ import {
   PageWrapper,
   Section,
   SectionContainer,
-  Wrapper,
+  CenterWrapper,
 } from '../../components/Wrapper'
 import { DAPP_HOST } from '../../constants'
 import { shortenAddr } from '../../utils/truncateString'
@@ -95,7 +95,7 @@ export default function Account() {
 
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '700px', justifyContent: 'center', alignItems: 'center' }}>
-      <Wrapper
+      <CenterWrapper
         style={{
           display: 'flex',
           width: '100%',
@@ -103,7 +103,7 @@ export default function Account() {
           alignItems: 'center',
         }}
       >
-        <FlatCard>
+        <Card>
           <Section style={{ marginBottom: '1rem' }}>
             <RowBetween>
               <Heading>{t(`Account`)}</Heading>
@@ -145,16 +145,16 @@ export default function Account() {
                   <HeavyText fontSize="14px">{t(`Referrer`)}</HeavyText>
                   <CopyWrapper style={{ display: 'flex' }}>
                     <CopyHelper toCopy={`${referrer}`} childrenIsIcon={true}>
-                      <StandardText fontSize="14px">{shortenAddr(referrer, 8)}</StandardText>
+                      <SText fontSize="14px">{shortenAddr(referrer, 8)}</SText>
                     </CopyHelper>
                   </CopyWrapper>
                 </RowBetween>
               </Section>
             </BorderedWrapper>
           )}
-          <RouteTabBar activeTab={activeTab} tabs={tabData} margin="0" />
-        </FlatCard>
-      </Wrapper>
+          <RouteTabBar activeTab={activeTab} tabs={tabData} level={'primary'} margin="0" />
+        </Card>
+      </CenterWrapper>
       <SectionContainer style={{ minHeight: '700px', marginTop: '0' }}>
         {activeTab === 'balances' && <Balances />}
         {activeTab === 'portfolio' && <Portfolio />}

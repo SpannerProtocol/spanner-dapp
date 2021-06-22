@@ -14,15 +14,32 @@ export function useExpectedBlockTime(): Moment | undefined {
   return time
 }
 
-export function useSubLastBlock(): BlockNumber | undefined {
+export function useSubLastBlock() {
+  const { api, connected } = useApi()
+  const [lastBlock, setLastBlock] = useState<BlockNumber>()
+  const [isReady, setIsReady] = useState<boolean>(false)
+
+  useEffect(() => {
+    if (!connected) return
+    api.rpc.chain.subscribeNewHeads((header) => {
+      setLastBlock(header.number.unwrap())
+    })
+    setIsReady(true)
+  }, [api, connected])
+
+  return { lastBlock, isReady }
+}
+
+export function useGetLastBlock() {
   const { api, connected } = useApi()
   const [lastBlock, setLastBlock] = useState<BlockNumber>()
 
   useEffect(() => {
-    if (!api || !connected) return
-    api?.rpc?.chain.subscribeNewHeads((header) => {
-      setLastBlock(header.number.unwrap())
-    })
+    api.rpc.chain.getFinalizedHead().then((blockHash) =>
+      api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
+        setLastBlock(signedBlock.block.header.number.unwrap())
+      })
+    )
   }, [api, connected])
 
   return lastBlock
@@ -51,14 +68,15 @@ export function useGenesisTime(): number | undefined {
   useEffect(() => {
     if (!connected || !expectedBlockTime) return
     // Get Genesis timestamp
-    api.rpc.chain.getBlockHash(1).then((blockHash) =>
+    api.rpc.chain.getBlockHash(1).then((blockHash) => {
+      console.log(`blockHash:${blockHash}`)
       api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
         const methodSetTs = signedBlock.block.extrinsics.find(
           (info) => info.method.method === 'set' && info.method.section === 'timestamp'
         )
         if (methodSetTs) setGenesisTs(parseInt(methodSetTs.method.args.toString()) - expectedBlockTime.toNumber())
       })
-    )
+    })
   }, [api, connected, expectedBlockTime])
 
   return genesisTs
@@ -69,11 +87,12 @@ interface BlockState {
   expectedBlockTime?: Moment
   currentTime?: Moment
   genesisTs?: number
+  lastBlockReady: boolean
 }
 
 export function useBlockManager(): BlockState {
   const expectedBlockTime = useExpectedBlockTime()
-  const lastBlock = useSubLastBlock()
+  const { lastBlock, isReady: lastBlockReady } = useSubLastBlock()
   const currentTime = useCurrentTime()
   const genesisTs = useGenesisTime()
 
@@ -82,5 +101,6 @@ export function useBlockManager(): BlockState {
     expectedBlockTime,
     currentTime,
     genesisTs,
+    lastBlockReady,
   }
 }
