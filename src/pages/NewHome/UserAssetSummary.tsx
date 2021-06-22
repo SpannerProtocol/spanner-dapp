@@ -221,7 +221,7 @@ export function UserAssetSummary({
   const { t } = useTranslation()
   return (
     <FlatCard style={{ textAlign: 'left' }}>
-      <HomeSectionTitle>{t('User Asset')}</HomeSectionTitle>
+      <HomeSectionTitle>{t('Your portfolio value')}</HomeSectionTitle>
       <HomeSectionLabel1>{t('Total Deposited')}</HomeSectionLabel1>
       <HomeSectionValue1>{`${totalDepositedBOLT} BOLT`}</HomeSectionValue1>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
