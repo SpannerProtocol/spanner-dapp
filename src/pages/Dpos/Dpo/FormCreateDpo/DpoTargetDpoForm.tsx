@@ -66,6 +66,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
     const name = event.target.value
     if (name.length <= 0) {
       setErrNameTooShort(true)
+    } else {
+      setErrNameTooShort(false)
     }
     setDpoName(event.target.value)
   }
