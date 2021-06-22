@@ -39,7 +39,7 @@ export default function DpoTargetCabinForm({
   onSubmit,
 }: DpoTargetCabinFormProps) {
   const [managerSeats, setManagerSeats] = useState<number>(0)
-  const [dpoName, setDpoName] = useState<string | null>('')
+  const [dpoName, setDpoName] = useState<string>('')
   const [baseFee, setBaseFee] = useState<number>(0)
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
   const [end, setEnd] = useState<number>(30)
@@ -50,6 +50,9 @@ export default function DpoTargetCabinForm({
   const { passengerSeatCap } = useConsts()
   const balance = useSubscribeBalance(token.toUpperCase())
   const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
+
+  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
 
   const costPerSeat = useMemo(() => travelCabinInfo.deposit_amount.div(new BN(100)), [travelCabinInfo])
 
@@ -64,6 +67,10 @@ export default function DpoTargetCabinForm({
   }
 
   const handleDpoName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.value
+    if (name.length <= 0) {
+      setErrNameTooShort(true)
+    }
     setDpoName(event.target.value)
   }
 
@@ -170,7 +177,7 @@ export default function DpoTargetCabinForm({
           </RowBetween>
         </BorderedWrapper>
         <DpoDefaultTarget target={travelCabinInfo.name.toString()} />
-        <DpoName onChange={handleDpoName} />
+        <DpoName onChange={handleDpoName} error={errNameTooShort} />
         <DpoEnd end={end} onChange={handleEnd} />
       </SpacedSection>
       <SpacedSection>
@@ -222,7 +229,7 @@ export default function DpoTargetCabinForm({
         <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
-        <ButtonPrimary maxWidth="none" onClick={handleSubmit}>
+        <ButtonPrimary maxWidth="none" onClick={handleSubmit} disabled={hasError || dpoName.length <= 0}>
           {t(`Create DPO`)}
         </ButtonPrimary>
       </Section>

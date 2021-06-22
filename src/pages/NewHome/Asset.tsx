@@ -52,7 +52,7 @@ export function BulletTrain() {
       >
         <HomeSectionTitle color={'white'}>{t('Spanner BulletTrain')}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
-          {t('homepage Spanner BulletTrain intro')}
+          {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
         </SText>
         <Link to={`/bullettrain`} style={{ textDecoration: 'none' }}>
           <CircleNextIconWrapper>
@@ -71,10 +71,10 @@ export function SpannerNFT() {
       <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
         <HomeSectionTitle>{t('Spanner NFT')}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {t('homepage Spanner NFT intro')}
+          {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
-          <Header4>({t('Coming soon')})</Header4>
+          <Header4>{t('(Coming soon)')}</Header4>
         </div>
       </FlatCard>
     </>

@@ -145,8 +145,10 @@ export default function BulletTrains() {
     <>
       <PageWrapper>
         <BannerCard url={BulletTrainBanner} borderRadius="0" padding="3rem 1rem">
-          <Header1 colorIsPrimary>{t(`Spanner BulletTrain`)}</Header1>
-          <Header2 color="#fff">{t(`An evolutionary viral growth marketing model`)}</Header2>
+          <Header1 colorIsPrimary>{t(`BulletTrain`)}</Header1>
+          <Header2 color="#fff">
+            {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
+          </Header2>
         </BannerCard>
       </PageWrapper>
       <ProjectPage>

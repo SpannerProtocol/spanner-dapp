@@ -41,7 +41,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   const [baseFee, setBaseFee] = useState<number>(0)
   const { passengerSeatCap, dpoSeatCap } = useConsts()
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
-  const [dpoName, setDpoName] = useState<string | null>('')
+  const [dpoName, setDpoName] = useState<string>('')
   const [end, setEnd] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const [newReferrer, setNewReferrer] = useState<boolean>(false)
@@ -50,6 +50,9 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const balance = useSubscribeBalance(token.toUpperCase())
   const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
+
+  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
 
   // Subtracting 500 blocks to give buffer if the user idles on the form
   const maxEnd =
@@ -60,6 +63,10 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   const costPerSeat = useMemo(() => new BN(seats).mul(dpoInfo.amount_per_seat).div(new BN(100)), [dpoInfo, seats])
 
   const handleDpoName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const name = event.target.value
+    if (name.length <= 0) {
+      setErrNameTooShort(true)
+    }
     setDpoName(event.target.value)
   }
 
@@ -190,7 +197,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
           </RowBetween>
         </BorderedWrapper>
         <DpoDefaultTarget target={dpoInfo.name.toString()} />
-        <DpoName onChange={handleDpoName} />
+        <DpoName onChange={handleDpoName} error={errNameTooShort} />
         <DpoEnd end={end} maxEnd={maxEnd} onChange={handleEnd} />
         <DpoTargetDpoSeats
           seats={seats}
@@ -249,7 +256,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
-        <ButtonPrimary maxWidth="none" onClick={handleSubmit} disabled={errNoBalance ? true : false}>
+        <ButtonPrimary maxWidth="none" onClick={handleSubmit} disabled={hasError || dpoName.length <= 0}>
           {t(`Create DPO`)}
         </ButtonPrimary>
       </Section>

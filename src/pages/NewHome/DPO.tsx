@@ -49,7 +49,7 @@ export function DPOV1() {
       >
         <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {t('homepage dpov1 intro')}
+          {`${t(`Crowdfund for any crypto assets. Create or join one to Earn`)}!`}
         </SText>
         <Link to={`/dpos`} style={{ textDecoration: 'none' }}>
           <CircleNextIconWrapper>
@@ -68,7 +68,7 @@ export function DPOV2() {
       <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
         <HomeSectionTitle>{'DPO V2'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {t('homepage dpov2 intro')}
+          {`${t(`Cross-chain assets, membership roles and more`)}.`}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
           <Header4>({t('Coming soon')})</Header4>
@@ -85,15 +85,15 @@ export function DPOV1Stats() {
 
   return (
     <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-      <HomeSectionTitle>{'DPO V1 Stats'}</HomeSectionTitle>
+      <HomeSectionTitle>{t(`DPO Stats`)}</HomeSectionTitle>
       {dpoCount && (
         <RowBetween>
-          <HomeSectionLabel2>{t('Total DPOs Quantity')}</HomeSectionLabel2>
+          <HomeSectionLabel2>{t(`Total DPOs`)}</HomeSectionLabel2>
           <HomeSectionValue2>{dpoCount.toString()}</HomeSectionValue2>
         </RowBetween>
       )}
       <RowBetween>
-        <HomeSectionLabel2>{t('Running Dpos Quantity')}</HomeSectionLabel2>
+        <HomeSectionLabel2>{t(`Running Dpos`)}</HomeSectionLabel2>
         <HomeSectionValue2>{runningDpoCount.toString()}</HomeSectionValue2>
       </RowBetween>
     </FlatCard>
