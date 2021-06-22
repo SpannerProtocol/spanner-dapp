@@ -97,7 +97,7 @@ export const BorderedWrapper = styled.div<{
   align-items: center;
   font-size: 0.9rem;
   width: 100%;
-  margin: ${({ margin }) => (margin ? margin : '0.5rem')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
   color: ${({ color, theme }) => (color ? color : theme.text1)}
   background: ${({ background }) => (background ? background : 'transparent')}
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#e6ebf2')} !important;
