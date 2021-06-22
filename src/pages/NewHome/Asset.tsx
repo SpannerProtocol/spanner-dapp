@@ -49,9 +49,9 @@ export function BulletTrain() {
           background: `transparent url(${bulletTrainBg}) center center no-repeat padding-box`,
         }}
       >
-        <HomeSectionTitle color={'white'}>{'Spanner BulletTrain'}</HomeSectionTitle>
+        <HomeSectionTitle color={'white'}>{t(`BulletTrain`)}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
-          {t(`Earn token rewards by buying TravelCabins or crowdfunding for them with DPOs`)}
+          {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
         </SText>
         <CircleNextIconWrapper>
           <StyledCircleNextWhite />
