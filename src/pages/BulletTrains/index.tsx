@@ -113,7 +113,7 @@ function ProjectsByAssets({ projects }: { projects: ProjectInfo[] }) {
             {projects.map((projectRegistry, index) => (
               <SLink
                 key={index}
-                to={`/projects/${projectRegistry.token.toLowerCase()}`}
+                to={`/projects/${projectRegistry.token.toLowerCase()}?asset=${asset}`}
                 colorIsBlue
                 fontSize="16px"
                 mobileFontSize="14px"

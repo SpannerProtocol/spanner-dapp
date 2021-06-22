@@ -14,6 +14,7 @@ interface DetailCardProps {
   smallDetails?: boolean
   padding?: string
   margin?: string
+  defaultShow?: boolean
 }
 
 function Details({
@@ -101,8 +102,8 @@ export default function DetailCard({ children, details, smallDetails, padding, m
   )
 }
 
-export function DetailCardSimple({ children, details, smallDetails, padding }: DetailCardProps) {
-  const [showDetails, setShowDetails] = useState<boolean>(false)
+export function DetailCardSimple({ children, details, smallDetails, padding, defaultShow }: DetailCardProps) {
+  const [showDetails, setShowDetails] = useState<boolean>(defaultShow ? defaultShow : false)
 
   return (
     <>

@@ -1,26 +1,20 @@
-import BulletTrainBanner from 'assets/images/banner-bullettrain.jpg'
-import DexIcon from 'assets/svg/icon-exchange.svg'
-import ChartIcon from 'assets/svg/icon-line-chart.svg'
 import BN from 'bn.js'
-import Card, { BannerCard } from 'components/Card'
-import PriceChart from 'components/Chart'
-import Divider from 'components/Divider'
+import Card from 'components/Card'
 import Filter from 'components/Filter'
 import { Icon } from 'components/Image'
-import { RowBetween } from 'components/Row'
-import { Header1, Header2, Header4, HeavyText, ItalicText, SText } from 'components/Text'
-import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
-import { useProjectPath } from 'hooks/useProject'
+import { Header1, ItalicText, SText } from 'components/Text'
+import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
+import { usePathProject } from 'hooks/usePath'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
-import { usePoolsWithToken } from 'hooks/useQueryDexPool'
 import useStats from 'hooks/useStats'
 import { useSubstrate } from 'hooks/useSubstrate'
-import BulletTrainStats from 'pages/BulletTrain/Stats'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import getProjectRegistry from 'utils/getProjectRegistry'
+import AssetTravelCabin from './Assets/TravelCabin'
+import AssetNFT from './Assets/NFT'
 
 const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string }>`
   display: grid;
@@ -33,95 +27,90 @@ const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string }>`
   `};
 `
 
-const TokenGrid = styled.div`
-  display: grid;
-  grid-template-columns: minmax(40px, 400px) minmax(20px, 50px);
-  grid-column-gap: 0.5rem;
-  text-align: right;
-  width: 100%;
-`
-
-function TokenPerformance({ projectInfo }: { projectInfo: ProjectInfo }) {
-  const { t } = useTranslation()
-  const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
-  const [latestPrice, setLatestPrice] = useState<string>('')
-  const [token1, token2] = useMemo(() => {
-    if (!projectInfo) return [undefined, undefined]
-    if (projectInfo.token === 'BOLT') {
-      return ['BOLT', 'WUSD']
-    } else {
-      return ['WUSD', projectInfo.token]
-    }
-  }, [projectInfo])
-  return (
-    <>
-      {projectInfo && (
-        <ContentWrapper>
-          <Card>
-            <Header2 style={{ display: 'inline-flex' }}>
-              <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
-                <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
-              </div>
-              {t(`Token Performance`)}
-            </Header2>
-            <SpacedSection>
-              {latestPrice && (
-                <>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <SText>{t(`Current Price`)}</SText>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
-                      ${latestPrice}
-                    </HeavyText>
-                    <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
-                  </div>
-                </>
-              )}
-            </SpacedSection>
-            {token1 && token2 && (
-              <PriceChart
-                token1={token1}
-                token2={token2}
-                from={0}
-                interval={300}
-                setAvailable={setPriceAvailable}
-                setLatestPrice={setLatestPrice}
-              />
-            )}
-            {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
-          </Card>
-        </ContentWrapper>
-      )}
-    </>
-  )
-}
+// function TokenPerformance({ projectInfo }: { projectInfo: ProjectInfo }) {
+//   const { t } = useTranslation()
+//   const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
+//   const [latestPrice, setLatestPrice] = useState<string>('')
+//   const [token1, token2] = useMemo(() => {
+//     if (!projectInfo) return [undefined, undefined]
+//     if (projectInfo.token === 'BOLT') {
+//       return ['BOLT', 'WUSD']
+//     } else {
+//       return ['WUSD', projectInfo.token]
+//     }
+//   }, [projectInfo])
+//   return (
+//     <>
+//       {projectInfo && (
+//         <ContentWrapper>
+//           <Card>
+//             <Header2 style={{ display: 'inline-flex' }}>
+//               <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
+//                 <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
+//               </div>
+//               {t(`Token Performance`)}
+//             </Header2>
+//             <SpacedSection>
+//               {latestPrice && (
+//                 <>
+//                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+//                     <SText>{t(`Current Price`)}</SText>
+//                   </div>
+//                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+//                     <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
+//                       ${latestPrice}
+//                     </HeavyText>
+//                     <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
+//                   </div>
+//                 </>
+//               )}
+//             </SpacedSection>
+//             {token1 && token2 && (
+//               <PriceChart
+//                 token1={token1}
+//                 token2={token2}
+//                 from={0}
+//                 interval={300}
+//                 setAvailable={setPriceAvailable}
+//                 setLatestPrice={setLatestPrice}
+//               />
+//             )}
+//             {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
+//           </Card>
+//         </ContentWrapper>
+//       )}
+//     </>
+//   )
+// }
 
 export default function Project(): JSX.Element {
-  const projectPath = useProjectPath()
+  const path = usePathProject()
   const projectInfos = useProjectInfos()
   const [projectInfo, setProjectInfo] = useState<ProjectInfo>()
   const { chainDecimals } = useSubstrate()
-  const projectRegistry = getProjectRegistry(projectPath.token)[0]
+  const projectRegistry = getProjectRegistry(path.token)[0]
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
   const { t } = useTranslation()
-  const dexPools = usePoolsWithToken(projectPath.token)
-  const [filteredAsset, setFilteredAsset] = useState<string>('TravelCabin')
+  // const dexPools = usePoolsWithToken(path.token.toUpperCase())
+  const [filteredAsset, setFilteredAsset] = useState<string>(path.asset ? path.asset : 'TravelCabin')
 
-  const stats = useStats(projectPath.token.toUpperCase())
+  const stats = useStats(path.token.toUpperCase())
 
-  const noBulletTrain =
-    stats.totalCabinsBought === 0 &&
-    stats.totalPassengers === 0 &&
-    stats.totalValueLocked.eq(new BN(0)) &&
-    stats.totalYieldWithdrawn.eq(new BN(0))
+  const noBulletTrain = useMemo(
+    () =>
+      stats.totalCabinsBought === 0 &&
+      stats.totalPassengers === 0 &&
+      stats.totalValueLocked.eq(new BN(0)) &&
+      stats.totalYieldWithdrawn.eq(new BN(0)),
+    [stats.totalCabinsBought, stats.totalPassengers, stats.totalValueLocked, stats.totalYieldWithdrawn]
+  )
 
   useEffect(() => {
     if (!projectInfos) return
-    const currentProject = projectInfos.find((project) => project.token.toLowerCase() === projectPath.token)
+    const currentProject = projectInfos.find((project) => project.token.toLowerCase() === path.token)
     setProjectInfo(currentProject)
-  }, [projectInfos, projectPath])
+  }, [projectInfos, path])
 
   const assetFilter = useMemo(() => {
     const options = ['TravelCabin', 'NFTs (Coming soon)']
@@ -131,7 +120,7 @@ export default function Project(): JSX.Element {
   return (
     <>
       <PageWrapper style={{ maxWidth: '680px' }}>
-        {projectPath && (
+        {path && projectInfo && (
           <>
             <Card borderRadius="0">
               <GridWrapper columns={'2'} mobileColumns={'2'}>
@@ -161,30 +150,22 @@ export default function Project(): JSX.Element {
                 )}
               </GridWrapper>
             </Card>
-            <Filter
-              options={assetFilter}
-              activeOption={filteredAsset}
-              modalTitle={t(`Filter Asset`)}
-              margin="0.25rem"
-              filterLabel="Filter by Asset"
-            />
-            {!noBulletTrain && (
-              <ContentWrapper>
-                <BannerCard url={BulletTrainBanner} padding="3rem 1rem" darkenBackground>
-                  <Header2 colorIsPrimary>{t(`BulletTrain TravelCabins`)}</Header2>
-                  <Header4 color="#fff">
-                    {`${t(`Earn by depositing your tokens and referring your friends`)}. 
-                    ${t(`Click to get more tokens`)}!`}
-                  </Header4>
-                  <Divider margin="0.5rem 0" />
-                  <Section style={{ width: '100%' }}>
-                    {projectInfo && <BulletTrainStats token={projectInfo.token} />}
-                  </Section>
-                </BannerCard>
-              </ContentWrapper>
+            <ContentWrapper>
+              <Filter
+                options={assetFilter}
+                activeOption={filteredAsset}
+                modalTitle={t(`Filter Asset`)}
+                margin="0 0 1rem 0"
+                filterLabel={t('Filter Asset')}
+              />
+            </ContentWrapper>
+            {!noBulletTrain && filteredAsset.toLowerCase() === 'travelcabin' && (
+              <AssetTravelCabin projectInfo={projectInfo} />
             )}
-            {projectInfo && <TokenPerformance projectInfo={projectInfo} />}
+            {filteredAsset.toLowerCase() === 'nfts (coming soon)' && <AssetNFT projectInfo={projectInfo} />}
 
+            {/* {projectInfo && <TokenPerformance projectInfo={projectInfo} />} */}
+            {/* 
             <ContentWrapper>
               <Wrapper
                 style={{
@@ -245,7 +226,7 @@ export default function Project(): JSX.Element {
                   </Card>
                 )}
               </Wrapper>
-            </ContentWrapper>
+            </ContentWrapper> */}
           </>
         )}
       </PageWrapper>

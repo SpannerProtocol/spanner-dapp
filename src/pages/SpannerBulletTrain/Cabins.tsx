@@ -3,7 +3,7 @@ import { useSubstrate } from '../../hooks/useSubstrate'
 import { useSubTravelCabinInventory, useTravelCabins } from '../../hooks/useQueryTravelCabins'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { getCabinClassImage, getCabinOrder } from '../../utils/getCabinClass'
-import { HeavyText, SText } from '../../components/Text'
+import { Header2, HeavyText, SText } from '../../components/Text'
 import { GridWrapper } from '../../components/Wrapper'
 import { TravelCabinInfo } from 'interfaces/bulletTrain'
 import { useBlockManager } from '../../hooks/useBlocks'
@@ -47,11 +47,12 @@ export function Cabins() {
 }
 
 export function CabinsSection() {
+  const { t } = useTranslation()
   return (
     <>
-      <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
-        {'Cabins'}
-      </HeavyText>
+      <Header2 fontSize={'18px'} mobileFontSize={'18px'} padding={'1rem 0rem'}>
+        {t('Buy a Cabin')}
+      </Header2>
       <Cabins />
     </>
   )
@@ -317,6 +318,7 @@ export function CabinCard(props: TravelCabinCard) {
     <>
       <DetailCardSimple
         smallDetails
+        defaultShow={true}
         details={<CabinCardDetails item={item} token={token} chainDecimals={chainDecimals} />}
       >
         <CabinCardGrid>

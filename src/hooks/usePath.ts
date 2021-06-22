@@ -40,11 +40,23 @@ export function useAccount() {
 }
 
 export function usePathDpoInfoTab() {
-  // item/dpo/{dpoIndex}/tab
+  // /item/dpo/{dpoIndex}/tab
   const location = useLocation()
   const pathSplit = location.pathname.split('/')
   return {
     dpoIndex: pathSplit[3],
     section: pathSplit[4],
+  }
+}
+
+export function usePathProject() {
+  // /projects/token?asset=asset
+  const location = useLocation()
+  const token = location.pathname.split('/')[2]
+  const search = new URLSearchParams(location.search)
+  const asset = search.get('asset')
+  return {
+    token,
+    asset,
   }
 }
