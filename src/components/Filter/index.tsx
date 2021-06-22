@@ -59,6 +59,8 @@ function FilterOptions({
   activeOption: string
   dismissModal: () => void
 }) {
+  const { t } = useTranslation()
+
   return (
     <>
       {options.map((option, index) => (
@@ -72,7 +74,7 @@ function FilterOptions({
             style={{ margin: '0' }}
             borderColor={activeOption === option.label ? '#FFBE2E' : 'transparent'}
           >
-            {option.label}
+            {t(option.label)}
           </Option>
         </>
       ))}
@@ -121,7 +123,7 @@ export default function Filter({
       >
         <RowFixed margin="0">
           <SText padding="0 0.25rem 0 0" color="#fff" fontWeight="700">
-            {activeOption}
+            {t(activeOption)}
           </SText>
           <ChevronDown size={12} />
         </RowFixed>

@@ -8,6 +8,7 @@ import React, { useEffect, useMemo } from 'react'
 import { Dispatcher } from 'types/dispatcher'
 import { DpoInfo } from 'spanner-interfaces'
 import { getDpoCompletedStates } from 'utils/dpoStateCompleted'
+import { useTranslation } from 'react-i18next'
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -58,6 +59,7 @@ export default function DpoStateFilter({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const defaultStepIndex = useMemo(() => steps.findIndex((step) => step === defaultStep), [])
   const [activeStep, setActiveStep] = React.useState(defaultStepIndex)
+  const { t } = useTranslation()
 
   // If defaultState changes because dpoInfo changes, then we will render the changes here
   useEffect(() => {
@@ -89,7 +91,7 @@ export default function DpoStateFilter({
               >
                 <StepLabel StepIconProps={{ classes: { root: classes.root } }}>
                   <SText width="100%" textAlign="center" fontSize="12px" mobileFontSize="10px">
-                    {label}
+                    {t(label)}
                   </SText>
                 </StepLabel>
               </StepButton>

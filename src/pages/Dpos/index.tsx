@@ -327,14 +327,14 @@ export default function Dpos() {
                 activeOption={filteredState}
                 modalTitle={t(`Filter Dpo State`)}
                 margin="0.25rem"
-                filterLabel="State"
+                filterLabel={t('State')}
               />
               <Filter
                 options={assetFilterOptions}
                 activeOption={filteredAsset}
                 modalTitle={t(`Filter Targeted Asset`)}
                 margin="0.25rem"
-                filterLabel="Asset"
+                filterLabel={t('Asset')}
               />
               <PillToggleFilter
                 isActive={filteredAffordable}
@@ -348,7 +348,7 @@ export default function Dpos() {
                 isActive={filteredOwned}
                 toggle={() => setFilteredOwned(!filteredOwned)}
                 margin="0.5rem"
-                toggleLabel="My DPOs"
+                toggleLabel={t('My DPOs')}
                 labelActive="ON"
                 labelInactive="OFF"
               />
@@ -356,7 +356,7 @@ export default function Dpos() {
             <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />
             <SearchBar
               inputType="text"
-              placeholder="Search for Name"
+              placeholder={t('Search for Name')}
               keyword={searchTerm}
               setKeyword={setSearchTerm}
               backgroundColor={'#fff'}

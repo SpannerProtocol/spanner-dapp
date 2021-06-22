@@ -3,16 +3,19 @@ import { Header2, SText } from 'components/Text'
 import { ContentWrapper, SpacedSection } from 'components/Wrapper'
 import React from 'react'
 import { DpoInfo } from 'spanner-interfaces/types'
+import { useTranslation } from 'react-i18next'
 
 function Activities({ dpoInfo }: { dpoInfo: DpoInfo }) {
+  const { t } = useTranslation()
   return (
     <ContentWrapper>
       <Card margin="0 0 1rem 0">
-        <Header2>Activity</Header2>
+        <Header2>{t('Activity')}</Header2>
         <SpacedSection>
           <SText>
-            This section will show all activities performed by this DPO such as purchases, reward releases etc. Coming
-            soon!
+            {t(
+              'This section will show all activities performed by this DPO such as purchases, reward releases etc. Coming soon!'
+            )}
           </SText>
         </SpacedSection>
       </Card>

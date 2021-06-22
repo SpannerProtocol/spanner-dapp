@@ -382,7 +382,6 @@ const DesktopHeaderWrpper = styled.div`
 export function DesktopNav(props: DesktopNavProp) {
   const { chain } = useChainState()
   // let icons = props.icons
-  const { t } = useTranslation()
   const classes = useStyles()
   const { navItems } = props
 
@@ -400,7 +399,7 @@ export function DesktopNav(props: DesktopNavProp) {
                   key={index}
                   iconLink={navItem.iconLink}
                   link={navItem.link}
-                  text={t(navItem.text)}
+                  text={navItem.text}
                   internal={navItem.internal}
                   nested={false}
                   classes={classes}
@@ -459,6 +458,7 @@ interface NavItemProps {
 }
 
 function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
+  const { t } = useTranslation()
   return (
     <>
       <div
@@ -506,7 +506,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggle
                     <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
                   </ListItemIcon>
                 )}
-                <ListItemText primary={text} />
+                <ListItemText primary={t(text)} />
               </ListItem>
             </ExternalLink>
           </List>
@@ -518,7 +518,6 @@ function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggle
 
 export function NavItemContent({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
   const [open, setOpen] = React.useState(false)
-
   const handleClick = () => {
     setOpen((prevOpen) => !prevOpen)
   }
@@ -532,7 +531,7 @@ export function NavItemContent({ iconLink, text, link, classes, internal, nested
             <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
           </ListItemIcon>
         )}
-        <ListItemText primary={text} />
+        <ListItemText primary={t(text)} />
         {subs != null ? open ? <ExpandLess /> : <ExpandMore /> : null}
       </ListItem>
       {subs && (
@@ -562,7 +561,6 @@ export function NavItemContent({ iconLink, text, link, classes, internal, nested
 export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
   const classes = useStyles()
   const [isOpen, setIsOpen] = React.useState<boolean>(false)
-  const { t } = useTranslation()
   const { chain } = useChainState()
 
   const toggleDrawer = (open: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -622,7 +620,7 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
                     key={index}
                     iconLink={navItem.iconLink}
                     link={navItem.link}
-                    text={t(navItem.text)}
+                    text={navItem.text}
                     internal={navItem.internal}
                     nested={false}
                     classes={classes}

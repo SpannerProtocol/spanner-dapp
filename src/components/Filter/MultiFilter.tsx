@@ -19,6 +19,7 @@ const SelectorWrapper = styled.div<{ background?: string; padding?: string; marg
     cursor: pointer;
     opacity: 0.6;
   }
+
   width: 100%;
 `
 
@@ -45,6 +46,8 @@ interface MultiFilterProps {
 
 function MultiFilterOptions({ options, activeOptions }: { options: FilterOption[]; activeOptions: string[] }) {
   const theme = useContext(ThemeContext)
+  const { t } = useTranslation()
+
   return (
     <>
       {options.map((option, index) => {
@@ -58,7 +61,7 @@ function MultiFilterOptions({ options, activeOptions }: { options: FilterOption[
             >
               <RowBetween>
                 <SText padding="0 1rem" color={isActive ? theme.white : theme.text1}>
-                  {option.label}
+                  {t(option.label)}
                 </SText>
                 {isActive && (
                   <div style={{ display: 'flex', alignItems: 'center', padding: '0 1rem' }}>
@@ -98,7 +101,7 @@ export function MultiFilter({ options, activeOptions, modalTitle }: MultiFilterP
         <RowFixed margin="0.25rem 0">
           {activeOptions.map((activeOption, index) => (
             <Pill key={index} margin="0 0.25rem" padding="0.25rem 1rem">
-              {activeOption}
+              {t(activeOption)}
             </Pill>
           ))}
         </RowFixed>

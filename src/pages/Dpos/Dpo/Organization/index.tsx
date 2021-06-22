@@ -94,13 +94,16 @@ export function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
 }
 
 function CollaborationStructure({ dpoInfo }: { dpoInfo: DpoInfo }) {
+  const { t } = useTranslation()
   return (
     <ContentWrapper>
       <Card margin="0 0 1rem 0">
-        <Header2>Collaboration Structure</Header2>
+        <Header2>{t('Collaboration Structure')}</Header2>
         <SpacedSection>
           <SText>
-            Collaboration Structure will show all DPOs collaborating with this DPO towards a common goal. Coming soon!
+            {t(
+              'Collaboration Structure will show all DPOs collaborating with this DPO towards a common goal. Coming soon!'
+            )}
           </SText>
         </SpacedSection>
       </Card>

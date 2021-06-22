@@ -73,10 +73,10 @@ export default function PillToggleFilter({
       )}
       <StyledToggle id={id} isActive={isActive} onClick={toggle}>
         <ToggleElement isActive={isActive} isOnSwitch={true}>
-          {labelActive}
+          {t(labelActive)}
         </ToggleElement>
         <ToggleElement isActive={!isActive} isOnSwitch={false} inActiveColor={inActiveColor} inActiveBg={inActiveBg}>
-          {labelInactive}
+          {t(labelInactive)}
         </ToggleElement>
       </StyledToggle>
     </div>
