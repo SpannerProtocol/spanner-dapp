@@ -30,7 +30,7 @@ export default function Dex() {
       <Wrapper
         style={{ width: '100%', maxWidth: '640px', padding: '0.5rem', justifyContent: 'center', alignItems: 'center' }}
       >
-        <TabBar activeTab={activeConsole} tabs={tabData} onClick={handleTabSelect} />
+        <TabBar activeTab={activeConsole} tabs={tabData} onClick={handleTabSelect} level={'primary'} />
         <MainConsole activeConsole={activeConsole} />
       </Wrapper>
     </PageWrapper>

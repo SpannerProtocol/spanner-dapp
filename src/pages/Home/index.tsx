@@ -1,4 +1,4 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
 import { Step, StepNumber } from 'components/InstructionSteps'
 import QuestionHelper from 'components/QuestionHelper'
@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import truncateString from 'utils/truncateString'
-import { StandardText, Heading, HeavyText, SectionTitle } from '../../components/Text'
+import { SText, Heading, HeavyText, Header3 } from '../../components/Text'
 
 const HomePageTitle = styled.h1`
   margin: 0;
@@ -37,30 +37,30 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <FlatCard>
+        <Card>
           <Section style={{ marginBottom: '1rem' }}>
             <HomePageTitle>{t(`Spanner Dapp`)}</HomePageTitle>
             <Heading>{t(`Dapp for Decentralized Collaboration`)}</Heading>
           </Section>
           <SpacedSection style={{ wordBreak: 'break-word' }}>
-            <SectionTitle>{t(`Blockchain Info`)}</SectionTitle>
+            <Header3>{t(`Blockchain Info`)}</Header3>
             <BorderedWrapper style={{ marginTop: '0' }}>
               <RowBetween>
                 <HeavyText fontSize="14px">{t(`Connected to`)}:</HeavyText>
-                <StandardText>{chain}</StandardText>
+                <SText>{chain}</SText>
               </RowBetween>
               {genesis && (
                 <RowBetween>
                   <HeavyText fontSize="14px">{t(`Genesis Hash`)}:</HeavyText>
                   <CopyHelper toCopy={genesis} childrenIsIcon={true}>
-                    <StandardText color="#565A69">{truncateString(genesis)}</StandardText>
+                    <SText color="#565A69">{truncateString(genesis)}</SText>
                   </CopyHelper>
                 </RowBetween>
               )}
               {expectedBlockTime && (
                 <RowBetween>
                   <HeavyText fontSize="14px">{t(`Estimated Time per Block`)}:</HeavyText>
-                  <StandardText>{`${expectedBlockTime.toNumber() / 1000} ${t(`seconds`)}`}</StandardText>
+                  <SText>{`${expectedBlockTime.toNumber() / 1000} ${t(`seconds`)}`}</SText>
                 </RowBetween>
               )}
             </BorderedWrapper>
@@ -73,9 +73,9 @@ export default function Home() {
               </div>
             )}
           </SpacedSection>
-        </FlatCard>
+        </Card>
         <ContentWrapper>
-          <FlatCard style={{ textAlign: 'left' }}>
+          <Card style={{ textAlign: 'left' }}>
             <div
               style={{
                 display: 'block',
@@ -85,10 +85,10 @@ export default function Home() {
                 paddingBottom: '0.5rem',
               }}
             >
-              <SectionTitle>{t(`Get Started`)}</SectionTitle>
-              <StandardText>
+              <Header3>{t(`Get Started`)}</Header3>
+              <SText>
                 {t(`Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.`)}
-              </StandardText>
+              </SText>
             </div>
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
@@ -154,7 +154,7 @@ export default function Home() {
                 <Step>{t(`Get aboard Spanner's BulletTrain`)}</Step>
               </Link>
             </SpacedSection>
-          </FlatCard>
+          </Card>
         </ContentWrapper>
       </Wrapper>
     </PageWrapper>

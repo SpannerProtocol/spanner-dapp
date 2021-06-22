@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import TabBar, { TabMetaData } from 'components/TabBar'
 import { SectionContainer } from 'components/Wrapper'
 import React, { useState } from 'react'
@@ -11,7 +11,7 @@ export const TxRow = styled.div`
   display: grid;
   grid-template-columns: min(240px) auto min(120px);
   grid-column-gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.text5};
+  border-bottom: 1px solid ${({ theme }) => theme.gray2};
   transition: background-color 0.3s ease-in;
   &:hover {
     background: ${({ theme }) => theme.text5};
@@ -59,7 +59,7 @@ export default function Activity() {
 
   return (
     <>
-      <FlatCard>
+      <Card>
         <SectionContainer>
           <TabBar
             activeTab={activeTab}
@@ -68,13 +68,14 @@ export default function Activity() {
             margin="0"
             fontSize="18px"
             mobileFontSize="14px"
+            level={'secondary'}
           />
         </SectionContainer>
         <SectionContainer style={{ marginTop: '0' }}>
           {activeTab === 'latest-transactions' && <Transactions />}
           {activeTab === 'transfers' && <Transfers />}
         </SectionContainer>
-      </FlatCard>
+      </Card>
     </>
   )
 }

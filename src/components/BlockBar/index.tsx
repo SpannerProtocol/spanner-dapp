@@ -26,7 +26,7 @@ const BlockText = styled.div`
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
   width: 100%;
-  color: ${({ theme }) => theme.white};
+  color: ${({ theme }) => theme.text1};
   font-size: 14px;
   text-align: right;
   padding: 0.5rem;

@@ -1,6 +1,12 @@
 import styled from 'styled-components'
 import AutoColumn from '../Column'
 
+export const Wrapper = styled.div<{ maxWidth?: string }>`
+  width: 100%;
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '960px')};
+  margin: auto;
+`
+
 export const PageWrapper = styled(AutoColumn)<{ maxWidth?: string }>`
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '640px')};
   width: 100%;
@@ -11,8 +17,16 @@ export const Section = styled(AutoColumn)`
   margin-bottom: 5px;
 `
 
+export const ClickableSection = styled(AutoColumn)`
+  cursor: pointer;
+  :hover,
+  :focus {
+    opacity: 0.7;
+  }
+`
+
 export const InlineSection = styled.div`
-  display: inline-flex;
+  display: flex;
 `
 
 export const SpacedSection = styled(AutoColumn)<{ margin?: string; mobileMargin?: string }>`
@@ -31,16 +45,11 @@ export const PaddedSection = styled(AutoColumn)`
   `};
 `
 
-export const Wrapper = styled.div`
+export const ContentWrapper = styled.div<{ padding?: string }>`
   position: relative;
   width: 100%;
-`
-
-export const ContentWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
+  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+    padding: ${padding ? padding : '0 0.5rem'};
   `};
 `
 
@@ -51,15 +60,6 @@ export const SectionContainer = styled.div`
   ${({ theme }) => theme.mediaWidth.upToMedium`
   padding: 0.5rem;
   `};
-`
-
-export const FlexWrapper = styled.div`
-  position: relative;
-  max-width: 100%;
-  width: 100%;
-  flex-wrap: wrap;
-  display: inline-flex;
-  justify-content: center;
 `
 
 export const ButtonWrapper = styled.div`
@@ -89,6 +89,7 @@ export const BorderedWrapper = styled.div<{
   borderColor?: string
   background?: string
   padding?: string
+  margin?: string
   marginTop?: string
   marginBottom?: string
 }>`
@@ -96,8 +97,7 @@ export const BorderedWrapper = styled.div<{
   align-items: center;
   font-size: 0.9rem;
   width: 100%;
-  margin-top: ${({ marginTop }) => (marginTop ? marginTop : '0.7rem')};
-  margin-bottom:${({ marginBottom }) => (marginBottom ? marginBottom : '0.7rem')};
+  margin: ${({ margin }) => (margin ? margin : '0.5rem')};
   color: ${({ color, theme }) => (color ? color : theme.text1)}
   background: ${({ background }) => (background ? background : 'transparent')}
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#e6ebf2')} !important;
@@ -120,8 +120,6 @@ export const MemberWrapper = styled(RoundWrapper)<{ borderColor?: string; backgr
   display: block;
   align-items: center;
   width: 100%;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
   font-size: 11px;
   font-weight: 500;
   color: ${({ color, theme }) => (color ? color : theme.text1)}
@@ -134,7 +132,6 @@ export const StateWrapper = styled(RoundWrapper)`
   border-radius: 14px;
   font-size: 11px;
   font-weight: 500;
-  margin-right: 0.5rem;
   padding: 0.5rem;
   width: auto;
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
@@ -181,17 +178,78 @@ export const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string
   `};
 `
 
-export const IconWrapper = styled.div<{ padding?: string; margin?: string }>`
+export const IconWrapper = styled.div<{ padding?: string; margin?: string; background?: string }>`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: ${({ padding }) => (padding ? padding : '0.2rem')};
   margin: ${({ margin }) => (margin ? margin : '0')};
-  background: transparent;
+  background: ${({ background }) => (background ? background : 'transparent')};
   cursor: pointer;
 
   :hover,
   :focus {
     opacity: 0.7;
   }
+`
+
+export const SectionDarkBg = styled.div<{ backgroundColor?: string }>`
+  width: 100%;
+  background: ${({ backgroundColor, theme }) => (backgroundColor ? backgroundColor : theme.bg2)};
+  z-index: -1;
+`
+
+export const SectionImageBg = styled.div<{ height?: string; url?: string }>`
+  width: 100%;
+  height: ${({ height }) => (height ? height : '600px')};
+  background: ${({ url }) => (url ? `transparent url(${url}) center center no-repeat padding-box;` : 'none')};
+  opacity: 1;
+`
+
+export const ContentSection = styled.div<{
+  paddingTop?: string
+  paddingBottom?: string
+}>`
+  width: 100%;
+  padding-top: ${({ paddingTop }) => (paddingTop ? paddingTop : '2rem')};
+  padding-bottom: ${({ paddingTop }) => (paddingTop ? paddingTop : '2rem')};
+
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+  `};
+`
+
+export const CenterWrapper = styled.div<{ display?: string }>`
+  display: ${({ display }) => (display ? display : 'flex')};
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+`
+
+export const FlexWrapper = styled.div<{
+  justifyContent?: string
+  alignItems?: string
+}>`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
+  align-items: ${({ alignItems }) => (alignItems ? alignItems : 'center')};
+  width: 100%;
+`
+
+export const ImageWrapper = styled.div<{
+  justifyContent?: string
+  alignItems?: string
+  maxWidth?: string
+  height?: string
+}>`
+  display: flex;
+  justify-content: ${({ justifyContent }) => (justifyContent ? justifyContent : 'center')};
+  align-items: ${({ alignItems }) => (alignItems ? alignItems : 'center')};
+  width: 100%;
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '400px')};
+  margin: auto;
+  height: ${({ height }) => (height ? height : 'initial')};
 `

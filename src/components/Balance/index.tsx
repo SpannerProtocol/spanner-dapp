@@ -21,7 +21,7 @@ export default function Balance({ token }: BalanceProps) {
       <SpacedSection style={{ margin: '0' }}>
         <RowBetween>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <ItalicText>{t(`Available Balance`)}</ItalicText>
+            <ItalicText width="fit-content">{t(`Available Balance`)}</ItalicText>
             <QuestionHelper
               size={12}
               backgroundColor={'transparent'}
@@ -30,7 +30,7 @@ export default function Balance({ token }: BalanceProps) {
               )}
             />
           </div>
-          <ItalicText>{`${formatToUnit(balance, chainDecimals, 2)} ${token}`}</ItalicText>
+          <ItalicText width="fit-content">{`${formatToUnit(balance, chainDecimals, 2)} ${token}`}</ItalicText>
         </RowBetween>
       </SpacedSection>
     </>

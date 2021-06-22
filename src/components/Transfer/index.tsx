@@ -5,7 +5,7 @@ import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
@@ -23,8 +23,8 @@ import { isValidSpannerAddress } from '../../utils/validAddress'
 import { RowBetween, RowFixed } from '../Row'
 
 const StyledMenuIcon = styled(Send)`
-  height: 20px;
-  width: 20px;
+  height: 30px;
+  width: 30px;
 
   > * {
     stroke: ${({ theme }) => theme.text1};
@@ -39,9 +39,8 @@ const StyledMenuButton = styled.button`
   background-color: transparent;
   margin: 0;
   padding: 0;
-  height: 35px;
+  height: 40px;
   background-color: ${({ theme }) => theme.bg3};
-
   padding: 0.15rem 0.5rem;
   border-radius: 0.5rem;
 
@@ -84,21 +83,21 @@ function ConfirmTransferContent({
   return (
     <>
       <Section>
-        <StandardText>{t(`Confirm details below. Transfers cannot be returned.`)}</StandardText>
+        <SText>{t(`Confirm details below. Transfers cannot be returned.`)}</SText>
       </Section>
       <BorderedWrapper>
         {dest && (
           <RowBetween>
-            <StandardText>{t(`To`)}:</StandardText>
-            <StandardText>{shortenAddr(dest, 8)}</StandardText>
+            <SText>{t(`To`)}:</SText>
+            <SText>{shortenAddr(dest, 8)}</SText>
           </RowBetween>
         )}
         {amount && (
           <RowBetween>
-            <StandardText>{t(`Amount`)}:</StandardText>
-            <StandardText>
+            <SText>{t(`Amount`)}:</SText>
+            <SText>
               {formatToUnit(amount, chainDecimals, 4)} {token}
-            </StandardText>
+            </SText>
           </RowBetween>
         )}
       </BorderedWrapper>
@@ -150,7 +149,7 @@ function TransferForm({ onSubmit }: TransferFormProps) {
     <>
       <SpacedSection>
         <RowFixed>
-          <StandardText>{t(`Recipient Address`)}</StandardText>
+          <SText>{t(`Recipient Address`)}</SText>
           <QuestionHelper text={t(`The Recipient's Spanner address`)} size={12} backgroundColor={'#fff'} />
         </RowFixed>
         <BorderedInput
@@ -164,10 +163,10 @@ function TransferForm({ onSubmit }: TransferFormProps) {
       </SpacedSection>
       <SpacedSection>
         <RowBetween>
-          <StandardText>{t(`Amount`)}</StandardText>
-          <StandardText>
+          <SText width="fit-content">{t(`Amount`)}</SText>
+          <SText width="fit-content">
             {t(`Balance`)}: {formatToUnit(balance, chainDecimals, 2)} {token}
-          </StandardText>
+          </SText>
         </RowBetween>
         <TokenInputWrapper>
           <TokenInputAmount
@@ -185,15 +184,15 @@ function TransferForm({ onSubmit }: TransferFormProps) {
 
       <Section style={{ marginTop: '1rem' }}>
         {invalidDest ? (
-          <ButtonPrimary onClick={handleSubmit} disabled>
+          <ButtonPrimary onClick={handleSubmit} disabled width="100%" maxWidth="none">
             {t(`Invalid Spanner Address`)}
           </ButtonPrimary>
         ) : (
-          <ButtonPrimary onClick={handleSubmit}>
+          <ButtonPrimary onClick={handleSubmit} width="100%" maxWidth="none">
             <Send size={16} />
-            <StandardText mobileFontSize="14px" color="#fff" paddingLeft="1rem">
+            <SText mobileFontSize="14px" color="#fff">
               {t(`Send`)}
-            </StandardText>
+            </SText>
           </ButtonPrimary>
         )}
       </Section>
