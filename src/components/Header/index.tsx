@@ -1,23 +1,4 @@
-<<<<<<< HEAD
 import { Badge, Collapse } from '@material-ui/core'
-=======
-import NetworkSelector from 'components/Network'
-import Transfer from 'components/Transfer'
-import { darken } from 'polished'
-import React, { useEffect, useState } from 'react'
-import { User } from 'react-feather'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import { useChainState } from 'state/connections/hooks'
-import styled from 'styled-components'
-import Logo from '../../assets/svg/logo-spanner-gradient.svg'
-import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
-import { useActiveWeb3React } from '../../hooks'
-import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
-import Row, { RowFixed } from '../Row'
-import Web3Status from '../Web3Status/Web3Substrate'
-import { makeStyles } from '@material-ui/core/styles'
->>>>>>> 0c4d8ee8fa6a7a33af49ffa99e1b409224a78edd
 import Divider from '@material-ui/core/Divider'
 import Drawer from '@material-ui/core/Drawer'
 import List from '@material-ui/core/List'
@@ -46,12 +27,8 @@ import EarnIcon from '../../assets/svg/icon-earn.svg'
 // import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
 import ExplorIcon from '../../assets/svg/icon-explore.svg'
 import FaqIcon from '../../assets/svg/icon-faq.svg'
-<<<<<<< HEAD
-import GuideIcon from '../../assets/svg/icon-guide.svg'
 import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
-=======
 // import GuideIcon from '../../assets/svg/icon-guide.svg'
->>>>>>> 0c4d8ee8fa6a7a33af49ffa99e1b409224a78edd
 import InfoIcon from '../../assets/svg/icon-info.svg'
 // import NewsIcon from '../../assets/svg/icon-news.svg'
 import ProjectIcon from '../../assets/svg/icon-project.svg'
@@ -63,9 +40,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
 import LanguageSwitch from '../LanguageSwitch'
 import { SLink } from '../Link'
-import Menu from '../Menu'
 import Row, { RowFixed } from '../Row'
-import Settings from '../Settings'
 import Web3Status from '../Web3Status/Web3Substrate'
 
 const HeaderFrame = styled.div`
