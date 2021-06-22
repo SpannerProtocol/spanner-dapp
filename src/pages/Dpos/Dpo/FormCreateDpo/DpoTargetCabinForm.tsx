@@ -222,7 +222,9 @@ export default function DpoTargetCabinForm({
         <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit}>{t(`Create DPO`)}</ButtonPrimary>
+        <ButtonPrimary maxWidth="none" onClick={handleSubmit}>
+          {t(`Create DPO`)}
+        </ButtonPrimary>
       </Section>
     </>
   )

@@ -68,7 +68,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
   // const token = useMemo(() => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : ''), [dpoInfo])
   return (
     <ContentWrapper>
-      <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+      <Card margin="0 0 1rem 0">
         <Section>
           <RowBetween>
             <div style={{ display: 'flex', alignItems: 'center' }}>

@@ -13,6 +13,8 @@ interface DetailCardProps {
   details?: JSX.Element
   smallDetails?: boolean
   padding?: string
+  margin?: string
+  defaultShow?: boolean
 }
 
 function Details({
@@ -80,12 +82,12 @@ function Details({
   )
 }
 
-export default function DetailCard({ children, details, smallDetails, padding }: DetailCardProps) {
+export default function DetailCard({ children, details, smallDetails, padding, margin }: DetailCardProps) {
   const [showDetails, setShowDetails] = useState<boolean>(false)
 
   return (
     <>
-      <Card padding={padding}>
+      <Card padding={padding} margin={margin}>
         {children}
         {showDetails && (
           <>
@@ -100,8 +102,8 @@ export default function DetailCard({ children, details, smallDetails, padding }:
   )
 }
 
-export function DetailCardSimple({ children, details, smallDetails, padding }: DetailCardProps) {
-  const [showDetails, setShowDetails] = useState<boolean>(false)
+export function DetailCardSimple({ children, details, smallDetails, padding, defaultShow }: DetailCardProps) {
+  const [showDetails, setShowDetails] = useState<boolean>(defaultShow ? defaultShow : false)
 
   return (
     <>

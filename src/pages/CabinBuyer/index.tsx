@@ -202,7 +202,7 @@ export function YieldAvailable(props: CabinInfoProps) {
   const { actions } = useUserActions(travelCabinInfo.index, travelCabinInventoryIndex)
   useEffect(() => {
     if (!actions) return
-    actions.map((action) => {
+    actions.forEach((action) => {
       if (action.action === 'withdrawYieldFromTravelCabin') {
         setActionEnable(true)
       }
@@ -301,7 +301,7 @@ export function FareAvailable(props: CabinInfoProps) {
   const { actions } = useUserActions(travelCabinInfo.index, travelCabinInventoryIndex)
   useEffect(() => {
     if (!actions) return
-    actions.map((action) => {
+    actions.forEach((action) => {
       if (action.action === 'withdrawFareFromTravelCabin') {
         setActionEnable(true)
       }

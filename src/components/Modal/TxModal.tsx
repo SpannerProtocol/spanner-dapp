@@ -90,7 +90,7 @@ export default function TxModal({
             <CenteredRow>{txError}</CenteredRow>
           </Section>
           <Section>
-            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" onClick={onDismiss}>
+            <ButtonPrimary minWidth="100%" mobileMinWidth="100%" maxWidth="none" onClick={onDismiss}>
               {t(`Return`)}
             </ButtonPrimary>
           </Section>

@@ -25,7 +25,7 @@ export function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
   return (
     <>
       <ContentWrapper>
-        <Card>
+        <Card margin="0 0 1rem 0">
           <Header2>{t(`Members`)}</Header2>
           {manager && (
             <Section>
@@ -96,7 +96,7 @@ export function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
 function CollaborationStructure({ dpoInfo }: { dpoInfo: DpoInfo }) {
   return (
     <ContentWrapper>
-      <Card>
+      <Card margin="0 0 1rem 0">
         <Header2>Collaboration Structure</Header2>
         <SpacedSection>
           <SText>

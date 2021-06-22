@@ -40,7 +40,7 @@ const BalanceRow = styled.div`
   display: grid;
   grid-template-columns: minmax(40px, 120px) auto min(160px);
   grid-column-gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.text5};
+  border-bottom: 1px solid ${({ theme }) => theme.gray2};
   transition: background-color 0.3s ease-in;
   &:hover {
     background: ${({ theme }) => theme.text5};

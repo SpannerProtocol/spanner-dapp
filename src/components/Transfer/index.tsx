@@ -184,11 +184,11 @@ function TransferForm({ onSubmit }: TransferFormProps) {
 
       <Section style={{ marginTop: '1rem' }}>
         {invalidDest ? (
-          <ButtonPrimary onClick={handleSubmit} disabled>
+          <ButtonPrimary onClick={handleSubmit} disabled width="100%" maxWidth="none">
             {t(`Invalid Spanner Address`)}
           </ButtonPrimary>
         ) : (
-          <ButtonPrimary onClick={handleSubmit}>
+          <ButtonPrimary onClick={handleSubmit} width="100%" maxWidth="none">
             <Send size={16} />
             <SText mobileFontSize="14px" color="#fff">
               {t(`Send`)}

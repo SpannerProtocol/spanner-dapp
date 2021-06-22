@@ -7,7 +7,7 @@ import { DpoInfo } from 'spanner-interfaces/types'
 function Activities({ dpoInfo }: { dpoInfo: DpoInfo }) {
   return (
     <ContentWrapper>
-      <Card>
+      <Card margin="0 0 1rem 0">
         <Header2>Activity</Header2>
         <SpacedSection>
           <SText>
