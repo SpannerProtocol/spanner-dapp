@@ -8,7 +8,7 @@ import { useWindowSize } from 'hooks/useWindowSize'
 import React, { createContext, Suspense } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
-import Header from '../components/Header'
+import Header, { Controls } from '../components/Header'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
@@ -25,6 +25,7 @@ import TravelCabinBuyer from './CabinBuyer'
 import Launchpad from './Projects'
 import Project from './Projects/Project'
 import NewHome from './NewHome'
+import BulletTrains from './BulletTrains'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -82,6 +83,7 @@ export default function App() {
           <HeaderWrapper>
             <Header width={width} />
           </HeaderWrapper>
+          <Controls />
           <AppBody>
             <Popups />
             <Web3ReactManager>
@@ -98,7 +100,7 @@ export default function App() {
                 />
                 <Route exact strict path="/account" component={Account} />
                 <Route exact strict path="/account/:section" component={Account} />
-                <Route exact strict path="/bullettrain" component={BulletTrain} />
+                <Route exact strict path="/bullettrain" component={BulletTrains} />
                 <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
                 <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
                 <Route exact strict path="/bullettrain/dpo/:index" component={BulletTrain} />

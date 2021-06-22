@@ -2,7 +2,7 @@ import DetailCard from 'components/Card/DetailCard'
 import Divider from 'components/Divider'
 import DpoStateFilter from 'components/DpoStateFilter'
 import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
-import { ContentWrapper, SpacedSection } from 'components/Wrapper'
+import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { usePathDpoInfoTab } from 'hooks/usePath'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -58,7 +58,7 @@ export default function Dpo(): JSX.Element {
   return (
     <>
       {dpoInfo && selectedState && (
-        <>
+        <PageWrapper>
           <Overview dpoInfo={dpoInfo} />
           <ContentWrapper>
             <DetailCard
@@ -69,6 +69,7 @@ export default function Dpo(): JSX.Element {
                   <RunningDetails dpoInfo={dpoInfo} />
                 ) : undefined
               }
+              margin="0 0 1rem 0"
             >
               <SpacedSection>
                 <DpoStateFilter
@@ -84,13 +85,13 @@ export default function Dpo(): JSX.Element {
               <CompletedCard selectedState={selectedState} dpoInfo={dpoInfo} />
             </DetailCard>
           </ContentWrapper>
-          <ContentWrapper>
-            <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0" />
+          <ContentWrapper padding="0 0.5rem">
+            <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0 0 1rem 0" />
           </ContentWrapper>
           {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
           {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
           {activeTab === 'activity' && <Activity dpoInfo={dpoInfo} />}
-        </>
+        </PageWrapper>
       )}
     </>
   )

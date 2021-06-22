@@ -9,7 +9,14 @@ import { CircleProgress } from 'components/ProgressBar'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, HeavyText, ItalicText, SText, TokenText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, ContentWrapper, InlineSection, PaddedSection, Section, SpacedSection } from 'components/Wrapper'
+import {
+  BorderedWrapper,
+  ContentWrapper,
+  InlineSection,
+  PaddedSection,
+  Section,
+  SpacedSection,
+} from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
 import useDpoFees from 'hooks/useDpoFees'

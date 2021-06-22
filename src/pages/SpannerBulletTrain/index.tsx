@@ -1,20 +1,25 @@
 import React, { useContext } from 'react'
-import { PageWrapper, Section, Wrapper } from '../../components/Wrapper'
-import { Heading, HeavyText, SText } from '../../components/Text'
+import { ContentWrapper, PageWrapper, SpacedSection, Wrapper } from '../../components/Wrapper'
+import { Header1, Header2, HeavyText, SText } from '../../components/Text'
 import styled, { ThemeContext } from 'styled-components'
-import { FlatCard } from '../../components/Card'
+import { BannerCard, FlatCard } from '../../components/Card'
 import { RowBetween } from '../../components/Row'
-import { CabinsCatalogue } from './CabinCatalogue'
+import { CabinsSection } from './Cabins'
 import { GlobalMilestoneReward } from './Milestone'
 import { SoldTo } from './SoldTo'
+import useStats from '../../hooks/useStats'
+import { useSubstrate } from '../../hooks/useSubstrate'
+import { formatToUnit } from '../../utils/formatUnit'
+import LightBanner from 'assets/images/banner-spanner-light.png'
+import { useTranslation } from 'react-i18next'
 
-const PageTitle = styled.h1`
-  margin: 0.1rem 0;
-  font-size: 24px;
-  font-weight: bold;
-  padding-bottom: 0.5rem;
-  color: ${({ theme }) => theme.black};
-`
+// const PageTitle = styled.h1`
+//   margin: 0.1rem 0;
+//   font-size: 24px;
+//   font-weight: bold;
+//   padding-bottom: 0.5rem;
+//   color: ${({ theme }) => theme.black};
+// `
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -25,6 +30,7 @@ export const HomeContentWrapper = styled.div`
 `
 
 export default function BulletTrain() {
+  const { t } = useTranslation()
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}>
       <Wrapper
@@ -34,17 +40,18 @@ export default function BulletTrain() {
           alignItems: 'center',
         }}
       >
-        <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
-          <Section>
-            <PageTitle>{'Spanner BulletTrain'}</PageTitle>
-            <Heading>{'An evolutionary viral growth marketing model '}</Heading>
-          </Section>
-        </div>
-
+        <BannerCard url={LightBanner} borderRadius="0">
+          <ContentWrapper>
+            <Header1 colorIsPrimary>{t(`Spanner BulletTrain`)}</Header1>
+            <Header2>{t(`An evolutionary viral growth marketing model`)}</Header2>
+            <SpacedSection>
+              <SpannerBulletTrainStats />
+            </SpacedSection>
+          </ContentWrapper>
+        </BannerCard>
         <HomeContentWrapper>
-          <SpannerBulletTrainStats />
           <GlobalMilestoneReward />
-          <CabinsCatalogue />
+          <CabinsSection />
           <SoldTo />
         </HomeContentWrapper>
       </Wrapper>
@@ -54,7 +61,9 @@ export default function BulletTrain() {
 
 export function SpannerBulletTrainStats() {
   const theme = useContext(ThemeContext)
-
+  const token = 'BOLT'
+  const stats = useStats(token)
+  const { chainDecimals } = useSubstrate()
   return (
     <FlatCard style={{ textAlign: 'left' }}>
       <HeavyText
@@ -63,7 +72,7 @@ export function SpannerBulletTrainStats() {
         color={theme.primary1}
         style={{ margin: 'auto', textAlign: 'center' }}
       >
-        {'100,000,000 BOLT'}
+        {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}
       </HeavyText>
       <SText
         fontSize={'16px'}
@@ -75,16 +84,16 @@ export function SpannerBulletTrainStats() {
       </SText>
       <RowBetween>
         <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
-          {'10,049,009 BOLT'}
+          {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}
         </HeavyText>
         <SText style={{ textAlign: 'right' }}>{'Total Yield Distributed'}</SText>
       </RowBetween>
-      <RowBetween>
-        <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
-          {'48,948,998 BOLT'}
-        </HeavyText>
-        <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>
-      </RowBetween>
+      {/*<RowBetween>*/}
+      {/*  <HeavyText fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>*/}
+      {/*    {'48,948,998 BOLT'}*/}
+      {/*  </HeavyText>*/}
+      {/*  <SText style={{ textAlign: 'right' }}>{'Total Bonus Distributed'}</SText>*/}
+      {/*</RowBetween>*/}
     </FlatCard>
   )
 }

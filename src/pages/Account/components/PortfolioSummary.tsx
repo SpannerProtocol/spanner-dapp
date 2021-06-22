@@ -149,20 +149,32 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                 </IconWrapper>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.25rem 0 0" padding="0.75rem">
+                <Card
+                  minHeight="80px"
+                  mobileMinHeight="70px"
+                  margin="0 0.5rem"
+                  mobileMargin="0 0.25rem 0 0"
+                  padding="0.75rem"
+                >
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Total Deposited`)}
                   </SText>
                   {Object.keys(totalDeposited).includes(selectedToken) && (
                     <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                      <HeavyText fontSize="20px" mobileFontSize="18px">
+                      <HeavyText fontSize="20px" mobileFontSize="18px" colorIsPrimary>
                         {formatToUnit(totalDeposited[selectedToken].total, chainDecimals)}
                       </HeavyText>
                       <TokenText padding="0 0 0 0.5rem">{selectedToken}</TokenText>
                     </div>
                   )}
                 </Card>
-                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0 0 0.25rem" padding="0.75rem">
+                <Card
+                  minHeight="80px"
+                  mobileMinHeight="70px"
+                  margin="0 0.5rem"
+                  mobileMargin="0 0 0 0.25rem"
+                  padding="0.75rem"
+                >
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Deposit by Asset`)}
                   </SText>
@@ -170,7 +182,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                     <div style={{ display: 'block' }}>
                       {totalDeposited[selectedToken].dpoCount > 0 && (
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <SText fontSize="14px" mobileFontSize="10px">
+                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
                             {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
                           </SText>
                           <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
@@ -181,7 +193,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                       )}
                       {totalDeposited[selectedToken].cabinCount > 0 && (
                         <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <SText fontSize="14px" mobileFontSize="10px">
+                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
                             {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
                           </SText>
                           <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>

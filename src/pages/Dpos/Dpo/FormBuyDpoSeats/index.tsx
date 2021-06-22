@@ -145,7 +145,9 @@ export default function FormBuyDpoSeats({ dpoInfo, token, chainDecimals, onSubmi
         </Section>
       )}
       <Section style={{ marginTop: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit}>{t(`Buy`)}</ButtonPrimary>
+        <ButtonPrimary onClick={handleSubmit} maxWidth="none">
+          {t(`Buy`)}
+        </ButtonPrimary>
       </Section>
     </>
   )

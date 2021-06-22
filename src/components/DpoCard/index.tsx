@@ -3,8 +3,9 @@ import { AlertIcon, AlertWrapper } from 'components/Alert'
 import Card from 'components/Card'
 import { DetailCardSimple } from 'components/Card/DetailCard'
 import { RowBetween, RowFixed } from 'components/Row'
-import { HeavyText, ItalicText, SText, TokenText, Header4 } from 'components/Text'
+import { Header4, HeavyText, ItalicText, SText, TokenText } from 'components/Text'
 import { Section, StateWrapper } from 'components/Wrapper'
+import Decimal from 'decimal.js'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoActions } from 'hooks/useDpoActions'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -14,14 +15,33 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
-import cdDivide from 'utils/cdDivide'
 import { blocksToCountDown } from 'utils/formatBlocks'
 import getApy from 'utils/getApy'
 import { ACTION_ICONS, DPO_STATE_COLORS } from '../../constants'
 import { formatToUnit } from '../../utils/formatUnit'
-import Decimal from 'decimal.js'
 
-export const DpoCardGrid = styled.div`
+const DpoCardGrid = styled.div`
+  display: grid;
+  grid-template-areas: 'state info apy bonus';
+  grid-template-columns: minmax(40px, 80px) 3fr 1fr 1fr;
+  grid-column-gap: 1rem;
+  align-items: center;
+  text-align: left;
+  padding: 1rem;
+  justify-content: flex-start;
+  width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    grid-template-areas: 'state info apy bonus';
+    background: transparent;
+    grid-template-columns: minmax(40px, 80px) 3fr 1fr 1fr;
+    grid-column-gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+  `};
+`
+
+const ProfileCardGrid = styled.div`
   display: grid;
   grid-template-areas: 'title title';
   grid-template-columns: auto auto;
@@ -33,9 +53,9 @@ export const DpoCardGrid = styled.div`
   text-align: center;
   width: 100%;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    grid-template-areas: 'state info apy bonus';
+    grid-template-areas: 'state info';
     background: transparent;
-    grid-template-columns: minmax(40px, 80px) 3fr 1fr 1fr;
+    grid-template-columns: minmax(40px, 80px) 2fr;
     grid-column-gap: 0.25rem;
     text-align: left;
     justify-content: flex-start;
@@ -43,52 +63,6 @@ export const DpoCardGrid = styled.div`
     padding: 0;
     width: 100%;
   `};
-`
-
-export const DpoData1 = styled.div`
-  grid-area: data1;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  display: block;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  `};
-`
-
-export const DpoData2 = styled.div`
-  grid-area: data2;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  display: block;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  `};
-`
-
-export const DpoTitle = styled.div`
-  grid-area: title;
-  padding-bottom: 0.5rem;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  padding-bottom: 0;
-  `};
-`
-
-export const DpoWrapper = styled(Card)`
-  // transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
-  // &:hover {
-  //   cursor: pointer;
-  //   box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  //   transform: translate(0, -5px);
-  // }
-  padding: 0;
-  background: transparent;
-`
-
-const InlineSection = styled.div`
-  display: inline-flex;
-  justify-content: center;
-  width: 100%
-    ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  justify-content: flex-start;
-`};
 `
 
 function DpoCardDetails({ dpoInfo, expiry }: { dpoInfo: DpoInfo; expiry?: BN }) {
@@ -246,7 +220,6 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
   const dpoActions = useDpoActions(dpoInfo)
   const { t } = useTranslation()
 
-  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
   const actions = dpoActions.dpoActions
 
   const [expiry, setExpiry] = useState<BN>()
@@ -262,60 +235,49 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
     }
   }, [lastBlock, dpoInfo])
 
-  const bonusPercent =
-    dpoInfo &&
-    Math.floor(cdDivide(dpoInfo.target_bonus_estimate.toBn(), dpoInfo.target_amount.toBn(), chainDecimals) * 100)
-
   return (
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
-        <DpoWrapper style={{ overflow: 'hidden' }}>
-          <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
-            <DpoCardGrid>
-              <DpoTitle>
-                <Section>
-                  <RowBetween>
-                    <div style={{ display: 'block' }}>
-                      <HeavyText>{dpoInfo.name.toString()}</HeavyText>
-                      <ItalicText fontSize="10px">
-                        {t(`DPO`)} #{dpoInfo.index.toString()}
-                      </ItalicText>
-                    </div>
-                    {dpoInfo.state.isCreated && expiry && (
-                      <InlineSection style={{ width: 'auto' }}>
-                        {expiry.isZero() ? (
-                          <>
-                            <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                              <SText color="#fff" fontSize="12px" mobileFontSize="10px">
-                                {t(`EXPIRED`)}
-                              </SText>
-                            </StateWrapper>
-                          </>
-                        ) : (
-                          <div style={{ display: 'flex', marginRight: '0.5rem' }}>
-                            <SText fontSize="10px" style={{ paddingLeft: '0.2rem' }}>{`${blocksToCountDown(
-                              expiry.toString(),
-                              expectedBlockTime
-                            )}`}</SText>
-                          </div>
-                        )}
-                      </InlineSection>
-                    )}
-                    {!dpoInfo.state.isCreated && (
-                      <InlineSection style={{ width: 'auto' }}>
-                        <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
-                          <SText color="#fff" fontSize="12px" mobileFontSize="10px">
-                            {t(dpoInfo.state.toString())}
-                          </SText>
-                        </StateWrapper>
-                      </InlineSection>
-                    )}
-                  </RowBetween>
-                </Section>
+        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+          <Card>
+            <ProfileCardGrid>
+              {dpoInfo.state.isCreated && expiry && (
+                <RowFixed>
+                  {expiry.isZero() ? (
+                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                      <SText color="#fff" fontSize="12px" mobileFontSize="8px">
+                        {t(`EXPIRED`)}
+                      </SText>
+                    </StateWrapper>
+                  ) : (
+                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                      <SText color="#fff" fontSize="12px" mobileFontSize="8px">
+                        {dpoInfo.state.toString()}
+                      </SText>
+                    </StateWrapper>
+                  )}
+                </RowFixed>
+              )}
+              {!dpoInfo.state.isCreated && (
+                <RowFixed>
+                  <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                    <SText color="#fff" fontSize="12px" mobileFontSize="8px">
+                      {t(dpoInfo.state.toString())}
+                    </SText>
+                  </StateWrapper>
+                </RowFixed>
+              )}
+              <Section>
+                <RowBetween>
+                  <HeavyText>{dpoInfo.name.toString()}</HeavyText>
+                  <ItalicText fontSize="10px">
+                    {t(`DPO`)} #{dpoInfo.index.toString()}
+                  </ItalicText>
+                </RowBetween>
                 {actions && actions.length > 0 && (
                   <Section>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <InlineSection>
+                      <RowFixed>
                         <HeavyText width="fit-content">{t(`Pending Actions`)}:</HeavyText>
                         <div style={{ display: 'flex' }}>
                           {actions.map((action, index) => (
@@ -324,60 +286,14 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                             </AlertWrapper>
                           ))}
                         </div>
-                      </InlineSection>
+                      </RowFixed>
                     </div>
                   </Section>
                 )}
-              </DpoTitle>
-              <DpoData1>
-                <InlineSection>
-                  <HeavyText width="fit-content">{t(`Crowdfunding`)}:</HeavyText>
-                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-                    {formatToUnit(dpoInfo.target_amount.toBn(), chainDecimals)} {token}
-                  </SText>
-                </InlineSection>
-                {dpoInfo.state.isCreated && (
-                  <InlineSection>
-                    <HeavyText width="fit-content">{t(`Seats Open`)}:</HeavyText>
-                    <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-                      {dpoInfo.empty_seats.toString()} {t(`Seats`)}
-                    </SText>
-                  </InlineSection>
-                )}
-                <InlineSection>
-                  <HeavyText width="fit-content">{t(`Manager Fee`)}:</HeavyText>
-                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-                    {dpoInfo.fee.toNumber() / 10}%
-                  </SText>
-                </InlineSection>
-              </DpoData1>
-              <DpoData2>
-                <InlineSection>
-                  {expectedBlockTime && (
-                    <>
-                      <HeavyText width="fit-content">{t(`APY`)}:</HeavyText>
-                      <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-                        {`${getApy({
-                          totalYield: dpoInfo.target_yield_estimate.toBn(),
-                          totalDeposit: dpoInfo.target_amount.toBn(),
-                          chainDecimals: chainDecimals,
-                          blockTime: expectedBlockTime,
-                          period: dpoInfo.target_maturity,
-                        }).toString()} %`}
-                      </SText>
-                    </>
-                  )}
-                </InlineSection>
-                <InlineSection>
-                  <HeavyText width="fit-content">{t(`Bonus`)}:</HeavyText>
-                  <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-                    {bonusPercent}%
-                  </SText>
-                </InlineSection>
-              </DpoData2>
-            </DpoCardGrid>
-          </Link>
-        </DpoWrapper>
+              </Section>
+            </ProfileCardGrid>
+          </Card>
+        </Link>
       )}
     </>
   )

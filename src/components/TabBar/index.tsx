@@ -6,19 +6,18 @@ import styled from 'styled-components'
 const TabBarWrapper = styled.div<{ margin?: string; level?: string }>`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-  background: ${({ level, theme }) => (level === 'primary' ? theme.secondary4 : theme.bg4)};
+  background: ${({ level, theme }) => (level === 'primary' ? theme.bg4 : theme.bg4)};
   border: 2px solid transparent;
   border-radius: 10px;
   width: 100%;
   justify-content: flex-start;
   align-items: flex-start;
   text-align: left;
-  margin: ${({ margin }) => (margin ? margin : '0 0rem 2rem 0')};
+  margin: ${({ margin }) => (margin ? margin : '0 0rem 1rem 0')};
 `
 
 const TabWrapper = styled.div<{ active?: boolean; level?: string }>`
-  background: ${({ active, level, theme }) =>
-    active ? theme.primary1 : level === 'primary' ? theme.secondary4 : theme.bg4};
+  background: ${({ active, level, theme }) => (active ? theme.primary1 : level === 'primary' ? theme.bg4 : theme.bg4)};
   padding: 0.5rem;
   border: 3px solid ${({ active }) => (active ? 'transparent' : 'transparent')};
   border-radius: 10px;
@@ -31,7 +30,7 @@ const Tab = styled.div`
 
 const TabText = styled.p<{ fontSize?: string; mobileFontSize?: string; active?: boolean; level?: string }>`
   width: 100%;
-  color: ${({ active, level, theme }) => (active ? theme.white : level === 'primary' ? theme.white : theme.text1)};
+  color: ${({ active, level, theme }) => (active ? theme.white : level === 'primary' ? theme.text2 : theme.text1)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
   font-weight: ${(active) => (active ? 900 : 300)};
   text-align: center;

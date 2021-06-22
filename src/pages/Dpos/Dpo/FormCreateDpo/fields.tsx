@@ -148,7 +148,7 @@ export function DpoManagerSeats({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText mobileFontSize="10px">
+            <SText mobileFontSize="10px" width={'fit-content'}>
               {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
             </SText>
           </RowBetween>

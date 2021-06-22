@@ -34,7 +34,11 @@ function TransactionRow({ id, section, method, timestamp, isSuccess, block }: Ex
     <TxRow>
       <TxCell>
         <RowBetween>
-          <StyledExternalLink fontSize="12px" href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}>
+          <StyledExternalLink
+            color={theme.blue2}
+            fontSize="12px"
+            href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}
+          >
             {truncateString(id, 26)}
           </StyledExternalLink>
         </RowBetween>

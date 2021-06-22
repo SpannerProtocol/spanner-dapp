@@ -5,6 +5,7 @@ import BN from 'bn.js'
 import Card, { BannerCard } from 'components/Card'
 import PriceChart from 'components/Chart'
 import Divider from 'components/Divider'
+import Filter from 'components/Filter'
 import { Icon } from 'components/Image'
 import { RowBetween } from 'components/Row'
 import { Header1, Header2, Header4, HeavyText, ItalicText, SText } from 'components/Text'
@@ -106,6 +107,7 @@ export default function Project(): JSX.Element {
   const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
   const { t } = useTranslation()
   const dexPools = usePoolsWithToken(projectPath.token)
+  const [filteredAsset, setFilteredAsset] = useState<string>('TravelCabin')
 
   const stats = useStats(projectPath.token.toUpperCase())
 
@@ -121,10 +123,10 @@ export default function Project(): JSX.Element {
     setProjectInfo(currentProject)
   }, [projectInfos, projectPath])
 
-  // const assetFilter = useMemo(() => {
-  //   const options = ['ALL', 'CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED', 'EXPIRED', 'FAILED']
-  //   return options.map((label) => ({ label, callback: () => setFilteredState(label) }))
-  // }, [])
+  const assetFilter = useMemo(() => {
+    const options = ['TravelCabin', 'NFTs (Coming soon)']
+    return options.map((label) => ({ label, callback: () => setFilteredAsset(label) }))
+  }, [])
 
   return (
     <>
@@ -159,7 +161,13 @@ export default function Project(): JSX.Element {
                 )}
               </GridWrapper>
             </Card>
-            {/* <Filter  /> */}
+            <Filter
+              options={assetFilter}
+              activeOption={filteredAsset}
+              modalTitle={t(`Filter Asset`)}
+              margin="0.25rem"
+              filterLabel="Filter by Asset"
+            />
             {!noBulletTrain && (
               <ContentWrapper>
                 <BannerCard url={BulletTrainBanner} padding="3rem 1rem" darkenBackground>

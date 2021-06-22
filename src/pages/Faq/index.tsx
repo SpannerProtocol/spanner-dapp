@@ -2,7 +2,7 @@ import Card from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import Text, { Heading, Header3 } from '../../components/Text'
+import { Heading, Header3, SText } from '../../components/Text'
 
 export default function Faq() {
   const { t } = useTranslation()
@@ -20,23 +20,23 @@ export default function Faq() {
           <Heading>{t(`Frequently Asked Questions`)}</Heading>
           <SpacedSection>
             <Header3>{t(`How do I login to Spanner's DApp?`)}</Header3>
-            <Text>{t(`How do I login to Spanner's DApp? (answer)`)}</Text>
+            <SText>{t(`How do I login to Spanner's DApp? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
             <Header3>{t(`How do I get tokens on Spanner?`)}</Header3>
-            <Text>{t(`How do I get tokens on Spanner? (answer)`)}</Text>
+            <SText>{t(`How do I get tokens on Spanner? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
             <Header3>{t(`How do I switch projects?`)}</Header3>
-            <Text>{t(`How do I switch projects? (answer)`)}</Text>
+            <SText>{t(`How do I switch projects? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
             <Header3>{t(`How do I switch chains?`)}</Header3>
-            <Text>{t(`How do I switch chains? (answer)`)}</Text>
+            <SText>{t(`How do I switch chains? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
             <Header3>{t(`Starting a project on Spanner`)}</Header3>
-            <Text>{t(`Starting a project on Spanner (answer)`)}</Text>
+            <SText>{t(`Starting a project on Spanner (answer)`)}</SText>
           </SpacedSection>
         </Card>
       </Wrapper>

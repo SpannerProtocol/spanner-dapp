@@ -114,7 +114,7 @@ export const Header3 = styled.h3<{
   colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '30px')};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '24px')};
   font-weight: 700;
   width: ${({ width }) => (width ? width : '100%')};
   color: ${({ color, colorIsPrimary, theme }) => (color ? color : colorIsPrimary ? theme.primary1 : theme.text1)};
@@ -136,7 +136,7 @@ export const Header4 = styled.h4<{
   colorIsPrimary?: boolean
 }>`
   font-family: 'Lato', 'Roboto', 'sans-serif';
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '24px')};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '20px')};
   font-weight: 700;
   width: ${({ width }) => (width ? width : '100%')};
   margin: 1rem 0;

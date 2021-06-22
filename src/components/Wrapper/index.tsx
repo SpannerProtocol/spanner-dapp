@@ -45,11 +45,11 @@ export const PaddedSection = styled(AutoColumn)`
   `};
 `
 
-export const ContentWrapper = styled.div`
+export const ContentWrapper = styled.div<{ padding?: string }>`
   position: relative;
   width: 100%;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 0.5rem;
+  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+    padding: ${padding ? padding : '0 0.5rem'};
   `};
 `
 
@@ -120,8 +120,6 @@ export const MemberWrapper = styled(RoundWrapper)<{ borderColor?: string; backgr
   display: block;
   align-items: center;
   width: 100%;
-  margin-left: 0.5rem;
-  margin-right: 0.5rem;
   font-size: 11px;
   font-weight: 500;
   color: ${({ color, theme }) => (color ? color : theme.text1)}
@@ -134,7 +132,6 @@ export const StateWrapper = styled(RoundWrapper)`
   border-radius: 14px;
   font-size: 11px;
   font-weight: 500;
-  margin-right: 0.5rem;
   padding: 0.5rem;
   width: auto;
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;

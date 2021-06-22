@@ -249,7 +249,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
         <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit} disabled={errNoBalance ? true : false}>
+        <ButtonPrimary maxWidth="none" onClick={handleSubmit} disabled={errNoBalance ? true : false}>
           {t(`Create DPO`)}
         </ButtonPrimary>
       </Section>

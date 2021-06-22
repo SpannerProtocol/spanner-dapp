@@ -9,7 +9,7 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import SearchBar from 'components/SearchBar'
 import { Header1, Header3, Header4, HeavyText, TokenText } from 'components/Text'
-import { CenterWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
+import { CenterWrapper, ContentWrapper, PageWrapper, Section, SpacedSection } from 'components/Wrapper'
 import Decimal from 'decimal.js'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useTotalCrowdfundedAmount } from 'hooks/useDpoStats'
@@ -316,55 +316,57 @@ export default function Dpos() {
 
   return (
     <>
-      <DpoOverviewCard token={token} />
-      <ContentWrapper>
-        <Section style={{ width: '100%' }}>
-          {/* filters */}
-          <RowFixed>
-            <Filter
-              options={stateFilterOptions}
-              activeOption={filteredState}
-              modalTitle={t(`Filter Dpo State`)}
-              margin="0.25rem"
-              filterLabel="State"
+      <PageWrapper>
+        <DpoOverviewCard token={token} />
+        <ContentWrapper>
+          <Section style={{ width: '100%' }}>
+            {/* filters */}
+            <RowFixed>
+              <Filter
+                options={stateFilterOptions}
+                activeOption={filteredState}
+                modalTitle={t(`Filter Dpo State`)}
+                margin="0.25rem"
+                filterLabel="State"
+              />
+              <Filter
+                options={assetFilterOptions}
+                activeOption={filteredAsset}
+                modalTitle={t(`Filter Targeted Asset`)}
+                margin="0.25rem"
+                filterLabel="Asset"
+              />
+              <PillToggleFilter
+                isActive={filteredAffordable}
+                toggle={() => setFilteredAfforable(!filteredAffordable)}
+                margin="0.5rem"
+                toggleLabel={t('Enough Balance')}
+                labelActive="ON"
+                labelInactive="OFF"
+              />
+              <PillToggleFilter
+                isActive={filteredOwned}
+                toggle={() => setFilteredOwned(!filteredOwned)}
+                margin="0.5rem"
+                toggleLabel="My DPOs"
+                labelActive="ON"
+                labelInactive="OFF"
+              />
+            </RowFixed>
+            <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />
+            <SearchBar
+              inputType="text"
+              placeholder="Search for Name"
+              keyword={searchTerm}
+              setKeyword={setSearchTerm}
+              backgroundColor={'#fff'}
             />
-            <Filter
-              options={assetFilterOptions}
-              activeOption={filteredAsset}
-              modalTitle={t(`Filter Targeted Asset`)}
-              margin="0.25rem"
-              filterLabel="Asset"
-            />
-            <PillToggleFilter
-              isActive={filteredAffordable}
-              toggle={() => setFilteredAfforable(!filteredAffordable)}
-              margin="0.5rem"
-              toggleLabel="Enough Balance"
-              labelActive="ON"
-              labelInactive="OFF"
-            />
-            <PillToggleFilter
-              isActive={filteredOwned}
-              toggle={() => setFilteredOwned(!filteredOwned)}
-              margin="0.5rem"
-              toggleLabel="My DPOs"
-              labelActive="ON"
-              labelInactive="OFF"
-            />
-          </RowFixed>
-          <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />
-          <SearchBar
-            inputType="text"
-            placeholder="Search for Name"
-            keyword={searchTerm}
-            setKeyword={setSearchTerm}
-            backgroundColor={'#fff'}
-          />
-        </Section>
-        {searchResults.map((dpoInfo, index) => {
-          return <DpoCard key={index} dpoInfo={dpoInfo} />
-        })}
-      </ContentWrapper>
+          </Section>
+          {searchResults.map((dpoInfo, index) => {
+            return <DpoCard key={index} dpoInfo={dpoInfo} />
+          })}
+        </ContentWrapper>
+      </PageWrapper>
     </>
   )
 }

@@ -45,7 +45,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
   return (
     <>
       <ContentWrapper>
-        <Card>
+        <Card margin="0 0 1rem 0">
           <Header2>{t(`Details`)}</Header2>
           <SmallText>{t(`DPO Account Vault`)}</SmallText>
           <BorderedWrapper borderColor="#EC3D3D" style={{ marginTop: '0' }}>

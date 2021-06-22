@@ -139,8 +139,8 @@ export default function DpoTargetCabinForm({
         </Section>
         <BorderedWrapper>
           <RowBetween>
-            <SText>{t(`Available Balance`)}</SText>
-            <SText>
+            <SText width={'fit-content'}>{t(`Available Balance`)}</SText>
+            <SText width={'fit-content'}>
               {formatToUnit(balance, chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
@@ -153,7 +153,7 @@ export default function DpoTargetCabinForm({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText>
+            <SText width={'fit-content'}>
               {formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
@@ -166,7 +166,7 @@ export default function DpoTargetCabinForm({
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
+            <SText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
           </RowBetween>
         </BorderedWrapper>
         <DpoDefaultTarget target={travelCabinInfo.name.toString()} />
@@ -189,9 +189,9 @@ export default function DpoTargetCabinForm({
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
-            baseFee + managerSeats
-          )}%`}</SText>
+          <SText width={'fit-content'}>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(
+            `Seats`
+          )}) = ${noNan(baseFee + managerSeats)}%`}</SText>
         </RowBetween>
         <RowBetween>
           <RowFixed width="fit-content">
@@ -202,9 +202,9 @@ export default function DpoTargetCabinForm({
               backgroundColor={'#fff'}
             ></QuestionHelper>
           </RowFixed>
-          <SText>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(100 - directReferralRate)} (${t(
-            `2nd`
-          )}) = 100%`}</SText>
+          <SText width={'fit-content'}>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(
+            100 - directReferralRate
+          )} (${t(`2nd`)}) = 100%`}</SText>
         </RowBetween>
       </BorderedWrapper>
       <DpoManagerSeats
