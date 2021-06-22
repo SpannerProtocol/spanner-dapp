@@ -24,7 +24,7 @@ import {
 import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { shortenAddr } from '../../utils/truncateString'
-import { useExpectedBlockTime, useGenesisTime, useGetLastBlock, useSubLastBlock } from '../../hooks/useBlocks'
+import { useExpectedBlockTime, useGenesisTime, useGetLastBlock } from '../../hooks/useBlocks'
 import { blockToTs, tsToDateTime } from '../../utils/formatBlocks'
 import BN from 'bn.js'
 import useUserActions from '../../hooks/useUserActions'
@@ -174,7 +174,7 @@ export function YieldAvailable(props: CabinInfoProps) {
   const { travelCabinInfo, travelCabinInventoryIndex, chainDecimals, token, selectedBuyer } = props
   const [yieldAvailable, setYieldAvailable] = useState<string>()
   const buyer = useSubTravelCabinBuyerVerbose(selectedBuyer[0][0], selectedBuyer[0][1])
-  const lastBlock = useGetLastBlock()
+  const { lastBlock } = useGetLastBlock()
 
   useEffect(() => {
     if (lastBlock && travelCabinInfo && buyer) {
@@ -397,13 +397,9 @@ export function Trip(props: CabinInfoProps) {
   const { travelCabinInfo, selectedBuyer } = props
   const expectedBlockTime = useExpectedBlockTime()
   const genesisTs = useGenesisTime()
-  const { lastBlock } = useSubLastBlock()
+  const { lastBlock } = useGetLastBlock()
   const [activeStep, setActiveStep] = useState<number>(1)
   const { t } = useTranslation()
-
-  console.log(`expectedBlockTime:${expectedBlockTime}`)
-  console.log(`genesisTs:${genesisTs}`)
-  console.log(`lastBlock:${lastBlock}`)
 
   if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
   const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
