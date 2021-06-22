@@ -18,6 +18,7 @@ import SwiperCore, { Pagination } from 'swiper/core'
 import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
 import heroBannerBg from '../../assets/images/hero-banner-desktop.jpg'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -50,9 +51,11 @@ export function DPOV1() {
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
           {t('homepage dpov1 intro')}
         </SText>
-        <CircleNextIconWrapper>
-          <StyledCircleNext />
-        </CircleNextIconWrapper>
+        <Link to={`/dpos`} style={{ textDecoration: 'none' }}>
+          <CircleNextIconWrapper>
+            <StyledCircleNext />
+          </CircleNextIconWrapper>
+        </Link>
       </FlatCard>
     </>
   )

@@ -21,6 +21,7 @@ import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit } from '../../utils/formatUnit'
 import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
 import { useTranslation } from 'react-i18next'
+import { Link } from 'react-router-dom'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -53,9 +54,11 @@ export function BulletTrain() {
         <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
           {t('homepage Spanner BulletTrain intro')}
         </SText>
-        <CircleNextIconWrapper>
-          <StyledCircleNextWhite />
-        </CircleNextIconWrapper>
+        <Link to={`/bullettrain`} style={{ textDecoration: 'none' }}>
+          <CircleNextIconWrapper>
+            <StyledCircleNextWhite />
+          </CircleNextIconWrapper>
+        </Link>
       </FlatCard>
     </>
   )
