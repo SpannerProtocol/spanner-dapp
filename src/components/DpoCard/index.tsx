@@ -252,7 +252,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                   ) : (
                     <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
                       <SText color="#fff" fontSize="12px" mobileFontSize="8px">
-                        {dpoInfo.state.toString()}
+                        {t(dpoInfo.state.toString())}
                       </SText>
                     </StateWrapper>
                   )}

@@ -74,7 +74,7 @@ export function SpannerNFT() {
           {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
-          <Header4>{t('(Coming soon)')}</Header4>
+          <Header4>({t('Coming soon')})</Header4>
         </div>
       </FlatCard>
     </>

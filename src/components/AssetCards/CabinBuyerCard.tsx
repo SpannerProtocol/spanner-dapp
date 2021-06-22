@@ -39,7 +39,7 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
       {cabinInfo && (
         <CabinWrapper>
           <Link
-            to={`/item/travelcabin/${cabinInfo.index.toString()}/inventory/${inventoryIndex}`}
+            to={`/assets/travelcabin/${cabinInfo.index.toString()}/inventory/${inventoryIndex}`}
             style={{ textDecoration: 'none' }}
           >
             <CabinCard>

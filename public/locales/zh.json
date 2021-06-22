@@ -644,5 +644,12 @@
   "DPO Seats": "DPO席位",
   "ASC": "升序",
   "DESC": "降序",
-  "Name": "名称"
+  "Name": "名称",
+  "Running Dpos": "运行中的DPO",
+  "Portfolio": "投资",
+  "BulletTrain TravelCabins": "子弹列车客舱",
+  "Earn by depositing your tokens and referring your friends": "通过存入您的代币并推荐您的朋友来赚取收益",
+  "Total Deposits Stored": "总抵押量",
+  "Users Participating": "参与用户数",
+  "A Blockchain for Decentralized Programmable Organizations.": "去中心化可编程组织的区块链。"
 }

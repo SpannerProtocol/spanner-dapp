@@ -256,7 +256,7 @@ function CabinCardDetails(props: TravelCabinCard) {
         />
       </TxModal>
       {expectedBlockTime && (
-        <RowBetween padding={'0.5rem 0.5rem'}>
+        <RowBetween padding={'0.5rem 4rem'}>
           <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {t(`Trip`)}
           </HeavyText>
@@ -267,7 +267,7 @@ function CabinCardDetails(props: TravelCabinCard) {
         </RowBetween>
       )}
       {inventoryCount && (
-        <RowBetween padding={'0.5rem 0.5rem'}>
+        <RowBetween padding={'0.5rem 4rem'}>
           <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
             {t(`Available`)}
           </HeavyText>

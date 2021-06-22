@@ -128,8 +128,8 @@ export default function Project(): JSX.Element {
                 {projectInfo && (
                   <ContentWrapper>
                     <SpacedSection>
-                      <Header1>{projectRegistry.name}</Header1>
-                      <ItalicText>{projectRegistry.description}</ItalicText>
+                      <Header1>{t(projectRegistry.name)}</Header1>
+                      <ItalicText>{t(projectRegistry.description)}</ItalicText>
                       <SpacedSection>
                         <SText>
                           <b>{t(`Token`)}</b>: {projectInfo.token}
