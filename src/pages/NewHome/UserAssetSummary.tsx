@@ -14,6 +14,7 @@ import { ApolloError } from '@apollo/client/errors'
 import { formatToUnit } from '../../utils/formatUnit'
 import { PairPrice, PairPriceVariables } from '../../queries/graphql/types/PairPrice'
 import pairPrice from '../../queries/graphql/pairPrice'
+import { useTranslation } from 'react-i18next'
 
 interface TokenDeposits {
   [token: string]: {
@@ -209,11 +210,12 @@ export function UserAssetSummaryFetch({ address, token }: { address: string; tok
 }
 
 export function UserAssetSummary({ totalDeposited }: { totalDeposited: string }) {
+  const { t } = useTranslation()
   return (
     <FlatCard style={{ textAlign: 'left' }}>
-      <HomeSectionTitle>{'User Asset'}</HomeSectionTitle>
-      <HomeSectionLabel1>{'Total Deposited'}</HomeSectionLabel1>
-      <HomeSectionValue1>{`$${totalDeposited}`}</HomeSectionValue1>
+      <HomeSectionTitle>{t('User Asset')}</HomeSectionTitle>
+      <HomeSectionLabel1>{t('Total Deposited')}</HomeSectionLabel1>
+      <HomeSectionValue1>{`≈ $${totalDeposited}`}</HomeSectionValue1>
       {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}
       {/*<HomeSectionValue1>{'$198.04'}</HomeSectionValue1>*/}
     </FlatCard>

@@ -30,6 +30,21 @@ export function useSubLastBlock() {
   return { lastBlock, isReady }
 }
 
+export function useGetLastBlock() {
+  const { api, connected } = useApi()
+  const [lastBlock, setLastBlock] = useState<BlockNumber>()
+
+  useEffect(() => {
+    api.rpc.chain.getFinalizedHead().then((blockHash) =>
+      api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
+        setLastBlock(signedBlock.block.header.number.unwrap())
+      })
+    )
+  }, [api, connected])
+
+  return lastBlock
+}
+
 export function useCurrentTime(): Moment | undefined {
   const { api, connected } = useApi()
   const [currentTime, setCurrentTime] = useState<Moment>()
@@ -53,14 +68,15 @@ export function useGenesisTime(): number | undefined {
   useEffect(() => {
     if (!connected || !expectedBlockTime) return
     // Get Genesis timestamp
-    api.rpc.chain.getBlockHash(1).then((blockHash) =>
+    api.rpc.chain.getBlockHash(1).then((blockHash) => {
+      console.log(`blockHash:${blockHash}`)
       api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
         const methodSetTs = signedBlock.block.extrinsics.find(
           (info) => info.method.method === 'set' && info.method.section === 'timestamp'
         )
         if (methodSetTs) setGenesisTs(parseInt(methodSetTs.method.args.toString()) - expectedBlockTime.toNumber())
       })
-    )
+    })
   }, [api, connected, expectedBlockTime])
 
   return genesisTs

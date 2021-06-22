@@ -17,6 +17,7 @@ import 'swiper/components/pagination/pagination.min.css'
 import SwiperCore, { Pagination } from 'swiper/core'
 import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
 import heroBannerBg from '../../assets/images/hero-banner-desktop.jpg'
+import { useTranslation } from 'react-i18next'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -35,6 +36,7 @@ export function DPOSwiper() {
 }
 
 export function DPOV1() {
+  const { t } = useTranslation()
   return (
     <>
       <FlatCard
@@ -46,7 +48,7 @@ export function DPOV1() {
       >
         <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {'DPO is a novel crowdfunding model extending from affiliate marketing'}
+          {t('homepage dpov1 intro')}
         </SText>
         <CircleNextIconWrapper>
           <StyledCircleNext />
@@ -57,15 +59,16 @@ export function DPOV1() {
 }
 
 export function DPOV2() {
+  const { t } = useTranslation()
   return (
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
         <HomeSectionTitle>{'DPO V2'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {'DPO is a novel crowdfunding model extending from affiliate marketing'}
+          {t('homepage dpov2 intro')}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
-          <Header4>{'(Coming soon)'}</Header4>
+          <Header4>({t('Coming soon')})</Header4>
         </div>
       </FlatCard>
     </>
@@ -75,18 +78,19 @@ export function DPOV2() {
 export function DPOV1Stats() {
   const dpoCount = useQuerySubscribeDpoCount()
   const runningDpoCount = useQueryRunningDpoCount()
+  const { t } = useTranslation()
 
   return (
     <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
       <HomeSectionTitle>{'DPO V1 Stats'}</HomeSectionTitle>
       {dpoCount && (
         <RowBetween>
-          <HomeSectionLabel2>Total DPOs Quantity</HomeSectionLabel2>
+          <HomeSectionLabel2>{t('Total DPOs Quantity')}</HomeSectionLabel2>
           <HomeSectionValue2>{dpoCount.toString()}</HomeSectionValue2>
         </RowBetween>
       )}
       <RowBetween>
-        <HomeSectionLabel2>Running Dpos Quantity</HomeSectionLabel2>
+        <HomeSectionLabel2>{t('Running Dpos Quantity')}</HomeSectionLabel2>
         <HomeSectionValue2>{runningDpoCount.toString()}</HomeSectionValue2>
       </RowBetween>
     </FlatCard>

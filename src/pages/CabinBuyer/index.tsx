@@ -4,7 +4,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from '../../components/Row'
 import { IconWrapper } from '../../components/AssetCards/TravelCabinCard'
-import getCabinClass,{ getCabinClassImage } from '../../utils/getCabinClass'
+import getCabinClass, { getCabinClassImage } from '../../utils/getCabinClass'
 import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { FlatCard } from '../../components/Card'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +24,7 @@ import {
 import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { shortenAddr } from '../../utils/truncateString'
-import { useBlockManager } from '../../hooks/useBlocks'
+import { useExpectedBlockTime, useGenesisTime, useGetLastBlock, useSubLastBlock } from '../../hooks/useBlocks'
 import { blockToTs, tsToDateTime } from '../../utils/formatBlocks'
 import BN from 'bn.js'
 import useUserActions from '../../hooks/useUserActions'
@@ -48,6 +48,7 @@ export default function TravelCabinBuyer() {
     [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
   >()
   const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
 
   useEffect(() => {
     if (buyers.length === 0) return
@@ -73,7 +74,7 @@ export default function TravelCabinBuyer() {
           <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
             <Section>
               <HeavyText fontSize={'18px'} mobileFontSize={'18px'} style={{ margin: 'auto' }}>
-                {'Spanner TravelCabin Inventory'}
+                {t('Spanner TravelCabin Inventory')}
               </HeavyText>
             </Section>
           </div>
@@ -173,7 +174,7 @@ export function YieldAvailable(props: CabinInfoProps) {
   const { travelCabinInfo, travelCabinInventoryIndex, chainDecimals, token, selectedBuyer } = props
   const [yieldAvailable, setYieldAvailable] = useState<string>()
   const buyer = useSubTravelCabinBuyerVerbose(selectedBuyer[0][0], selectedBuyer[0][1])
-  const { lastBlock } = useBlockManager()
+  const lastBlock = useGetLastBlock()
 
   useEffect(() => {
     if (lastBlock && travelCabinInfo && buyer) {
@@ -255,14 +256,14 @@ export function YieldAvailable(props: CabinInfoProps) {
       >
         <>
           <SText>
-            {`Confirm Withdraw Yield from TravelCabin`}: {getCabinClass(travelCabinInfo.index.toString())}`
+            {t(`Confirm Withdraw Yield from TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}`
           </SText>
           <TxFee fee={estimatedFee} />
         </>
       </TxModal>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-          {'Yield Available'}
+          {t('Yield Available')}
         </HeavyText>
         <RowBetween>
           <HeavyText width={'fit-content'} fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
@@ -355,14 +356,14 @@ export function FareAvailable(props: CabinInfoProps) {
       >
         <>
           <SText>
-            {`Confirm Withdraw Ticket Fare from TravelCabin`}: {getCabinClass(travelCabinInfo.index.toString())}`
+            {t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}`
           </SText>
           <TxFee fee={estimatedFee} />
         </>
       </TxModal>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-          {'Fare Available'}
+          {t('Fare Available')}
         </HeavyText>
         <RowBetween padding={'1.5rem 0rem'}>
           <HeavyText width={'fit-content'} fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
@@ -394,8 +395,15 @@ const TripDiv = styled.div`
 
 export function Trip(props: CabinInfoProps) {
   const { travelCabinInfo, selectedBuyer } = props
-  const { expectedBlockTime, genesisTs, lastBlock } = useBlockManager()
+  const expectedBlockTime = useExpectedBlockTime()
+  const genesisTs = useGenesisTime()
+  const { lastBlock } = useSubLastBlock()
   const [activeStep, setActiveStep] = useState<number>(1)
+  const { t } = useTranslation()
+
+  console.log(`expectedBlockTime:${expectedBlockTime}`)
+  console.log(`genesisTs:${genesisTs}`)
+  console.log(`lastBlock:${lastBlock}`)
 
   if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
   const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
@@ -407,7 +415,7 @@ export function Trip(props: CabinInfoProps) {
   return (
     <>
       <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
-        {'Trip'}
+        {t('Trip')}
       </HeavyText>
 
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
@@ -435,7 +443,7 @@ export function Trip(props: CabinInfoProps) {
                   <StepLabel>
                     <TripDiv>
                       <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {`Start`}
+                        {t(`Start`)}
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                         {tsToDateTime(
@@ -450,7 +458,7 @@ export function Trip(props: CabinInfoProps) {
                   <StepLabel>
                     <TripDiv>
                       <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {`End`}
+                        {t(`End`)}
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                         {tsToDateTime(
@@ -494,12 +502,13 @@ export function Activity() {
 }
 
 export function ActivityItem() {
+  const { t } = useTranslation()
   return (
     <>
       <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
         <RowBetween>
           <HeavyText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-            {`Withdraw`}
+            {t(`Withdraw`)}
           </HeavyText>
           <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
             {`0.675 BOLT`}

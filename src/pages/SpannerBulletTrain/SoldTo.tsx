@@ -1,4 +1,4 @@
-import { useBlockManager } from '../../hooks/useBlocks'
+import { useExpectedBlockTime, useGenesisTime } from '../../hooks/useBlocks'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { FlatCard } from '../../components/Card'
@@ -19,7 +19,8 @@ export function SoldTo() {
   const platinumBuyers = useTravelCabinBuyers('3')
   const diamondBuyers = useTravelCabinBuyers('4')
   const buyers = bronzeBuyers.concat(sliverBuyers, goldBuyers, platinumBuyers, diamondBuyers)
-  const { expectedBlockTime, genesisTs } = useBlockManager()
+  const expectedBlockTime = useExpectedBlockTime()
+  const genesisTs = useGenesisTime()
   const sortedBuyers = useMemo(
     () => buyers.sort((b1, b2) => b2[1].purchase_blk.toNumber() - b1[1].purchase_blk.toNumber()),
     [buyers]
@@ -64,7 +65,7 @@ export function SoldToItem(props: CabinSoldToProps) {
     <>
       <Link
         key={index}
-        to={{ pathname: `/item/travelCabin/${cabinIndex}/inventory/${cabinInventoryIndex}` }}
+        to={{ pathname: `/assets/travelCabin/${cabinIndex}/inventory/${cabinInventoryIndex}` }}
         style={{ textDecoration: 'none' }}
       >
         <FlatCard style={{ textAlign: 'left', padding: '1rem 1rem' }}>
