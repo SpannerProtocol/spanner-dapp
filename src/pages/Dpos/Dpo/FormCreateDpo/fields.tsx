@@ -6,8 +6,9 @@ import { SText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { ErrorMsg } from 'pages/Dex/components'
-import React from 'react'
+import React, { useContext } from 'react'
 import { useTranslation } from 'react-i18next'
+import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 
 export function DpoDirectReferralRate({
@@ -283,8 +284,15 @@ export function DpoDefaultTarget({ target }: { target: string }) {
   )
 }
 
-export function DpoName({ onChange }: { onChange: (e: React.ChangeEvent<HTMLInputElement>) => void }) {
+export function DpoName({
+  onChange,
+  error,
+}: {
+  error: boolean
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
   const { t } = useTranslation()
+  const theme = useContext(ThemeContext)
 
   return (
     <Section>
@@ -304,6 +312,11 @@ export function DpoName({ onChange }: { onChange: (e: React.ChangeEvent<HTMLInpu
         onChange={(e) => onChange(e)}
         style={{ alignItems: 'flex-end', width: '100%' }}
       />
+      {error && (
+        <SText color={theme.red1} mobileFontSize="10px">
+          {t(`Name cannot be empty`)}
+        </SText>
+      )}
     </Section>
   )
 }

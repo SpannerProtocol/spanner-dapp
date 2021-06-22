@@ -580,5 +580,6 @@
   "Create a token, add assets and grow your community with DPOs": "Create a token, add assets and grow your community with DPOs",
   "Used by": "Used by",
   "Filter by": "Filter by",
-  "Filter Asset": "Filter Asset"
+  "Filter Asset": "Filter Asset",
+  "Name cannot be empty": "Name cannot be empty"
 }
