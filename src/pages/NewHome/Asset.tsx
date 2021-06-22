@@ -20,6 +20,7 @@ import useStats from '../../hooks/useStats'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit } from '../../utils/formatUnit'
 import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
+import { useTranslation } from 'react-i18next'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -38,6 +39,7 @@ export function AssetSwiper() {
 }
 
 export function BulletTrain() {
+  const { t } = useTranslation()
   return (
     <>
       <FlatCard
@@ -49,9 +51,7 @@ export function BulletTrain() {
       >
         <HomeSectionTitle color={'white'}>{'Spanner BulletTrain'}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
-          {
-            'BulletTrain (a Growth Template) is an evolutionary viral growth marketing model running on the Spanner Blockchain'
-          }
+          {t(`Earn token rewards by buying TravelCabins or crowdfunding for them with DPOs`)}
         </SText>
         <CircleNextIconWrapper>
           <StyledCircleNextWhite />
@@ -62,15 +62,16 @@ export function BulletTrain() {
 }
 
 export function SpannerNFT() {
+  const { t } = useTranslation()
   return (
     <>
       <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
-        <HomeSectionTitle>{'Spanner NFT'}</HomeSectionTitle>
+        <HomeSectionTitle>{t(`NFTs on Spanner`)}</HomeSectionTitle>
         <SText fontSize={'18px'} mobileFontSize={'18px'}>
-          {'DPO V2 is a novel crowdfunding model extending from affiliate marketing'}
+          {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
-          <Header4>{'(Coming soon)'}</Header4>
+          <Header4>{t('(Coming soon)')}</Header4>
         </div>
       </FlatCard>
     </>
@@ -81,16 +82,17 @@ export function BulletTrainStats() {
   const token = 'BOLT'
   const stats = useStats(token)
   const { chainDecimals } = useSubstrate()
+  const { t } = useTranslation()
 
   return (
     <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-      <HomeSectionTitle>{'Spanner BulletTrain Stats'}</HomeSectionTitle>
+      <HomeSectionTitle>{t('Spanner BulletTrain Stats')}</HomeSectionTitle>
       <RowBetween>
-        <HomeSectionLabel2>Total Deposited Value</HomeSectionLabel2>
+        <HomeSectionLabel2>{t(`Total Deposited Value`)}</HomeSectionLabel2>
         <HomeSectionValue3> {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}</HomeSectionValue3>
       </RowBetween>
       <RowBetween>
-        <HomeSectionLabel2>Total Yield Distributed</HomeSectionLabel2>
+        <HomeSectionLabel2>{t(`Total Yield Distributed`)}</HomeSectionLabel2>
         <HomeSectionValue3>{`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}</HomeSectionValue3>
       </RowBetween>
       {/*<RowBetween>*/}
