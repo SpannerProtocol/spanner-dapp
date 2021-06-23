@@ -71,7 +71,7 @@ export function DPOV2() {
         <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
           {`${t(`Cross-chain assets, membership roles and more`)}.`}
         </SText>
-        <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
+        <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
           <Header4>({t('Coming soon')})</Header4>
         </div>
       </FlatCard>
