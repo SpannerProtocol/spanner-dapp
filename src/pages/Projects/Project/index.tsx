@@ -122,7 +122,7 @@ export default function Project(): JSX.Element {
       <PageWrapper style={{ maxWidth: '680px' }}>
         {path && projectInfo && (
           <>
-            <Card borderRadius="0">
+            <Card borderRadius="0" margin="0 0 1rem 0" mobileMargin="0 0 0.5rem 0">
               <GridWrapper columns={'2'} mobileColumns={'2'}>
                 <Icon src={TokenImage} size="60px" mobileSize="40px" alt="project logo" />
                 {projectInfo && (

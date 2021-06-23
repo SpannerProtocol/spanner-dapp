@@ -239,7 +239,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
-          <Card>
+          <Card margin="0 0 1rem 0" mobileMargin="0 0 0.25rem 0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>
