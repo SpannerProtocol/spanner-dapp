@@ -26,7 +26,6 @@ export function SoldTo() {
     [buyers]
   )
 
-  console.log('sortedBuyers length' + sortedBuyers.length)
   return (
     <>
       <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>

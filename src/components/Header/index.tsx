@@ -239,7 +239,7 @@ export default function Header(props: HeaderProps) {
 
   const [icons, setIcons] = useState<boolean>(false)
   // const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
-  const isMobile = useMedia('(max-width: 720px)')
+  const isMobile = useMedia('(max-width: 960px)')
   const { chain } = useChainState()
 
   useEffect(() => {

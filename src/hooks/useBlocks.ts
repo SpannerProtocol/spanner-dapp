@@ -1,6 +1,10 @@
 import { useApi } from './useApi'
 import type { Moment, BlockNumber } from '@polkadot/types/interfaces'
 import { useEffect, useState } from 'react'
+import { useQuery } from '@apollo/client'
+import blockTimestamp from '../queries/graphql/blockTimestamp'
+import type { BlockHash } from '@polkadot/types/interfaces/chain'
+import { BlockTimestamp, BlockTimestampVariables } from '../queries/graphql/types/BlockTimestamp'
 
 export function useExpectedBlockTime(): Moment | undefined {
   const { api, connected } = useApi()
@@ -42,7 +46,7 @@ export function useGetLastBlock() {
     )
   }, [api, connected])
 
-  return lastBlock
+  return { lastBlock }
 }
 
 export function useCurrentTime(): Moment | undefined {
@@ -59,27 +63,55 @@ export function useCurrentTime(): Moment | undefined {
 
 /**
  * Returns genesis ts in milliseconds
+ * (have bug ,will remove later)
  */
+// export function useGenesisTime(): number | undefined {
+//   const { api, connected } = useApi()
+//   const expectedBlockTime = useExpectedBlockTime()
+//   const [genesisTs, setGenesisTs] = useState<number>()
+//
+//   useEffect(() => {
+//     if (!connected || !expectedBlockTime) return
+//     // Get Genesis timestamp
+//     api.rpc.chain.getBlockHash(1).then((blockHash) => {
+//       api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
+//         const methodSetTs = signedBlock.block.extrinsics.find(
+//           (info) => info.method.method === 'set' && info.method.section === 'timestamp'
+//         )
+//         if (methodSetTs) setGenesisTs(parseInt(methodSetTs.method.args.toString()) - expectedBlockTime.toNumber())
+//       })
+//     })
+//   }, [api, connected, expectedBlockTime])
+//
+//   return genesisTs
+// }
+
 export function useGenesisTime(): number | undefined {
   const { api, connected } = useApi()
   const expectedBlockTime = useExpectedBlockTime()
-  const [genesisTs, setGenesisTs] = useState<number>()
+  const [blockHash, setBlockHash] = useState<BlockHash>()
 
   useEffect(() => {
     if (!connected || !expectedBlockTime) return
     // Get Genesis timestamp
     api.rpc.chain.getBlockHash(1).then((blockHash) => {
-      console.log(`blockHash:${blockHash}`)
-      api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
-        const methodSetTs = signedBlock.block.extrinsics.find(
-          (info) => info.method.method === 'set' && info.method.section === 'timestamp'
-        )
-        if (methodSetTs) setGenesisTs(parseInt(methodSetTs.method.args.toString()) - expectedBlockTime.toNumber())
-      })
+      setBlockHash(blockHash)
     })
   }, [api, connected, expectedBlockTime])
 
-  return genesisTs
+  const blockHashStr = blockHash ? blockHash.toHex() : ''
+  const { loading, data } = useQuery<BlockTimestamp, BlockTimestampVariables>(blockTimestamp, {
+    skip: !blockHashStr && blockHashStr != '',
+    variables: {
+      hash: blockHashStr,
+    },
+  })
+
+  if (!loading && data) {
+    return parseInt(data.block?.timestamp) * 1000
+  } else {
+    return undefined
+  }
 }
 
 interface BlockState {
