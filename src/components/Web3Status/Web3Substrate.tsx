@@ -1,7 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import Identicon from 'components/Identicon'
-import SpannerLogo from '../../assets/svg/logo-spanner-gradient.svg'
 import WalletModal from 'components/WalletModal'
 import { injected, walletconnect } from 'connectors'
 import useWallet from 'hooks/useWallet'
@@ -11,11 +10,11 @@ import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useWalletModalToggle } from 'state/application/hooks'
 import styled, { css } from 'styled-components'
-import { shortenAddr } from '../../utils/truncateString'
 import WalletConnectIcon from '../../assets/images/walletConnectIcon.svg'
+import SpannerLogo from '../../assets/svg/logo-spanner-gradient.svg'
 import { NetworkContextName } from '../../constants'
+import { shortenAddr } from '../../utils/truncateString'
 import { ButtonPrimary } from '../Button'
-import { useConnectionsState } from 'state/connections/hooks'
 
 const IconWrapper = styled.div<{ size?: number }>`
   ${({ theme }) => theme.flexColumnNoWrap};
@@ -134,17 +133,26 @@ function Web3StatusInner() {
   const { t } = useTranslation()
   const { account, connector, error } = useWeb3React()
   const wallet = useWallet()
-  const connections = useConnectionsState()
+  // const connections = useConnectionsState()
 
   const toggleWalletModal = useWalletModalToggle()
 
-  if (wallet && wallet.address && connections && connections.bridgeServerOn) {
-    return (
-      <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={false}>
-        <Text>{shortenAddr(wallet.address)}</Text>
-        {connector ? <StatusIcon connector={connector} /> : <StatusIcon connector={'Spanner'} />}
-      </Web3StatusConnected>
-    )
+  if (wallet && wallet.address) {
+    if (connector) {
+      return (
+        <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={false}>
+          <Text>{shortenAddr(wallet.address)}</Text>
+          <StatusIcon connector={connector} />
+        </Web3StatusConnected>
+      )
+    } else {
+      return (
+        <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={false}>
+          <Text>{shortenAddr(wallet.address)}</Text>
+          <StatusIcon connector={'Spanner'} />
+        </Web3StatusConnected>
+      )
+    }
   } else if (error) {
     return (
       <Web3StatusError onClick={toggleWalletModal}>
