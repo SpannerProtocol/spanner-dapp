@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { useQuery } from '@apollo/client'
+import { ApolloError, useLazyQuery } from '@apollo/client'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
 import { HeavyText, ItalicText, Header2 } from 'components/Text'
-import { SpacedSection, TransferWrapper } from 'components/Wrapper'
+import { IconWrapper, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import extrinsics from 'queries/graphql/extrinsics'
 import {
@@ -14,13 +14,14 @@ import {
   ExtrinsicsByAddress_extrinsics_nodes,
 } from 'queries/graphql/types/ExtrinsicsByAddress'
 import React, { useContext, useEffect, useState } from 'react'
+import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
 import { ThemeContext } from 'styled-components'
-import { Dispatcher } from 'types/dispatcher'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import truncateString from 'utils/truncateString'
 import { TxCell, TxRow } from '.'
+import { LocalSpinner } from 'pages/Spinner'
 
 // Tx Hash | Extrinsic Info
 function TransactionRow({ id, section, method, timestamp, isSuccess, block }: ExtrinsicsByAddress_extrinsics_nodes) {
@@ -61,33 +62,20 @@ function TransactionRow({ id, section, method, timestamp, isSuccess, block }: Ex
 }
 
 function TransactionRows({
-  first,
-  offset,
-  setTotalCount,
+  loading,
+  error,
+  data,
 }: {
-  first: number
-  offset: number
-  setTotalCount: Dispatcher<number>
+  loading: boolean
+  error: ApolloError | undefined
+  data: ExtrinsicsByAddress | undefined
 }) {
-  const wallet = useWallet()
-  const address = wallet && wallet.address ? wallet.address : ''
-  const { loading, error, data } = useQuery<ExtrinsicsByAddress, ExtrinsicsByAddressVariables>(extrinsics, {
-    variables: {
-      address: address,
-      first: first,
-      offset: offset,
-    },
-  })
-
-  useEffect(() => {
-    if (data && data.extrinsics) setTotalCount(data.extrinsics.totalCount)
-  }, [data, setTotalCount])
-
   return (
     <>
       {error && <div>{error.message}</div>}
-      {loading && <div>Loading</div>}
-      {data &&
+      {loading && <LocalSpinner />}
+      {!loading &&
+        data &&
         data.extrinsics &&
         data.extrinsics.nodes.map((extrinsic, index) => extrinsic && <TransactionRow key={index} {...extrinsic} />)}
     </>
@@ -99,26 +87,53 @@ export default function Transactions() {
   const [totalCount, setTotalCount] = useState<number>(0)
   const [page, setPage] = useState(1)
   const [pagination, setPagination] = useState<{ first: number; offset: number }>({ first: 10, offset: 0 })
+  const theme = useContext(ThemeContext)
+  const wallet = useWallet()
+  const address = wallet && wallet.address ? wallet.address : ''
+  const [loadTransaction, { loading, error, data }] = useLazyQuery<ExtrinsicsByAddress, ExtrinsicsByAddressVariables>(
+    extrinsics,
+    {
+      variables: {
+        address: address,
+        first: pagination.first,
+        offset: pagination.offset,
+      },
+      fetchPolicy: 'network-only',
+    }
+  )
+
+  useEffect(() => {
+    loadTransaction()
+  }, [loadTransaction])
 
   useEffect(() => {
     const offset = (page - 1) * 10 > 0 ? (page - 1) * 10 : 0
     setPagination({ first: 10, offset })
   }, [page])
 
+  useEffect(() => {
+    if (data && data.extrinsics) setTotalCount(data.extrinsics.totalCount)
+  }, [data, setTotalCount])
+
   return (
     <>
       <SpacedSection>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Header2 width="fit-content">{t(`Transactions`)}</Header2>
-          <QuestionHelper
-            size={12}
-            backgroundColor={'transparent'}
-            text={t(`Your latest transactions. Each transaction shows the transaction hash, details and fee.`)}
-          />
-        </div>
+        <RowBetween>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <Header2 width="fit-content">{t(`Transactions`)}</Header2>
+            <QuestionHelper
+              size={12}
+              backgroundColor={'transparent'}
+              text={t(`Your latest transactions. Each transaction shows the transaction hash, details and fee.`)}
+            />
+            <IconWrapper margin="0 1rem" onClick={() => loadTransaction()}>
+              <RefreshCw size={'16px'} color={theme.text3} />
+            </IconWrapper>
+          </div>
+        </RowBetween>
       </SpacedSection>
       <SpacedSection>
-        <TransactionRows {...pagination} setTotalCount={setTotalCount}></TransactionRows>
+        <TransactionRows loading={loading} error={error} data={data} />
       </SpacedSection>
       <Pagination currentPage={setPage} maxPage={Math.ceil(totalCount / 10)} />
     </>

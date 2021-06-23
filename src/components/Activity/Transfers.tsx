@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/camelcase */
-import { useQuery } from '@apollo/client'
+import { ApolloError, useLazyQuery } from '@apollo/client'
 import Filter from 'components/Filter'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
+import { IconWrapper, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
-import { SpacedSection, TransferWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet from 'hooks/useWallet'
 import transferIn from 'queries/graphql/transferIn'
@@ -13,10 +13,10 @@ import transferOut from 'queries/graphql/transferOut'
 import { TransferIn, TransferInVariables } from 'queries/graphql/types/TransferIn'
 import { TransferOut, TransferOutVariables } from 'queries/graphql/types/TransferOut'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
 import { ThemeContext } from 'styled-components'
-import { Dispatcher } from 'types/dispatcher'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
@@ -90,33 +90,20 @@ function TransferRow({ id, amount, token, fromId, toId, timestamp }: TransferPro
 }
 
 function TransferInRows({
-  first,
-  offset,
-  setTotalCount,
+  error,
+  loading,
+  data,
 }: {
-  first: number
-  offset: number
-  setTotalCount: Dispatcher<number>
+  error: ApolloError | undefined
+  loading: boolean
+  data: TransferIn
 }) {
-  const wallet = useWallet()
-  const address = wallet && wallet.address ? wallet.address : ''
-  const { loading, error, data } = useQuery<TransferIn, TransferInVariables>(transferIn, {
-    variables: {
-      address: address,
-      first: first,
-      offset: offset,
-    },
-  })
-
-  useEffect(() => {
-    if (data && data.account) setTotalCount(data.account.transferIn.totalCount)
-  }, [data, setTotalCount])
-
   return (
     <>
       {error && <div>{error.message}</div>}
       {loading && <div>Loading</div>}
-      {data &&
+      {!loading &&
+        data &&
         data.account &&
         data.account.transferIn.nodes.map((transfer, index) => transfer && <TransferRow key={index} {...transfer} />)}
     </>
@@ -124,33 +111,20 @@ function TransferInRows({
 }
 
 function TransferOutRows({
-  first,
-  offset,
-  setTotalCount,
+  error,
+  loading,
+  data,
 }: {
-  first: number
-  offset: number
-  setTotalCount: Dispatcher<number>
+  error: ApolloError | undefined
+  loading: boolean
+  data: TransferOut
 }) {
-  const wallet = useWallet()
-  const address = wallet && wallet.address ? wallet.address : ''
-  const { loading, error, data } = useQuery<TransferOut, TransferOutVariables>(transferOut, {
-    variables: {
-      address: address,
-      first: first,
-      offset: offset,
-    },
-  })
-
-  useEffect(() => {
-    if (data && data.account) setTotalCount(data.account.transferOut.totalCount)
-  }, [data, setTotalCount])
-
   return (
     <>
       {error && <div>{error.message}</div>}
       {loading && <div>Loading</div>}
-      {data &&
+      {!loading &&
+        data &&
         data.account &&
         data.account.transferOut.nodes.map((transfer, index) => transfer && <TransferRow key={index} {...transfer} />)}
     </>
@@ -163,6 +137,59 @@ export default function Transfers() {
   const [page, setPage] = useState(1)
   const [pagination, setPagination] = useState<{ first: number; offset: number }>({ first: 10, offset: 0 })
   const [transferType, setTransferType] = useState<string>('Received')
+  const wallet = useWallet()
+  const address = wallet && wallet.address ? wallet.address : ''
+  const theme = useContext(ThemeContext)
+  const [loadInData, { loading: inLoading, error: inError, data: inData }] = useLazyQuery<
+    TransferIn,
+    TransferInVariables
+  >(transferIn, {
+    variables: {
+      address: address,
+      first: pagination.first,
+      offset: pagination.offset,
+    },
+    fetchPolicy: 'network-only',
+  })
+  const [loadOutData, { loading: outLoading, error: outError, data: outData }] = useLazyQuery<
+    TransferOut,
+    TransferOutVariables
+  >(transferOut, {
+    variables: {
+      address: address,
+      first: pagination.first,
+      offset: pagination.offset,
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (transferType === 'Received') {
+      if (inData && inData.account) setTotalCount(inData.account.transferIn.totalCount)
+    } else if (transferType === 'Sent') {
+      if (outData && outData.account) setTotalCount(outData.account.transferOut.totalCount)
+    }
+  }, [transferType, inData, setTotalCount, outData])
+
+  useEffect(() => {
+    if (transferType === 'Received') {
+      loadInData({
+        variables: {
+          address: address,
+          first: pagination.first,
+          offset: pagination.offset,
+        },
+      })
+    } else if (transferType === 'Sent') {
+      loadOutData({
+        variables: {
+          address: address,
+          first: pagination.first,
+          offset: pagination.offset,
+        },
+      })
+    }
+  }, [address, loadInData, loadOutData, pagination.first, pagination.offset, transferType])
 
   useEffect(() => {
     const offset = (page - 1) * 10 > 0 ? (page - 1) * 10 : 0
@@ -188,14 +215,39 @@ export default function Transfers() {
               `Inbound and Outbound transfers. Green amounts indicate amount received and Red indicates transferred.`
             )}
           />
+          <IconWrapper margin="0 0.5rem">
+            <RefreshCw
+              onClick={
+                transferType === 'Received'
+                  ? () =>
+                      loadInData({
+                        variables: {
+                          address: address,
+                          first: pagination.first,
+                          offset: pagination.offset,
+                        },
+                      })
+                  : () =>
+                      loadOutData({
+                        variables: {
+                          address: address,
+                          first: pagination.first,
+                          offset: pagination.offset,
+                        },
+                      })
+              }
+              size={'16px'}
+              color={theme.text3}
+            />
+          </IconWrapper>
         </div>
       </SpacedSection>
       <SpacedSection>
         <Filter options={filterTransferType} activeOption={transferType} modalTitle={t(`Filter transfer type`)} />
       </SpacedSection>
       <SpacedSection>
-        {transferType === 'Received' && <TransferInRows {...pagination} setTotalCount={setTotalCount} />}
-        {transferType === 'Sent' && <TransferOutRows {...pagination} setTotalCount={setTotalCount} />}
+        {transferType === 'Received' && inData && <TransferInRows data={inData} error={inError} loading={inLoading} />}
+        {transferType === 'Sent' && outData && <TransferOutRows data={outData} error={outError} loading={outLoading} />}
       </SpacedSection>
       <Pagination currentPage={setPage} maxPage={Math.ceil(totalCount / 10)} />
     </>

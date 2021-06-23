@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { useLazyQuery } from '@apollo/client'
-import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import Card from 'components/Card'
 import { TokenText, HeavyText, Header2, SText } from 'components/Text'
@@ -11,11 +10,11 @@ import userTransferIn from 'queries/graphql/userTransferIn'
 import userTransferOut from 'queries/graphql/userTransferOut'
 import React, { useEffect, useState, useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CustomLightSpinner } from 'theme/components'
 import { formatToUnit } from 'utils/formatUnit'
 import { RefreshCw } from 'react-feather'
 import { ThemeContext } from 'styled-components'
 import { IconWrapper } from 'components/Wrapper'
+import { LocalSpinner } from 'pages/Spinner'
 
 interface TokenDeposits {
   [token: string]: {
@@ -40,6 +39,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
     variables: {
       address: address,
     },
+    fetchPolicy: 'network-only',
   })
   const [loadTransferIn, { error: inError, loading: outLoading, data: inData }] = useLazyQuery<
     UserTransferIn,
@@ -48,9 +48,9 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
     variables: {
       address: address,
     },
+    fetchPolicy: 'network-only',
   })
   // this component might take awhile so use a loader
-  const [loading, setLoading] = useState<boolean>(true)
   const { t } = useTranslation()
   const [totalDeposited, setTotalDeposited] = useState<TokenDeposits>({})
   const { chainDecimals } = useSubstrate()
@@ -66,12 +66,6 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
     loadTransferOut()
     loadTransferIn()
   }, [loadTransferOut, loadTransferIn])
-
-  useEffect(() => {
-    if (inLoading || outLoading) {
-      setLoading(true)
-    }
-  }, [inLoading, outLoading])
 
   useEffect(() => {
     if (!outData || !outData.account || !outData.account.transferOut || !outData.account.transferOut.nodes) return
@@ -126,19 +120,18 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
       }
     })
     setTotalDeposited(tokenDeposits)
-    setLoading(false)
   }, [chainDecimals, inData, outData])
 
   return (
     <>
       {inError || outError ? null : (
         <>
-          {loading && (
+          {(inLoading || outLoading) && (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
+              <LocalSpinner />
             </div>
           )}
-          {!loading && totalDeposited[selectedToken] && (
+          {!(inLoading || outLoading) && totalDeposited[selectedToken] && (
             <>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
                 <Header2 width="fit-content" margin="0">

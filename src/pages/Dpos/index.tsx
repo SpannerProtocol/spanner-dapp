@@ -72,7 +72,7 @@ export function DpoOverviewCard({ token }: { token: string }) {
                 <Header4>{t(`Total DPOs`)}</Header4>
               </CenterWrapper>
             </Card>
-            <Card margin="0 0.25rem">
+            <Card margin="0 1rem" mobileMargin="0 0.5rem">
               <CenterWrapper display="block">
                 <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" width="100%" textAlign="center">
                   {formatToUnit(crowdfundedAmount, chainDecimals)} <TokenText>{token}</TokenText>
@@ -219,7 +219,6 @@ export default function Dpos() {
 
   // Final after all Filters, Sorts and Searches
   useEffect(() => {
-    if (primaryFilteredDpos.length === 0) return
     // Only loop if User filters for affordable or owned
     let filteredDpos: DpoInfo[] = []
     if (filteredAffordable || filteredOwned) {
@@ -322,36 +321,38 @@ export default function Dpos() {
           <Section style={{ width: '100%' }}>
             {/* filters */}
             <RowFixed>
-              <Filter
-                options={stateFilterOptions}
-                activeOption={filteredState}
-                modalTitle={t(`Filter Dpo State`)}
-                margin="0.25rem"
-                filterLabel={t('State')}
-              />
-              <Filter
-                options={assetFilterOptions}
-                activeOption={filteredAsset}
-                modalTitle={t(`Filter Targeted Asset`)}
-                margin="0.25rem"
-                filterLabel={t('Asset')}
-              />
-              <PillToggleFilter
-                isActive={filteredAffordable}
-                toggle={() => setFilteredAfforable(!filteredAffordable)}
-                margin="0.5rem"
-                toggleLabel={t('Enough Balance')}
-                labelActive="ON"
-                labelInactive="OFF"
-              />
-              <PillToggleFilter
-                isActive={filteredOwned}
-                toggle={() => setFilteredOwned(!filteredOwned)}
-                margin="0.5rem"
-                toggleLabel={t('My DPOs')}
-                labelActive="ON"
-                labelInactive="OFF"
-              />
+              <CenterWrapper>
+                <Filter
+                  options={stateFilterOptions}
+                  activeOption={filteredState}
+                  modalTitle={t(`Filter Dpo State`)}
+                  margin="0.25rem"
+                  filterLabel={t('State')}
+                />
+                <Filter
+                  options={assetFilterOptions}
+                  activeOption={filteredAsset}
+                  modalTitle={t(`Filter Targeted Asset`)}
+                  margin="0.25rem"
+                  filterLabel={t('Asset')}
+                />
+                <PillToggleFilter
+                  isActive={filteredAffordable}
+                  toggle={() => setFilteredAfforable(!filteredAffordable)}
+                  margin="0.25rem"
+                  toggleLabel={t('Enough Balance')}
+                  labelActive="ON"
+                  labelInactive="OFF"
+                />
+                <PillToggleFilter
+                  isActive={filteredOwned}
+                  toggle={() => setFilteredOwned(!filteredOwned)}
+                  margin="0.25rem"
+                  toggleLabel={t('My DPOs')}
+                  labelActive="ON"
+                  labelInactive="OFF"
+                />
+              </CenterWrapper>
             </RowFixed>
             <MultiFilter options={sortOptions} activeOptions={sortBy} modalTitle={t(`Sort DPOs by`)} />
             <SearchBar

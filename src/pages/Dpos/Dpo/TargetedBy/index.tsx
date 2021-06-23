@@ -1,6 +1,5 @@
 import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
-import Circle from 'assets/svg/yellow-loader.svg'
 import BN from 'bn.js'
 import Divider from 'components/Divider'
 import StandardModal from 'components/Modal/StandardModal'
@@ -10,6 +9,7 @@ import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
+import { LocalSpinner } from 'pages/Spinner'
 import { createdDpoAllArgsOnly } from 'queries/graphql/createdDpoAllArgsOnly'
 import { dposTargetPurchasedIncludes } from 'queries/graphql/dposTargetPurchasedIncludes'
 import { CreatedDpoAllArgsOnly } from 'queries/graphql/types/CreatedDpoAllArgsOnly'
@@ -23,7 +23,6 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
-import { CustomLightSpinner } from 'theme/components'
 import { blocksToCountDown } from 'utils/formatBlocks'
 import IconFire from 'assets/images/icon-fire.png'
 import { RowFixed } from 'components/Row'
@@ -160,6 +159,7 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     variables: {
       includes: 'dpo',
     },
+    fetchPolicy: 'network-only',
   })
   // this component might take awhile so use a loader
   const { t } = useTranslation()
@@ -341,7 +341,7 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
         <>
           {createdLoading || purchasedLoading ? (
             <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <CustomLightSpinner src={Circle} alt="loader" size={'40px'} />
+              <LocalSpinner />
             </div>
           ) : (
             <>

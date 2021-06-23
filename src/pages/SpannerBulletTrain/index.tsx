@@ -42,8 +42,8 @@ export default function BulletTrain() {
       >
         <BannerCard url={LightBanner} borderRadius="0">
           <ContentWrapper>
-            <Header1 colorIsPrimary>{t(`Spanner BulletTrain`)}</Header1>
-            <Header2>{t(`An evolutionary viral growth marketing model`)}</Header2>
+            <Header1 colorIsPrimary>{t(`BulletTrain`)}</Header1>
+            <Header2>{t(`Earn t`)}</Header2>
             <SpacedSection>
               <SpannerBulletTrainStats />
             </SpacedSection>
