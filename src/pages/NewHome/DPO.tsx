@@ -43,12 +43,13 @@ export function DPOV1() {
       <FlatCard
         style={{
           textAlign: 'left',
-          minHeight: '220px',
-          background: `transparent url(${heroBannerBg}) center center no-repeat padding-box`,
+          minHeight: '250px',
+          background: `url(${heroBannerBg}) no-repeat center center`,
+          backgroundSize: 'cover',
         }}
       >
         <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
           {`${t(`Crowdfund for any crypto assets. Create or join one to Earn`)}!`}
         </SText>
         <Link to={`/dpos`} style={{ textDecoration: 'none' }}>
@@ -65,9 +66,9 @@ export function DPOV2() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '220px' }}>
+      <FlatCard style={{ textAlign: 'left', minHeight: '250px' }}>
         <HomeSectionTitle>{'DPO V2'}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
           {`${t(`Cross-chain assets, membership roles and more`)}.`}
         </SText>
         <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
