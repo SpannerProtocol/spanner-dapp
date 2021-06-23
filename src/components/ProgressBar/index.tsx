@@ -70,6 +70,7 @@ export function CircleProgress(
 ) {
   const classes = useStyles()
   const { t } = useTranslation()
+  const { fontSize, mobileFontSize, displayFilled, ...muiProps } = props
   return (
     <div className={classes.root}>
       <Box position="relative" display="inline-flex">
@@ -78,19 +79,18 @@ export function CircleProgress(
           className={classes.bottom}
           size={props.size ? props.size : 80}
           thickness={4}
-          {...props}
+          {...muiProps}
           value={100}
         />
         <CircularProgress
           variant="determinate"
-          disableShrink
           className={classes.top}
           classes={{
             circle: classes.circle,
           }}
           size={props.size ? props.size : 80}
           thickness={4}
-          {...props}
+          {...muiProps}
         />
         <Box
           top={0}
@@ -104,14 +104,14 @@ export function CircleProgress(
         >
           <Typography variant="caption" component="div" color="textSecondary">
             <SText
-              fontSize={props.fontSize ? props.fontSize : '10px'}
-              mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
+              fontSize={fontSize ? fontSize : '10px'}
+              mobileFontSize={mobileFontSize ? mobileFontSize : '11px'}
               style={{ margin: 'auto' }}
             >{`${Math.round(props.value)}%`}</SText>
-            {props.displayFilled && (
+            {displayFilled && (
               <SText
-                fontSize={props.fontSize ? props.fontSize : '10px'}
-                mobileFontSize={props.mobileFontSize ? props.mobileFontSize : '11px'}
+                fontSize={fontSize ? fontSize : '10px'}
+                mobileFontSize={mobileFontSize ? mobileFontSize : '11px'}
                 style={{ margin: 'auto' }}
               >
                 {t(`Filled`)}

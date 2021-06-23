@@ -76,8 +76,7 @@ function ProjectsByProjects({ projects }: { projects: ProjectInfo[] }) {
                         key={index}
                         to={`/projects/${project.token.toLowerCase()}?asset=${asset}`}
                         colorIsBlue
-                        fontSize="16px"
-                        mobileFontSize="14px"
+                        fontSize="14px"
                       >
                         {asset === 'TravelCabin' ? `${t(`BulletTrain`)} ${t(`TravelCabin`)}` : t(asset)}
                       </SLink>

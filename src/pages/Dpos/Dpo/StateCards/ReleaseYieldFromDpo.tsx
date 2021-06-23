@@ -66,12 +66,14 @@ export default function ReleaseYieldFromDpo({
           <RowFixed>
             <BorderedWrapper margin="0.25rem">
               <div style={{ display: 'block' }}>
-                <HeavyText width="100%" textAlign="center" mobileFontSize="12px" color={theme.green1}>
-                  {`${formatToUnit(dpoInfo.vault_yield.toBn(), chainDecimals)} `}
-                  <TokenText color={theme.green1} fontSize="10px" mobileFontSize="8px">
+                <RowFixed align="baseline" justifyContent="center">
+                  <HeavyText mobileFontSize="12px" color={theme.green1}>
+                    {`${formatToUnit(dpoInfo.vault_yield.toBn(), chainDecimals)} `}
+                  </HeavyText>
+                  <TokenText color={theme.green1} fontSize="10px" mobileFontSize="8px" padding="0 0.25rem">
                     {dpoInfo.token_id.asToken.toString()}
                   </TokenText>
-                </HeavyText>
+                </RowFixed>
                 <RowFixed width="100%" justifyContent="center">
                   <SText
                     width="fit-content"

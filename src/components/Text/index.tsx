@@ -236,7 +236,7 @@ export const SmallText = styled.div`
  `};
 `
 
-export const TokenText = styled.div<{
+export const TokenText = styled.p<{
   color?: string
   fontSize?: string
   mobileFontSize?: string

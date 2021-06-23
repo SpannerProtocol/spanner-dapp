@@ -1,10 +1,10 @@
 import styled from 'styled-components'
 
-export const BorderedInput = styled.input<{ fontSize?: string }>`
-  border-radius: 8px;
-  border: 1px solid #e6ebf2 !important;
+const InputBase = styled.input<{ fontSize?: string; padding?: string }>`
+  border-radius: none;
+  border: none;
   display: block;
-  padding: 0.75rem;
+  padding: ${({ padding }) => (padding ? padding : '0.75rem')};
   font-weight: 400;
   font-size: 14px;
   line-height: 1.5;
@@ -20,6 +20,15 @@ export const BorderedInput = styled.input<{ fontSize?: string }>`
   -webkit-box-align: stretch;
 
   ${({ fontSize, theme }) => theme.mediaWidth.upToExtraSmall`
-    font-size: ${fontSize ? fontSize : '12px'};
+  font-size: ${fontSize ? fontSize : '12px'};
 `};
+`
+
+export const BorderedInput = styled(InputBase)`
+  border-radius: 8px;
+  border: 1px solid #e6ebf2 !important;
+`
+
+export const SInput = styled(InputBase)`
+  padding: ${({ padding }) => (padding ? padding : '0.5rem')};
 `
