@@ -14,15 +14,21 @@ export default function BulletTrainStats({ token }: { token: string }) {
     <>
       <RowFixed>
         <HeavyText color="#fff">{t(`Total Deposits Stored`)}:</HeavyText>
-        <SText padding="0 0.5rem" colorIsPrimary>
-          {formatToUnit(stats.totalValueLocked, chainDecimals)} <TokenText>{token}</TokenText>
-        </SText>
+        <RowFixed width="fit-content">
+          <SText padding="0 0.5rem" colorIsPrimary>
+            {formatToUnit(stats.totalValueLocked, chainDecimals)}
+          </SText>
+          <TokenText padding="0 0.25rem">{token}</TokenText>
+        </RowFixed>
       </RowFixed>
       <RowFixed>
         <HeavyText color="#fff">{t(`Yield Distributed`)}:</HeavyText>
-        <SText padding="0 0.5rem" colorIsPrimary>
-          {formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} <TokenText>{token}</TokenText>
-        </SText>
+        <RowFixed width="fit-content">
+          <SText padding="0 0.5rem" colorIsPrimary>
+            {formatToUnit(stats.totalYieldWithdrawn, chainDecimals)}
+          </SText>
+          <TokenText padding="0 0.25rem">{token}</TokenText>
+        </RowFixed>
       </RowFixed>
       <RowFixed>
         <HeavyText color="#fff">{t(`Cabins Purchased`)}:</HeavyText>

@@ -51,11 +51,11 @@ export default function DpoBuyDpoSeatsAvailable({
       dpoInfo={dpoInfo}
       selectedState={selectedState}
       actionName={t('Buy DPO Seats')}
-      tip={`${t(`Use DPO's crowdfund to buy seats from DPO`)} ${dpoInfo.target.asDpo[0].toString()}`}
+      tip={`${t(`Use crowdfund amount to buy seats from Target DPO`)}`}
       buttonText={t(`Buy`)}
       icon={ACTION_ICONS[dpoAction.action]}
       gracePeriod={
-        lifeSentenceGp && lastBlock && expectedBlockTime
+        lifeSentenceGp && !dpoInfo.vault_deposit.isZero() && lastBlock && expectedBlockTime
           ? {
               timeLeft: blocksToCountDown(lifeSentenceGp, expectedBlockTime, t(`Time's up!`)),
               tip: t(
@@ -112,6 +112,7 @@ export default function DpoBuyDpoSeatsAvailable({
       }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
+      disableButton={true}
     />
   )
 }

@@ -232,10 +232,12 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
           </PaddedSection>
         )}
         <PaddedSection>
-          <HeavyText width="fit-content" fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
-            {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
+          <RowFixed>
+            <HeavyText width="fit-content" fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
+              {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
+            </HeavyText>
             <TokenText>{token}</TokenText>
-          </HeavyText>
+          </RowFixed>
           <SText width="fit-content" style={{ margin: 'auto' }}>
             {t(`Cost per Seat`)}
           </SText>
@@ -332,6 +334,7 @@ function TargetDpoName({ dpoInfo }: { dpoInfo: DpoInfo }) {
 function TargetCabinName({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { t } = useTranslation()
   const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+
   return (
     <SLink to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`} colorIsBlue>
       {t(`TravelCabin`)}: {target?.name.toString()}

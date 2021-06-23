@@ -44,12 +44,14 @@ export default function ReleaseBonusFromDpo({
             <BorderedWrapper margin="0.25rem">
               <CenterWrapper>
                 <div style={{ display: 'block', paddingRight: '0.5rem' }}>
-                  <HeavyText width="100%" textAlign="center" mobileFontSize="12px" color={theme.green1}>
-                    {`${formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)} `}
-                    <TokenText color={theme.green1} fontSize="10px" mobileFontSize="8px">
+                  <RowFixed align="baseline" justifyContent="center">
+                    <HeavyText mobileFontSize="12px" color={theme.green1}>
+                      {`${formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)} `}
+                    </HeavyText>
+                    <TokenText color={theme.green1} fontSize="10px" mobileFontSize="8px" padding="0 0.25rem">
                       {dpoInfo.token_id.asToken.toString()}
                     </TokenText>
-                  </HeavyText>
+                  </RowFixed>
                   <SText
                     width="100%"
                     textAlign="center"

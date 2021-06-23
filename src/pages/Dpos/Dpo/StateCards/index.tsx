@@ -1,4 +1,6 @@
 import Divider from 'components/Divider'
+import QuestionHelper from 'components/QuestionHelper'
+import { RowFixed } from 'components/Row'
 import { Header3 } from 'components/Text'
 import { useDpoActions } from 'hooks/useDpoActions'
 import React, { useEffect, useState } from 'react'
@@ -146,7 +148,16 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
       {userActions && userActions.length > 0 && (
         <>
           <Divider margin="0.5rem 0" />
-          <Header3>{t(`Actions`)}</Header3>
+          <RowFixed>
+            <Header3 width="fit-content">{t(`Actions`)}</Header3>
+            <QuestionHelper
+              size={12}
+              backgroundColor={'transparent'}
+              text={t(
+                `Managers should perform actions for the DPO but any user can perform them if they don't want to wait`
+              )}
+            />
+          </RowFixed>
           {userActions.map((action, index) => (
             <React.Fragment key={index}>{action}</React.Fragment>
           ))}

@@ -45,7 +45,11 @@ function TransferRow({ id, amount, token, fromId, toId, timestamp }: TransferPro
       {wallet && wallet.address && (
         <TxRow>
           <TxCell>
-            <StyledExternalLink fontSize="14px" href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}>
+            <StyledExternalLink
+              color={theme.blue2}
+              fontSize="14px"
+              href={chain && chain.url ? `${chain.url}/query/${blockNum}` : ''}
+            >
               {` ${id}`}
             </StyledExternalLink>
             {timestamp && (

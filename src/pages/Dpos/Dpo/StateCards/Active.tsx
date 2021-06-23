@@ -22,13 +22,18 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
     <>
       {!isTargetMember && (
         <RowFixed>
-          <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem 0 0">
-            {target.name.toString()}
-          </SLink>
           {stateCompleted ? (
-            <SText>{t(`has been purchased`)}</SText>
+            <>
+              <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
+              <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem 0 0">
+                {target.name.toString()}
+              </SLink>
+            </>
           ) : (
             <>
+              <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem 0 0">
+                {target.name.toString()}
+              </SLink>
               {!target.empty_seats.isZero() ? (
                 <SText width="fit-content">{t(`is available for purchase`)}</SText>
               ) : (
@@ -38,6 +43,14 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
               )}
             </>
           )}
+        </RowFixed>
+      )}
+      {isTargetMember && (
+        <RowFixed>
+          <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
+          <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem">
+            {target.name.toString()}
+          </SLink>
         </RowFixed>
       )}
     </>
@@ -78,6 +91,18 @@ function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
               </>
             )}
           </>
+        </RowFixed>
+      )}
+      {targetPurchased && (
+        <RowFixed>
+          <SLink
+            to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
+            colorIsBlue
+            padding="0 0.25rem 0 0"
+          >
+            {t(`TravelCabin`)}: {target.name.toString()}
+          </SLink>
+          <SText>{t(`has been purchased`)}</SText>
         </RowFixed>
       )}
     </>
