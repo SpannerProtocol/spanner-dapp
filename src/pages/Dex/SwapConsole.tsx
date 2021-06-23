@@ -8,17 +8,16 @@ import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
 import { DisclaimerText, Header2, HeavyText, ModalText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
+import { useEnabledPair } from 'hooks/useQueryTradingPairs'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useProjectManager } from 'state/project/hooks'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
 import SlippageTabs from '../../components/TransactionSettings'
-import { BorderedWrapper, ContentWrapper, Section, SpacedSection } from '../../components/Wrapper'
+import { BorderedWrapper, Section, SpacedSection } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
@@ -97,58 +96,60 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
   )
 }
 
-function TokenPerformance({
-  projectInfo,
-  tokenA,
-  tokenB,
-}: {
-  projectInfo: ProjectInfo
-  tokenA: string
-  tokenB: string
-}) {
+function TokenPerformance({ tokenA, tokenB }: { tokenA: string; tokenB: string }) {
   const { t } = useTranslation()
   const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
+  const pair = useEnabledPair(tokenA, tokenB)
   const [latestPrice, setLatestPrice] = useState<string>('')
   const [token1, token2] = useMemo(() => {
-    if (tokenA === 'WUSD') return [tokenB, tokenA]
-    if (tokenB === 'WUSD') return [tokenA, tokenB]
-    return ['BOLT', 'WUSD']
-  }, [tokenA, tokenB])
+    if (pair.isValid) {
+      return [pair.validPair[0]['Token'], pair.validPair[1]['Token']]
+    } else {
+      return [undefined, undefined]
+    }
+  }, [pair])
+
+  const correctPairName = useMemo(() => {
+    if (!pair.isValid) return `-`
+    const a = pair.validPair[0]['Token']
+    const b = pair.validPair[1]['Token']
+    const isBoltWusd = a === 'BOLT' && b === 'WUSD'
+    // This might need to change in the future if validPairs change
+    // BOLT/WUSD is valid but for all other tokens valid name is WUSD/TOKEN
+    return isBoltWusd ? `${a} / ${b}` : `${b} / ${a}`
+  }, [pair])
+
   return (
     <>
-      {projectInfo && (
-        <ContentWrapper>
-          <Card margin="1rem 0" mobileMargin="1rem 0">
-            <Header2 style={{ display: 'inline-flex' }}>{t(`Token Performance`)}</Header2>
-            <SpacedSection>
-              {latestPrice && (
-                <>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <SText>{t(`Current Price`)}</SText>
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
-                      ${latestPrice}
-                    </HeavyText>
-                    <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
-                  </div>
-                </>
-              )}
-            </SpacedSection>
-            {token1 && token2 && (
-              <PriceChart
-                token1={token1}
-                token2={token2}
-                from={0}
-                interval={300}
-                setAvailable={setPriceAvailable}
-                setLatestPrice={setLatestPrice}
-              />
-            )}
-            {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
-          </Card>
-        </ContentWrapper>
-      )}
+      <Card margin="1rem 0" mobileMargin="1rem 0">
+        <Header2 style={{ display: 'inline-flex' }}>{`${correctPairName} ${t(`Price History`)}`}</Header2>
+        <SpacedSection>
+          {latestPrice && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <SText>{t(`Current Price`)}</SText>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
+                  ${latestPrice}
+                </HeavyText>
+                <HeavyText>{`${correctPairName} `}</HeavyText>
+              </div>
+            </>
+          )}
+        </SpacedSection>
+        {token1 && token2 && (
+          <PriceChart
+            token1={token1}
+            token2={token2}
+            from={0}
+            interval={300}
+            setAvailable={setPriceAvailable}
+            setLatestPrice={setLatestPrice}
+          />
+        )}
+        {!priceAvailable && <div>{t(`Price is unavailable for this token`)}</div>}
+      </Card>
     </>
   )
 }
@@ -176,9 +177,6 @@ export default function SwapConsole(): JSX.Element {
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
   const { createTx, submitTx } = useTxHelpers()
   const [txInfo, setTxInfo] = useState<TxInfo>()
-  const projectInfos = useProjectInfos()
-  const { projectState: project } = useProjectManager()
-  const [projectInfo, setProjectInfo] = useState<ProjectInfo>()
 
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
@@ -341,14 +339,6 @@ export default function SwapConsole(): JSX.Element {
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }, [])
 
-  useEffect(() => {
-    if (!projectInfos || !project.selectedProject || !project.selectedProject.token) return
-    const currentProject = projectInfos.find(
-      (info) => info.token.toLowerCase() === project.selectedProject?.token.toLowerCase()
-    )
-    setProjectInfo(currentProject)
-  }, [projectInfos, project])
-
   return (
     <>
       <TxModal
@@ -474,7 +464,7 @@ export default function SwapConsole(): JSX.Element {
           )}
         </Section>
       </Card>
-      {projectInfo && <TokenPerformance projectInfo={projectInfo} tokenA={tokenA} tokenB={tokenB} />}
+      <TokenPerformance tokenA={tokenA} tokenB={tokenB} />
     </>
   )
 }
