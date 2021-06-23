@@ -48,7 +48,7 @@ export function DpoOverviewCard({ token }: { token: string }) {
   const crowdfundedAmount = useTotalCrowdfundedAmount(token)
   const { chainDecimals } = useSubstrate()
   return (
-    <BannerCard url={LightBanner}>
+    <BannerCard url={LightBanner} borderRadius="0">
       <ContentWrapper>
         <Header1 colorIsPrimary>{t(`DPOs`)}</Header1>
         <Header3>

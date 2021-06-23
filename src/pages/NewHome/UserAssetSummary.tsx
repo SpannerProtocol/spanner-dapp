@@ -178,8 +178,6 @@ export function UserAssetSummaryContainer() {
   const address = wallet.address
   const selectedToken = project.selectedProject ? project.selectedProject.token : 'BOLT'
 
-  console.log(`address:${address}`)
-  console.log(`selectedToken:${selectedToken}`)
   return <UserAssetSummaryFetch address={address} token={selectedToken} />
 }
 
