@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
+import type { BlockNumber } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
 import Divider from 'components/Divider'
 import StandardModal from 'components/Modal/StandardModal'
@@ -66,7 +67,15 @@ interface Targeter {
   purchasedSeats: number | null
 }
 
-function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter: Targeter; expiry: BN }) {
+function TargeterRow({
+  dpoInfo,
+  targeter,
+  lastBlock,
+}: {
+  dpoInfo: DpoInfo
+  targeter: Targeter
+  lastBlock: BlockNumber
+}) {
   const { expectedBlockTime } = useBlockManager()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
@@ -88,6 +97,17 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
     return () => setTargetState({})
   }, [createdDpoInfo, dpoInfo, purchasedDpoInfo, t, targeter.defaultTargetIndex, targeter.purchasedIndex])
 
+  const targeterExpiry = useMemo(() => {
+    if (!createdDpoInfo) return new BN(0)
+    let expiry = new BN(0)
+    if (lastBlock) {
+      expiry = createdDpoInfo.expiry_blk.sub(lastBlock).gte(new BN(0))
+        ? createdDpoInfo.expiry_blk.sub(lastBlock)
+        : new BN(0)
+    }
+    return expiry
+  }, [createdDpoInfo, lastBlock])
+
   return (
     <Link to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
       <Row>
@@ -99,7 +119,7 @@ function TargeterRow({ dpoInfo, targeter, expiry }: { dpoInfo: DpoInfo; targeter
                   {targeter.dpoInfo.name.toString()}
                 </HeavyText>
                 {expectedBlockTime && createdDpoInfo && !targeter.purchasedIndex && targeter.createdIndex && (
-                  <SText>{blocksToCountDown(expiry, expectedBlockTime, t(`Expired`), ['m', 's'])}</SText>
+                  <SText>{blocksToCountDown(targeterExpiry, expectedBlockTime, t(`Expired`), ['m', 's'])}</SText>
                 )}
               </div>
               <div style={{ display: 'flex', alignItems: 'center', padding: '0.4rem 0', flexWrap: 'wrap' }}>
@@ -207,7 +227,7 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     })
     const created = createdIndexes
     const purchased = dposPurchasedTarget
-    if (!connected || created.length === 0 || purchased.length === 0) return
+    if (!connected || (created.length === 0 && purchased.length === 0)) return
     // get set of all created and purchased dpos that are related to this dpo
     const purchasedOnly = purchased.map((arr) => arr[0])
     const createdOnly = created.map((createdObj) => createdObj.targeter)
@@ -250,25 +270,21 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   }, [api, connected, dpoInfo, createdData, purchasedData])
 
   const targeterRows = useMemo(() => {
-    if (!targeters) return null
+    if (!targeters || !lastBlock) return null
     if (targeters.length === 0) return null
-    let expiry = new BN(0)
-    if (lastBlock) {
-      expiry = dpoInfo.expiry_blk.sub(lastBlock).gte(new BN(0)) ? dpoInfo.expiry_blk.sub(lastBlock) : new BN(0)
-    }
     return (
       <>
-        {targeters.map((targeter, index) => {
-          return (
-            <>
-              <TargeterRow key={index} dpoInfo={dpoInfo} targeter={targeter} expiry={expiry} />
-              {index !== targeters.length - 1 && <Divider />}
-            </>
-          )
-        })}
+        {targeters.map((targeter, index) => (
+          <div key={index}>
+            <TargeterRow dpoInfo={dpoInfo} targeter={targeter} lastBlock={lastBlock} />
+            {index !== targeters.length - 1 && <Divider />}
+          </div>
+        ))}
       </>
     )
-  }, [dpoInfo, lastBlock, targeters])
+    // don't want lastblock rendering constantly
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dpoInfo, targeters])
 
   const summaryData = useMemo(() => {
     if (!targeters) return null
@@ -322,8 +338,8 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   // Sections for SectionNoCard
   const targetSections = useMemo(() => {
     const result: JSX.Element[] = []
-    if (summaryData) result.push(summaryData)
-    if (targeterRows) result.push(targeterRows)
+    if (summaryData) result.push(<React.Fragment key="summary-data">{summaryData}</React.Fragment>)
+    if (targeterRows) result.push(<React.Fragment key="targeter-rows">{targeterRows}</React.Fragment>)
     return result
   }, [summaryData, targeterRows])
 

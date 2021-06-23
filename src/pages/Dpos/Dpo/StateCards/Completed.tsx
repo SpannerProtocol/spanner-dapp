@@ -15,6 +15,7 @@ import DpoActions from '.'
 function TargetDpo({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { t } = useTranslation()
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
+
   if (!target) return null
   return (
     <>

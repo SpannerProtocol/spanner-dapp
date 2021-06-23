@@ -74,9 +74,12 @@ export function DpoOverviewCard({ token }: { token: string }) {
             </Card>
             <Card margin="0 1rem" mobileMargin="0 0.5rem">
               <CenterWrapper display="block">
-                <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" width="100%" textAlign="center">
-                  {formatToUnit(crowdfundedAmount, chainDecimals)} <TokenText>{token}</TokenText>
-                </HeavyText>
+                <RowFixed justifyContent="center" align="baseline">
+                  <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" padding="0">
+                    {formatToUnit(crowdfundedAmount, chainDecimals)}
+                  </HeavyText>
+                  <TokenText padding="0 0.25rem">{token}</TokenText>
+                </RowFixed>
                 <Header4>{t(`Total Crowdfunded`)}</Header4>
               </CenterWrapper>
             </Card>

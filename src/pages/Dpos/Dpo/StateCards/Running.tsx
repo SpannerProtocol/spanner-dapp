@@ -16,6 +16,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
   const { t } = useTranslation()
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
+
   if (!target) return null
   return (
     <>
@@ -116,25 +117,25 @@ export function RunningDetails({ dpoInfo }: { dpoInfo: DpoInfo }) {
       <Header3>{t(`Total Rewards Received`)}</Header3>
       <RowBetween>
         <HeavyText>{t(`Yield`)}</HeavyText>
-        <SText>
-          {formatToUnit(dpoInfo.total_yield_received.toBn(), chainDecimals)}
+        <RowFixed width="fit-content">
+          <SText>{formatToUnit(dpoInfo.total_yield_received.toBn(), chainDecimals)}</SText>
           <TokenText padding="0 0.25rem">{token}</TokenText>
-        </SText>
+        </RowFixed>
       </RowBetween>
       <RowBetween>
         <HeavyText>{t(`Bonus`)}</HeavyText>
-        <SText>
-          {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
+        <RowFixed width="fit-content">
+          <SText>{formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}</SText>
           <TokenText padding="0 0.25rem">{token}</TokenText>
-        </SText>
+        </RowFixed>
       </RowBetween>
       {dpoInfo.target.isTravelCabin && (
         <RowBetween>
           <HeavyText>{t(`Milestone`)}</HeavyText>
-          <SText>
-            {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
+          <RowFixed width="fit-content">
+            <SText>{formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}</SText>
             <TokenText padding="0 0.25rem">{token}</TokenText>
-          </SText>
+          </RowFixed>
         </RowBetween>
       )}
     </>

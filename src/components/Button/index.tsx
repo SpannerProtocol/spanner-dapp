@@ -5,6 +5,7 @@ import { Button as RebassButton } from 'rebass/styled-components'
 
 const Base = styled(RebassButton)<{
   padding?: string
+  margin?: string
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
@@ -18,6 +19,7 @@ const Base = styled(RebassButton)<{
   mobileMaxWidth?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
   min-width: ${({ minWidth }) => (minWidth ? minWidth : '120px')};
   min-height: ${({ minHeight }) => (minHeight ? minHeight : '25px')};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '160px')};
@@ -43,7 +45,8 @@ const Base = styled(RebassButton)<{
   > * {
     user-select: none;
   }
-  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, mobileMaxWidth, theme }) => theme.mediaWidth.upToExtraSmall`
+  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, mobileMaxWidth, theme }) => theme.mediaWidth
+    .upToExtraSmall`
   font-size: ${mobileFontSize ? mobileFontSize : '12px'};
   padding: ${mobilePadding ? mobilePadding : '0.5rem'};
   min-width: ${mobileMinWidth ? mobileMinWidth : '100px'};
@@ -183,4 +186,30 @@ export const ButtonTrans = styled(ButtonPrimary)`
   }
   color: ${({ theme }) => theme.text1};
   border: 1px solid #262a41;
+`
+
+export const PillButton = styled(Base)`
+  background-color: ${({ theme }) => theme.primary1};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '15px')};
+  color: white;
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+  }
+  &:hover {
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+  }
+  &:active {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.1, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.1, theme.primary1)};
+  }
+  &:disabled {
+    background-color: ${({ theme, altDisabledStyle }) => (altDisabledStyle ? theme.primary1 : theme.bg3)};
+    color: ${({ theme, altDisabledStyle }) => (altDisabledStyle ? 'white' : theme.text3)};
+    cursor: auto;
+    box-shadow: none;
+    border: 1px solid transparent;
+    outline: none;
+    opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.7' : '1')};
+  }
 `
