@@ -101,7 +101,7 @@ export function useGenesisTime(): number | undefined {
 
   const blockHashStr = blockHash ? blockHash.toHex() : ''
   const { loading, data } = useQuery<BlockTimestamp, BlockTimestampVariables>(blockTimestamp, {
-    skip: !blockHashStr && blockHashStr != '',
+    skip: !blockHashStr && blockHashStr !== '',
     variables: {
       hash: blockHashStr,
     },
