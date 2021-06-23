@@ -39,6 +39,7 @@ export function useGetLastBlock() {
   const [lastBlock, setLastBlock] = useState<BlockNumber>()
 
   useEffect(() => {
+    if (!connected) return
     api.rpc.chain.getFinalizedHead().then((blockHash) =>
       api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
         setLastBlock(signedBlock.block.header.number.unwrap())

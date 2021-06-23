@@ -113,10 +113,10 @@ export function tsToDateTimeHuman(timestamp: number) {
 /**
  * Converts a unix ts to time, e.g. 11:54:22
  * @param timestamp unix timestamp in seconds
- * @returns time as string in 'hh:mm:ss'
+ * @returns time as string in 'HH:mm:ss'
  */
 export function tsToTime(timestamp: number) {
-  return moment.unix(timestamp).format('hh:mm:ss')
+  return moment.unix(timestamp).format('HH:mm:ss')
 }
 
 /**
@@ -124,7 +124,15 @@ export function tsToTime(timestamp: number) {
  * @param timestamp unix timestamp in seconds
  */
 export function tsToDateTime(timestamp: number) {
-  return moment.unix(timestamp).format('MM/DD/YYYY, hh:mm:ss')
+  return moment.unix(timestamp).format('MM/DD/YYYY, HH:mm:ss')
+}
+
+/**
+ *  Converts a unix ts into date time
+ * @param timestamp unix timestamp in seconds
+ */
+export function tsToDate(timestamp: number) {
+  return moment.unix(timestamp).format('MM/DD/YYYY')
 }
 
 /**

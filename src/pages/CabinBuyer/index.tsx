@@ -3,8 +3,7 @@ import { HeavyText, SText } from '../../components/Text'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from '../../components/Row'
-import { IconWrapper } from '../../components/AssetCards/TravelCabinCard'
-import getCabinClass, { getCabinClassImage } from '../../utils/getCabinClass'
+import { getCabinClassByIndex, getCabinClassImage } from '../../utils/getCabinClass'
 import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
 import { FlatCard } from '../../components/Card'
 import { useTranslation } from 'react-i18next'
@@ -24,14 +23,16 @@ import {
 import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { shortenAddr } from '../../utils/truncateString'
-import { useExpectedBlockTime, useGenesisTime, useGetLastBlock } from '../../hooks/useBlocks'
-import { blockToTs, tsToDateTime } from '../../utils/formatBlocks'
+import { blockToTs, tsToDate, tsToTime } from '../../utils/formatBlocks'
 import BN from 'bn.js'
 import useUserActions from '../../hooks/useUserActions'
 import TxModal from '../../components/Modal/TxModal'
 import TxFee from '../../components/TxFee'
 import useTxHelpers from '../../hooks/useTxHelpers'
 import { Step, StepLabel, Stepper } from '@material-ui/core'
+import type { BlockNumber } from '@polkadot/types/interfaces'
+import { Moment } from '@polkadot/types/interfaces'
+import { useBlockManager } from '../../hooks/useBlocks'
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -49,6 +50,7 @@ export default function TravelCabinBuyer() {
   >()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
+  const { lastBlock, expectedBlockTime, genesisTs } = useBlockManager()
 
   useEffect(() => {
     if (buyers.length === 0) return
@@ -93,6 +95,7 @@ export default function TravelCabinBuyer() {
                 chainDecimals={chainDecimals}
                 token={token}
                 selectedBuyer={selectedBuyer}
+                lastBlock={lastBlock}
               />
               <FareAvailable
                 travelCabinInfo={travelCabinInfo}
@@ -107,6 +110,9 @@ export default function TravelCabinBuyer() {
                 chainDecimals={chainDecimals}
                 token={token}
                 selectedBuyer={selectedBuyer}
+                lastBlock={lastBlock}
+                expectedBlockTime={expectedBlockTime}
+                genesisTs={genesisTs}
               />
               {/*<Activity />*/}
             </HomeContentWrapper>
@@ -123,6 +129,9 @@ interface CabinInfoProps {
   chainDecimals: number
   token: string
   selectedBuyer: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+  lastBlock?: BlockNumber
+  expectedBlockTime?: Moment
+  genesisTs?: number
 }
 
 export function CabinInfo(props: CabinInfoProps) {
@@ -133,16 +142,14 @@ export function CabinInfo(props: CabinInfoProps) {
       <FlatCard style={{ textAlign: 'left', padding: '1rem 2rem' }}>
         {travelCabinInfo && (
           <RowBetween>
-            <IconWrapper>
-              <div
-                style={{
-                  maxWidth: '45px',
-                  width: '45px',
-                }}
-              >
-                {getCabinClassImage(travelCabinInfo.name.toString())}
-              </div>
-            </IconWrapper>
+            <div
+              style={{
+                maxWidth: '45px',
+                width: '45px',
+              }}
+            >
+              {getCabinClassImage(travelCabinInfo.name.toString())}
+            </div>
             <div>
               <HeavyText fontSize={'16px'} mobileFontSize={'16px'} style={{ float: 'right' }} width={'fit-content'}>
                 {`${t(`TravelCabin`)} ${t(travelCabinInfo.name.toString())} #${travelCabinInventoryIndex.toString()}`}
@@ -171,10 +178,9 @@ export function CabinInfo(props: CabinInfoProps) {
 export function YieldAvailable(props: CabinInfoProps) {
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  const { travelCabinInfo, travelCabinInventoryIndex, chainDecimals, token, selectedBuyer } = props
+  const { travelCabinInfo, travelCabinInventoryIndex, chainDecimals, token, selectedBuyer, lastBlock } = props
   const [yieldAvailable, setYieldAvailable] = useState<string>()
   const buyer = useSubTravelCabinBuyerVerbose(selectedBuyer[0][0], selectedBuyer[0][1])
-  const { lastBlock } = useGetLastBlock()
 
   useEffect(() => {
     if (lastBlock && travelCabinInfo && buyer) {
@@ -256,7 +262,7 @@ export function YieldAvailable(props: CabinInfoProps) {
       >
         <>
           <SText>
-            {t(`Confirm Withdraw Yield from TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}`
+            {t(`Confirm Withdraw Yield from TravelCabin`)}: {getCabinClassByIndex(travelCabinInfo.index.toString())}
           </SText>
           <TxFee fee={estimatedFee} />
         </>
@@ -265,7 +271,7 @@ export function YieldAvailable(props: CabinInfoProps) {
         <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
           {t('Yield Available')}
         </HeavyText>
-        <RowBetween>
+        <RowBetween padding={'1.5rem 0rem'}>
           <HeavyText width={'fit-content'} fontSize={'20px'} mobileFontSize={'20px'} color={theme.primary1}>
             {`${yieldAvailable} ${token}`}
           </HeavyText>
@@ -280,7 +286,7 @@ export function YieldAvailable(props: CabinInfoProps) {
           </ButtonPrimary>
         </RowBetween>
         <SText fontSize={'12px'} mobileFontSize={'12px'}>
-          {`${t('Withdraw')}:${formatToUnit(buyer[1].yield_withdrawn.toString(), chainDecimals, 2)}/${formatToUnit(
+          {`${t('Withdrawn')}:${formatToUnit(buyer[1].yield_withdrawn.toString(), chainDecimals, 2)}/${formatToUnit(
             travelCabinInfo.yield_total.toString(),
             chainDecimals,
             2
@@ -356,7 +362,8 @@ export function FareAvailable(props: CabinInfoProps) {
       >
         <>
           <SText>
-            {t(`Confirm Withdraw Ticket Fare from TravelCabin`)}: {getCabinClass(travelCabinInfo.index.toString())}`
+            {t(`Confirm Withdraw Ticket Fare from TravelCabin`)}:{' '}
+            {getCabinClassByIndex(travelCabinInfo.index.toString())}
           </SText>
           <TxFee fee={estimatedFee} />
         </>
@@ -380,7 +387,7 @@ export function FareAvailable(props: CabinInfoProps) {
           </ButtonPrimary>
         </RowBetween>
         <SText fontSize={'12px'} mobileFontSize={'12px'}>
-          {`Withdrawn:${buyer[1].fare_withdrawn.isTrue ? fareAmount : 0}/${fareAmount} ${token}`}
+          {`${t('Withdrawn')}:${buyer[1].fare_withdrawn.isTrue ? fareAmount : 0}/${fareAmount} ${token}`}
         </SText>
       </FlatCard>
     </>
@@ -394,19 +401,20 @@ const TripDiv = styled.div`
 `
 
 export function Trip(props: CabinInfoProps) {
-  const { travelCabinInfo, selectedBuyer } = props
-  const expectedBlockTime = useExpectedBlockTime()
-  const genesisTs = useGenesisTime()
-  const { lastBlock } = useGetLastBlock()
+  const { travelCabinInfo, selectedBuyer, lastBlock, expectedBlockTime, genesisTs } = props
+
   const [activeStep, setActiveStep] = useState<number>(1)
   const { t } = useTranslation()
 
-  if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
-  const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
+  useEffect(() => {
+    if (!lastBlock) return
+    const remainBlock = travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber() - lastBlock.toNumber()
+    if (remainBlock <= 0) {
+      setActiveStep(2)
+    }
+  }, [travelCabinInfo, selectedBuyer, lastBlock])
 
-  if (remainBlock > 0) {
-    setActiveStep(2)
-  }
+  if (!travelCabinInfo || !selectedBuyer || !lastBlock) return <></>
 
   return (
     <>
@@ -442,7 +450,13 @@ export function Trip(props: CabinInfoProps) {
                         {t(`Start`)}
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {tsToDateTime(
+                        {tsToDate(
+                          blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) /
+                            1000
+                        )}
+                      </SText>
+                      <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {tsToTime(
                           blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) /
                             1000
                         )}
@@ -457,7 +471,16 @@ export function Trip(props: CabinInfoProps) {
                         {t(`End`)}
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {tsToDateTime(
+                        {tsToDate(
+                          blockToTs(
+                            genesisTs,
+                            expectedBlockTime.toNumber(),
+                            travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                          ) / 1000
+                        )}
+                      </SText>
+                      <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
+                        {tsToTime(
                           blockToTs(
                             genesisTs,
                             expectedBlockTime.toNumber(),
