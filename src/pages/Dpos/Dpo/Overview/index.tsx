@@ -26,7 +26,7 @@ function TargetDpo({ dpoInfo }: { dpoInfo: DpoInfo }) {
     <>
       <RowFixed>
         <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
-        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0 0 0.25rem">
+        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} padding="0 0 0 0.25rem" colorIsBlue>
           {t(`DPO`)}: {target.name.toString()}
         </SLink>
       </RowFixed>
@@ -45,8 +45,8 @@ function TargetCabin({ dpoInfo }: { dpoInfo: DpoInfo }) {
         <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
         <SLink
           to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
-          colorIsBlue
           padding="0 0 0 0.25rem"
+          colorIsBlue
         >
           {t(`TravelCabin`)}: {target.name.toString()}
         </SLink>
@@ -115,44 +115,6 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </div>
           </RowBetween>
         </Section>
-        {/* {!dpoInfo.state.isCreated && (
-          <Section>
-            <HeavyText color={theme.primary1}>{t(`Total Rewards Received`)}</HeavyText>
-            <StatDisplayContainer>
-              <StatDisplayGrid>
-                <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue small={true}>
-                    {formatToUnit(dpoInfo.total_yield_received.toString(), chainDecimals, 2)}{' '}
-                    <TokenText color="#fff" mobileFontSize="8px">
-                      {token}
-                    </TokenText>
-                  </StatValue>
-                  <StatText>{t(`Yield`)}</StatText>
-                </StatContainer>
-                <StatContainer maxWidth="none" background={statsBg}>
-                  <StatValue small={true}>
-                    {formatToUnit(dpoInfo.total_bonus_received.toString(), chainDecimals)}{' '}
-                    <TokenText color="#fff" mobileFontSize="8px">
-                      {token}
-                    </TokenText>
-                  </StatValue>
-                  <StatText>{t(`Bonus`)}</StatText>
-                </StatContainer>
-                {dpoInfo.target.isTravelCabin && (
-                  <StatContainer maxWidth="none" background={statsBg}>
-                    <StatValue small={true}>
-                      {formatToUnit(dpoInfo.total_milestone_received.toString(), chainDecimals, 2)}{' '}
-                      <TokenText color="#fff" mobileFontSize="8px">
-                        {token}
-                      </TokenText>
-                    </StatValue>
-                    <StatText>{t(`Milestone`)}</StatText>
-                  </StatContainer>
-                )}
-              </StatDisplayGrid>
-            </StatDisplayContainer>
-          </Section>
-        )} */}
       </Card>
     </ContentWrapper>
   )

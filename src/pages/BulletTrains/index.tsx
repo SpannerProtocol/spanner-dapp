@@ -110,8 +110,7 @@ function ProjectsByAssets({ projects }: { projects: ProjectInfo[] }) {
                 key={index}
                 to={`/projects/${projectRegistry.token.toLowerCase()}?asset=${asset}`}
                 colorIsBlue
-                fontSize="16px"
-                mobileFontSize="14px"
+                fontSize="14px"
                 width="100%"
               >
                 <ProjectCard>

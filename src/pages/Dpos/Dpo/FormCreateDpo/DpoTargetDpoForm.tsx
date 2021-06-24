@@ -101,8 +101,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
     setBaseFee(abs(value))
   }
 
-  const handleManagerSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+  const handleManagerSeats = (seats: string) => {
+    const value = parseFloat(seats)
     if (!passengerSeatCap) return
     if (value > passengerSeatCap) return
     setManagerSeats(abs(value))

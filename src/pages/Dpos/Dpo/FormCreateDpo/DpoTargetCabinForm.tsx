@@ -88,8 +88,8 @@ export default function DpoTargetCabinForm({
     setBaseFee(value)
   }
 
-  const handleManagerSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+  const handleManagerSeats = (seats: string) => {
+    const value = parseFloat(seats)
     if (value > 15) return
     setManagerSeats(value)
   }

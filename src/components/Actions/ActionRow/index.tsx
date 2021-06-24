@@ -79,6 +79,7 @@ export default function ActionRow({
   gracePeriod,
   isLast,
   selectedState,
+  disableButton,
   setEstimatedFee,
 }: ActionProps) {
   const [commitDpoModalOpen, setCommitDpoModalOpen] = useState<boolean>(false)
@@ -194,7 +195,7 @@ export default function ActionRow({
           mobilePadding="0.25rem 0.25rem"
           minWidth="fit-content"
           mobileMinWidth="fit-content"
-          disabled={isCurrent ? false : true}
+          disabled={disableButton ? true : isCurrent ? false : true}
         >
           {buttonText}
         </ButtonPrimary>

@@ -1,12 +1,14 @@
 import BN from 'bn.js'
-import { BorderedInput } from 'components/Input'
+import { PillButton } from 'components/Button'
+import { BorderedInput, SInput } from 'components/Input'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { SText } from 'components/Text'
-import { Section } from 'components/Wrapper'
+import { Section, BorderedWrapper } from 'components/Wrapper'
+import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { ErrorMsg } from 'pages/Dex/components'
-import React, { useContext } from 'react'
+import React, { useCallback, useContext } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
@@ -128,11 +130,24 @@ export function DpoManagerSeats({
   dpoName: string
   costPerSeat: BN
   token: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  onChange: (seats: string) => void
   errMsg?: string
 }) {
   const { t } = useTranslation()
   const { chainDecimals } = useSubstrate()
+  const balance = useSubscribeBalance(token)
+
+  const handleMax = useCallback(() => {
+    if (!seatCap) return
+    const seatCapBn = new BN(seatCap)
+    const affordableSeats = balance.div(costPerSeat)
+    if (affordableSeats.gt(seatCapBn)) {
+      onChange(seatCapBn.toString())
+    } else {
+      const seats = Math.floor(affordableSeats.toNumber()).toString()
+      onChange(seats)
+    }
+  }, [balance, costPerSeat, onChange, seatCap])
 
   return (
     <>
@@ -153,15 +168,29 @@ export function DpoManagerSeats({
               {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
             </SText>
           </RowBetween>
-          <BorderedInput
-            required
-            id="dpo-manager-seats"
-            type="number"
-            placeholder={`0 - ${seatCap}`}
-            onChange={(e) => onChange(e)}
-            value={Number.isNaN(managerSeats) ? '' : managerSeats}
-            style={{ alignItems: 'flex-end', width: '100%' }}
-          />
+          <BorderedWrapper margin="0" padding="0.25rem">
+            <RowFixed margin="0" padding="0">
+              <SInput
+                required
+                id="dpo-manager-seats"
+                type="number"
+                placeholder={`0 - ${seatCap}`}
+                onChange={(e) => onChange(e.target.value)}
+                value={Number.isNaN(managerSeats) ? '' : managerSeats}
+                style={{ alignItems: 'flex-end', width: '100%' }}
+              />
+              <PillButton
+                onClick={handleMax}
+                padding="0.25rem"
+                mobilePadding="0.25rem"
+                margin="0 1rem"
+                minWidth="60px"
+                mobileMinWidth="60px"
+              >
+                {t(`Max`)}
+              </PillButton>
+            </RowFixed>
+          </BorderedWrapper>
           {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
         </Section>
       )}
@@ -183,7 +212,7 @@ export function DpoEnd({
   return (
     <Section>
       <RowBetween>
-        <RowFixed>
+        <RowFixed width="fit-content">
           <SText mobileFontSize="10px">
             {t(`Crowdfund Period`)} ({t(`Days`)})
           </SText>
@@ -193,7 +222,7 @@ export function DpoEnd({
             backgroundColor={'transparent'}
           />
         </RowFixed>
-        {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)} ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
+        {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)}: ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
       </RowBetween>
       <BorderedInput
         required
@@ -228,7 +257,7 @@ export function DpoTargetDpoSeats({
       {seatCap && (
         <Section>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>
               <QuestionHelper
                 text={t(
