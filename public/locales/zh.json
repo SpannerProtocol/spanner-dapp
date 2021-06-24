@@ -657,5 +657,9 @@
   "Managers should perform actions for the DPO but any user can perform them if they don't want to wait": "管理员应该为DPO执行操作，但任何用户都可以执行这些操作当他们不想等待",
   "Use crowdfund amount to buy seats from Target DPO": "使用众筹金额从目标DPO购买席位",
   "Price History": "价格历史",
-  "Price is unavailable for this token": "此代币的价格暂不可用"
+  "Price is unavailable for this token": "此代币的价格暂不可用",
+  "Total Distributed": "已分发",
+  "Buy or crowdfund a cabin to get Milestone Rewards": "购买或众筹客舱以获得里程碑奖励",
+  "Global Milestone Rewards": "全球里程碑奖励",
+  "Current": "当前"
 }

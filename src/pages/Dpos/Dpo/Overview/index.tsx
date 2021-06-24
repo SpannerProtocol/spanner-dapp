@@ -68,7 +68,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
   // const token = useMemo(() => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : ''), [dpoInfo])
   return (
     <ContentWrapper>
-      <Card margin="1rem 0" mobileMargin="0.5rem 0">
+      <Card margin="1rem 0">
         <Section>
           <RowBetween>
             <Header1 colorIsPrimary width="fit-content">

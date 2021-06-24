@@ -15,13 +15,7 @@ export default function AssetTravelCabin({ projectInfo }: { projectInfo: Project
 
   return (
     <ContentWrapper>
-      <BannerCard
-        url={BulletTrainBanner}
-        padding="3rem 1rem"
-        margin="0 0 1rem 0"
-        mobileMargin="0 0 1rem 0"
-        darkenBackground
-      >
+      <BannerCard url={BulletTrainBanner} padding="3rem 1rem" margin="0 0 1rem 0" darkenBackground>
         <Header2 colorIsPrimary>{t(`BulletTrain TravelCabins`)}</Header2>
         <Header4 color="#fff">{`${t(`Earn by depositing your tokens and referring your friends`)}!`}</Header4>
         <Divider margin="0.5rem 0" />

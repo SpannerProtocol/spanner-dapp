@@ -142,13 +142,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                 </IconWrapper>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Card
-                  minHeight="80px"
-                  mobileMinHeight="70px"
-                  margin="0 0.5rem"
-                  mobileMargin="0 0.25rem 0 0"
-                  padding="0.75rem"
-                >
+                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Total Deposited`)}
                   </SText>
@@ -161,13 +155,7 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
                     </div>
                   )}
                 </Card>
-                <Card
-                  minHeight="80px"
-                  mobileMinHeight="70px"
-                  margin="0 0.5rem"
-                  mobileMargin="0 0 0 0.25rem"
-                  padding="0.75rem"
-                >
+                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
                   <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
                     {t(`Deposit by Asset`)}
                   </SText>
