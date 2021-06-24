@@ -56,8 +56,6 @@ export default function Dpo(): JSX.Element {
     setActiveTab(path.section)
   }, [path.section])
 
-  console.log(selectedState, dpoInfo?.state.toString())
-
   return (
     <>
       {dpoInfo && selectedState && (

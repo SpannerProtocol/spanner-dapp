@@ -127,7 +127,7 @@ export function useBlockTime(blockNumber?: BlockNumber | AnyNumber | Uint8Array)
     api.rpc.chain.getBlockHash(blockNumber).then((blockHash) => {
       setBlockHash(blockHash)
     })
-  }, [api, connected, expectedBlockTime])
+  }, [api, blockNumber, connected, expectedBlockTime])
 
   const blockHashStr = blockHash ? blockHash.toHex() : ''
   const { loading, data } = useQuery<BlockTimestamp, BlockTimestampVariables>(blockTimestamp, {

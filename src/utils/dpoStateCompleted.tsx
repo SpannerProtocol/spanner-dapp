@@ -19,7 +19,6 @@ export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState: str
     // All states that aren't FAILED
     dpoStateIndex = stateOrder.findIndex((state) => dpoInfo.state.eq(state))
   }
-  console.log('dpoStateIndex', dpoStateIndex, 'selectedStateIndex', selectedStateIndex)
   return dpoStateIndex > selectedStateIndex
 }
 
