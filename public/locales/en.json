@@ -661,5 +661,7 @@
   "Total Distributed": "Total Distributed",
   "Buy or crowdfund a cabin to get Milestone Rewards": "Buy or crowdfund a cabin to get Milestone Rewards",
   "Global Milestone Rewards": "Global Milestone Rewards",
-  "Current": "Current"
+  "Current": "Current",
+  "Failed to crowdfund": "Failed to crowdfund",
+  "DPO failed to crowdfund before its expiry. Members received their deposits back": "DPO failed to crowdfund before its expiry. Members received their deposits back"
 }
