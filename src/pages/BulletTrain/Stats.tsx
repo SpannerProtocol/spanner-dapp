@@ -15,7 +15,7 @@ export default function BulletTrainStats({ token }: { token: string }) {
       <RowFixed>
         <HeavyText color="#fff">{t(`Total Deposits Stored`)}:</HeavyText>
         <RowFixed width="fit-content">
-          <SText padding="0 0.5rem" colorIsPrimary>
+          <SText padding="0 0 0 0.5rem" colorIsPrimary>
             {formatToUnit(stats.totalValueLocked, chainDecimals)}
           </SText>
           <TokenText padding="0 0.25rem">{token}</TokenText>
@@ -24,7 +24,7 @@ export default function BulletTrainStats({ token }: { token: string }) {
       <RowFixed>
         <HeavyText color="#fff">{t(`Yield Distributed`)}:</HeavyText>
         <RowFixed width="fit-content">
-          <SText padding="0 0.5rem" colorIsPrimary>
+          <SText padding="0 0 0 0.5rem" colorIsPrimary>
             {formatToUnit(stats.totalYieldWithdrawn, chainDecimals)}
           </SText>
           <TokenText padding="0 0.25rem">{token}</TokenText>
@@ -32,13 +32,13 @@ export default function BulletTrainStats({ token }: { token: string }) {
       </RowFixed>
       <RowFixed>
         <HeavyText color="#fff">{t(`Cabins Purchased`)}:</HeavyText>
-        <SText padding="0 0.5rem" colorIsPrimary>
+        <SText padding="0 0 0 0.5rem" colorIsPrimary>
           {stats.totalCabinsBought}
         </SText>
       </RowFixed>
       <RowFixed>
         <HeavyText color="#fff">{t(`Users Participating`)}:</HeavyText>
-        <SText padding="0 0.5rem" colorIsPrimary>
+        <SText padding="0 0 0 0.5rem" colorIsPrimary>
           {stats.totalPassengers}
         </SText>
       </RowFixed>

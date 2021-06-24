@@ -82,25 +82,25 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
           <Header3>{t(`Total Rewards Received`)}</Header3>
           <RowBetween>
             <HeavyText>{t(`Yield`)}</HeavyText>
-            <SText>
-              {formatToUnit(dpoInfo.total_yield_received.toBn(), chainDecimals)}
+            <RowFixed width="fit-content">
+              <SText>{formatToUnit(dpoInfo.total_yield_received.toBn(), chainDecimals)}</SText>
               <TokenText padding="0 0.25rem">{token}</TokenText>
-            </SText>
+            </RowFixed>
           </RowBetween>
           <RowBetween>
             <HeavyText>{t(`Bonus`)}</HeavyText>
-            <SText>
-              {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
+            <RowFixed width="fit-content">
+              <SText>{formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}</SText>
               <TokenText padding="0 0.25rem">{token}</TokenText>
-            </SText>
+            </RowFixed>
           </RowBetween>
           {dpoInfo.target.isTravelCabin && (
             <RowBetween>
               <HeavyText>{t(`Milestone`)}</HeavyText>
-              <SText>
-                {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
+              <RowFixed width="fit-content">
+                <SText>{formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}</SText>
                 <TokenText padding="0 0.25rem">{token}</TokenText>
-              </SText>
+              </RowFixed>
             </RowBetween>
           )}
         </>
@@ -110,46 +110,6 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
           <Header3>{t(`Total Rewards Received`)}</Header3>
           <SText>{t(`Summary data will be displayed once DPO goal is complete`)}</SText>
         </>
-      )}
-    </>
-  )
-}
-
-export function RunningDetails({ dpoInfo }: { dpoInfo: DpoInfo }) {
-  const { t } = useTranslation()
-  const { chainDecimals } = useSubstrate()
-
-  const token = useMemo(
-    () => (dpoInfo.token_id.isToken ? dpoInfo.token_id.asToken.toString() : dpoInfo.token_id.asDexShare.toString()),
-    [dpoInfo]
-  )
-
-  return (
-    <>
-      <Divider margin="0.5rem 0" />
-      <Header3>{t(`Total Rewards Received`)}</Header3>
-      <RowBetween>
-        <HeavyText>{t(`Yield`)}</HeavyText>
-        <SText>
-          {formatToUnit(dpoInfo.total_yield_received.toBn(), chainDecimals)}
-          <TokenText padding="0 0.25rem">{token}</TokenText>
-        </SText>
-      </RowBetween>
-      <RowBetween>
-        <HeavyText>{t(`Bonus`)}</HeavyText>
-        <SText>
-          {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
-          <TokenText padding="0 0.25rem">{token}</TokenText>
-        </SText>
-      </RowBetween>
-      {dpoInfo.target.isTravelCabin && (
-        <RowBetween>
-          <HeavyText>{t(`Milestone`)}</HeavyText>
-          <SText>
-            {formatToUnit(dpoInfo.total_bonus_received.toBn(), chainDecimals)}
-            <TokenText padding="0 0.25rem">{token}</TokenText>
-          </SText>
-        </RowBetween>
       )}
     </>
   )

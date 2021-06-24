@@ -13,8 +13,8 @@ export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState: str
   const selectedStateIndex = stateOrder.findIndex((state) => state === selectedState)
   let dpoStateIndex: number
   // Failed is mapped to CREATED in the sequence
-  if (dpoInfo.state.eq('FAILED')) {
-    dpoStateIndex = 0
+  if (dpoInfo.state.eq('FAILED') && selectedState === 'CREATED') {
+    return true
   } else {
     // All states that aren't FAILED
     dpoStateIndex = stateOrder.findIndex((state) => dpoInfo.state.eq(state))
@@ -23,7 +23,8 @@ export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState: str
 }
 
 export function isDpoStateSelectedState(dpoInfo: DpoInfo, selectedState: string): boolean {
-  return dpoInfo.state.eq(selectedState)
+  const isFailed = selectedState === 'CREATED' && dpoInfo.state.isFailed
+  return dpoInfo.state.eq(selectedState) || isFailed
 }
 
 export function getDpoCompletedStates(dpoInfo: DpoInfo) {

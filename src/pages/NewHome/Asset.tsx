@@ -46,12 +46,13 @@ export function BulletTrain() {
       <FlatCard
         style={{
           textAlign: 'left',
-          minHeight: '270px',
-          background: `transparent url(${bulletTrainBg}) center center no-repeat padding-box`,
+          minHeight: '250px',
+          background: `url(${bulletTrainBg}) no-repeat center center`,
+          backgroundSize: 'cover',
         }}
       >
         <HomeSectionTitle color={'white'}>{t('Spanner BulletTrain')}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
+        <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'} style={{ marginLeft: '0.5rem' }}>
           {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
         </SText>
         <Link to={`/bullettrain`} style={{ textDecoration: 'none' }}>
@@ -68,12 +69,12 @@ export function SpannerNFT() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '270px' }}>
+      <FlatCard style={{ textAlign: 'left', minHeight: '250px' }}>
         <HomeSectionTitle>{t('Spanner NFT')}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
           {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
         </SText>
-        <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
+        <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
           <Header4>({t('Coming soon')})</Header4>
         </div>
       </FlatCard>

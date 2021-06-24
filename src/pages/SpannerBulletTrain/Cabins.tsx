@@ -50,9 +50,7 @@ export function CabinsSection() {
   const { t } = useTranslation()
   return (
     <>
-      <Header2 fontSize={'18px'} mobileFontSize={'18px'} padding={'1rem 0rem'}>
-        {t('Buy a Cabin')}
-      </Header2>
+      <Header2 padding="1rem 0">{t('Buy a Cabin')}</Header2>
       <Cabins />
     </>
   )

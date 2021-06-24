@@ -7,9 +7,9 @@ import useMilestones from '../../hooks/useMilestones'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import BN from 'bn.js'
 import { BULLETTRAIN_MILESTONES } from '../../constants'
-import { FlatCard } from '../../components/Card'
-import { HeavyText, SText } from '../../components/Text'
-import { RowBetween } from '../../components/Row'
+import Card from '../../components/Card'
+import { Header2, HeavyText, SText, TokenText } from '../../components/Text'
+import { RowBetween, RowFixed } from '../../components/Row'
 import { formatToUnit } from '../../utils/formatUnit'
 import { LinearProgressBar } from '../../components/ProgressBar'
 
@@ -24,8 +24,9 @@ export function GlobalMilestoneReward() {
   const theme = useContext(ThemeContext)
   const classes = lineProcessBarStyle()
   const project = useSelectedProject()
+  const token = useMemo(() => (project ? project.token : 'BOLT'), [project])
   const { t } = useTranslation()
-  const milestoneInfo = useMilestones(project?.token)
+  const milestoneInfo = useMilestones(token)
   // const theme = useContext(ThemeContext)
   const { chainDecimals } = useSubstrate()
   const [progress, setProgress] = useState<number>(0)
@@ -94,52 +95,52 @@ export function GlobalMilestoneReward() {
 
   return (
     <>
-      {milestoneInfo && nextMilestone && project && chainDecimals && (
-        <FlatCard style={{ textAlign: 'left' }}>
-          <HeavyText fontSize={'14px'} mobileFontSize={'14px'}>
-            {'Global Milestone Reward'}
-          </HeavyText>
-          <HeavyText
-            fontSize={'20px'}
-            mobileFontSize={'20px'}
-            color={theme.primary1}
-            padding={'2rem 0rem 1rem 0rem'}
-            style={{ margin: 'auto', textAlign: 'center' }}
-          >{`${rewardsData?.finishedRewards.toString()} BOLT`}</HeavyText>
+      {milestoneInfo && nextMilestone && chainDecimals && (
+        <Card>
+          <Header2>{t('Global Milestone Rewards')}</Header2>
+          <RowFixed align="baseline" justifyContent="center" padding="1rem 0 0 0">
+            <HeavyText
+              fontSize={'24px'}
+              mobileFontSize={'20px'}
+              color={theme.primary1}
+            >{`${rewardsData?.finishedRewards.toString()}`}</HeavyText>
+            <TokenText padding="0 0.25rem">{token}</TokenText>
+          </RowFixed>
           <SText
-            fontSize={'14px'}
-            mobileFontSize={'14px'}
-            padding={'0rem 0rem 3rem 0rem'}
-            style={{ margin: 'auto', textAlign: 'center' }}
+            fontSize={'18px'}
+            mobileFontSize={'16px'}
+            padding={'0rem 0rem 2rem 0rem'}
+            width="100%"
+            textAlign="center"
           >
-            {'Total Milestone Reward Distributed'}
+            {t('Total Distributed')}
           </SText>
           <RowBetween>
-            <SText fontSize={'12px'} mobileFontSize={'12px'}>
-              {`${t(`Current`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}
-            </SText>
-            <SText fontSize={'12px'} mobileFontSize={'12px'} style={{ textAlign: 'right' }}>
-              {`${t(`Milestone`)}: ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)} ${project.token}`}
-            </SText>
+            <RowFixed align="baseline">
+              <SText fontSize={'12px'} mobileFontSize={'12px'}>
+                {`${t(`Current`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}
+              </SText>
+              <TokenText padding="0 0.25rem">{token}</TokenText>
+            </RowFixed>
+            <RowFixed align="baseline" textAlign="right" justifyContent="flex-end">
+              <SText fontSize={'12px'} mobileFontSize={'12px'} style={{ textAlign: 'right' }}>
+                {`${t(`Milestone`)}: ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)}`}
+              </SText>
+              <TokenText padding="0 0.25rem">{token}</TokenText>
+            </RowFixed>
           </RowBetween>
 
-          <div style={{ margin: '1rem 0rem' }}>
+          <div style={{ margin: '0.5rem 0 1rem 0' }}>
             <LinearProgressBar
-              color={'secondary'}
+              color={'primary'}
               classes={{ root: classes.root }}
               value={parseFloat(progress.toFixed(0))}
             />
           </div>
-          <HeavyText
-            style={{ margin: 'auto' }}
-            fontSize={'12px'}
-            mobileFontSize={'12px'}
-            width={'fit-content'}
-            padding={'1rem 0rem'}
-          >
-            {'Get involved and get more rewards'}
+          <HeavyText textAlign="center" width="100%" padding={'1rem 0rem'}>
+            {t('Buy or crowdfund a cabin to get Milestone Rewards')}
           </HeavyText>
-        </FlatCard>
+        </Card>
       )}
     </>
   )

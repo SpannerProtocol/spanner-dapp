@@ -243,13 +243,13 @@ export const TokenText = styled.p<{
   padding?: string
   fontWeight?: string
 }>`
-  display: inline;
+  margin: 0;
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '700')};
   color: ${({ color, theme }) => (color ? color : theme.text3)};
   overflow-wrap: break-word;
-  padding: ${({ padding }) => (padding ? padding : '0')}
-    ${({ theme }) => theme.mediaWidth.upToMedium`
+  padding: ${({ padding }) => (padding ? padding : '0')};
+  ${({ theme }) => theme.mediaWidth.upToMedium`
     font-size: 12px;
  `};
 

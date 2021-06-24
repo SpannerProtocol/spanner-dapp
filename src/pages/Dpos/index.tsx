@@ -64,7 +64,7 @@ export function DpoOverviewCard({ token }: { token: string }) {
         </Header3>
         <SpacedSection>
           <RowBetween>
-            <Card margin="0 1rem" mobileMargin="0 0.5rem">
+            <Card margin="0 0.5rem">
               <CenterWrapper display="block">
                 <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" width="100%" textAlign="center">
                   {dpoCount}
@@ -72,7 +72,7 @@ export function DpoOverviewCard({ token }: { token: string }) {
                 <Header4>{t(`Total DPOs`)}</Header4>
               </CenterWrapper>
             </Card>
-            <Card margin="0 1rem" mobileMargin="0 0.5rem">
+            <Card margin="0 0.5rem">
               <CenterWrapper display="block">
                 <RowFixed justifyContent="center" align="baseline">
                   <HeavyText colorIsPrimary fontSize="24px" mobileFontSize="18px" padding="0">
