@@ -154,6 +154,10 @@ export function blockToTs(genesisTs: number, expectedBlockTime: number, currentB
   return genesisTs + currentBlock * expectedBlockTime
 }
 
+export function estimateBlockToTs(startTimestamp: number, expectedBlockTime: number, durationBlocks: number) {
+  return startTimestamp + durationBlocks * expectedBlockTime
+}
+
 export function isoToTs(iso: string) {
   const myDate = new Date(iso)
   const offset = myDate.getTimezoneOffset() * 60 * 1000

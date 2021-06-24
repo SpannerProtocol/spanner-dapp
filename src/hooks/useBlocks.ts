@@ -5,6 +5,7 @@ import { useQuery } from '@apollo/client'
 import blockTimestamp from '../queries/graphql/blockTimestamp'
 import type { BlockHash } from '@polkadot/types/interfaces/chain'
 import { BlockTimestamp, BlockTimestampVariables } from '../queries/graphql/types/BlockTimestamp'
+import { AnyNumber } from '@polkadot/types/types'
 
 export function useExpectedBlockTime(): Moment | undefined {
   const { api, connected } = useApi()
@@ -96,6 +97,34 @@ export function useGenesisTime(): number | undefined {
     if (!connected || !expectedBlockTime) return
     // Get Genesis timestamp
     api.rpc.chain.getBlockHash(1).then((blockHash) => {
+      setBlockHash(blockHash)
+    })
+  }, [api, connected, expectedBlockTime])
+
+  const blockHashStr = blockHash ? blockHash.toHex() : ''
+  const { loading, data } = useQuery<BlockTimestamp, BlockTimestampVariables>(blockTimestamp, {
+    skip: !blockHashStr && blockHashStr !== '',
+    variables: {
+      hash: blockHashStr,
+    },
+  })
+
+  if (!loading && data) {
+    return parseInt(data.block?.timestamp) * 1000
+  } else {
+    return undefined
+  }
+}
+
+export function useBlockTime(blockNumber?: BlockNumber | AnyNumber | Uint8Array): number | undefined {
+  const { api, connected } = useApi()
+  const expectedBlockTime = useExpectedBlockTime()
+  const [blockHash, setBlockHash] = useState<BlockHash>()
+
+  useEffect(() => {
+    if (!connected || !expectedBlockTime || !blockNumber) return
+    // Get Genesis timestamp
+    api.rpc.chain.getBlockHash(blockNumber).then((blockHash) => {
       setBlockHash(blockHash)
     })
   }, [api, connected, expectedBlockTime])

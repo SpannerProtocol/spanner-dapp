@@ -23,7 +23,7 @@ import {
 import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { shortenAddr } from '../../utils/truncateString'
-import { blockToTs, tsToDate, tsToTime } from '../../utils/formatBlocks'
+import { estimateBlockToTs, tsToDate, tsToTime } from '../../utils/formatBlocks'
 import BN from 'bn.js'
 import useUserActions from '../../hooks/useUserActions'
 import TxModal from '../../components/Modal/TxModal'
@@ -32,7 +32,7 @@ import useTxHelpers from '../../hooks/useTxHelpers'
 import { Step, StepLabel, Stepper } from '@material-ui/core'
 import type { BlockNumber } from '@polkadot/types/interfaces'
 import { Moment } from '@polkadot/types/interfaces'
-import { useBlockManager } from '../../hooks/useBlocks'
+import { useBlockManager, useBlockTime } from '../../hooks/useBlocks'
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -50,7 +50,7 @@ export default function TravelCabinBuyer() {
   >()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
-  const { lastBlock, expectedBlockTime, genesisTs } = useBlockManager()
+  const { lastBlock, expectedBlockTime } = useBlockManager()
 
   useEffect(() => {
     if (buyers.length === 0) return
@@ -112,7 +112,6 @@ export default function TravelCabinBuyer() {
                 selectedBuyer={selectedBuyer}
                 lastBlock={lastBlock}
                 expectedBlockTime={expectedBlockTime}
-                genesisTs={genesisTs}
               />
               {/*<Activity />*/}
             </HomeContentWrapper>
@@ -403,10 +402,12 @@ const TripDiv = styled.div`
 `
 
 export function Trip(props: CabinInfoProps) {
-  const { travelCabinInfo, selectedBuyer, lastBlock, expectedBlockTime, genesisTs } = props
+  const { travelCabinInfo, selectedBuyer, lastBlock, expectedBlockTime } = props
 
   const [activeStep, setActiveStep] = useState<number>(1)
   const { t } = useTranslation()
+
+  const startTime = useBlockTime(selectedBuyer[1].purchase_blk)
 
   useEffect(() => {
     if (!lastBlock) return
@@ -442,7 +443,7 @@ export function Trip(props: CabinInfoProps) {
         {/*    : ` `}*/}
         {/*</SText>*/}
         <div>
-          {genesisTs && expectedBlockTime && selectedBuyer && travelCabinInfo && (
+          {startTime && expectedBlockTime && selectedBuyer && travelCabinInfo && (
             <div>
               <Stepper alternativeLabel activeStep={activeStep}>
                 <Step>
@@ -452,16 +453,10 @@ export function Trip(props: CabinInfoProps) {
                         {t(`Start`)}
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {tsToDate(
-                          blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) /
-                            1000
-                        )}
+                        {tsToDate(startTime / 1000)}
                       </SText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
-                        {tsToTime(
-                          blockToTs(genesisTs, expectedBlockTime.toNumber(), selectedBuyer[1].purchase_blk.toNumber()) /
-                            1000
-                        )}
+                        {tsToTime(startTime / 1000)}
                       </SText>
                     </TripDiv>
                   </StepLabel>
@@ -474,19 +469,19 @@ export function Trip(props: CabinInfoProps) {
                       </HeavyText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                         {tsToDate(
-                          blockToTs(
-                            genesisTs,
+                          estimateBlockToTs(
+                            startTime,
                             expectedBlockTime.toNumber(),
-                            travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                            travelCabinInfo.maturity.toNumber()
                           ) / 1000
                         )}
                       </SText>
                       <SText fontSize={'14px'} mobileFontSize={'14px'} width={'fit-content'}>
                         {tsToTime(
-                          blockToTs(
-                            genesisTs,
+                          estimateBlockToTs(
+                            startTime,
                             expectedBlockTime.toNumber(),
-                            travelCabinInfo.maturity.add(selectedBuyer[1].purchase_blk).toNumber()
+                            travelCabinInfo.maturity.toNumber()
                           ) / 1000
                         )}
                       </SText>
