@@ -657,5 +657,7 @@
   "Managers should perform actions for the DPO but any user can perform them if they don't want to wait": "Managers should perform actions for the DPO but any user can perform them if they don't want to wait",
   "Use crowdfund amount to buy seats from Target DPO": "Use crowdfund amount to buy seats from Target DPO",
   "Price History": "Price History",
-  "Price is unavailable for this token": "Price is unavailable for this token"
+  "Price is unavailable for this token": "Price is unavailable for this token",
+  "Total Distributed": "Total Distributed",
+  "Buy or crowdfund a cabin to get Milestone Rewards": "Buy or crowdfund a cabin to get Milestone Rewards"
 }
