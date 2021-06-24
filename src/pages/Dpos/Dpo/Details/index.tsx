@@ -1,14 +1,11 @@
 import BN from 'bn.js'
 import Card from 'components/Card'
-import ExpandCard from 'components/Card/ExpandCard'
-import CopyHelper from 'components/Copy/Copy'
 import { LinearProgressBar } from 'components/ProgressBar'
 import { RowBetween } from 'components/Row'
-import { Header2, HeavyText, SmallText, SText } from 'components/Text'
+import { Header2, SmallText, SText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper, Section } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useDpoFees from 'hooks/useDpoFees'
-import { useDpoManager, useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -17,14 +14,11 @@ import { DpoInfo } from 'spanner-interfaces/types'
 import { ThemeContext } from 'styled-components'
 import { blocksToCountDown, blockToDays } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
-import { shortenAddr } from 'utils/truncateString'
 import getApy from 'utils/getApy'
 
 export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
-  const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
   const { chainDecimals } = useSubstrate()
   const { expectedBlockTime, lastBlock } = useBlockManager()
-  const manager = useDpoManager(dpoInfo.index.toString(), dpoInfo)
   const theme = useContext(ThemeContext)
   const fees = useDpoFees(dpoInfo.index.toString())
   const { t } = useTranslation()
@@ -48,7 +42,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
         <Card margin="0 0 1rem 0">
           <Header2>{t(`Details`)}</Header2>
           <SmallText>{t(`DPO Account Vault`)}</SmallText>
-          <BorderedWrapper borderColor="#EC3D3D" style={{ marginTop: '0' }}>
+          <BorderedWrapper borderColor="#EC3D3D" margin="0 0 0.5rem 0">
             <Section>
               <RowBetween>
                 <SText>{t(`Bonus`)}</SText>
@@ -77,7 +71,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`General Information`)}</SmallText>
-          <BorderedWrapper style={{ marginTop: '0' }}>
+          <BorderedWrapper margin="0 0 0.5rem 0">
             <Section>
               <RowBetween>
                 <SText>{t(`DPO Id`)}</SText>
@@ -96,7 +90,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`Crowdfunding Information`)}</SmallText>
-          <BorderedWrapper style={{ marginTop: '0' }}>
+          <BorderedWrapper margin="0 0 0.5rem 0">
             <Section>
               <RowBetween>
                 <SText>{t(`Target`)}</SText>
@@ -169,7 +163,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`State Information`)}</SmallText>
-          <BorderedWrapper style={{ marginTop: '0' }}>
+          <BorderedWrapper margin="0 0 0.5rem 0">
             <Section>
               <RowBetween>
                 <SText>{t(`State`)}</SText>
@@ -191,7 +185,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`Membership Requirements`)}</SmallText>
-          <BorderedWrapper style={{ marginTop: '0' }}>
+          <BorderedWrapper margin="0 0 0.5rem 0">
             <Section>
               {fees && (
                 <RowBetween>
@@ -219,59 +213,6 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
               </RowBetween>
             </Section>
           </BorderedWrapper>
-          <SmallText>{t(`Members`)}</SmallText>
-          <ExpandCard title={t(`Members List`)} defaultExpanded={false} borderColor="#e6ebf2">
-            {manager && (
-              <Section>
-                <HeavyText fontSize="14px">{t(`Manager`)}</HeavyText>
-                <RowBetween>
-                  <SmallText>{`${t(`Passenger`)}: `}</SmallText>
-                  <CopyHelper toCopy={`${manager.buyer.asPassenger.toString()}`} childrenIsIcon={true}>
-                    <SmallText>
-                      {`${shortenAddr(
-                        manager.buyer.asPassenger.toString(),
-                        8
-                      )} (${manager.number_of_seats.toString()} ${t(`Seats`)})`}
-                    </SmallText>
-                  </CopyHelper>
-                </RowBetween>
-              </Section>
-            )}
-            <Section>
-              <HeavyText fontSize="14px">{t(`Members`)}</HeavyText>
-              {dpoMembers.map((entry, index) => (
-                <div key={index}>
-                  {entry[1].buyer.isPassenger && (
-                    <>
-                      {!entry[1].buyer.asPassenger.eq(dpoInfo.manager.toString()) && (
-                        <RowBetween key={index}>
-                          <SmallText>{`${t(`Passenger`)}: `}</SmallText>
-                          <CopyHelper toCopy={`${entry[1].buyer.asPassenger.toString()}`} childrenIsIcon={true}>
-                            <SmallText>
-                              {`${shortenAddr(
-                                entry[1].buyer.asPassenger.toString(),
-                                8
-                              )} (${entry[1].number_of_seats.toString()} ${t(`Seats`)})`}
-                            </SmallText>
-                          </CopyHelper>
-                        </RowBetween>
-                      )}
-                    </>
-                  )}
-                  {entry[1].buyer.isDpo && (
-                    <RowBetween key={index}>
-                      <SmallText>DPO:</SmallText>
-                      <CopyHelper toCopy={`${entry[1].buyer.asDpo.toString()}`} childrenIsIcon={true}>
-                        <SmallText>
-                          {`${entry[1].buyer.asDpo.toString()} (${entry[1].number_of_seats.toString()} ${t(`Seats`)})`}
-                        </SmallText>
-                      </CopyHelper>
-                    </RowBetween>
-                  )}
-                </div>
-              ))}
-            </Section>
-          </ExpandCard>
         </Card>
       </ContentWrapper>
     </>

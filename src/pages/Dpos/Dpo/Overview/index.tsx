@@ -3,7 +3,7 @@ import CopyHelper from 'components/Copy/Copy'
 import { SLink } from 'components/Link'
 import { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
-import { Header2, Header4, SText } from 'components/Text'
+import { Header1, Header4, SText } from 'components/Text'
 import { ContentWrapper, IconWrapper, Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
@@ -71,9 +71,9 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
       <Card margin="1rem 0" mobileMargin="0.5rem 0">
         <Section>
           <RowBetween>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Header2 color={theme.primary1}>{dpoInfo.name.toString()}</Header2>
-            </div>
+            <Header1 colorIsPrimary width="fit-content">
+              {dpoInfo.name.toString()}
+            </Header1>
             <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
               {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) ? (
                 <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
@@ -86,7 +86,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
               )}
             </AnyQuestionHelper>
           </RowBetween>
-          <Header4>{`DPO #${dpoInfo.index.toString()}`}</Header4>
+          <Header4 color={theme.text3}>{`DPO #${dpoInfo.index.toString()}`}</Header4>
           <RowBetween>
             {dpoInfo.target.isDpo && <TargetDpo dpoInfo={dpoInfo} />}
             {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
