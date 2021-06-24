@@ -4,7 +4,7 @@ import Card from 'components/Card'
 import { DetailCardSimple } from 'components/Card/DetailCard'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header4, HeavyText, ItalicText, SText, TokenText } from 'components/Text'
-import { Section, StateWrapper } from 'components/Wrapper'
+import { ContentWrapper, Section, StateWrapper } from 'components/Wrapper'
 import Decimal from 'decimal.js'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useDpoActions } from 'hooks/useDpoActions'
@@ -32,11 +32,11 @@ const DpoCardGrid = styled.div`
   width: 100%;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     grid-template-areas: 'state info apy bonus';
+    margin: 0;
+    padding: 0;
     background: transparent;
     grid-template-columns: minmax(40px, 80px) 3fr 1fr 1fr;
     grid-column-gap: 0.25rem;
-    margin: 0;
-    padding: 0;
     width: 100%;
   `};
 `
@@ -73,34 +73,33 @@ function DpoCardDetails({ dpoInfo, expiry }: { dpoInfo: DpoInfo; expiry?: BN }) 
   const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
 
   return (
-    <>
+    <ContentWrapper maxWidth="400px" margin="1rem auto 0">
       {dpoInfo.state.isCreated && expectedBlockTime && expiry && (
-        <RowFixed>
-          <HeavyText width="fit-content">{`${t(`Time left`)}:`}</HeavyText>
-          <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
+        <RowBetween>
+          <HeavyText>{`${t(`Time left`)}:`}</HeavyText>
+          <SText style={{ paddingLeft: '0.5rem' }}>
             {blocksToCountDown(expiry.toString(), expectedBlockTime, t('EXPIRED'), ['m', 's'])}
           </SText>
-        </RowFixed>
+        </RowBetween>
       )}
-      <RowFixed>
-        <HeavyText width="fit-content">{t(`Cost per Seat`)}:</HeavyText>
-        <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-          {formatToUnit(dpoInfo.amount_per_seat, chainDecimals)} <TokenText>{token}</TokenText>
-        </SText>
-      </RowFixed>
-      <RowFixed>
-        <HeavyText width="fit-content">{t(`Seats Available`)}:</HeavyText>
-        <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
+      <RowBetween>
+        <HeavyText>{t(`Cost per Seat`)}:</HeavyText>
+        <RowFixed width="fit-content">
+          <SText style={{ paddingLeft: '0.5rem' }}>{formatToUnit(dpoInfo.amount_per_seat, chainDecimals)}</SText>
+          <TokenText padding="0 0 0 0.25rem">{token}</TokenText>
+        </RowFixed>
+      </RowBetween>
+      <RowBetween>
+        <HeavyText>{t(`Seats Available`)}:</HeavyText>
+        <SText style={{ paddingLeft: '0.5rem' }}>
           {dpoInfo.empty_seats.toString()} {t(`Seats`)}
         </SText>
-      </RowFixed>
-      <RowFixed>
-        <HeavyText width="fit-content">{t(`Management Fee`)}:</HeavyText>
-        <SText width="fit-content" style={{ paddingLeft: '0.5rem' }}>
-          {dpoInfo.fee.toNumber() / 10}%
-        </SText>
-      </RowFixed>
-    </>
+      </RowBetween>
+      <RowBetween>
+        <HeavyText>{t(`Management Fee`)}:</HeavyText>
+        <SText style={{ paddingLeft: '0.5rem' }}>{dpoInfo.fee.toNumber() / 10}%</SText>
+      </RowBetween>
+    </ContentWrapper>
   )
 }
 
@@ -239,7 +238,7 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
-          <Card margin="0 0 1rem 0" mobileMargin="0 0 0.25rem 0">
+          <Card margin="0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>

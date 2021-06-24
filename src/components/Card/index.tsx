@@ -3,18 +3,6 @@ import styled from 'styled-components'
 import { CardProps, Text } from 'rebass'
 import { Box } from 'rebass/styled-components'
 
-// Normal Card with surrounding shadows
-// const Card = styled(Box)<{ padding?: string; border?: string; borderRadius?: string }>`
-//   box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
-//   -webkit-box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
-//   padding: 1.25rem;
-//   background: ${({ theme }) => theme.bg1};
-//   color: ${({ theme }) => theme.text2};
-//   padding: ${({ padding }) => padding};
-//   border: ${({ border }) => border};
-//   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
-// `
-
 const Card = styled(Box)<{
   width?: string
   padding?: string
@@ -23,7 +11,6 @@ const Card = styled(Box)<{
   maxWidth?: string
   height?: string
   margin?: string
-  mobileMargin?: string
   minHeight?: string
   mobileMinHeight?: string
 }>`
@@ -37,9 +24,8 @@ const Card = styled(Box)<{
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
   min-height: ${({ minHeight }) => (minHeight ? minHeight : 'auto')};
-  ${({ mobileMinHeight, mobileMargin, theme }) => theme.mediaWidth.upToExtraSmall`
-   min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
-   margin: ${mobileMargin ? mobileMargin : '0 0 0.5rem 0'};
+  ${({ mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
+  min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
   `};
 `
 
@@ -127,7 +113,7 @@ export const SecondaryGradientCard = styled(Card)`
 
 export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; darkenBackground?: boolean }>`
   background: ${({ darkenBackground }) =>
-      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2) ),`}
+      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ),`}
     ${({ url }) => (url ? `url(${url}) no-repeat center center` : `#fff`)};
   background-size: ${({ backgroundSize }) => (backgroundSize ? backgroundSize : 'cover')};
   box-shadow: none;

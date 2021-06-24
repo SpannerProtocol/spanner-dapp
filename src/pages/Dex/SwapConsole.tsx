@@ -121,7 +121,7 @@ function TokenPerformance({ tokenA, tokenB }: { tokenA: string; tokenB: string }
 
   return (
     <>
-      <Card margin="1rem 0" mobileMargin="1rem 0">
+      <Card margin="1rem 0">
         <Header2 style={{ display: 'inline-flex' }}>{`${correctPairName} ${t(`Price History`)}`}</Header2>
         <SpacedSection>
           {latestPrice && (

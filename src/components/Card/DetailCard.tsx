@@ -45,7 +45,7 @@ function Details({
         </ClickableSection>
       ) : (
         <>
-          <Divider margin={'0.5rem 0'} />
+          <Divider margin={'1rem 0'} />
           <ClickableSection onClick={onClick}>
             <CenterWrapper>
               {show ? (
@@ -103,24 +103,12 @@ export default function DetailCard({ children, details, smallDetails, padding, m
   )
 }
 
-export function DetailCardSimple({
-  children,
-  details,
-  smallDetails,
-  padding,
-  defaultShow,
-  margin,
-  mobileMargin,
-}: DetailCardProps) {
+export function DetailCardSimple({ children, details, smallDetails, padding, defaultShow, margin }: DetailCardProps) {
   const [showDetails, setShowDetails] = useState<boolean>(defaultShow ? defaultShow : false)
 
   return (
     <>
-      <Card
-        padding={padding}
-        margin={margin ? margin : '0 0 1rem 0'}
-        mobileMargin={mobileMargin ? mobileMargin : '0 0 0.5rem 0'}
-      >
+      <Card padding={padding} margin={margin ? margin : '0 0 0.5rem 0'}>
         <DetailGridCard>
           {children}
           {details && (

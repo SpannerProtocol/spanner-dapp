@@ -14,6 +14,7 @@ import Overview from './Overview'
 import ActiveCard from './StateCards/Active'
 import CompletedCard from './StateCards/Completed'
 import CreatedCard, { CreatedDetails } from './StateCards/Created'
+import FailedCard from './StateCards/Failed'
 import RunningCard, { RunningDetails } from './StateCards/Running'
 
 export default function Dpo(): JSX.Element {
@@ -47,7 +48,7 @@ export default function Dpo(): JSX.Element {
 
   useEffect(() => {
     if (!dpoInfo) return
-    setSelectedState(dpoInfo.state.toString())
+    setSelectedState(dpoInfo.state.isFailed ? 'CREATED' : dpoInfo.state.toString())
   }, [dpoInfo])
 
   useEffect(() => {
@@ -80,6 +81,7 @@ export default function Dpo(): JSX.Element {
                 />
               </SpacedSection>
               <Divider margin="0.5rem 0" />
+              <FailedCard selectedState={selectedState} dpoInfo={dpoInfo} />
               <CreatedCard selectedState={selectedState} dpoInfo={dpoInfo} />
               <ActiveCard selectedState={selectedState} dpoInfo={dpoInfo} />
               <RunningCard selectedState={selectedState} dpoInfo={dpoInfo} />

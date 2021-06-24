@@ -45,11 +45,19 @@ export const PaddedSection = styled(AutoColumn)`
   `};
 `
 
-export const ContentWrapper = styled.div<{ padding?: string }>`
+export const ContentWrapper = styled.div<{
+  margin?: string
+  padding?: string
+  maxWidth?: string
+  mobileMaxWidth?: string
+}>`
   position: relative;
   width: 100%;
-  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
+  ${({ mobileMaxWidth, padding, theme }) => theme.mediaWidth.upToSmall`
     padding: ${padding ? padding : '0 0.5rem'};
+    max-width: ${mobileMaxWidth ? mobileMaxWidth : '100%'};
   `};
 `
 
