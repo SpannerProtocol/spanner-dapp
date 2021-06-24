@@ -1,4 +1,4 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { Step, StepNumber } from 'components/InstructionSteps'
 import ImageLightBox from 'components/LightBox'
 import QuestionHelper from 'components/QuestionHelper'
@@ -7,7 +7,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import BulletTrainDiagram from '../../assets/images/bullettrain-rules.png'
-import { HeavyText, SectionHeading, SectionTitle, StandardText } from '../../components/Text'
+import { HeavyText, Header2, Header3, SText } from '../../components/Text'
 
 export default function BulletTrainInstructions() {
   const { t } = useTranslation()
@@ -20,10 +20,10 @@ export default function BulletTrainInstructions() {
         alignItems: 'center',
       }}
     >
-      <FlatCard style={{ textAlign: 'left' }}>
+      <Card style={{ textAlign: 'left' }}>
         <SpacedSection>
           <div style={{ display: 'flex', alignItems: 'center' }}>
-            <SectionHeading style={{ marginBottom: '0' }}>{t(`BulletTrain`)}</SectionHeading>
+            <Header2 width="fit-content">{t(`BulletTrain`)}</Header2>
             <QuestionHelper
               text={t(`BulletTrain is a decentralized viral affiliate crowdfunding campaign that projects can use to
             grow their communities.`)}
@@ -31,17 +31,17 @@ export default function BulletTrainInstructions() {
               backgroundColor={'transparent'}
             />
           </div>
-          <StandardText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</StandardText>
+          <SText>{t(`Begin your BulletTrain journey to receive token Rewards.`)}</SText>
         </SpacedSection>
         <SpacedSection>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>
-            <SectionTitle>{t(`How to Participate?`)}</SectionTitle>
+            <Header3>{t(`How to Participate?`)}</Header3>
           </div>
           <div style={{ justifyContent: 'center', textAlign: 'center' }}>
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>1</StepNumber>
-                <HeavyText fontSize="14px">{t(`Before Boarding`)}</HeavyText>
+                <HeavyText width="fit-content">{t(`Before Boarding`)}</HeavyText>
                 <QuestionHelper
                   size={12}
                   backgroundColor={'transparent'}
@@ -60,7 +60,7 @@ export default function BulletTrainInstructions() {
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>2</StepNumber>
-                <HeavyText fontSize="14px">{t(`Boarded`)}</HeavyText>
+                <HeavyText width="fit-content">{t(`Boarded`)}</HeavyText>
                 <QuestionHelper
                   text={t(
                     `Get your rewards from the TravelCabin. If you created a DPO, release it to all DPO Members.`
@@ -79,7 +79,7 @@ export default function BulletTrainInstructions() {
             <SpacedSection>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
                 <StepNumber>3</StepNumber>
-                <HeavyText fontSize="14px">{t(`Journey Ends`)}</HeavyText>
+                <HeavyText width="fit-content">{t(`Journey Ends`)}</HeavyText>
                 <QuestionHelper
                   text={t(`The ride is over, withdraw your Ticket Fare back.`)}
                   size={12}
@@ -96,10 +96,10 @@ export default function BulletTrainInstructions() {
           </div>
         </SpacedSection>
         <SpacedSection>
-          <SectionTitle>{t(`BulletTrain Journey`)}</SectionTitle>
+          <Header3>{t(`BulletTrain Journey`)}</Header3>
           <div>{BulletTrainDiagram && <ImageLightBox imageSrc={BulletTrainDiagram} />}</div>
         </SpacedSection>
-      </FlatCard>
+      </Card>
     </Wrapper>
   )
 }

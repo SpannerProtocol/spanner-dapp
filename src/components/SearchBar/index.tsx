@@ -2,6 +2,7 @@ import styled from 'styled-components'
 import React, { Dispatch, SetStateAction } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
+import { useTranslation } from 'react-i18next'
 
 const SearchWrapper = styled.div<{ backgroundColor: string | undefined; borderColor: string | undefined }>`
   display: inline-flex;
@@ -46,7 +47,7 @@ interface SearchBarProps {
 
 export default function SearchBar(props: SearchBarProps) {
   const { keyword, placeholder, iconColor, backgroundColor, borderColor, textColor, inputType, setKeyword } = props
-
+  const { t } = useTranslation()
   return (
     <SearchWrapper backgroundColor={backgroundColor} borderColor={borderColor}>
       <FontAwesomeIcon icon={faSearch} style={{ color: iconColor ? iconColor : '#000' }} />
@@ -55,7 +56,7 @@ export default function SearchBar(props: SearchBarProps) {
         onChange={(e) => setKeyword(e.target.value)}
         type={inputType ? inputType : 'text'}
         textColor={textColor}
-        placeholder={placeholder ? placeholder : 'Search'}
+        placeholder={placeholder ? t(placeholder) : t(`Search`)}
       />
     </SearchWrapper>
   )

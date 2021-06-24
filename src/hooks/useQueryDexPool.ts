@@ -4,7 +4,7 @@ import { TradingPair } from 'interfaces/dex'
 import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
 import { useQueryDexFee } from './useQueryDexFee'
-import { useEnabledTradingPairs } from './useQueryTradingPairs'
+import { getEnabledPair, useEnabledTradingPairs } from './useQueryTradingPairs'
 import { useSubstrate } from './useSubstrate'
 import BN from 'bn.js'
 interface PoolResponse {
@@ -13,30 +13,6 @@ interface PoolResponse {
   pool?: [Balance, Balance]
   dexFee?: [u32, u32]
   input?: any
-}
-
-interface ValidPair {
-  isValid: boolean
-  validPair: any
-  enabledPair: TradingPair | undefined
-  reversed: boolean
-}
-
-function getEnabledPair(enabledPairs: Array<TradingPair>, inputPair: any): ValidPair {
-  let validPair = undefined
-  for (const enabledPair of enabledPairs) {
-    if (enabledPair.eq(inputPair)) {
-      validPair = { isValid: true, validPair: inputPair, enabledPair, reversed: false }
-      break
-    } else {
-      const reversed = [inputPair[1], inputPair[0]]
-      if (enabledPair.eq(reversed)) {
-        validPair = { isValid: true, validPair: reversed, enabledPair, reversed: true }
-      }
-    }
-  }
-  if (!validPair) return { isValid: false, validPair: undefined, enabledPair: undefined, reversed: false }
-  return validPair
 }
 
 export default function useSubscribePool(inputA: string, inputB: string, delay?: number): PoolResponse {

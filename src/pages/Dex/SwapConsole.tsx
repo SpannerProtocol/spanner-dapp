@@ -3,19 +3,21 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { u32 } from '@polkadot/types'
 import { Balance } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
+import PriceChart from 'components/Chart'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { DisclaimerText, ModalText } from 'components/Text'
+import { DisclaimerText, Header2, HeavyText, ModalText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
+import { useEnabledPair } from 'hooks/useQueryTradingPairs'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from '../../components/Button'
 import Card from '../../components/Card'
 import SlippageTabs from '../../components/TransactionSettings'
-import { BorderedWrapper, Section } from '../../components/Wrapper'
+import { BorderedWrapper, Section, SpacedSection } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
@@ -90,6 +92,64 @@ function SwapModalContent({ data }: { data: SwapData }): JSX.Element {
         </BorderedWrapper>
       </Section>
       <TxFee fee={estimatedFee} />
+    </>
+  )
+}
+
+function TokenPerformance({ tokenA, tokenB }: { tokenA: string; tokenB: string }) {
+  const { t } = useTranslation()
+  const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
+  const pair = useEnabledPair(tokenA, tokenB)
+  const [latestPrice, setLatestPrice] = useState<string>('')
+  const [token1, token2] = useMemo(() => {
+    if (pair.isValid) {
+      return [pair.validPair[0]['Token'], pair.validPair[1]['Token']]
+    } else {
+      return [undefined, undefined]
+    }
+  }, [pair])
+
+  const correctPairName = useMemo(() => {
+    if (!pair.isValid) return `-`
+    const a = pair.validPair[0]['Token']
+    const b = pair.validPair[1]['Token']
+    const isBoltWusd = a === 'BOLT' && b === 'WUSD'
+    // This might need to change in the future if validPairs change
+    // BOLT/WUSD is valid but for all other tokens valid name is WUSD/TOKEN
+    return isBoltWusd ? `${a} / ${b}` : `${b} / ${a}`
+  }, [pair])
+
+  return (
+    <>
+      <Card margin="1rem 0">
+        <Header2 style={{ display: 'inline-flex' }}>{`${correctPairName} ${t(`Price History`)}`}</Header2>
+        <SpacedSection>
+          {latestPrice && (
+            <>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <SText>{t(`Current Price`)}</SText>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
+                  ${latestPrice}
+                </HeavyText>
+                <HeavyText>{`${correctPairName} `}</HeavyText>
+              </div>
+            </>
+          )}
+        </SpacedSection>
+        {token1 && token2 && (
+          <PriceChart
+            token1={token1}
+            token2={token2}
+            from={0}
+            interval={300}
+            setAvailable={setPriceAvailable}
+            setLatestPrice={setLatestPrice}
+          />
+        )}
+        {!priceAvailable && <div>{t(`Price is unavailable for this token`)}</div>}
+      </Card>
     </>
   )
 }
@@ -394,12 +454,17 @@ export default function SwapConsole(): JSX.Element {
         </Section>
         <Section>
           {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError || tokenA === tokenB ? (
-            <ButtonPrimary disabled>{t(`Enter an amount`)}</ButtonPrimary>
+            <ButtonPrimary maxWidth="none" disabled>
+              {t(`Enter an amount`)}
+            </ButtonPrimary>
           ) : (
-            <ButtonPrimary onClick={openModal}>{t(`Swap`)}</ButtonPrimary>
+            <ButtonPrimary maxWidth="none" onClick={openModal}>
+              {t(`Swap`)}
+            </ButtonPrimary>
           )}
         </Section>
       </Card>
+      <TokenPerformance tokenA={tokenA} tokenB={tokenB} />
     </>
   )
 }

@@ -1,5 +1,5 @@
 import { useLazyQuery } from '@apollo/client'
-import { StandardText } from 'components/Text'
+import { SText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { LocalSpinner } from 'pages/Spinner'
@@ -88,7 +88,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
   return (
     <>
       {loading && <LocalSpinner />}
-      {error && <StandardText>{t(`Price data unavailable. Please try again later.`)}</StandardText>}
+      {error && <SText>{t(`Price data unavailable. Please try again later.`)}</SText>}
       {priceData && priceData.length > 0 && (
         <ChartWrapper>
           <ResponsiveContainer aspect={below1080 ? 2.5 / 1 : 3 / 1}>

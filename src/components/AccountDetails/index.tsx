@@ -179,9 +179,10 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
   useEffect(() => {
     if (connectionState && !connectionState.bridgeServerOn && connector) {
       console.info('No connection to bridge, turning off connector')
-      ;(connector as any).close()
+      connector.deactivate()
     }
   }, [connectionState, connector])
+
   function formatConnectorName() {
     const { ethereum } = window
     const isMetaMask = !!(ethereum && ethereum.isMetaMask)
@@ -258,7 +259,7 @@ export default function AccountDetails({ toggleWalletModal, ENSName, openOptions
                     <WalletAction
                       style={{ fontSize: '.825rem', fontWeight: 400, marginRight: '8px' }}
                       onClick={() => {
-                        ;(connector as any).close()
+                        ;(connector as any).deactivate()
                       }}
                     >
                       {t(`Disconnect`)}

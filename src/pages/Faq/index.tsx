@@ -1,8 +1,8 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import Text, { Heading, SectionTitle } from '../../components/Text'
+import { Heading, Header3, SText } from '../../components/Text'
 
 export default function Faq() {
   const { t } = useTranslation()
@@ -16,29 +16,29 @@ export default function Faq() {
           alignItems: 'center',
         }}
       >
-        <FlatCard style={{ textAlign: 'left' }}>
+        <Card style={{ textAlign: 'left' }}>
           <Heading>{t(`Frequently Asked Questions`)}</Heading>
           <SpacedSection>
-            <SectionTitle>{t(`How do I login to Spanner's DApp?`)}</SectionTitle>
-            <Text>{t(`How do I login to Spanner's DApp? (answer)`)}</Text>
+            <Header3>{t(`How do I login to Spanner's DApp?`)}</Header3>
+            <SText>{t(`How do I login to Spanner's DApp? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
-            <SectionTitle>{t(`How do I get tokens on Spanner?`)}</SectionTitle>
-            <Text>{t(`How do I get tokens on Spanner? (answer)`)}</Text>
+            <Header3>{t(`How do I get tokens on Spanner?`)}</Header3>
+            <SText>{t(`How do I get tokens on Spanner? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
-            <SectionTitle>{t(`How do I switch projects?`)}</SectionTitle>
-            <Text>{t(`How do I switch projects? (answer)`)}</Text>
+            <Header3>{t(`How do I switch projects?`)}</Header3>
+            <SText>{t(`How do I switch projects? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
-            <SectionTitle>{t(`How do I switch chains?`)}</SectionTitle>
-            <Text>{t(`How do I switch chains? (answer)`)}</Text>
+            <Header3>{t(`How do I switch chains?`)}</Header3>
+            <SText>{t(`How do I switch chains? (answer)`)}</SText>
           </SpacedSection>
           <SpacedSection>
-            <SectionTitle>{t(`Starting a project on Spanner`)}</SectionTitle>
-            <Text>{t(`Starting a project on Spanner (answer)`)}</Text>
+            <Header3>{t(`Starting a project on Spanner`)}</Header3>
+            <SText>{t(`Starting a project on Spanner (answer)`)}</SText>
           </SpacedSection>
-        </FlatCard>
+        </Card>
       </Wrapper>
     </PageWrapper>
   )

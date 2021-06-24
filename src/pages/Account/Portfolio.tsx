@@ -1,8 +1,8 @@
 import { useLazyQuery } from '@apollo/client'
-import { FlatCard } from 'components/Card'
-import CabinBuyerCard from 'components/Item/CabinBuyerCard'
-import { DpoProfileCard } from 'components/Item/DpoCard'
-import { WarningMsg, SectionHeading, StandardText } from 'components/Text'
+import Card from 'components/Card'
+import CabinBuyerCard from 'components/AssetCards/CabinBuyerCard'
+import { DpoProfileCard } from 'components/DpoCard'
+import { WarningMsg, Header2, SText, Header3 } from 'components/Text'
 import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
@@ -74,7 +74,7 @@ export default function Portfolio(): JSX.Element {
     <>
       {!(wallet && wallet.address) ? (
         <>
-          <FlatCard
+          <Card
             style={{
               width: '100%',
               backgroundColor: '#fff',
@@ -85,8 +85,8 @@ export default function Portfolio(): JSX.Element {
               textAlign: 'center',
             }}
           >
-            <StandardText>{t(`Connect to your wallet to view your Portfolio.`)}</StandardText>
-          </FlatCard>
+            <SText>{t(`Connect to your wallet to view your Portfolio.`)}</SText>
+          </Card>
         </>
       ) : (
         <>
@@ -94,7 +94,7 @@ export default function Portfolio(): JSX.Element {
           <Wrapper style={{ width: '100%', justifyContent: 'center', alignItems: 'center' }}>
             {assets.dpoIndexes.length === 0 && assets.cabinIndexes.length === 0 && (
               <>
-                <FlatCard
+                <Card
                   style={{
                     width: '100%',
                     backgroundColor: '#fff',
@@ -105,13 +105,13 @@ export default function Portfolio(): JSX.Element {
                     textAlign: 'center',
                   }}
                 >
-                  <StandardText>
+                  <SText>
                     <Trans>
                       Could not find any Portfolio Items. Check out our <Link to="/bullettrain/dpos">Growth</Link>{' '}
                       section.
                     </Trans>
-                  </StandardText>
-                </FlatCard>
+                  </SText>
+                </Card>
               </>
             )}
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -121,8 +121,10 @@ export default function Portfolio(): JSX.Element {
               address={wallet.address}
               selectedToken={project.selectedProject ? project.selectedProject.token : 'BOLT'}
             />
-            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-              <SectionHeading margin="0">{t(`Assets`)}</SectionHeading>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <Header2 width="fit-content" margin="0">
+                {t(`Assets`)}
+              </Header2>
               <IconWrapper margin="0 0.5rem" onClick={getPortfolioData}>
                 <RefreshCw size={'16px'} color={theme.text3} />
               </IconWrapper>
@@ -132,7 +134,9 @@ export default function Portfolio(): JSX.Element {
               <>
                 {assets.cabinIndexes.length > 0 && (
                   <>
-                    <SectionHeading>{t(`Your TravelCabins`)}</SectionHeading>
+                    <div style={{ display: 'flex', padding: '1rem 0' }}>
+                      <Header3>{t(`Your TravelCabins`)}</Header3>
+                    </div>
                     <GridWrapper columns="2">
                       {assets.cabinIndexes.map((inventory, index) => {
                         return <CabinBuyerCard key={index} cabinIndex={inventory[0]} inventoryIndex={inventory[1]} />
@@ -142,8 +146,8 @@ export default function Portfolio(): JSX.Element {
                 )}
                 {assets.dpoIndexes.length > 0 && (
                   <>
-                    <div style={{ display: 'flex', paddingTop: '0.5rem' }}>
-                      <SectionHeading>{t(`Your DPOs`)}</SectionHeading>
+                    <div style={{ display: 'flex', padding: '1rem 0' }}>
+                      <Header3>{t(`Your DPOs`)}</Header3>
                     </div>
                     <GridWrapper columns="2">
                       {assets.dpoIndexes.map((dpoIndex, index) => (
