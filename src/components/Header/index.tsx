@@ -571,7 +571,7 @@ export function NavItemContent({
     }
   }, [subs, selected])
 
-  const itemSelected = subs == undefined && selected
+  const itemSelected = subs === undefined && selected
   return (
     <>
       <ListItem button onClick={handleClick} selected={itemSelected} className={nested ? classes.nested : ''}>
