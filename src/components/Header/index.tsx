@@ -16,7 +16,7 @@ import { darken } from 'polished'
 import React, { useEffect, useState } from 'react'
 import { User } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { useMedia } from 'react-use'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
@@ -233,6 +233,28 @@ interface HeaderProps {
   width?: number
 }
 
+function SelectNavItem(pathname: string, naviItems: NavItemDefs[]): boolean {
+  let isSelected = false
+  naviItems.forEach((item) => {
+    if (item.children) {
+      const isChildrenSelected = SelectNavItem(pathname, item.children)
+      if (isChildrenSelected) {
+        item.selected = true
+        isSelected = true
+      }
+    } else {
+      if (pathname === '') {
+        return
+      }
+      if (pathname.startsWith(item.link)) {
+        item.selected = true
+        isSelected = true
+      }
+    }
+  })
+  return isSelected
+}
+
 export default function Header(props: HeaderProps) {
   const { width } = props
   const { t } = useTranslation()
@@ -241,6 +263,9 @@ export default function Header(props: HeaderProps) {
   // const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
   const isMobile = useMedia('(max-width: 960px)')
   const { chain } = useChainState()
+
+  const location = useLocation()
+  const pathname = location.pathname
 
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
@@ -332,6 +357,8 @@ export default function Header(props: HeaderProps) {
     },
   ]
 
+  SelectNavItem(pathname, navItems)
+
   return (
     <HeaderFrame>
       <HeaderRow>
@@ -402,6 +429,7 @@ export function DesktopNav(props: DesktopNavProp) {
                   text={t(navItem.text)}
                   internal={navItem.internal}
                   nested={false}
+                  selected={navItem.selected ? navItem.selected : false}
                   classes={classes}
                   subs={navItem.children ? navItem.children : undefined}
                   toggleDrawer={undefined}
@@ -444,6 +472,7 @@ interface NavItemDefs {
   internal: boolean
   children?: NavItemDefs[]
   enable?: boolean
+  selected?: boolean
 }
 
 interface NavItemProps {
@@ -452,12 +481,13 @@ interface NavItemProps {
   link: string
   internal: boolean
   nested: boolean
+  selected: boolean
   subs?: NavItemDefs[]
   classes: ClassNameMap<'list' | 'fullList' | 'nested'>
   toggleDrawer?: (open: boolean) => (event: React.MouseEvent | React.KeyboardEvent) => void
 }
 
-function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
+function NavItem({ iconLink, text, link, classes, internal, nested, selected, subs, toggleDrawer }: NavItemProps) {
   return (
     <>
       <div
@@ -477,6 +507,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggle
                 link={link}
                 internal={internal}
                 nested={nested}
+                selected={selected}
                 classes={classes}
                 subs={subs}
                 toggleDrawer={toggleDrawer}
@@ -489,6 +520,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggle
                   link={link}
                   internal={internal}
                   nested={nested}
+                  selected={selected}
                   classes={classes}
                   toggleDrawer={toggleDrawer}
                 />
@@ -515,16 +547,34 @@ function NavItem({ iconLink, text, link, classes, internal, nested, subs, toggle
   )
 }
 
-export function NavItemContent({ iconLink, text, link, classes, internal, nested, subs, toggleDrawer }: NavItemProps) {
+export function NavItemContent({
+  iconLink,
+  text,
+  link,
+  classes,
+  internal,
+  nested,
+  selected,
+  subs,
+  toggleDrawer,
+}: NavItemProps) {
   const [open, setOpen] = React.useState(false)
 
   const handleClick = () => {
     setOpen((prevOpen) => !prevOpen)
   }
   const { t } = useTranslation()
+
+  useEffect(() => {
+    if (subs && selected) {
+      setOpen(true)
+    }
+  }, [subs, selected])
+
+  const itemSelected = subs == undefined && selected
   return (
     <>
-      <ListItem button onClick={handleClick} className={nested ? classes.nested : ''}>
+      <ListItem button onClick={handleClick} selected={itemSelected} className={nested ? classes.nested : ''}>
         {iconLink && (
           <ListItemIcon>
             {' '}
@@ -546,6 +596,7 @@ export function NavItemContent({ iconLink, text, link, classes, internal, nested
                   text={t(navItem.text)}
                   internal={navItem.internal}
                   nested={true}
+                  selected={navItem.selected ? navItem.selected : false}
                   classes={classes}
                   toggleDrawer={toggleDrawer}
                 />
@@ -624,6 +675,7 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
                     text={t(navItem.text)}
                     internal={navItem.internal}
                     nested={false}
+                    selected={navItem.selected ? navItem.selected : false}
                     classes={classes}
                     subs={navItem.children ? navItem.children : undefined}
                     toggleDrawer={toggleDrawer}
