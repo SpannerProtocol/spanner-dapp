@@ -1,8 +1,8 @@
 import { getFaucet } from 'bridge'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { RowBetween } from 'components/Row'
-import { SectionHeading, StandardText } from 'components/Text'
+import { Header2, SText } from 'components/Text'
 import { BorderedWrapper, ButtonWrapper, Section } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
@@ -35,47 +35,43 @@ export default function Faucet(): JSX.Element {
     <>
       {!wallet?.address ? (
         <>
-          <FlatCard
-            style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
-          >
-            <StandardText>{t(`Connect to your Custodial Wallet (for Ethereum) to use the Faucet.`)}</StandardText>
-          </FlatCard>
+          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}>
+            <SText>{t(`Connect to your Custodial Wallet (for Ethereum) to use the Faucet.`)}</SText>
+          </Card>
         </>
       ) : (
         <>
-          <FlatCard style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
+          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <Section>
               <RowBetween>
-                <SectionHeading>{t(`Faucet: Get Hammer BOLT`)}</SectionHeading>
+                <Header2>{t(`Faucet: Get Hammer BOLT`)}</Header2>
               </RowBetween>
             </Section>
             <Section>
-              <StandardText>{t(`Balances`)}</StandardText>
+              <SText>{t(`Balances`)}</SText>
               <BorderedWrapper style={{ marginTop: '0.5rem' }}>
                 <RowBetween>
-                  <StandardText>BOLT</StandardText>
-                  <StandardText>{formatToUnit(boltBalance, chainDecimals, 2)}</StandardText>
+                  <SText>BOLT</SText>
+                  <SText>{formatToUnit(boltBalance, chainDecimals, 2)}</SText>
                 </RowBetween>
               </BorderedWrapper>
               <BorderedWrapper style={{ marginTop: '0.5rem' }}>
                 <RowBetween>
-                  <StandardText>WUSD</StandardText>
-                  <StandardText>{formatToUnit(wusdBalance, chainDecimals, 2)}</StandardText>
+                  <SText>WUSD</SText>
+                  <SText>{formatToUnit(wusdBalance, chainDecimals, 2)}</SText>
                 </RowBetween>
               </BorderedWrapper>
             </Section>
             <Section>
-              <StandardText>{t(`Click the button below to add Hammer BOLT to your custodial wallet.`)}</StandardText>
-              <StandardText>
-                {t(`Note, this is just for testing transactions on Spanner's Hammer testnet.`)}
-              </StandardText>
+              <SText>{t(`Click the button below to add Hammer BOLT to your custodial wallet.`)}</SText>
+              <SText>{t(`Note, this is just for testing transactions on Spanner's Hammer testnet.`)}</SText>
               <ButtonWrapper style={{ width: '100px', marginTop: '1rem' }}>
                 <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleFaucet}>
                   {t(`Use Faucet`)}
                 </ButtonPrimary>
               </ButtonWrapper>
             </Section>
-          </FlatCard>
+          </Card>
         </>
       )}
     </>

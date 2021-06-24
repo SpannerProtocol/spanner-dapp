@@ -3,40 +3,36 @@ import styled from 'styled-components'
 import { CardProps, Text } from 'rebass'
 import { Box } from 'rebass/styled-components'
 
-// Normal Card with surrounding shadows
-const Card = styled(Box)<{ padding?: string; border?: string; borderRadius?: string }>`
-  box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
-  -webkit-box-shadow: 0 2px 22px 0 rgba(15, 89, 209, 0.12), 0 2px 19px 0 rgba(82, 105, 141, 0.12);
-  padding: 1.25rem;
+const Card = styled(Box)<{
+  width?: string
+  padding?: string
+  border?: string
+  borderRadius?: string
+  maxWidth?: string
+  height?: string
+  margin?: string
+  minHeight?: string
+  mobileMinHeight?: string
+}>`
+  box-shadow: 0px 8px 15px #2b2f4a19;
   background: ${({ theme }) => theme.bg1};
-  color: ${({ theme }) => theme.text2};
-  padding: ${({ padding }) => padding};
-  border: ${({ border }) => border};
-  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '8px')};
+  color: ${({ theme }) => theme.white};
+  width: ${({ width }) => (width ? width : '100%')};
+  padding: ${({ padding }) => (padding ? padding : '1rem')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
+  border: ${({ border }) => (border ? border : '1px solid transparent')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '100%')};
+  min-height: ${({ minHeight }) => (minHeight ? minHeight : 'auto')};
+  ${({ mobileMinHeight, theme }) => theme.mediaWidth.upToExtraSmall`
+  min-height: ${mobileMinHeight ? mobileMinHeight : 'auto'};
+  `};
 `
 
 export default Card
 
-export const FlexCardBox = styled(Card)`
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  background: none;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 0.6rem;
-  `};
-`
-
-export const FlatCardSection = styled(Card)<{ margin?: string }>`
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  margin: ${({ margin }) => (margin ? margin : '0 0 1rem 0')};
-  padding: ${({ padding }) => (padding ? padding : '1rem')};
-  width: 100%;
-`
-
 // Normal Card with surrounding shadows
-export const FlatCard = styled(FlatCardSection)<{
+export const FlatCard = styled(Card)<{
   margin?: string
   padding?: string
   width?: string
@@ -68,34 +64,9 @@ export const ThinShadowCard = styled(Card)<{ background?: string; maxWidth?: str
   margin: ${({ margin }) => (margin ? margin : '0')};
 `
 
-export const TableCard = styled(Card)`
-  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
-  padding: 0;
-  margin-bottom: 1rem;
-`
-
-export const LightCard = styled(Card)`
-  border: 1px solid ${({ theme }) => theme.bg2};
-  background-color: ${({ theme }) => theme.bg1};
-`
-
-export const GreyCard = styled(Card)`
-  background-color: ${({ theme }) => theme.bg3};
-`
-
-export const OutlineCard = styled(Card)`
-  border: 1px solid ${({ theme }) => theme.bg3};
-`
-
 export const YellowCard = styled(Card)`
   background-color: rgba(243, 132, 30, 0.05);
   color: ${({ theme }) => theme.yellow2};
-  font-weight: 500;
-`
-
-export const PinkCard = styled(Card)`
-  background-color: rgba(255, 0, 122, 0.03);
-  color: ${({ theme }) => theme.primary1};
   font-weight: 500;
 `
 
@@ -116,57 +87,47 @@ export const BlueCard = ({ children, ...rest }: CardProps) => {
   )
 }
 
-export const PinkGradientCard = styled.div`
-  background: linear-gradient(148.21deg, #fe11a3 6.77%, #520a74 100%);
-  box-shadow: 7px 7px 6px 1px rgba(193, 1, 255, 0.22);
-  border-radius: 18px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.02, 0.01, 0.47, 1);
-  color: #fff;
+export const CardIconGrid = styled(Card)<{ columns?: string }>`
+  display: grid;
+  padding: 0;
+  width: 100%;
+  grid-template-columns: min(110px) auto min(110px);
+  grid-column-gap: 0.5rem;
+  grid-row-gap: 0.5rem;
+  height: 110px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 
-  &:hover {
-    box-shadow: 0 15px 15px rgba(193, 1, 255, 0.22);
-    transform: translate(0, -5px);
-  }
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  grid-template-columns: min(80px) auto min(80px);
+  grid-column-gap: 0.35rem;
+  grid-row-gap: 0.35rem;
+  height: 140px;
+  `};
 `
 
-export const GreenGradientCard = styled.div`
-  background: linear-gradient(148.21deg, #39ffbc 9.38%, #0737de 100%);
-  box-shadow: 7px 7px 6px 1px rgba(58, 255, 189, 0.23);
-  border-radius: 18px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.02, 0.01, 0.47, 1);
-
-  &:hover {
-    box-shadow: 0 15px 15px rgba(193, 1, 255, 0.22);
-    transform: translate(0, -5px);
-  }
+export const SecondaryGradientCard = styled(Card)`
+  background: transparent linear-gradient(180deg, #3f4564 0%, #262a41 100%) 0% 0% no-repeat padding-box;
+  opacity: 1;
 `
 
-export const PinkFillCard = styled.div`
-  color: #000;
-  border: double 1.5px transparent;
-  background-image: linear-gradient(white, white), linear-gradient(148.21deg, #fe11a3 6.77%, #520a74 100%);
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  box-shadow: 7px 7px 6px 1px rgba(193, 1, 255, 0.22);
-  border-radius: 18px;
-  cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.02, 0.01, 0.47, 1);
+export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; darkenBackground?: boolean }>`
+  background: ${({ darkenBackground }) =>
+      darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ),`}
+    ${({ url }) => (url ? `url(${url}) no-repeat center center` : `#fff`)};
+  background-size: ${({ backgroundSize }) => (backgroundSize ? backgroundSize : 'cover')};
+  box-shadow: none;
+  border: ${({ border }) => (border ? border : 'none')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
+`
 
-  &:hover {
-    color: #fff;
-    border: 2.5px transparent;
-    background: linear-gradient(148.21deg, #fe11a3 6.77%, #520a74 100%);
-    box-shadow: 0 15px 15px rgba(193, 1, 255, 0.22);
-    transform: translate(0, -5px);
-  }
-
-  @media only screen and (max-width: 615px) {
-    background: linear-gradient(148.21deg, #fe11a3 6.77%, #520a74 100%);
-    box-shadow: 7px 7px 6px 1px rgba(193, 1, 255, 0.22);
-    border-radius: 18px;
-    border: 2.5px transparent;
-    color: #fff;
-  }
+export const DetailGridCard = styled(Card)`
+  display: grid;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  border: 0;
+  background: transparent;
+  grid-template-columns: auto max(20px);
+  width: 100%;
 `

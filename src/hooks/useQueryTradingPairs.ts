@@ -2,6 +2,30 @@ import { useEffect, useState } from 'react'
 import { TradingPair } from 'spanner-interfaces'
 import { useApi } from './useApi'
 
+interface ValidPair {
+  isValid: boolean
+  validPair: any
+  enabledPair: TradingPair | undefined
+  reversed: boolean
+}
+
+export function getEnabledPair(enabledPairs: Array<TradingPair>, inputPair: any): ValidPair {
+  let validPair = undefined
+  for (const enabledPair of enabledPairs) {
+    if (enabledPair.eq(inputPair)) {
+      validPair = { isValid: true, validPair: inputPair, enabledPair, reversed: false }
+      break
+    } else {
+      const reversed = [inputPair[1], inputPair[0]]
+      if (enabledPair.eq(reversed)) {
+        validPair = { isValid: true, validPair: reversed, enabledPair, reversed: true }
+      }
+    }
+  }
+  if (!validPair) return { isValid: false, validPair: undefined, enabledPair: undefined, reversed: false }
+  return validPair
+}
+
 export function useEnabledTradingPairs(): Array<TradingPair> {
   const { api, connected } = useApi()
   const [enabledTradingPairs, setEnabledTradingPairs] = useState<Array<TradingPair>>([])
@@ -16,4 +40,10 @@ export function useEnabledTradingPairs(): Array<TradingPair> {
   }, [api, connected])
 
   return enabledTradingPairs
+}
+
+export function useEnabledPair(inputA: string, inputB: string) {
+  const enabledPairs = useEnabledTradingPairs()
+  const validQuery = getEnabledPair(enabledPairs, [{ Token: inputA }, { Token: inputB }])
+  return validQuery
 }

@@ -19,6 +19,7 @@ export enum ApplicationModal {
   WALLET,
   SETTINGS,
   MENU,
+  LANGUAGE,
 }
 
 export const updateBlockNumber = createAction<{ chainId: number; blockNumber: number }>('application/updateBlockNumber')

@@ -1,15 +1,17 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import { PageWrapper, SpacedSection, Wrapper } from 'components/Wrapper'
 import { useReferrer } from 'hooks/useReferrer'
+import useWallet from 'hooks/useWallet'
 import React from 'react'
 import { useProjectState } from 'state/project/hooks'
 import { useReferrerManager } from 'state/referrer/hooks'
-import Text, { Heading, SectionTitle } from '../../components/Text'
+import { SText, Heading, Header3 } from '../../components/Text'
 
 export default function Diagnostics() {
   const referrer = useReferrer()
   const referrerState = useReferrerManager()
   const projectState = useProjectState()
+  const wallet = useWallet()
 
   const referrerLocal = window.localStorage.getItem('redux_localstorage_simple_referrer')
 
@@ -23,26 +25,30 @@ export default function Diagnostics() {
           alignItems: 'center',
         }}
       >
-        <FlatCard style={{ textAlign: 'left' }}>
+        <Card style={{ textAlign: 'left' }}>
           <Heading>{`Diagnostics`}</Heading>
           <SpacedSection>
-            <SectionTitle>{`Referral (DynamoDB)`}</SectionTitle>
-            <Text>{referrer}</Text>
+            <Header3>{`Referral (DynamoDB)`}</Header3>
+            <SText>{referrer}</SText>
           </SpacedSection>
           {referrerState.referrerState && projectState.selectedProject && referrerState.referrerState.referrer && (
             <SpacedSection>
-              <SectionTitle>{`Referrer State (from REDUX)`}</SectionTitle>
-              <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.referrer}</Text>
-              <Text>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.storedRemotely}</Text>
+              <Header3>{`Referrer State (from REDUX)`}</Header3>
+              <SText>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.referrer}</SText>
+              <SText>{referrerState.referrerState.referrer[projectState.selectedProject.token]?.storedRemotely}</SText>
             </SpacedSection>
           )}
           {referrerLocal && (
             <SpacedSection>
-              <SectionTitle>{`Local Storage`}</SectionTitle>
-              <Text>{referrerLocal.toString()}</Text>
+              <Header3>{`Local Storage`}</Header3>
+              <SText>{referrerLocal.toString()}</SText>
             </SpacedSection>
           )}
-        </FlatCard>
+          <SpacedSection>
+            <Header3>{`Address`}</Header3>
+            <SText>{wallet?.address}</SText>
+          </SpacedSection>
+        </Card>
       </Wrapper>
     </PageWrapper>
   )

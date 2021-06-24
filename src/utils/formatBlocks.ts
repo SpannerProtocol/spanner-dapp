@@ -3,6 +3,7 @@ import type { BlockNumber, Moment } from '@polkadot/types/interfaces'
 import BN from 'bn.js'
 import { Decimal } from 'decimal.js'
 import moment from 'moment'
+import { DefaultTheme } from 'styled-components'
 import { isBN } from './formatUnit'
 
 /**
@@ -112,10 +113,10 @@ export function tsToDateTimeHuman(timestamp: number) {
 /**
  * Converts a unix ts to time, e.g. 11:54:22
  * @param timestamp unix timestamp in seconds
- * @returns time as string in 'hh:mm:ss'
+ * @returns time as string in 'HH:mm:ss'
  */
 export function tsToTime(timestamp: number) {
-  return moment.unix(timestamp).format('hh:mm:ss')
+  return moment.unix(timestamp).format('HH:mm:ss')
 }
 
 /**
@@ -123,7 +124,15 @@ export function tsToTime(timestamp: number) {
  * @param timestamp unix timestamp in seconds
  */
 export function tsToDateTime(timestamp: number) {
-  return moment.unix(timestamp).format('MM/DD/YYYY, hh:mm:ss')
+  return moment.unix(timestamp).format('MM/DD/YYYY, HH:mm:ss')
+}
+
+/**
+ *  Converts a unix ts into date time
+ * @param timestamp unix timestamp in seconds
+ */
+export function tsToDate(timestamp: number) {
+  return moment.unix(timestamp).format('MM/DD/YYYY')
 }
 
 /**
@@ -145,10 +154,24 @@ export function blockToTs(genesisTs: number, expectedBlockTime: number, currentB
   return genesisTs + currentBlock * expectedBlockTime
 }
 
+export function estimateBlockToTs(startTimestamp: number, expectedBlockTime: number, durationBlocks: number) {
+  return startTimestamp + durationBlocks * expectedBlockTime
+}
+
 export function isoToTs(iso: string) {
   const myDate = new Date(iso)
   const offset = myDate.getTimezoneOffset() * 60 * 1000
   const withOffset = myDate.getTime()
   const withoutOffset = withOffset - offset
   return withoutOffset
+}
+
+export function formatBlocksCountdown(blocks: BN, expectedBlockTime: Moment, theme: DefaultTheme) {
+  if (parseInt(blocks.toString()) <= 0) {
+    return theme.red1
+  } else if (parseInt(blockToHours(blocks, expectedBlockTime, 0)) <= 24) {
+    return theme.yellow1
+  } else {
+    return theme.green1
+  }
 }

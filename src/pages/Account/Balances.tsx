@@ -1,6 +1,6 @@
-import { FlatCard } from 'components/Card'
+import Card from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, SectionTitle, StandardText } from 'components/Text'
+import { HeavyText, Header3, SText } from 'components/Text'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -40,7 +40,7 @@ const BalanceRow = styled.div`
   display: grid;
   grid-template-columns: minmax(40px, 120px) auto min(160px);
   grid-column-gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.text5};
+  border-bottom: 1px solid ${({ theme }) => theme.gray2};
   transition: background-color 0.3s ease-in;
   &:hover {
     background: ${({ theme }) => theme.text5};
@@ -91,11 +91,11 @@ function Balance({ icon, token, type, balance }: BalanceRowProps) {
           <HeavyText fontSize="14px">{token}</HeavyText>
         </BalanceCell>
         <BalanceCell style={{ paddingTop: '0' }}>
-          <StandardText fontSize="12px">{type}</StandardText>
+          <SText fontSize="12px">{type}</SText>
         </BalanceCell>
       </div>
       <BalanceCell style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <StandardText>{balance}</StandardText>
+        <SText>{balance}</SText>
       </BalanceCell>
     </BalanceRow>
   )
@@ -112,9 +112,11 @@ export default function Balances() {
 
   return (
     <>
-      <FlatCard>
+      <Card>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-          <SectionTitle style={{ margin: '0' }}>{t(`Balances`)}</SectionTitle>
+          <Header3 width="fit-content" style={{ margin: '0' }}>
+            {t(`Balances`)}
+          </Header3>
           <QuestionHelper
             size={12}
             backgroundColor="transparent"
@@ -131,7 +133,7 @@ export default function Balances() {
               balance={balance.balance}
             />
           ))}
-      </FlatCard>
+      </Card>
     </>
   )
 }

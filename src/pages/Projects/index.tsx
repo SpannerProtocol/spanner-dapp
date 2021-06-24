@@ -1,66 +1,27 @@
+import SpannerBanner from 'assets/images/banner-spanner-dark.png'
 import { ButtonPrimary } from 'components/Button'
-import { FlatCard } from 'components/Card'
-import { RowBetween } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
-import { ContentWrapper, PageWrapper } from 'components/Wrapper'
-import useProjectInfos from 'hooks/useProjectInfo'
+import Card, { BannerCard } from 'components/Card'
+import Divider from 'components/Divider'
+import { SLink } from 'components/Link'
+import { Header1, Header2, Header3, SText } from 'components/Text'
+import { PageWrapper, SpacedSection } from 'components/Wrapper'
+import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
 import React from 'react'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
 import { useTranslation } from 'translate'
 import getProjectRegistry from 'utils/getProjectRegistry'
 
-const ProjectsContainer = styled.div`
+const ProjectGrid = styled.div`
   display: grid;
-  grid-template-columns: auto auto auto auto;
-  grid-column-gap: 40px;
-  grid-row-gap: 40px;
-  align-items: center;
-  justify-content: center;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 1rem;
-  `};
-
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    padding: 1rem;
-    grid-template-columns: auto auto;
-    grid-column-gap: 40px;
-  `};
-
+  grid-template-columns: minmax(40px, 55px) auto;
+  grid-template-rows: auto;
+  grid-row-gap: 1rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    width: 100%;
-    display: block;
-    padding: 1rem;
-  `};
-`
-
-const ProjectCard = styled.div`
-  display: grid;
-  grid-template-columns: auto;
-  grid-template-rows: minmax(60px, 100px) auto;
-  grid-row-gap: 10px;
-  align-items: center;
-  margin: 1rem;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin: 0;
     width: 100%;
     grid-template-columns: minmax(40px, 55px) auto;
     grid-template-rows: auto;
     grid-row-gap: 0px;
-    grid-column-gap: 0px;
-    padding: 0.5rem;
-  `};
-`
-
-const ProjectPage = styled(PageWrapper)`
-  width: 100%;
-  max-width: 960px;
-  justify-content: center;
-  align-items: center;
-  margin-top: 140px;
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-    margin-top: 0;
+    grid-column-gap: 1rem;
   `};
 `
 
@@ -74,58 +35,67 @@ export const ProjectIconWrapper = styled.div`
   `};
 `
 
-const ProjectCardPlate = styled(FlatCard)`
+const ProjectCard = styled(Card)`
   transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
   &:hover {
     cursor: pointer;
     box-shadow: 0 10px 10px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
     transform: translate(0, -5px);
   }
+  margin: 1rem 0;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  margin: 0.5rem 0;
+`};
 `
+
+function ProjectsByProjects({ projects }: { projects: ProjectInfo[] }) {
+  const { t } = useTranslation()
+  return (
+    <>
+      {projects.map((project, index) => {
+        const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
+        if (projectRegistry.description === '') return <div key={index}></div>
+        // eslint-disable-next-line @typescript-eslint/no-var-requires
+        const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
+        const numAssets = projectRegistry.assets.length
+        return (
+          <ProjectCard key={index}>
+            <ProjectGrid>
+              <ProjectIconWrapper>
+                <img src={TokenImage} width="100%" alt="token icon" />
+              </ProjectIconWrapper>
+              <div>
+                <Header2>{projectRegistry.name}</Header2>
+                <SText width="100%">{project.token}</SText>
+                {numAssets > 0 && (
+                  <>
+                    <Divider margin="0.5rem 0" />
+                    <Header3>{t(`Assets`)}</Header3>
+                    {projectRegistry.assets.map((asset, index) => (
+                      <SLink
+                        key={index}
+                        to={`/projects/${project.token.toLowerCase()}?asset=${asset}`}
+                        colorIsBlue
+                        fontSize="14px"
+                      >
+                        {asset === 'TravelCabin' ? `${t(`BulletTrain`)} ${t(`TravelCabin`)}` : t(asset)}
+                      </SLink>
+                    ))}
+                  </>
+                )}
+              </div>
+            </ProjectGrid>
+          </ProjectCard>
+        )
+      })}
+    </>
+  )
+}
 
 function ProjectCatalogue() {
   const projects = useProjectInfos()
-  return (
-    <>
-      <ProjectsContainer>
-        {projects &&
-          projects.map((project, index) => {
-            const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
-            if (projectRegistry.description === '') return <div key={index}></div>
-            // eslint-disable-next-line @typescript-eslint/no-var-requires
-            const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
-            return (
-              <div key={index}>
-                <Link
-                  key={index}
-                  to={{ pathname: `/projects/${project.token.toLowerCase()}` }}
-                  style={{ textDecoration: 'none' }}
-                >
-                  <ProjectCardPlate
-                    style={{
-                      width: '100%',
-                      justifyContent: 'flex-start',
-                      alignItems: 'flex-start',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
-                    <ProjectCard>
-                      <ProjectIconWrapper>
-                        <img src={TokenImage} style={{ width: '100%' }} alt="token icon" />
-                      </ProjectIconWrapper>
-                      <div style={{ textAlign: 'center' }}>
-                        <HeavyText style={{ width: '100%' }}>{projectRegistry.name}</HeavyText>
-                        <StandardText style={{ width: '100%' }}>{project.token}</StandardText>
-                      </div>
-                    </ProjectCard>
-                  </ProjectCardPlate>
-                </Link>
-              </div>
-            )
-          })}
-      </ProjectsContainer>
-    </>
-  )
+
+  return <>{projects && <ProjectsByProjects projects={projects} />}</>
 }
 
 export default function Projects() {
@@ -133,19 +103,18 @@ export default function Projects() {
   return (
     <>
       <PageWrapper>
-        <ContentWrapper>
-          <FlatCard padding="2rem">{t(`Project onboarding available Late Q3, 2021`)}</FlatCard>
-          <RowBetween>
-            <div />
-            <div style={{ maxWidth: '400px' }}>
-              <ButtonPrimary disabled>{t(`Create Project`)}</ButtonPrimary>
-            </div>
-          </RowBetween>
-        </ContentWrapper>
-      </PageWrapper>
-      <ProjectPage>
+        <BannerCard url={SpannerBanner} borderRadius="0" padding="3rem 1rem" margin="0 0 1rem 0">
+          <Header1 colorIsPrimary>{t(`Projects`)}</Header1>
+          <Header2 color="#fff">{t(`Create a token, add assets and grow your community with DPOs`)}</Header2>
+          <SpacedSection>
+            <SText color="#fff">{t(`Project onboarding available Late Q3, 2021`)}</SText>
+          </SpacedSection>
+          <SpacedSection margin="2rem 0" mobileMargin="1rem 0">
+            <ButtonPrimary disabled>{t(`Create Project`)}</ButtonPrimary>
+          </SpacedSection>
+        </BannerCard>
         <ProjectCatalogue />
-      </ProjectPage>
+      </PageWrapper>
     </>
   )
 }

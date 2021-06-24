@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { LinearProgressBar } from 'components/ProgressBar'
 import QuestionHelper, { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, StandardText } from 'components/Text'
+import { HeavyText, SText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import useMilestones from 'hooks/useMilestones'
 import { useSelectedProject } from 'hooks/useProject'
@@ -87,7 +87,9 @@ export default function Milestones() {
       {milestoneInfo && nextMilestone && project && chainDecimals && (
         <>
           <div style={{ display: 'flex', paddingBottom: '0.35rem', alignItems: 'center' }}>
-            <HeavyText fontSize="14px">{t(`Global Milestone Reward`)}</HeavyText>
+            <HeavyText fontSize="14px" width="fit-content">
+              {t(`Global Milestone Reward`)}
+            </HeavyText>
             <QuestionHelper
               size={12}
               backgroundColor={'transparent'}
@@ -100,11 +102,11 @@ export default function Milestones() {
             <>
               <SpacedSection mobileMargin="0.2rem 0">
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
-                  <StandardText fontSize="16px" mobileFontSize="11px">
+                  <SText fontSize="16px" mobileFontSize="11px">
                     {String.fromCodePoint(0x1f389)} {t(`Congrats!! Total of`)}{' '}
                     <b>{`${rewardsData.finishedPercent.toFixed(2)}% `}</b>{' '}
                     {t(`given to all passengers. Don't miss out!`)}!{String.fromCodePoint(0x1f389)}
-                  </StandardText>
+                  </SText>
                 </div>
               </SpacedSection>
               <SpacedSection mobileMargin="0.2rem 0">
@@ -118,9 +120,9 @@ export default function Milestones() {
                             100
                           ).toFixed(2)}% ${t(`to all passengers`)}.`}
                         >
-                          <StandardText fontSize="20px" mobileFontSize="14px" padding="0 0.1rem">
+                          <SText fontSize="20px" mobileFontSize="14px" padding="0 0.1rem">
                             {String.fromCodePoint(0x2705)}
-                          </StandardText>
+                          </SText>
                         </AnyQuestionHelper>
                       ) : (
                         <AnyQuestionHelper
@@ -128,9 +130,9 @@ export default function Milestones() {
                             `will be given to all passengers when hitting the Milestone of`
                           )}: ${milestone.milestone.toLocaleString()} ${project.token} `}
                         >
-                          <StandardText fontSize="20px" mobileFontSize="14px" padding="0 0.1rem">
+                          <SText fontSize="20px" mobileFontSize="14px" padding="0 0.1rem">
                             {String.fromCodePoint(0x1f381)}
-                          </StandardText>
+                          </SText>
                         </AnyQuestionHelper>
                       )}
                     </>
@@ -140,14 +142,16 @@ export default function Milestones() {
             </>
           )}
           <SpacedSection>
-            <HeavyText fontSize="14px">{t(`Next Milestone`)}</HeavyText>
+            <HeavyText fontSize="14px" width="fit-content">
+              {t(`Next Milestone`)}
+            </HeavyText>
             <RowBetween>
-              <StandardText fontSize="11px">
+              <SText width="fit-content">
                 {`${t(`Progress`)}: ${formatToUnit(milestoneInfo.deposited.toBn(), chainDecimals, 3, true)}`}
-              </StandardText>
-              <StandardText fontSize="11px">
+              </SText>
+              <SText width="fit-content">
                 {`${t(`Milestone`)}: ${formatToUnit(nextMilestone[0].toBn(), chainDecimals, 1, true)} ${project.token}`}
-              </StandardText>
+              </SText>
             </RowBetween>
             <div style={{ display: 'block', width: '100%', borderRadius: '12px' }}>
               <LinearProgressBar color={'secondary'} value={parseFloat(progress.toFixed(0))} />
