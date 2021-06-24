@@ -653,5 +653,9 @@
   "Users Participating": "参与用户数",
   "A Blockchain for Decentralized Programmable Organizations.": "去中心化可编程组织的区块链。",
   "Your portfolio value": "您的投资价值",
-  "Withdrawn": "已提取"
+  "Withdrawn": "已提取",
+  "Managers should perform actions for the DPO but any user can perform them if they don't want to wait": "管理员应该为DPO执行操作，但任何用户都可以执行这些操作当他们不想等待",
+  "Use crowdfund amount to buy seats from Target DPO": "使用众筹金额从目标DPO购买席位",
+  "Price History": "价格历史",
+  "Price is unavailable for this token": "此代币的价格暂不可用"
 }
