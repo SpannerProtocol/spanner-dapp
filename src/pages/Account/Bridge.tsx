@@ -56,9 +56,7 @@ function BridgeTxConfirm({
   return (
     <>
       <Section>
-        <SText>
-          {t(`Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.`)}
-        </SText>
+        <SText>{t(`Exchange Spanner WUSD for Ethereum USDT and send to Ethereum Withdrawal Address.`)}</SText>
       </Section>
       <SpacedSection>
         <ItalicText fontSize="12px">
@@ -304,9 +302,7 @@ export default function Bridge(): JSX.Element {
       </TxModal>
       {!wallet ? (
         <>
-          <Card
-            style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
-          >
+          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}>
             <SText>{t(`Connect to your wallet to use the Bridge`)}</SText>
           </Card>
         </>
@@ -358,9 +354,7 @@ export default function Bridge(): JSX.Element {
                     <SText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</SText>
                     <BorderedWrapper background="#8CD88C" borderColor="transparent">
                       <HeavyText color="#fff">{t(`Early Bird Landing Bonus`)}</HeavyText>
-                      <SText color="#fff">
-                        {t(`10 BOLT giveaway for first time deposits of at least 100 USDT.`)}
-                      </SText>
+                      <SText color="#fff">{t(`10 BOLT giveaway for first time deposits of at least 100 USDT.`)}</SText>
                     </BorderedWrapper>
                   </Section>
                   <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
