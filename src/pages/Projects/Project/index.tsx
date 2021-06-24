@@ -27,62 +27,6 @@ const GridWrapper = styled.div<{ columns?: string; mobileColumns?: string }>`
   `};
 `
 
-// function TokenPerformance({ projectInfo }: { projectInfo: ProjectInfo }) {
-//   const { t } = useTranslation()
-//   const [priceAvailable, setPriceAvailable] = useState<boolean>(true)
-//   const [latestPrice, setLatestPrice] = useState<string>('')
-//   const [token1, token2] = useMemo(() => {
-//     if (!projectInfo) return [undefined, undefined]
-//     if (projectInfo.token === 'BOLT') {
-//       return ['BOLT', 'WUSD']
-//     } else {
-//       return ['WUSD', projectInfo.token]
-//     }
-//   }, [projectInfo])
-//   return (
-//     <>
-//       {projectInfo && (
-//         <ContentWrapper>
-//           <Card>
-//             <Header2 style={{ display: 'inline-flex' }}>
-//               <div style={{ display: 'block', maxWidth: '25px', marginRight: '0.5rem' }}>
-//                 <img alt="Price Chart" style={{ display: 'block', width: '100%' }} src={ChartIcon} />
-//               </div>
-//               {t(`Token Performance`)}
-//             </Header2>
-//             <SpacedSection>
-//               {latestPrice && (
-//                 <>
-//                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-//                     <SText>{t(`Current Price`)}</SText>
-//                   </div>
-//                   <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-//                     <HeavyText fontSize="28px" mobileFontSize="24px" style={{ paddingRight: '1rem' }}>
-//                       ${latestPrice}
-//                     </HeavyText>
-//                     <HeavyText>{`${projectInfo.token.toUpperCase()} / WUSD `}</HeavyText>
-//                   </div>
-//                 </>
-//               )}
-//             </SpacedSection>
-//             {token1 && token2 && (
-//               <PriceChart
-//                 token1={token1}
-//                 token2={token2}
-//                 from={0}
-//                 interval={300}
-//                 setAvailable={setPriceAvailable}
-//                 setLatestPrice={setLatestPrice}
-//               />
-//             )}
-//             {!priceAvailable && <div>{`Price is unavailable for this token`}</div>}
-//           </Card>
-//         </ContentWrapper>
-//       )}
-//     </>
-//   )
-// }
-
 export default function Project(): JSX.Element {
   const path = usePathProject()
   const projectInfos = useProjectInfos()
@@ -122,7 +66,7 @@ export default function Project(): JSX.Element {
       <PageWrapper style={{ maxWidth: '680px' }}>
         {path && projectInfo && (
           <>
-            <Card borderRadius="0" margin="0 0 1rem 0" mobileMargin="0 0 0.5rem 0">
+            <Card borderRadius="0" margin="0 0 1rem 0" mobileMargin="0 0 1rem 0">
               <GridWrapper columns={'2'} mobileColumns={'2'}>
                 <Icon src={TokenImage} size="60px" mobileSize="40px" alt="project logo" />
                 {projectInfo && (
