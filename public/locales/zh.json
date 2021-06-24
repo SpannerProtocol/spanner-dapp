@@ -661,5 +661,7 @@
   "Total Distributed": "已分发",
   "Buy or crowdfund a cabin to get Milestone Rewards": "购买或众筹客舱以获得里程碑奖励",
   "Global Milestone Rewards": "全球里程碑奖励",
-  "Current": "当前"
+  "Current": "当前",
+  "Failed to crowdfund": "众筹失败",
+  "DPO failed to crowdfund before its expiry. Members received their deposits back": "DPO未能在到期前众筹完成，将返回成员们的抵押资金"
 }
