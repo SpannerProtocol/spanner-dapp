@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
 import { ChevronDown } from 'react-feather'
 import { SText } from 'components/Text'
-import { RowFixed } from 'components/Row'
+import { RowBetween, RowFixed } from 'components/Row'
 import { useTranslation } from 'react-i18next'
 
 const SelectorWrapper = styled.div<{
@@ -14,6 +14,7 @@ const SelectorWrapper = styled.div<{
   margin?: string
   borderColor?: string
   color?: string
+  width?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem 1rem')};
   background: ${({ background, theme }) => (background ? background : theme.secondary1)};
@@ -25,7 +26,7 @@ const SelectorWrapper = styled.div<{
     cursor: pointer;
     opacity: 0.6;
   }
-  width: fit-content;
+  width: ${({ width }) => (width ? width : 'fit-content')};
 `
 
 const Option = styled(BorderedWrapper)`
@@ -35,6 +36,7 @@ const Option = styled(BorderedWrapper)`
 `
 
 interface FilterOption {
+  icon?: JSX.Element
   label: string
   callback: Dispatcher<any>
 }
@@ -43,9 +45,11 @@ interface FilterProps {
   activeOption: string
   options: FilterOption[]
   modalTitle: string
+  color?: string
   background?: string
   padding?: string
   margin?: string
+  width?: string
   borderColor?: string
   filterLabel?: string
 }
@@ -74,7 +78,10 @@ function FilterOptions({
             style={{ margin: '0' }}
             borderColor={activeOption === option.label ? '#FFBE2E' : 'transparent'}
           >
-            {t(option.label)}
+            <RowFixed>
+              {option.icon && <div style={{ padding: '0 0.5rem 0 0' }}>{option.icon}</div>}
+              {t(option.label)}
+            </RowFixed>
           </Option>
         </>
       ))}
@@ -94,6 +101,8 @@ export default function Filter({
   background,
   padding,
   margin,
+  width,
+  color,
   borderColor,
 }: FilterProps) {
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -119,14 +128,22 @@ export default function Filter({
         onClick={() => setModalOpen(!modalOpen)}
         background={background}
         padding={padding}
+        color={color}
+        width={width}
         borderColor={borderColor}
       >
-        <RowFixed margin="0">
-          <SText padding="0 0.25rem 0 0" color="#fff" fontWeight="700">
+        <RowBetween margin="0">
+          <SText
+            padding="0 0.25rem 0 0"
+            width="100%"
+            textAlign="center"
+            color={color ? color : '#fff'}
+            fontWeight="700"
+          >
             {t(activeOption)}
           </SText>
           <ChevronDown size={12} />
-        </RowFixed>
+        </RowBetween>
       </SelectorWrapper>
     </div>
   )
