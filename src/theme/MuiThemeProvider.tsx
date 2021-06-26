@@ -1,5 +1,7 @@
 import React from 'react'
-import { ThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { ThemeProvider } from '@material-ui/core/styles'
+// Using unstable because the stable version throws warnings that don't comply with recent react guidelines
+import { unstable_createMuiStrictModeTheme as createMuiTheme } from '@material-ui/core'
 
 const theme = createMuiTheme({
   overrides: {

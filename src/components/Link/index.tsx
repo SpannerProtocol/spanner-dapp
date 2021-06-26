@@ -1,8 +1,9 @@
-import { Link, LinkProps } from 'react-router-dom'
-import { ExternalLink } from 'theme'
-import styled, { ThemeContext } from 'styled-components'
 import { darken } from 'polished'
 import React, { useContext } from 'react'
+import { Link, LinkProps } from 'react-router-dom'
+import { HashLink } from 'react-router-hash-link'
+import styled, { ThemeContext } from 'styled-components'
+import { ExternalLink } from 'theme'
 
 export const StyledExternalLink = styled(ExternalLink)<{
   fontWeight?: number
@@ -38,6 +39,28 @@ export const StyledLink = styled(Link)<{
 }>`
   text-decoration: none;
   color: ${({ color, theme }) => (color ? color : theme.text1)};
+  font-family: 'Lato', 'Roboto', 'sans-serif';
+  font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : 400)};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  width: ${({ width }) => (width ? width : 'fit-content')};
+  margin: 0;
+  padding: ${({ padding }) => (padding ? padding : '0.1rem 0')};
+  cursor: pointer;
+  ${({ fontSize, theme }) => theme.mediaWidth.upToExtraSmall`
+  font-size: ${fontSize ? fontSize : '12px'};
+`};
+`
+
+export const SHashLink = styled(HashLink)<{
+  fontWeight?: number
+  color?: string
+  fontSize?: string
+  width?: string
+  padding?: string
+  colorIsBlue?: boolean
+}>`
+  text-decoration: none;
+  color: ${({ color, colorIsBlue, theme }) => (color ? color : colorIsBlue ? theme.blue2 : theme.text1)};
   font-family: 'Lato', 'Roboto', 'sans-serif';
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : 400)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
