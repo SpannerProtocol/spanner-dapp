@@ -25,7 +25,7 @@ function ConnectedTooLong({ onClick }: { onClick: () => void }) {
   const theme = useContext(ThemeContext)
   return (
     <RowFixed onClick={onClick}>
-      <SText padding="0 0.25rem 0 0">{t(`Click to refresh`)}</SText>
+      <SText padding="0 0.5rem 0 0">{t(`Click to refresh`)}</SText>
       <RefreshCw size={12} color={theme.gray1} />
     </RowFixed>
   )
@@ -166,7 +166,7 @@ export function ApiProvider({ children }: any): JSX.Element {
   useEffect(() => {
     if (apiState.needReconnect && pageVisible) {
       console.log('api start', new Date().toLocaleTimeString())
-      // createApi(selectedChain)
+      createApi(selectedChain)
       setApiState((prev) => ({
         ...prev,
         needReconnect: false,

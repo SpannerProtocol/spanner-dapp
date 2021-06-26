@@ -67,25 +67,23 @@ function Options({
   return (
     <>
       {options.map((option, index) => (
-        <>
-          <Option
-            key={index}
-            onClick={() => {
-              option.callback(option.label)
-              dismissModal()
-            }}
-            color={activeOption === option.label ? theme.white : theme.text2}
-            background={activeOption === option.label ? theme.primary1 : 'transparent'}
-            borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
-          >
-            <RowFixed>
-              <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
-              <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
-                {t(option.label)}
-              </SText>
-            </RowFixed>
-          </Option>
-        </>
+        <Option
+          key={index}
+          onClick={() => {
+            option.callback(option.label)
+            dismissModal()
+          }}
+          color={activeOption === option.label ? theme.white : theme.text2}
+          background={activeOption === option.label ? theme.primary1 : 'transparent'}
+          borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
+        >
+          <RowFixed>
+            <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
+            <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+              {t(option.label)}
+            </SText>
+          </RowFixed>
+        </Option>
       ))}
     </>
   )
