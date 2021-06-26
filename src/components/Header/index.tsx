@@ -307,7 +307,13 @@ export default function Header(props: HeaderProps) {
     },
     {
       text: 'Bridge',
-      link: '/account/bridge',
+      link: '/bridge',
+      iconLink: BridgeIcon,
+      internal: true,
+    },
+    {
+      text: 'Faucet',
+      link: '/faucet',
       iconLink: BridgeIcon,
       internal: true,
     },
@@ -547,17 +553,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, selected, su
   )
 }
 
-export function NavItemContent({
-  iconLink,
-  text,
-  link,
-  classes,
-  internal,
-  nested,
-  selected,
-  subs,
-  toggleDrawer,
-}: NavItemProps) {
+export function NavItemContent({ iconLink, text, classes, nested, selected, subs, toggleDrawer }: NavItemProps) {
   const [open, setOpen] = React.useState(false)
 
   const handleClick = () => {
@@ -665,7 +661,9 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
             <Divider />
             {navItems.map(function (navItem, index) {
               if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
-                return false
+                return null
+              } else if (chain && chain.chain !== 'Hammer' && navItem.text === 'Faucet') {
+                return null
               } else {
                 return (
                   <NavItem
