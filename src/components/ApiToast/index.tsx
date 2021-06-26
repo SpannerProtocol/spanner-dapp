@@ -10,12 +10,12 @@ import styled, { keyframes, ThemeContext } from 'styled-components'
 
 const ToastMain = styled.div`
   position: fixed;
-  bottom: 50px;
+  bottom: 100px;
   right: 10px;
   width: 300px;
   max-height: 90vh;
   overflow-y: scroll;
-  z-index: 3;
+  z-index: 1310;
 `
 
 const ToastContainer = styled.div`
@@ -55,7 +55,7 @@ const ToastInnerGrid = styled.div`
   grid-column-gap: 0.5rem;
 `
 
-export default function ApiConnectionToast({ toast }: { toast: ToastState }) {
+export default function ApiToast({ toast }: { toast: ToastState }) {
   const { toastDispatch } = useApiToastContext()
   const theme = useContext(ThemeContext)
 
@@ -101,6 +101,7 @@ export default function ApiConnectionToast({ toast }: { toast: ToastState }) {
                       <SText>{toast.content}</SText>
                     </Section>
                   )}
+                  {toast.jsxElement}
                 </Section>
               </ToastInnerGrid>
             </ToastContainerItem>
