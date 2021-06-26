@@ -123,12 +123,10 @@ export function ApiProvider({ children }: any): JSX.Element {
       }
       // Save to component state for reconnect if necessary
       setSelectedChain(chain)
-      setApiState((prev) => ({
-        ...prev,
-        needReconnect: true,
-      }))
+      console.log('api start', new Date().toLocaleTimeString())
+      createApi(chain)
     },
-    [apiState, supportedChains]
+    [apiState.api, createApi, supportedChains]
   )
 
   // init
