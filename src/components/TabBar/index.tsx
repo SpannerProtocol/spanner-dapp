@@ -1,3 +1,5 @@
+import { RowFixed } from 'components/Row'
+import { SText } from 'components/Text'
 import React, { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
@@ -28,13 +30,19 @@ const Tab = styled.div`
   width: 100%;
 `
 
-const TabText = styled.p<{ fontSize?: string; mobileFontSize?: string; active?: boolean; level?: string }>`
-  width: 100%;
+const TabText = styled.p<{
+  fontSize?: string
+  mobileFontSize?: string
+  active?: boolean
+  level?: string
+  margin?: string
+}>`
+  width: fit-content;
   color: ${({ active, level, theme }) => (active ? theme.white : level === 'primary' ? theme.text1 : theme.text1)};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')}
   font-weight: ${(active) => (active ? 900 : 300)};
   text-align: center;
-  margin: 0;
+  margin: ${({ margin }) => (margin ? margin : 'auto')};
   ${({ mobileFontSize, theme }) => theme.mediaWidth.upToExtraSmall`
     font-size: ${mobileFontSize ? `${mobileFontSize}` : '12px'};
   `}
@@ -61,6 +69,8 @@ export interface TabMetaData {
   id: string
   label: string
   onClick?: (e: React.MouseEvent) => any
+  disabled?: boolean
+  disabledLabel?: string
 }
 
 export interface RouteTabMetaData extends TabMetaData {
@@ -95,11 +105,30 @@ export default function TabBar({
           const active = tabs.findIndex((tab) => tab.id === activeTab) === index
           return (
             <TabWrapper key={index} active={active} level={level}>
-              <Tab key={index} onClick={() => handleClick(index)}>
-                <TabText fontSize={fontSize} mobileFontSize={mobileFontSize} active={active} level={level}>
-                  {t(tab.label)}
-                </TabText>
-              </Tab>
+              {tab.disabled ? (
+                <Tab key={index}>
+                  <RowFixed justifyContent="center">
+                    <TabText
+                      margin="0"
+                      fontSize={fontSize}
+                      mobileFontSize={mobileFontSize}
+                      active={active}
+                      level={level}
+                    >
+                      {t(tab.label)}
+                    </TabText>
+                    <SText padding="0 0.25rem" fontSize="12px" mobileFontSize="10px">
+                      {`(${t(tab.disabledLabel)})`}
+                    </SText>
+                  </RowFixed>
+                </Tab>
+              ) : (
+                <Tab key={index} onClick={() => handleClick(index)}>
+                  <TabText fontSize={fontSize} mobileFontSize={mobileFontSize} active={active} level={level}>
+                    {t(tab.label)}
+                  </TabText>
+                </Tab>
+              )}
             </TabWrapper>
           )
         })}

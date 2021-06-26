@@ -1,5 +1,6 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring'
 import { hexToU8a, isHex } from '@polkadot/util'
+import { ethers } from 'ethers'
 
 export function isValidSpannerAddress(address: string) {
   try {
@@ -8,4 +9,8 @@ export function isValidSpannerAddress(address: string) {
   } catch (error) {
     return false
   }
+}
+
+export function isValidEthAddress(address: string) {
+  return ethers.utils.isAddress(address)
 }

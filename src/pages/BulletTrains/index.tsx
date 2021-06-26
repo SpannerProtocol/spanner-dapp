@@ -9,31 +9,6 @@ import styled from 'styled-components'
 import { useTranslation } from 'translate'
 import getProjectRegistry, { ProjectRegistry } from 'utils/getProjectRegistry'
 
-// const ProjectsContainer = styled.div`
-//   display: grid;
-//   grid-template-columns: auto auto auto auto;
-//   grid-column-gap: 40px;
-//   grid-row-gap: 40px;
-//   align-items: center;
-//   justify-content: center;
-//
-//   ${({ theme }) => theme.mediaWidth.upToMedium`
-//     padding: 1rem;
-//   `};
-//
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-//     padding: 1rem;
-//     grid-template-columns: auto auto;
-//     grid-column-gap: 40px;
-//   `};
-//
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//     width: 100%;
-//     display: block;
-//     padding: 1rem;
-//   `};
-// `
-
 const ProjectGrid = styled.div`
   display: grid;
   grid-template-columns: minmax(40px, 55px) auto;
@@ -47,17 +22,6 @@ const ProjectGrid = styled.div`
     grid-column-gap: 1rem;
   `};
 `
-
-// const ProjectPage = styled(PageWrapper)`
-//   width: 100%;
-//   max-width: 960px;
-//   justify-content: center;
-//   align-items: center;
-//   margin-top: 140px;
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//     margin-top: 0;
-//   `};
-// `
 
 export const ProjectIconWrapper = styled.div`
   max-width: 120px;
@@ -82,53 +46,41 @@ const ProjectCard = styled(Card)`
 `};
 `
 
-function ProjectsByAssets({ projects }: { projects: ProjectInfo[] }) {
-  const assets = useMemo(() => {
-    const assetMap: { [key: string]: ProjectRegistry[] } = {}
+function ProjectsByBulletTrain({ projects }: { projects: ProjectInfo[] }) {
+  const bulletTrainProjects = useMemo(() => {
+    const projectsWithBulletTrain: ProjectRegistry[] = []
     projects.forEach((project) => {
       const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
-      const projectAssets = projectRegistry.assets
-      projectAssets.forEach((asset) => {
-        if (Object.keys(assetMap).includes(asset)) {
-          assetMap[asset].push(projectRegistry)
-        } else {
-          assetMap[asset] = [projectRegistry]
-        }
-      })
+      if (projectRegistry.assets.includes('TravelCabin')) {
+        projectsWithBulletTrain.push(projectRegistry)
+      }
     })
-    return assetMap
+    return projectsWithBulletTrain
   }, [projects])
 
   return (
     <>
-      {Object.keys(assets).map((asset) => {
-        const projects = assets[asset]
-        return (
-          <>
-            {projects.map((projectRegistry, index) => (
-              <SLink
-                key={index}
-                to={`/projects/${projectRegistry.token.toLowerCase()}?asset=${asset}`}
-                colorIsBlue
-                fontSize="14px"
-                width="100%"
-              >
-                <ProjectCard>
-                  <ProjectGrid>
-                    <ProjectIconWrapper>
-                      <img src={require(`assets/tokens/${projectRegistry.icon}`)} width="100%" alt="token icon" />
-                    </ProjectIconWrapper>
-                    <div>
-                      <Header2>{projectRegistry.name}</Header2>
-                      <SText width="100%">{projectRegistry.token.toUpperCase()}</SText>
-                    </div>
-                  </ProjectGrid>
-                </ProjectCard>
-              </SLink>
-            ))}
-          </>
-        )
-      })}
+      {bulletTrainProjects.map((projectRegistry, index) => (
+        <SLink
+          key={index}
+          to={`/projects/${projectRegistry.token.toLowerCase()}?asset=TravelCabin`}
+          colorIsBlue
+          fontSize="14px"
+          width="100%"
+        >
+          <ProjectCard>
+            <ProjectGrid>
+              <ProjectIconWrapper>
+                <img src={require(`assets/tokens/${projectRegistry.icon}`)} width="100%" alt="token icon" />
+              </ProjectIconWrapper>
+              <div>
+                <Header2>{projectRegistry.name}</Header2>
+                <SText width="100%">{projectRegistry.token.toUpperCase()}</SText>
+              </div>
+            </ProjectGrid>
+          </ProjectCard>
+        </SLink>
+      ))}
     </>
   )
 }
@@ -145,7 +97,7 @@ export default function BulletTrains() {
             {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
           </Header2>
         </BannerCard>
-        {projects && <ProjectsByAssets projects={projects} />}
+        {projects && <ProjectsByBulletTrain projects={projects} />}
       </PageWrapper>
     </>
   )
