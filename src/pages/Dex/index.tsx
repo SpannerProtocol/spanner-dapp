@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import TabBar, { TabMetaData } from '../../components/TabBar'
-import { PageWrapper, Wrapper } from '../../components/Wrapper'
+import { PageWrapper, ContentWrapper } from '../../components/Wrapper'
 import MainConsole from './MainConsole'
+import { SwapBanner } from './SwapConsole'
 
 const tabData: Array<TabMetaData> = [
   {
@@ -9,12 +10,10 @@ const tabData: Array<TabMetaData> = [
     label: 'Swap',
   },
   {
-    id: 'lp-add',
-    label: 'Add Liquidity',
-  },
-  {
-    id: 'lp-remove',
-    label: 'Remove Liquidity',
+    id: 'lp-pool',
+    label: 'Pool',
+    disabled: true,
+    disabledLabel: 'Coming Soon',
   },
 ]
 
@@ -27,12 +26,11 @@ export default function Dex() {
 
   return (
     <PageWrapper>
-      <Wrapper
-        style={{ width: '100%', maxWidth: '640px', padding: '0.5rem', justifyContent: 'center', alignItems: 'center' }}
-      >
+      {activeConsole === 'swap' && <SwapBanner />}
+      <ContentWrapper>
         <TabBar activeTab={activeConsole} tabs={tabData} onClick={handleTabSelect} level={'primary'} />
         <MainConsole activeConsole={activeConsole} />
-      </Wrapper>
+      </ContentWrapper>
     </PageWrapper>
   )
 }
