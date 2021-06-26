@@ -1,6 +1,5 @@
 import { Compact } from '@polkadot/types'
 import { BlockNumber } from '@polkadot/types/interfaces'
-import GlobalApiSpinner from 'components/GlobalSpinner'
 import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
@@ -14,18 +13,20 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Account from './Account'
 import AppBody from './AppBody'
-import Dpos from './Dpos'
 import Assets from './Assets'
-import Dpo from './Dpos/Dpo'
-import BulletTrain from './SpannerBulletTrain'
+import Bridge from './Bridge'
+import BulletTrains from './BulletTrains'
+import TravelCabinBuyer from './CabinBuyer'
 import Dex from './Dex'
 import Diagnostics from './Diagnostics'
+import Dpos from './Dpos'
+import Dpo from './Dpos/Dpo'
 import Faq from './Faq'
-import TravelCabinBuyer from './CabinBuyer'
+import Faucet from './Faucet'
+import NewHome from './NewHome'
 import Launchpad from './Projects'
 import Project from './Projects/Project'
-import NewHome from './NewHome'
-import BulletTrains from './BulletTrains'
+import BulletTrain from './SpannerBulletTrain'
 
 const AppWrapper = styled.div`
   display: grid;
@@ -78,44 +79,39 @@ export default function App() {
   return (
     <Suspense fallback={null}>
       <Route component={DarkModeQueryParamReader} />
-      <GlobalApiSpinner>
-        <AppWrapper>
-          <HeaderWrapper>
-            <Header width={width} />
-          </HeaderWrapper>
-          <Controls />
-          <AppBody>
-            <Popups />
-            <Web3ReactManager>
-              <Switch>
-                <Route exact strict path="/" component={NewHome} />
-                <Route exact strict path="/dex" component={Dex} />
-                <Route exact strict path="/assets/:name/:index" component={Assets} />
-                <Route exact strict path="/assets/:name/:index/:section" component={Assets} />
-                <Route
-                  exact
-                  strict
-                  path="/assets/:name/:index/inventory/:inventoryIndex"
-                  component={TravelCabinBuyer}
-                />
-                <Route exact strict path="/account" component={Account} />
-                <Route exact strict path="/account/:section" component={Account} />
-                <Route exact strict path="/bullettrain" component={BulletTrains} />
-                <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
-                <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
-                <Route exact strict path="/bullettrain/dpo/:index" component={BulletTrain} />
-                <Route exact strict path="/dpos" component={Dpos} />
-                <Route exact strict path="/dpos/dpo/:index/:section" component={Dpo} />
-                <Route exact strict path="/projects" component={Launchpad} />
-                <Route exact strict path="/projects/:token" component={Project} />
-                <Route exact strict path="/faq" component={Faq} />
-                <Route exact strict path="/diagnostics" component={Diagnostics} />
-              </Switch>
-            </Web3ReactManager>
-            <Marginer />
-          </AppBody>
-        </AppWrapper>
-      </GlobalApiSpinner>
+      <AppWrapper>
+        <HeaderWrapper>
+          <Header width={width} />
+        </HeaderWrapper>
+        <Controls />
+        <AppBody>
+          <Popups />
+          <Web3ReactManager>
+            <Switch>
+              <Route exact strict path="/" component={NewHome} />
+              <Route exact strict path="/dex" component={Dex} />
+              <Route exact strict path="/assets/:name/:index" component={Assets} />
+              <Route exact strict path="/assets/:name/:index/:section" component={Assets} />
+              <Route exact strict path="/assets/:name/:index/inventory/:inventoryIndex" component={TravelCabinBuyer} />
+              <Route exact strict path="/account" component={Account} />
+              <Route exact strict path="/account/:section" component={Account} />
+              <Route exact strict path="/bridge" component={Bridge} />
+              <Route exact strict path="/bullettrain" component={BulletTrains} />
+              <Route exact strict path="/bullettrain/:section" component={BulletTrain} />
+              <Route exact strict path="/bullettrain/dpo" component={BulletTrain} />
+              <Route exact strict path="/bullettrain/dpo/:index" component={BulletTrain} />
+              <Route exact strict path="/dpos" component={Dpos} />
+              <Route exact strict path="/dpos/dpo/:index/:section" component={Dpo} />
+              <Route exact strict path="/faucet" component={Faucet} />
+              <Route exact strict path="/projects" component={Launchpad} />
+              <Route exact strict path="/projects/:token" component={Project} />
+              <Route exact strict path="/faq" component={Faq} />
+              <Route exact strict path="/diagnostics" component={Diagnostics} />
+            </Switch>
+          </Web3ReactManager>
+          <Marginer />
+        </AppBody>
+      </AppWrapper>
     </Suspense>
   )
 }
