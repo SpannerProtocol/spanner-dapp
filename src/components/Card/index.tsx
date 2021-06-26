@@ -121,6 +121,13 @@ export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; 
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
 `
 
+export const BgColorCard = styled(Card)<{ backgroundColor?: string; border?: string; borderRadius?: string }>`
+  background: ${({ backgroundColor, theme }) => (backgroundColor ? backgroundColor : theme.bg5)};
+  box-shadow: none;
+  border: ${({ border }) => (border ? border : 'none')};
+  border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '10px')};
+`
+
 export const DetailGridCard = styled(Card)`
   display: grid;
   padding: 0;

@@ -6,7 +6,7 @@ import BN from 'bn.js'
 import PriceChart from 'components/Chart'
 import TxModal from 'components/Modal/TxModal'
 import { CenteredRow, RowBetween } from 'components/Row'
-import { DisclaimerText, Header2, HeavyText, ModalText, SText } from 'components/Text'
+import { DisclaimerText, Header1, Header2, HeavyText, ModalText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
@@ -14,8 +14,8 @@ import { useEnabledPair } from 'hooks/useQueryTradingPairs'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ButtonPrimary } from '../../components/Button'
-import Card from '../../components/Card'
+import { ButtonPrimary, ButtonTrans } from '../../components/Button'
+import Card, { BannerCard } from '../../components/Card'
 import SlippageTabs from '../../components/TransactionSettings'
 import { BorderedWrapper, Section, SpacedSection } from '../../components/Wrapper'
 import { useSubstrate } from '../../hooks/useSubstrate'
@@ -33,6 +33,8 @@ import {
   TokenInputWrapper,
 } from './components'
 import TokenSelector from './components/TokenSelector'
+import BannerSwap from 'assets/images/banner-swap.jpg'
+import { SHashLink } from 'components/Link'
 
 interface SwapData {
   amountA: number
@@ -151,6 +153,23 @@ function TokenPerformance({ tokenA, tokenB }: { tokenA: string; tokenB: string }
         {!priceAvailable && <div>{t(`Price is unavailable for this token`)}</div>}
       </Card>
     </>
+  )
+}
+
+export function SwapBanner() {
+  const { t } = useTranslation()
+  return (
+    <BannerCard url={BannerSwap} borderRadius="0" padding="3rem 1rem" margin="0 0 1rem 0" darkenBackground>
+      <Header1 colorIsPrimary>{t(`Swap`)}</Header1>
+      <Header2 color="#fff">{t(`Swap for the tokens you want`)}</Header2>
+      <SpacedSection>
+        <SHashLink smooth to="/faq#how-to-swap">
+          <ButtonTrans color="#fff" borderColor="#fff" maxWidth="120px">
+            {t(`Learn More`)}
+          </ButtonTrans>
+        </SHashLink>
+      </SpacedSection>
+    </BannerCard>
   )
 }
 

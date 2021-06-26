@@ -37,6 +37,13 @@ export const SpacedSection = styled(AutoColumn)<{ margin?: string; mobileMargin?
   `};
 `
 
+export const TextSection = styled(AutoColumn)<{ margin?: string; mobileMargin?: string }>`
+  margin: ${({ margin }) => (margin ? margin : '2.5rem 0')};
+
+  ${({ mobileMargin, theme }) => theme.mediaWidth.upToExtraSmall`
+  margin: ${mobileMargin ? mobileMargin : '2rem 0'};
+  `};
+`
 export const PaddedSection = styled(AutoColumn)`
   display: block;
   padding: 2rem;

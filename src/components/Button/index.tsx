@@ -4,8 +4,10 @@ import { darken } from 'polished'
 import { Button as RebassButton } from 'rebass/styled-components'
 
 const Base = styled(RebassButton)<{
+  color?: string
   padding?: string
   margin?: string
+  borderColor?: string
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
@@ -28,8 +30,8 @@ const Base = styled(RebassButton)<{
   text-align: center;
   border-radius: ${({ borderRadius }) => (borderRadius ? borderRadius : '5px')};
   outline: none;
-  border: 1px solid transparent;
-  color: white;
+  border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')};
+  color: ${({ color }) => (color ? color : '#fff')};
   text-decoration: none;
   display: flex;
   justify-content: center;
@@ -184,8 +186,8 @@ export const ButtonTrans = styled(ButtonPrimary)`
     border: 1px solid ${({ theme }) => darken(0.05, theme.primary1)};
     color: ${({ theme }) => theme.white};
   }
-  color: ${({ theme }) => theme.text1};
-  border: 1px solid #262a41;
+  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : '#262a41')};
 `
 
 export const PillButton = styled(Base)`

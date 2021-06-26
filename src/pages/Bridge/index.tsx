@@ -1,31 +1,33 @@
-import CopyHelper from 'components/Copy/Copy'
+import { AxiosError } from 'axios'
+import BN from 'bn.js'
+import Balance from 'components/Balance'
 import { ButtonPrimary } from 'components/Button'
-import Card from 'components/Card'
+import Card, { BgColorCard } from 'components/Card'
+import CopyHelper from 'components/Copy/Copy'
 import { BorderedInput } from 'components/Input'
 import { StepNumber } from 'components/InstructionSteps'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
-import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, Header2, SText } from 'components/Text'
+import { RowBetween, RowFixed } from 'components/Row'
+import { Header1, Header2, Header4, HeavyText, ItalicText, SText, TokenText } from 'components/Text'
 import TxFee from 'components/TxFee'
-import { BorderedWrapper, ButtonWrapper, Section, SpacedSection } from 'components/Wrapper'
+import { BorderedWrapper, ButtonWrapper, ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import useWallet from 'hooks/useWallet'
+import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
 import { useChainState, useConnectionsState } from 'state/connections/hooks'
+import { useUpdateE2sTs } from 'state/user/hooks'
 import { shortenAddress } from 'utils'
 import { formatToUnit, numberToBn } from 'utils/formatUnit'
+import { isValidEthAddress } from 'utils/validAddress'
 import { getBridgeFee, getBurnAddr, getEthDepositAddr, postE2sCheck } from '../../bridge'
-import { AxiosError } from 'axios'
-import { useUpdateE2sTs } from 'state/user/hooks'
-import moment from 'moment'
-import Balance from 'components/Balance'
-import BN from 'bn.js'
+
 interface FeeData {
   feeBps: number
   feeMinUsd: number
@@ -67,7 +69,7 @@ function BridgeTxConfirm({
         <Section>{errorMsg}</Section>
       ) : (
         <>
-          <BorderedWrapper>
+          <BorderedWrapper margin="0 0 0.5rem 0">
             {withdrawAddress && (
               <RowBetween>
                 <SText>{t(`Withdraw Address`)}</SText>
@@ -157,6 +159,7 @@ export default function Bridge(): JSX.Element {
   const [e2sTs, setE2sTs] = useUpdateE2sTs()
   const [time, setTime] = useState(Date.now())
   const [e2sTsPlus5, setE2sTsPlus5] = useState<number>(0)
+  const [invalidWithdrawAddress, setInvalidWithdrawAddress] = useState<boolean>(false)
 
   const bridge = connectionState && connectionState.bridgeServerOn
 
@@ -227,7 +230,7 @@ export default function Bridge(): JSX.Element {
   }, [calcBridgeFee, ethWithdrawAmount, wusdBalanceNum])
 
   const withdrawToEthereum = useCallback(
-    (ethWithdrawAddress: string | undefined, ethWithdrawAmount: number | undefined) => {
+    (ethWithdrawAddress: string, ethWithdrawAmount: number) => {
       if (!chain) return
       if (!wallet) {
         setTxErrorMsg(t(`Please connect to a wallet.`))
@@ -272,6 +275,16 @@ export default function Bridge(): JSX.Element {
       .finally(() => setE2sTs())
   }
 
+  const handleWithdrawalAddress = (address: string) => {
+    const isValid = isValidEthAddress(address)
+    if (!isValid) {
+      setInvalidWithdrawAddress(true)
+    } else {
+      setInvalidWithdrawAddress(false)
+    }
+    setEthWithdrawAddr(address)
+  }
+
   const dismissModal = () => {
     setConfirmModalOpen(false)
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
@@ -300,62 +313,122 @@ export default function Bridge(): JSX.Element {
           balanceNum={wusdBalanceNum}
         />
       </TxModal>
-      {!wallet ? (
-        <>
-          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}>
-            <SText>{t(`Connect to your wallet to use the Bridge`)}</SText>
-          </Card>
-        </>
-      ) : (
-        <>
-          {!bridge ? (
-            <>
-              <Card
-                style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
-              >
-                <SText>{t(`Bridge is currently unavailable. Please check back later.`)}</SText>
-              </Card>
-            </>
-          ) : (
-            <>
-              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                <Section>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Header2 style={{ margin: '0' }}>{t(`Bridge`)}</Header2>
-                    <QuestionHelper
-                      size={12}
-                      backgroundColor={'transparent'}
-                      text={t(
-                        `Bridges help transfer crypto between different blockchains. Spanner's Ethereum Bridge sends your custodial wallet WUSD for the USDT (Ethereum ERC20) you send to your deposit address.`
-                      )}
-                    />
-                  </div>
-                </Section>
-                <SpacedSection style={{ width: '100%', marginTop: '1rem' }}>
-                  <SText fontSize="12px">{t(`Balance`)}</SText>
-                  <BorderedWrapper style={{ margin: '0' }}>
-                    <RowBetween>
-                      <SText>{`WUSD`}</SText>
-                      <SText>{formatToUnit(wusdBalance, chainDecimals, 2)}</SText>
-                    </RowBetween>
-                  </BorderedWrapper>
+      <>
+        {!bridge ? (
+          <>
+            <BgColorCard borderRadius="0" margin="0 0 1rem 0">
+              <Header1 width="fit-content" colorIsPrimary>
+                {t(`Bridge`)}
+              </Header1>
+              <SText color="#fff">{t(`Bridge is currently unavailable. Please check back later.`)}</SText>
+            </BgColorCard>
+          </>
+        ) : (
+          <>
+            <BgColorCard borderRadius="0" margin="0 0 1rem 0">
+              <RowFixed>
+                <Header1 width="fit-content" colorIsPrimary>
+                  {t(`Bridge`)}
+                </Header1>
+                <QuestionHelper
+                  size={12}
+                  color="#fff"
+                  backgroundColor={'transparent'}
+                  text={t(
+                    `Bridges help transfer crypto between different blockchains. Spanner's Ethereum Bridge sends your custodial wallet WUSD for the USDT (Ethereum ERC20) you send to your deposit address.`
+                  )}
+                />
+              </RowFixed>
+              <Header2 color="#fff">{t(`Send Ethereum USDT to Deposit Address for Spanner WUSD`)}</Header2>
+              {wallet && wallet.address ? (
+                <SpacedSection>
+                  <Header4 color="#fff">{t(`Your Balance`)}</Header4>
+                  <RowFixed>
+                    <SText color="#fff">{formatToUnit(wusdBalance, chainDecimals, 2)}</SText>
+                    <TokenText padding="0 0.25rem">{`WUSD`}</TokenText>
+                  </RowFixed>
                 </SpacedSection>
-              </Card>
-
-              {ethDepositAddr && wallet && (
-                <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                  <Section>
+              ) : (
+                <SpacedSection>
+                  <SText color="#fff">{t(`Connect to your wallet to use the Bridge`)}</SText>
+                </SpacedSection>
+              )}
+            </BgColorCard>
+            {wallet && wallet.address && (
+              <ContentWrapper>
+                {ethDepositAddr && (
+                  <Card margin=" 0 0 1rem 0">
                     <Header2>{t(`Deposit to Spanner`)}</Header2>
                     <SText>{t(`Exchange Ethereum USDT for Spanner WUSD.`)}</SText>
                     <BorderedWrapper background="#8CD88C" borderColor="transparent">
                       <HeavyText color="#fff">{t(`Early Bird Landing Bonus`)}</HeavyText>
                       <SText color="#fff">{t(`10 BOLT giveaway for first time deposits of at least 100 USDT.`)}</SText>
                     </BorderedWrapper>
+                    <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'left',
+                          paddingBottom: '0.5rem',
+                        }}
+                      >
+                        <StepNumber size={'18px'} fontSize={'12px'}>{`1`}</StepNumber>
+                        <HeavyText>{t(`Send USDT to this address`)}</HeavyText>
+                        <QuestionHelper
+                          size={12}
+                          backgroundColor={'transparent'}
+                          text={t(
+                            `This is an Ethereum USDT deposit address. After sending USDT to this address, you will receive WUSD within 5 minutes depending on Ethereum network congestion.`
+                          )}
+                        />
+                      </div>
+                      <SpacedSection>
+                        <SText>{t(`Deposit Address (Ethereum USDT)`)}</SText>
+                        <BorderedWrapper style={{ margin: '0' }}>
+                          <CopyHelper toCopy={ethDepositAddr} childrenIsIcon={true}>
+                            <SText>{ethDepositAddr}</SText>
+                          </CopyHelper>
+                        </BorderedWrapper>
+                      </SpacedSection>
+                    </SpacedSection>
+                    <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'left',
+                        }}
+                      >
+                        <StepNumber size={'18px'} fontSize={'12px'}>{`2`}</StepNumber>
+                        <HeavyText fontSize={'14px'}>{t(`Check your WUSD balance in 5 minutes`)}</HeavyText>
+                      </div>
+                      <SpacedSection>
+                        <SText>{t(`Manually request a deposit check`)}</SText>
+                        <div style={{ maxWidth: '160px', paddingTop: '0.5rem' }}>
+                          {canE2s() ? (
+                            <ButtonPrimary onClick={handleE2sCheck} fontSize="12px">
+                              {t(`Check for Deposits`)}
+                            </ButtonPrimary>
+                          ) : (
+                            <ButtonPrimary onClick={handleE2sCheck} fontSize="12px" disabled>
+                              {`${t(`Please wait`)} ${(e2sTsPlus5 / 1000 - time / 1000).toFixed(0)} ${t(`seconds`)}`}
+                            </ButtonPrimary>
+                          )}
+                        </div>
+                      </SpacedSection>
+                      {e2sMsg && !canE2s() && (
+                        <BorderedWrapper background="#8CD88C" borderColor="transparent">
+                          <SText color="#fff">{e2sMsg}</SText>
+                        </BorderedWrapper>
+                      )}
+                    </SpacedSection>
+                  </Card>
+                )}
+                <Card margin="0 0 1rem 0">
+                  <Section>
+                    <Header2>{t(`Withdraw to Ethereum`)}</Header2>
+                    <SText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</SText>
                   </Section>
                   <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                     <div
@@ -367,23 +440,18 @@ export default function Bridge(): JSX.Element {
                       }}
                     >
                       <StepNumber size={'18px'} fontSize={'12px'}>{`1`}</StepNumber>
-                      <HeavyText fontSize={'14px'}>{t(`Send USDT to this address`)}</HeavyText>
-                      <QuestionHelper
-                        size={12}
-                        backgroundColor={'transparent'}
-                        text={t(
-                          `This is an Ethereum USDT deposit address. After sending USDT to this address, you will receive WUSD within 5 minutes depending on Ethereum network congestion.`
-                        )}
-                      />
+                      <HeavyText fontSize={'14px'}>{t(`Enter WUSD amount to withdraw`)}</HeavyText>
                     </div>
-                    <SpacedSection>
-                      <SText fontSize="12px">{t(`Deposit Address (Ethereum USDT)`)}</SText>
-                      <BorderedWrapper style={{ margin: '0' }}>
-                        <CopyHelper toCopy={ethDepositAddr} childrenIsIcon={true}>
-                          <SText>{ethDepositAddr}</SText>
-                        </CopyHelper>
-                      </BorderedWrapper>
-                    </SpacedSection>
+                    <SText fontSize="12px">{t(`Withdraw Amount`)}</SText>
+                    <BorderedInput
+                      required
+                      id="eth-withdraw-amount-input"
+                      type="number"
+                      value={Number.isNaN(ethWithdrawAmount) ? '' : ethWithdrawAmount}
+                      placeholder="0.0"
+                      onChange={(e) => setEthWithdrawAmount(parseFloat(e.target.value))}
+                      style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
+                    />
                   </SpacedSection>
                   <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
                     <div
@@ -391,124 +459,46 @@ export default function Bridge(): JSX.Element {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'left',
+                        paddingBottom: '0.5rem',
                       }}
                     >
                       <StepNumber size={'18px'} fontSize={'12px'}>{`2`}</StepNumber>
-                      <HeavyText fontSize={'14px'}>{t(`Check your WUSD balance in 5 minutes`)}</HeavyText>
-                    </div>
-                    <SpacedSection>
-                      <SText fontSize="12px">{t(`Manually request a deposit check`)}</SText>
-                      <div style={{ maxWidth: '160px', paddingTop: '0.5rem' }}>
-                        {canE2s() ? (
-                          <ButtonPrimary onClick={handleE2sCheck} fontSize="12px">
-                            {t(`Check for Deposits`)}
-                          </ButtonPrimary>
-                        ) : (
-                          <ButtonPrimary onClick={handleE2sCheck} fontSize="12px" disabled>
-                            {`${t(`Please wait`)} ${(e2sTsPlus5 / 1000 - time / 1000).toFixed(0)} ${t(`seconds`)}`}
-                          </ButtonPrimary>
+                      <HeavyText fontSize={'14px'}>{t(`Enter address and click Withdraw`)}</HeavyText>
+                      <QuestionHelper
+                        size={12}
+                        backgroundColor={'transparent'}
+                        text={t(
+                          `WUSD will be deducted from your Spanner wallet and USDT will be sent to your Withdrawal Address.`
                         )}
-                      </div>
-                    </SpacedSection>
-                    {e2sMsg && !canE2s() && (
-                      <BorderedWrapper background="#8CD88C" borderColor="transparent">
-                        <SText fontSize="12px" color="#fff">
-                          {e2sMsg}
-                        </SText>
-                      </BorderedWrapper>
-                    )}
-                  </SpacedSection>
-                </Card>
-              )}
-              <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start' }}>
-                <Section>
-                  <Header2>{t(`Withdraw to Ethereum`)}</Header2>
-                  <SText>{t(`Exchange Spanner WUSD for Ethereum USDT.`)}</SText>
-                </Section>
-                {/* {feeData && (
-                  <SpacedSection>
-                    <RowBetween>
-                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                        <HeavyText>{`${t(`Estimated Withdrawal Fee`)}`}</HeavyText>
-                        <QuestionHelper
-                          size={12}
-                          backgroundColor={'transparent'}
-                          text={t(
-                            `The withdrawal fee is dependent on Ethereum gas fee and will vary depending on Ethereum's network congestion.`
-                          )}
-                        />
-                      </div>
-                      <SText>{feeData.ethPriceUsd}</SText>
-                    </RowBetween>
-                  </SpacedSection>
-                )} */}
-                <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'left',
-                      paddingBottom: '0.5rem',
-                    }}
-                  >
-                    <StepNumber size={'18px'} fontSize={'12px'}>{`1`}</StepNumber>
-                    <HeavyText fontSize={'14px'}>{t(`Enter WUSD amount to withdraw`)}</HeavyText>
-                  </div>
-                  <SText fontSize="12px">{t(`Withdraw Amount`)}</SText>
-                  <BorderedInput
-                    required
-                    id="eth-withdraw-amount-input"
-                    type="number"
-                    value={Number.isNaN(ethWithdrawAmount) ? '' : ethWithdrawAmount}
-                    placeholder="0.0"
-                    onChange={(e) => setEthWithdrawAmount(parseFloat(e.target.value))}
-                    style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
-                  />
-                </SpacedSection>
-                <SpacedSection style={{ marginTop: '1.5rem', marginBottom: '1.5rem' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'left',
-                      paddingBottom: '0.5rem',
-                    }}
-                  >
-                    <StepNumber size={'18px'} fontSize={'12px'}>{`2`}</StepNumber>
-                    <HeavyText fontSize={'14px'}>{t(`Enter address and click Withdraw`)}</HeavyText>
-                    <QuestionHelper
-                      size={12}
-                      backgroundColor={'transparent'}
-                      text={t(
-                        `WUSD will be deducted from your Spanner wallet and USDT will be sent to your Withdrawal Address.`
-                      )}
+                      />
+                    </div>
+                    <SText fontSize="12px">{t(`Withdrawal Address (Ethereum USDT)`)}</SText>
+                    <BorderedInput
+                      required
+                      id="eth-withdraw-addr-input"
+                      type="string"
+                      value={ethWithdrawAddr}
+                      placeholder={'e.g. 0x3jf9d....'}
+                      onChange={(e) => handleWithdrawalAddress(e.target.value)}
+                      style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
                     />
-                  </div>
-                  <SText fontSize="12px">{t(`Withdrawal Address (Ethereum USDT)`)}</SText>
-                  <BorderedInput
-                    required
-                    id="eth-withdraw-addr-input"
-                    type="string"
-                    value={ethWithdrawAddr}
-                    placeholder={'0x3jf9d....'}
-                    onChange={(e) => setEthWithdrawAddr(e.target.value)}
-                    style={{ alignItems: 'flex-end', width: '100%', fontSize: '12px', margin: '0' }}
-                  />
-                </SpacedSection>
-                <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
-                  <ButtonPrimary
-                    padding="0.45rem"
-                    fontSize="12px"
-                    onClick={() => withdrawToEthereum(ethWithdrawAddr, ethWithdrawAmount)}
-                  >
-                    {t(`Withdraw`)}
-                  </ButtonPrimary>
-                </ButtonWrapper>
-              </Card>
-            </>
-          )}
-        </>
-      )}
+                  </SpacedSection>
+                  <ButtonWrapper style={{ width: '100px', margin: '0.25rem' }}>
+                    <ButtonPrimary
+                      padding="0.45rem"
+                      fontSize="12px"
+                      onClick={() => withdrawToEthereum(ethWithdrawAddr, ethWithdrawAmount)}
+                      disabled={invalidWithdrawAddress || ethWithdrawAddr.length === 0}
+                    >
+                      {t(`Withdraw`)}
+                    </ButtonPrimary>
+                  </ButtonWrapper>
+                </Card>
+              </ContentWrapper>
+            )}
+          </>
+        )}
+      </>
     </>
   )
 }
