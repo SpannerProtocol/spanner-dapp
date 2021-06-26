@@ -35,9 +35,7 @@ export default function Faucet(): JSX.Element {
     <>
       {!wallet?.address ? (
         <>
-          <Card
-            style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}
-          >
+          <Card style={{ width: '100%', justifyContent: 'flex-start', alignItems: 'flex-start', textAlign: 'center' }}>
             <SText>{t(`Connect to your Custodial Wallet (for Ethereum) to use the Faucet.`)}</SText>
           </Card>
         </>
@@ -66,9 +64,7 @@ export default function Faucet(): JSX.Element {
             </Section>
             <Section>
               <SText>{t(`Click the button below to add Hammer BOLT to your custodial wallet.`)}</SText>
-              <SText>
-                {t(`Note, this is just for testing transactions on Spanner's Hammer testnet.`)}
-              </SText>
+              <SText>{t(`Note, this is just for testing transactions on Spanner's Hammer testnet.`)}</SText>
               <ButtonWrapper style={{ width: '100px', marginTop: '1rem' }}>
                 <ButtonPrimary padding="0.45rem" fontSize="12px" onClick={handleFaucet}>
                   {t(`Use Faucet`)}
