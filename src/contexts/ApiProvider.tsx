@@ -1,9 +1,11 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
+import useIsWindowVisible from 'hooks/useIsWindowVisible'
 import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useChainState } from 'state/connections/hooks'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
 import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
 import * as definitions from '../spanner-interfaces/definitions'
+import { useApiToastContext } from './ApiToastProvider'
 
 interface ApiInternalState {
   api: ApiPromise
@@ -15,7 +17,6 @@ interface ApiInternalState {
 }
 
 export interface ApiState extends ApiInternalState {
-  reconnect: () => void
   connectToNetwork: (chain: string) => void
 }
 
@@ -32,6 +33,8 @@ export function ApiProvider({ children }: any): JSX.Element {
   })
   const { chain, addChain } = useChainState()
   const [selectedChain, setSelectedChain] = useState<string>(chain ? chain.chainName : '')
+  const { toastDispatch } = useApiToastContext()
+  const pageVisible = useIsWindowVisible()
 
   const supportedChains = useMemo(() => {
     const chains = SPANNER_SUPPORTED_CHAINS.map((supportedChain) => supportedChain.chain)
@@ -57,16 +60,35 @@ export function ApiProvider({ children }: any): JSX.Element {
         })
 
         apiPromise.on('disconnected', () => {
-          console.log('disconnect')
+          console.log()
           setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true }))
+          toastDispatch({
+            type: 'ADD',
+            payload: {
+              title: `Disconnected from ${chainToConnect}`,
+              type: 'warning',
+            },
+          })
         })
         apiPromise.on('error', () => {
-          console.log('error')
           setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true, error: true }))
-          apiPromise.disconnect()
+          toastDispatch({
+            type: 'ADD',
+            payload: {
+              title: `Connection error`,
+              type: 'danger',
+            },
+          })
         })
         apiPromise.on('connected', () => {
           setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, loading: true }))
+          toastDispatch({
+            type: 'ADD',
+            payload: {
+              title: `Connecting to ${chainToConnect}`,
+              type: 'info',
+            },
+          })
         })
         apiPromise.on('ready', () => {
           setApiState((prev) => ({
@@ -74,15 +96,22 @@ export function ApiProvider({ children }: any): JSX.Element {
             api: apiPromise,
             loading: false,
             connected: true,
-            needReconnect: false,
             error: false,
           }))
+          toastDispatch({
+            type: 'ADD',
+            payload: {
+              title: `Connected to ${chainToConnect}`,
+              type: 'success',
+            },
+          })
+          console.log('api ready', new Date().toLocaleTimeString())
         })
       } catch (e) {
         console.log('connection error', e)
       }
     },
-    [addChain]
+    [addChain, toastDispatch]
   )
 
   const connectToNetwork = useCallback(
@@ -92,25 +121,36 @@ export function ApiProvider({ children }: any): JSX.Element {
         const apiInstance = await apiState.api.isReadyOrError
         apiInstance.disconnect()
       }
-      createApi(chain)
       // Save to component state for reconnect if necessary
       setSelectedChain(chain)
+      setApiState((prev) => ({
+        ...prev,
+        needReconnect: true,
+      }))
     },
-    [apiState, createApi, supportedChains]
+    [apiState, supportedChains]
   )
 
-  const reconnect = useCallback(() => createApi(selectedChain), [selectedChain, createApi])
-
+  // init
   useEffect(() => {
     createApi(selectedChain)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const value = useMemo<ApiState>(() => ({ ...apiState, connectToNetwork, reconnect }), [
-    apiState,
-    connectToNetwork,
-    reconnect,
-  ])
+  // Only calling createApi if page is visible. This avoids unnecessary websocket instances.
+  useEffect(() => {
+    if (apiState.needReconnect && pageVisible) {
+      console.log('api start', new Date().toLocaleTimeString())
+      createApi(selectedChain)
+      setApiState((prev) => ({
+        ...prev,
+        needReconnect: false,
+      }))
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageVisible])
+
+  const value = useMemo<ApiState>(() => ({ ...apiState, connectToNetwork }), [apiState, connectToNetwork])
 
   return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>
 }
