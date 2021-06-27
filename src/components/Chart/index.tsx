@@ -6,8 +6,8 @@ import { LocalSpinner } from 'pages/Spinner'
 import { darken } from 'polished'
 import pairPrice from 'queries/graphql/pairPrice'
 import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
-import React, { useContext, useEffect, useState } from 'react'
-import { useMedia } from 'react-use'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+// import { useMedia } from 'react-use'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import styled, { ThemeContext } from 'styled-components'
 import { useTranslation } from 'translate'
@@ -22,7 +22,7 @@ const ChartWrapper = styled.div`
 `
 
 export const toNiceDate = (date: number) => {
-  return dayjs.utc(dayjs.unix(date)).format('MMM DD')
+  return dayjs.utc(dayjs.unix(date)).format('DD/MM')
 }
 
 export const toNiceDateYear = (date: number) => dayjs.utc(dayjs.unix(date)).local().format('MMMM DD, YYYY HH:mm:ss')
@@ -45,7 +45,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
   const theme = useContext(ThemeContext)
   const textColor = theme.text3
   const color = theme.primary1
-  const below1080 = useMedia('(max-width: 1080px)')
+  // const below1080 = useMedia('(max-width: 1080px)')
   const [loadPriceData, { loading, error, data }] = useLazyQuery<PairPrice, PairPriceVariables>(pairPrice, {
     variables: {
       pairId: `${token1}-${token2}`,
@@ -54,7 +54,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
     },
     fetchPolicy: 'network-only',
   })
-  const [priceData, setPriceData] = useState<(ChartParams | undefined)[]>()
+  const [priceData, setPriceData] = useState<ChartParams[]>([])
   const { t } = useTranslation()
 
   useEffect(() => {
@@ -63,14 +63,14 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
 
   useEffect(() => {
     if (!data || !data.pair) return
-    const prices = data.pair.pairHourData.nodes.map((node) => {
+    const prices: ChartParams[] = []
+    data.pair.pairHourData.nodes.forEach((node) => {
       if (!node) return undefined
-      return {
+      prices.push({
         timestamp: parseInt(node.hourStartTime),
         price: token1 === 'BOLT' ? parseFloat(node.price) : 1 / parseFloat(node.price),
-      }
+      })
     })
-    if (!prices) return
     setPriceData(prices)
   }, [data, token1])
 
@@ -85,14 +85,31 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
     }
   }, [setLatestPrice, setAvailable, priceData])
 
+  const getMinMax = useCallback((priceData: ChartParams[]) => {
+    if (priceData.length === 0) return { min: 0, max: 0 }
+    const sorted = [...priceData].sort((a, b) => a.price - b.price)
+    return { min: sorted[0].price, max: sorted[sorted.length - 1].price }
+  }, [])
+
+  const priceFormatter = useMemo(() => {
+    const minMax = getMinMax(priceData)
+    if (minMax.max > 100) {
+      return (tick: number) => '$' + tick.toFixed(0)
+    } else if (minMax.max > 1) {
+      return (tick: number) => '$' + tick.toPrecision(2)
+    } else {
+      return (tick: number) => '$' + tick.toFixed(2)
+    }
+  }, [getMinMax, priceData])
+
   return (
     <>
       {loading && <LocalSpinner />}
       {error && <SText>{t(`Price data unavailable. Please try again later.`)}</SText>}
-      {priceData && priceData.length > 0 && (
+      {priceData.length > 0 && (
         <ChartWrapper>
-          <ResponsiveContainer aspect={below1080 ? 2.5 / 1 : 3 / 1}>
-            <AreaChart margin={{ top: 5, right: 5, bottom: 5, left: 5 }} barCategoryGap={1} data={priceData}>
+          <ResponsiveContainer aspect={250 / 100}>
+            <AreaChart barCategoryGap={1} data={priceData} margin={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               <defs>
                 <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%" stopColor={color} stopOpacity={0.35} />
@@ -102,26 +119,29 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
               <XAxis
                 tickLine={false}
                 axisLine={false}
-                interval="preserveEnd"
-                tickMargin={16}
-                minTickGap={120}
+                scale={'time'}
                 tickFormatter={(tick) => toNiceDate(tick)}
                 dataKey="timestamp"
-                tick={{ fill: textColor }}
+                tick={{ fill: textColor, fontSize: 12 }}
+                // ticks={[priceData[0]['timestamp'], priceData[priceData.length - 1]['timestamp']]}
+                tickCount={10}
+                minTickGap={30}
                 type={'number'}
-                domain={['dataMin', 'dataMax']}
+                domain={['auto', 'dataMax']}
+                padding={{ left: 10, right: 20 }}
               />
               <YAxis
-                orientation="right"
+                orientation="left"
                 type="number"
-                tickCount={4}
-                tickFormatter={(tick) => '$' + tick.toFixed(0)}
+                tickFormatter={priceFormatter}
                 axisLine={false}
                 tickLine={false}
                 interval={0}
                 minTickGap={50}
+                padding={{ top: 5, bottom: 5 }}
                 yAxisId={0}
-                tick={{ fill: textColor }}
+                width={40}
+                tick={{ fill: textColor, fontSize: 12 }}
               />
               <Tooltip
                 cursor={true}

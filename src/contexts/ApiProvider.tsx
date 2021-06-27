@@ -1,19 +1,34 @@
 import { ApiPromise, WsProvider } from '@polkadot/api'
+import { SText } from 'components/Text'
 import useIsWindowVisible from 'hooks/useIsWindowVisible'
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
 import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
 import * as definitions from '../spanner-interfaces/definitions'
 import { useApiToastContext } from './ApiToastProvider'
+import { RefreshCw } from 'react-feather'
+import { RowFixed } from 'components/Row'
+import { ThemeContext } from 'styled-components'
 
 interface ApiInternalState {
   api: ApiPromise
+  lastState: 'error' | 'disconnected' | 'connected' | 'ready'
   connected: boolean
-  error: boolean
-  loading: boolean
   chain: string
   needReconnect: boolean
+}
+
+function ConnectedTooLong({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation()
+  const theme = useContext(ThemeContext)
+  return (
+    <RowFixed onClick={onClick}>
+      <SText padding="0 0.5rem 0 0">{t(`Click to refresh`)}</SText>
+      <RefreshCw size={12} color={theme.gray1} />
+    </RowFixed>
+  )
 }
 
 export interface ApiState extends ApiInternalState {
@@ -27,9 +42,8 @@ export function ApiProvider({ children }: any): JSX.Element {
     api: {} as ApiPromise,
     connected: false,
     chain: '',
-    error: false,
-    loading: false,
     needReconnect: false,
+    lastState: 'disconnected',
   })
   const { chain, addChain } = useChainState()
   const [selectedChain, setSelectedChain] = useState<string>(chain ? chain.chainName : '')
@@ -61,7 +75,7 @@ export function ApiProvider({ children }: any): JSX.Element {
 
         apiPromise.on('disconnected', () => {
           console.log()
-          setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true }))
+          setApiState((prev) => ({ ...prev, connected: false, needReconnect: true, lastState: 'disconnected' }))
           toastDispatch({
             type: 'ADD',
             payload: {
@@ -71,7 +85,7 @@ export function ApiProvider({ children }: any): JSX.Element {
           })
         })
         apiPromise.on('error', () => {
-          setApiState((prev) => ({ ...prev, loading: false, connected: false, needReconnect: true, error: true }))
+          setApiState((prev) => ({ ...prev, connected: false, needReconnect: true, lastState: 'error' }))
           toastDispatch({
             type: 'ADD',
             payload: {
@@ -81,22 +95,34 @@ export function ApiProvider({ children }: any): JSX.Element {
           })
         })
         apiPromise.on('connected', () => {
-          setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, loading: true }))
-          toastDispatch({
-            type: 'ADD',
-            payload: {
-              title: `Connecting to ${chainToConnect}`,
-              type: 'info',
-            },
-          })
+          // sometimes the api returns connected instead of ready even tho the provider is connected
+          if (apiPromise.isConnected) {
+            setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, lastState: 'ready' }))
+            toastDispatch({
+              type: 'ADD',
+              payload: {
+                title: `Connected to ${chainToConnect}`,
+                type: 'success',
+              },
+            })
+          } else {
+            setApiState((prev) => ({ ...prev, chain: `${chainToConnect}`, lastState: 'connected' }))
+            toastDispatch({
+              type: 'ADD',
+              payload: {
+                title: `Connecting to ${chainToConnect}`,
+                type: 'info',
+                jsxElement: <ConnectedTooLong onClick={() => createApi(chainToConnect)} />,
+              },
+            })
+          }
         })
         apiPromise.on('ready', () => {
           setApiState((prev) => ({
             ...prev,
             api: apiPromise,
-            loading: false,
             connected: true,
-            error: false,
+            lastState: 'ready',
           }))
           toastDispatch({
             type: 'ADD',
@@ -116,6 +142,7 @@ export function ApiProvider({ children }: any): JSX.Element {
 
   const connectToNetwork = useCallback(
     async (chain: string) => {
+      console.log(chain, supportedChains)
       if (!supportedChains.includes(chain)) return
       if (Object.keys(apiState.api).length > 0) {
         const apiInstance = await apiState.api.isReadyOrError

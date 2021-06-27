@@ -21,7 +21,7 @@ import {
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { SLink } from 'components/Link'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
@@ -109,7 +109,7 @@ function TargeterRow({
   }, [createdDpoInfo, lastBlock])
 
   return (
-    <Link to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/profile`} style={{ textDecoration: 'none' }}>
+    <SLink to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/details`}>
       <Row>
         <Cell>
           <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
@@ -160,7 +160,7 @@ function TargeterRow({
           <CircleProgress value={100 - targeter.dpoInfo.empty_seats.toNumber()} size={40} mobileFontSize="10px" />
         </Cell>
       </Row>
-    </Link>
+    </SLink>
   )
 }
 
@@ -290,18 +290,11 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
     if (!targeters) return null
     let committedDpos = 0
     let committedSeats = 0
-    let remainingDpos = 0
-    let remainingSeats = 0
     targeters.forEach((t) => {
       // All DPO commitments
       if (t.defaultSeats) {
         committedDpos = committedDpos + 1
         committedSeats = committedSeats + t.defaultSeats
-      }
-      // Remaining DPOs
-      if (!t.purchasedIndex && t.defaultSeats) {
-        remainingDpos = remainingDpos + 1
-        remainingSeats = remainingSeats + t.defaultSeats
       }
     })
     return (
@@ -322,12 +315,6 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
                 } Seats`}</SText>
                 <img src={IconFire} width="16px" alt="fire hot icon" />
               </RowFixed>
-            </ListItem>
-          )}
-          {committedDpos !== remainingDpos && remainingDpos !== 0 && (
-            <ListItem>
-              <SText width="fit-content" padding="0 0.25rem 0 0">{`${remainingDpos} ${t(`DPOs`)} 
-              ${t(`are still crowdfunding`)} ${remainingSeats} ${t(`Seats`)}`}</SText>
             </ListItem>
           )}
         </UnorderedList>

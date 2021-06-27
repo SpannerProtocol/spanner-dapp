@@ -4,7 +4,7 @@ import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
-import React, { createContext, Suspense } from 'react'
+import React, { createContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import Header, { Controls } from '../components/Header'
@@ -77,7 +77,7 @@ export default function App() {
   useCreateTableUser()
   useConnectionsInit()
   return (
-    <Suspense fallback={null}>
+    <>
       <Route component={DarkModeQueryParamReader} />
       <AppWrapper>
         <HeaderWrapper>
@@ -112,6 +112,6 @@ export default function App() {
           <Marginer />
         </AppBody>
       </AppWrapper>
-    </Suspense>
+    </>
   )
 }
