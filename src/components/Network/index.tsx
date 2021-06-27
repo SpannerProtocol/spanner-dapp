@@ -88,12 +88,8 @@ function Options({
     </>
   )
 }
-interface NetworkSelectorProps {
-  color?: string
-  background?: string
-}
 
-export default function NetworkSelector(props: NetworkSelectorProps) {
+export default function NetworkSelector() {
   const chainOptions = SPANNER_SUPPORTED_CHAINS
   const { connectToNetwork, lastState } = useApi()
   const { chain } = useChainState()
