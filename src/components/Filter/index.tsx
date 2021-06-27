@@ -7,6 +7,7 @@ import { ChevronDown } from 'react-feather'
 import { SText } from 'components/Text'
 import { RowBetween, RowFixed } from 'components/Row'
 import { useTranslation } from 'react-i18next'
+import useTheme from 'utils/useTheme'
 
 const SelectorWrapper = styled.div<{
   background?: string
@@ -32,7 +33,13 @@ const SelectorWrapper = styled.div<{
 const Option = styled(BorderedWrapper)`
   display: flex;
   justify-content: center;
+  padding: 1rem;
+  margin: 1rem 0;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
+  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+  padding: ${padding ? padding : '0.75rem'};
+`};
 `
 
 interface FilterOption {
@@ -64,6 +71,7 @@ function FilterOptions({
   dismissModal: () => void
 }) {
   const { t } = useTranslation()
+  const theme = useTheme()
 
   return (
     <>
@@ -75,12 +83,15 @@ function FilterOptions({
               option.callback(option.label)
               dismissModal()
             }}
-            style={{ margin: '0' }}
-            borderColor={activeOption === option.label ? '#FFBE2E' : 'transparent'}
+            color={activeOption === option.label ? theme.white : theme.text2}
+            background={activeOption === option.label ? theme.primary1 : 'transparent'}
+            borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
           >
             <RowFixed>
               {option.icon && <div style={{ padding: '0 0.5rem 0 0' }}>{option.icon}</div>}
-              {t(option.label)}
+              <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+                {t(option.label)}
+              </SText>
             </RowFixed>
           </Option>
         </>
