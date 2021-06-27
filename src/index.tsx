@@ -6,7 +6,7 @@ import { SubstrateProvider } from 'contexts/SubstrateProvider'
 import { ToastProvider } from 'contexts/ToastContext'
 import { Web3InjectedProvider } from 'contexts/WalletProvider'
 import 'inter-ui'
-import React, { StrictMode } from 'react'
+import React, { StrictMode, Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { Provider } from 'react-redux'
 import { HashRouter } from 'react-router-dom'
@@ -27,32 +27,34 @@ if ('ethereum' in window) {
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <Web3ReactProvider getLibrary={getLibrary}>
-      <Web3ProviderNetwork getLibrary={getLibrary}>
-        <Web3InjectedProvider>
-          <Provider store={store}>
-            <ThemeProvider>
-              <ApiToastProvider>
-                <ApiProvider>
-                  <SubstrateProvider>
-                    <SubQLProvider>
-                      <MuiThemeProvider>
-                        <ThemedGlobalStyle />
-                        <HashRouter>
-                          <ToastProvider>
-                            <App />
-                          </ToastProvider>
-                        </HashRouter>
-                      </MuiThemeProvider>
-                    </SubQLProvider>
-                  </SubstrateProvider>
-                </ApiProvider>
-              </ApiToastProvider>
-            </ThemeProvider>
-          </Provider>
-        </Web3InjectedProvider>
-      </Web3ProviderNetwork>
-    </Web3ReactProvider>
+    <Suspense fallback={null}>
+      <Provider store={store}>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Web3ProviderNetwork getLibrary={getLibrary}>
+            <Web3InjectedProvider>
+              <ThemeProvider>
+                <ApiToastProvider>
+                  <ApiProvider>
+                    <SubstrateProvider>
+                      <SubQLProvider>
+                        <MuiThemeProvider>
+                          <ThemedGlobalStyle />
+                          <HashRouter>
+                            <ToastProvider>
+                              <App />
+                            </ToastProvider>
+                          </HashRouter>
+                        </MuiThemeProvider>
+                      </SubQLProvider>
+                    </SubstrateProvider>
+                  </ApiProvider>
+                </ApiToastProvider>
+              </ThemeProvider>
+            </Web3InjectedProvider>
+          </Web3ProviderNetwork>
+        </Web3ReactProvider>
+      </Provider>
+    </Suspense>
   </StrictMode>,
   document.getElementById('root')
 )

@@ -15,6 +15,7 @@ const initialState: ToastState = {}
 export interface ToastState {
   title?: string
   content?: string
+  jsxElement?: JSX.Element
   type?: 'success' | 'danger' | 'info' | 'warning'
 }
 
@@ -29,6 +30,7 @@ export const toastReducer = (state: ToastState, action: ToastAction) => {
       return {
         title: action.payload.title,
         content: action.payload.content,
+        jsxElement: action.payload.jsxElement,
         type: action.payload.type ? action.payload.type : 'info',
       }
     case 'UPDATE':
@@ -73,6 +75,7 @@ export const ApiToastProvider = (props: ToastProviderProps) => {
         payload: {
           title: newToast.payload.title,
           content: newToast.payload.content,
+          jsxElement: newToast.payload.jsxElement,
           type: newToast.payload.type,
         },
       })

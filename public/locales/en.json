@@ -667,5 +667,6 @@
   "What is a DEX and how does Swap work?": "What is a DEX and how does Swap work?",
   "What is a DEX and how does Swap work? (answer)": "Spanner's Decentralized Exchange (DEX) is based on Uniswap v2 and allows users to exchange tokens with the Automatic Market Maker rather than other users like in Centralized Exchanges (CEX). You Swap by entering how much to swap From and an estimated amount will be provided to you in the To section and vice versa.",
   "Your Balance": "Your Balance",
-  "Send Ethereum USDT to Deposit Address for Spanner WUSD": "Send Ethereum USDT to Deposit Address for Spanner WUSD"
+  "Send Ethereum USDT to Deposit Address for Spanner WUSD": "Send Ethereum USDT to Deposit Address for Spanner WUSD",
+  "Connected Chain": "Connected Chain"
 }

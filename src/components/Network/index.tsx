@@ -1,67 +1,149 @@
-import Selector from 'components/Selector'
-import { SPANNER_SUPPORTED_CHAINS } from '../../constants'
-import React, { useMemo } from 'react'
+import { SText } from 'components/Text'
+import { BorderedWrapper, ContentWrapper } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
-import { BorderedWrapper } from 'components/Wrapper'
-import styled from 'styled-components'
+import React, { useMemo, useState } from 'react'
+import { Activity, ChevronDown, Circle } from 'react-feather'
+import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
+import useTheme from 'utils/useTheme'
+import { SPANNER_SUPPORTED_CHAINS } from '../../constants'
+import styled from 'styled-components'
+import { Dispatcher } from 'types/dispatcher'
+import { RowBetween, RowFixed } from 'components/Row'
+import StandardModal from 'components/Modal/StandardModal'
 
-const NetworkWrapper = styled(BorderedWrapper)`
-  padding: 0;
-  width: 100%;
-  max-width: 240px;
-  margin-left: 1rem;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 0;
-    margin-top: 0.25;
-    margin-bottom: 0.25;
-    max-width: fit-content;
-  `};
+const SelectorWrapper = styled.div<{
+  background?: string
+  padding?: string
+  margin?: string
+  borderColor?: string
+  color?: string
+  width?: string
+}>`
+  padding: ${({ padding }) => (padding ? padding : '0.5rem 1rem')};
+  background: ${({ background, theme }) => (background ? background : theme.secondary1)};
+  color: ${({ color, theme }) => (color ? color : theme.white)};
+  border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
+  margin: ${({ margin }) => (margin ? margin : 'auto')};
+  border-radius: 15px;
+  &:hover {
+    cursor: pointer;
+    opacity: 0.6;
+  }
+  width: ${({ width }) => (width ? width : 'fit-content')};
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
 `
 
-interface NetworkSelectorProps {
-  collaspedTextPrefix?: string
-  color?: string
-  background?: string
+const Option = styled(BorderedWrapper)`
+  display: flex;
+  justify-content: center;
+  padding: 1rem;
+  margin: 1rem 0;
+  color: ${({ color, theme }) => (color ? color : theme.text1)};
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(15, 89, 209, 0.08);
+  ${({ padding, theme }) => theme.mediaWidth.upToSmall`
+  padding: ${padding ? padding : '1rem'};
+`};
+`
+
+interface FilterOption {
+  icon?: JSX.Element
+  label: string
+  callback: Dispatcher<any>
 }
 
-export default function NetworkSelector(props: NetworkSelectorProps) {
-  const chainOptions = SPANNER_SUPPORTED_CHAINS
-  const { connectToNetwork } = useApi()
-  const { chain } = useChainState()
+function Options({
+  options,
+  activeOption,
+  dismissModal,
+}: {
+  options: FilterOption[]
+  activeOption: string
+  dismissModal: () => void
+}) {
+  const { t } = useTranslation()
+  const theme = useTheme()
 
-  const selectorOptions = useMemo(() => {
+  return (
+    <>
+      {options.map((option, index) => (
+        <Option
+          key={index}
+          onClick={() => {
+            option.callback(option.label)
+            dismissModal()
+          }}
+          color={activeOption === option.label ? theme.white : theme.text2}
+          background={activeOption === option.label ? theme.primary1 : 'transparent'}
+          borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
+        >
+          <RowFixed>
+            <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
+            <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+              {t(option.label)}
+            </SText>
+          </RowFixed>
+        </Option>
+      ))}
+    </>
+  )
+}
+
+export default function NetworkSelector() {
+  const chainOptions = SPANNER_SUPPORTED_CHAINS
+  const { connectToNetwork, lastState } = useApi()
+  const { chain } = useChainState()
+  const [active, setActive] = useState<string>(chain ? chain.chainName : 'Spanner Mainnet')
+  const theme = useTheme()
+  const { t } = useTranslation()
+  const [modalOpen, setModalOpen] = useState<boolean>(false)
+
+  const networkOptions = useMemo(() => {
     const options = chainOptions.map((chainOption) => ({
       label: chainOption.chain,
-      callback: () => connectToNetwork(chainOption.chain),
+      callback: () => {
+        setActive(chainOption.chain)
+        connectToNetwork(chainOption.chain)
+      },
     }))
     return options
   }, [chainOptions, connectToNetwork])
 
-  const defaultChain = useMemo(() => {
-    if (!chain) return { label: '', callback: () => undefined }
-    const chainInfo = chainOptions.find((option) => option.id === chain.chain)
-    if (!chainInfo) {
-      return { label: '', callback: () => undefined }
-    } else {
-      return {
-        label: chainInfo.chain,
-        callback: () => connectToNetwork(chainInfo.chain),
-      }
-    }
-  }, [chain, chainOptions, connectToNetwork])
+  const dismissModal = () => {
+    setModalOpen(false)
+  }
+
+  let color = theme.gray1
+  if (lastState === 'error') {
+    color = theme.red1
+  } else if (lastState === 'disconnected') {
+    color = theme.yellow1
+  } else if (lastState === 'connected') {
+    color = theme.gray1
+  } else if (lastState === 'ready') {
+    color = theme.green1
+  }
 
   return (
     <>
-      <NetworkWrapper background={props.background}>
-        <Selector
-          title={'Select Network'}
-          options={selectorOptions}
-          defaultOption={defaultChain}
-          collaspedTextPrefix={props.collaspedTextPrefix}
-          color={props.color}
-        />
-      </NetworkWrapper>
+      <ContentWrapper>
+        {active && (
+          <StandardModal title={t(`Connect to Chain`)} isOpen={modalOpen} onDismiss={dismissModal} desktopScroll={true}>
+            <Options options={networkOptions} activeOption={active} dismissModal={dismissModal} />
+          </StandardModal>
+        )}
+        <SelectorWrapper onClick={() => setModalOpen(!modalOpen)} background={theme.white} borderColor={'transparent'}>
+          <RowBetween margin="0">
+            <RowFixed>
+              <Circle size={10} color={color} fill={color} />
+              <SText padding="0 0.5rem" width="100%" textAlign="center" color={theme.text2} fontWeight="700">
+                {t(active)}
+              </SText>
+            </RowFixed>
+            <ChevronDown size={12} color={theme.text2} />
+          </RowBetween>
+        </SelectorWrapper>
+      </ContentWrapper>
     </>
   )
 }
