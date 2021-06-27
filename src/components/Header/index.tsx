@@ -260,7 +260,6 @@ export default function Header(props: HeaderProps) {
   const { t } = useTranslation()
 
   const [icons, setIcons] = useState<boolean>(false)
-  // const [subNavNetworkSelector, setSubNavNetworkSelector] = useState<boolean>(false)
   const isMobile = useMedia('(max-width: 960px)')
   const { chain } = useChainState()
 
@@ -270,10 +269,8 @@ export default function Header(props: HeaderProps) {
   useEffect(() => {
     if (width && width > MEDIA_WIDTHS.upToMedium) {
       setIcons(true)
-      // setSubNavNetworkSelector(true)
     } else {
       setIcons(false)
-      // setSubNavNetworkSelector(false)
     }
   }, [width])
 
@@ -374,7 +371,6 @@ export default function Header(props: HeaderProps) {
           </SpannerIcon>
           <LogoText>{t(`Spanner Protocol`)}</LogoText>
         </Title>
-        {/*{subNavNetworkSelector && <NetworkSelector background={'#fff'} />}*/}
         <>{isMobile ? <MobileNav navItems={navItems} /> : <DesktopNav icons={icons} navItems={navItems} />}</>
       </HeaderRow>
     </HeaderFrame>
@@ -447,7 +443,7 @@ export function DesktopNav(props: DesktopNavProp) {
         <MenuBottom>
           <Divider />
           <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-            <NetworkSelector background={'#fff'} />
+            <NetworkSelector />
           </div>
           <HeaderElementWrap>
             <Transfer />
@@ -685,7 +681,7 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
           <MenuBottom>
             <Divider />
             <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-              <NetworkSelector background={'#fff'} />
+              <NetworkSelector />
             </div>
             <HeaderElementWrap>
               <Transfer />

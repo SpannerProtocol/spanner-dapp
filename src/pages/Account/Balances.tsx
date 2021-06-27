@@ -1,6 +1,6 @@
 import Card from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
-import { HeavyText, Header3, SText } from 'components/Text'
+import { HeavyText, Header2, SText } from 'components/Text'
 import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import getProjectRegistry from '../../utils/getProjectRegistry'
+import Divider from 'components/Divider'
 
 interface BalanceDataProps {
   balances: Array<BalanceData> | undefined
@@ -19,6 +20,7 @@ interface BalanceRowProps {
   token: string
   type: string
   balance: string
+  isLast: boolean
 }
 
 function structureBalanceData(data: BalanceDataProps) {
@@ -38,9 +40,8 @@ function structureBalanceData(data: BalanceDataProps) {
 
 const BalanceRow = styled.div`
   display: grid;
-  grid-template-columns: minmax(40px, 120px) auto min(160px);
+  grid-template-columns: minmax(70px, 70px) auto min(160px);
   grid-column-gap: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.gray2};
   transition: background-color 0.3s ease-in;
   &:hover {
     background: ${({ theme }) => theme.text5};
@@ -51,7 +52,7 @@ const BalanceRow = styled.div`
   `};
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-  grid-template-columns: minmax(40px, 80px) auto min(160px);
+  grid-template-columns: min(70px) auto min(160px);
   grid-column-gap: 0.5rem;
 `};
 `
@@ -78,26 +79,29 @@ export const IconWrapper = styled.div`
   `};
 `
 
-function Balance({ icon, token, type, balance }: BalanceRowProps) {
+function Balance({ icon, token, type, balance, isLast }: BalanceRowProps) {
   return (
-    <BalanceRow>
-      <BalanceCell style={{ display: 'flex', justifyContent: 'center' }}>
-        <IconWrapper>
-          <img src={icon} alt={`${token} token icon`} style={{ width: '100%' }} />
-        </IconWrapper>
-      </BalanceCell>
-      <div style={{ display: 'block' }}>
-        <BalanceCell style={{ paddingBottom: '0' }}>
-          <HeavyText fontSize="14px">{token}</HeavyText>
+    <>
+      <BalanceRow>
+        <BalanceCell style={{ display: 'flex', justifyContent: 'flex-start' }}>
+          <IconWrapper>
+            <img src={icon} alt={`${token} token icon`} style={{ width: '100%' }} />
+          </IconWrapper>
         </BalanceCell>
-        <BalanceCell style={{ paddingTop: '0' }}>
-          <SText fontSize="12px">{type}</SText>
+        <div style={{ display: 'block' }}>
+          <BalanceCell style={{ display: 'flex', justifyContent: 'flex-start', paddingBottom: '0' }}>
+            <HeavyText fontSize="14px">{token}</HeavyText>
+          </BalanceCell>
+          <BalanceCell style={{ paddingTop: '0' }}>
+            <SText fontSize="12px">{type}</SText>
+          </BalanceCell>
+        </div>
+        <BalanceCell style={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <SText>{balance}</SText>
         </BalanceCell>
-      </div>
-      <BalanceCell style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        <SText>{balance}</SText>
-      </BalanceCell>
-    </BalanceRow>
+      </BalanceRow>
+      {isLast ? null : <Divider />}
+    </>
   )
 }
 
@@ -114,9 +118,9 @@ export default function Balances() {
     <>
       <Card>
         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-          <Header3 width="fit-content" style={{ margin: '0' }}>
+          <Header2 width="fit-content" style={{ margin: '0' }}>
             {t(`Balances`)}
-          </Header3>
+          </Header2>
           <QuestionHelper
             size={12}
             backgroundColor="transparent"
@@ -131,6 +135,7 @@ export default function Balances() {
               token={balance.token}
               type={balance.type}
               balance={balance.balance}
+              isLast={index === data.length - 1}
             />
           ))}
       </Card>
