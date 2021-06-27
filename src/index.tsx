@@ -27,34 +27,34 @@ if ('ethereum' in window) {
 ReactDOM.render(
   <StrictMode>
     <FixedGlobalStyle />
-    <Suspense fallback={null}>
-      <Web3ReactProvider getLibrary={getLibrary}>
-        <Web3ProviderNetwork getLibrary={getLibrary}>
-          <Web3InjectedProvider>
-            <Provider store={store}>
-              <ThemeProvider>
-                <ApiToastProvider>
-                  <ApiProvider>
-                    <SubstrateProvider>
-                      <SubQLProvider>
-                        <MuiThemeProvider>
-                          <ThemedGlobalStyle />
-                          <HashRouter>
-                            <ToastProvider>
+    <Web3ReactProvider getLibrary={getLibrary}>
+      <Web3ProviderNetwork getLibrary={getLibrary}>
+        <Web3InjectedProvider>
+          <Provider store={store}>
+            <ThemeProvider>
+              <ApiToastProvider>
+                <ApiProvider>
+                  <SubstrateProvider>
+                    <SubQLProvider>
+                      <MuiThemeProvider>
+                        <ThemedGlobalStyle />
+                        <HashRouter>
+                          <ToastProvider>
+                            <Suspense fallback={null}>
                               <App />
-                            </ToastProvider>
-                          </HashRouter>
-                        </MuiThemeProvider>
-                      </SubQLProvider>
-                    </SubstrateProvider>
-                  </ApiProvider>
-                </ApiToastProvider>
-              </ThemeProvider>
-            </Provider>
-          </Web3InjectedProvider>
-        </Web3ProviderNetwork>
-      </Web3ReactProvider>
-    </Suspense>
+                            </Suspense>
+                          </ToastProvider>
+                        </HashRouter>
+                      </MuiThemeProvider>
+                    </SubQLProvider>
+                  </SubstrateProvider>
+                </ApiProvider>
+              </ApiToastProvider>
+            </ThemeProvider>
+          </Provider>
+        </Web3InjectedProvider>
+      </Web3ProviderNetwork>
+    </Web3ReactProvider>
   </StrictMode>,
   document.getElementById('root')
 )
