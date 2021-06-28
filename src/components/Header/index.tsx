@@ -421,7 +421,9 @@ export function DesktopNav(props: DesktopNavProp) {
           <Divider />
           {navItems.map(function (navItem, index) {
             if (chain && chain.chain !== 'Spanner' && navItem.text === 'Bridge') {
-              return false
+              return null
+            } else if (chain && chain.chain !== 'Hammer' && navItem.text === 'Faucet') {
+              return null
             } else {
               return (
                 <NavItem
