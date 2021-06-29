@@ -1,13 +1,13 @@
 import Card from 'components/Card'
 import CopyHelper from 'components/Copy/Copy'
-import { SLink } from 'components/Link'
+import { SLink, SHashLink } from 'components/Link'
 import { AnyQuestionHelper } from 'components/QuestionHelper'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header1, Header4, SText } from 'components/Text'
 import { ContentWrapper, IconWrapper, Section, StateWrapper } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
-import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
+import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useUserInDpo } from 'hooks/useUser'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
 import React, { useContext } from 'react'
@@ -37,20 +37,39 @@ function TargetDpo({ dpoInfo }: { dpoInfo: DpoInfo }) {
 function TargetCabin({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { t } = useTranslation()
   const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+  const buyerInventoryIndex = useDpoTravelCabinInventoryIndex(
+    dpoInfo.index.toString(),
+    dpoInfo.target.asTravelCabin.toString()
+  )
 
   if (!target) return null
+  const hasPurchased = buyerInventoryIndex ? true : false
+  const token = dpoInfo.token_id.asToken.toString().toLowerCase()
   return (
     <>
-      <RowFixed>
-        <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
-        <SLink
-          to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
-          padding="0 0 0 0.25rem"
-          colorIsBlue
-        >
-          {t(`TravelCabin`)}: {target.name.toString()}
-        </SLink>
-      </RowFixed>
+      {hasPurchased ? (
+        <RowFixed>
+          <SText width="fit-content">{`${t(`Crowdfunded`)} ${t(`for`)}`}</SText>
+          <SLink
+            to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}/inventory/${buyerInventoryIndex}`}
+            padding="0 0 0 0.25rem"
+            colorIsBlue
+          >
+            {t(`TravelCabin`)}: {target.name.toString()}
+          </SLink>
+        </RowFixed>
+      ) : (
+        <RowFixed>
+          <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
+          <SHashLink
+            to={`/projects/${token}?asset=TravelCabin#${target.name.toString()}`}
+            padding="0 0 0 0.25rem"
+            colorIsBlue
+          >
+            {t(`TravelCabin`)}: {target.name.toString()}
+          </SHashLink>
+        </RowFixed>
+      )}
     </>
   )
 }
@@ -92,7 +111,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${DAPP_HOST}/#/item/dpo/${dpoInfo.index.toString()}/details?ref=${wallet.address}&project=${
+                toCopy={`${DAPP_HOST}/#/dpos/dpo/${dpoInfo.index.toString()}/details?ref=${wallet.address}&project=${
                   projectState.selectedProject.token
                 }`}
                 childrenIsIcon={true}

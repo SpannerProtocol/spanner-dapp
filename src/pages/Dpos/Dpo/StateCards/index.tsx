@@ -27,7 +27,7 @@ interface ActionProviderProps {
  * Provides Action components for a single DPO
  */
 function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.Element {
-  const { dpoActions } = useDpoActions(dpoInfo, selectedState)
+  const dpoActions = useDpoActions(dpoInfo, selectedState)
   // IF TARGET IS DPO
   const targetDpo = useSubDpo(dpoInfo.index)
   // IF TARGET IS CABIN this is okay because the hooks can accept undefined

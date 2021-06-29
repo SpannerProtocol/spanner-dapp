@@ -319,7 +319,7 @@ export function CabinCard(props: TravelCabinCard) {
         defaultShow={true}
         details={<CabinCardDetails item={item} token={token} chainDecimals={chainDecimals} />}
       >
-        <CabinCardGrid>
+        <CabinCardGrid id={travelCabinInfo.name.toString()}>
           <div style={{ maxWidth: '30px', width: '30px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
           <div>
             <HeavyText fontSize={'18px'} mobileFontSize={'14px'}>

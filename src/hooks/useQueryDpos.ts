@@ -1,3 +1,4 @@
+import { Option } from '@polkadot/types'
 import { useEffect, useState } from 'react'
 import { DpoIndex, DpoInfo } from 'spanner-interfaces'
 import { useApi } from './useApi'
@@ -33,6 +34,29 @@ export function useDpos(token?: string): DpoInfo[] {
       setDpos(allDpos)
     })().catch((err) => console.log(err))
   }, [api, connected, token])
+
+  return dpos
+}
+
+export function useDposMulti(dpoIndexes: string[]) {
+  const { api, connected } = useApi()
+  const [dpos, setDpos] = useState<DpoInfo[]>([])
+
+  useEffect(() => {
+    if (!connected || dpoIndexes.length === 0) return
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.query.bulletTrain.dpos.multi(dpoIndexes, (results: Option<DpoInfo>[]) => {
+        // Reset targeters if new query
+        const allDpos: DpoInfo[] = []
+        results.forEach((result) => {
+          if (result.isSome) allDpos.push(result.unwrapOrDefault())
+        })
+        setDpos(allDpos)
+      })
+    })()
+    return unsub
+  }, [api, connected, dpoIndexes])
 
   return dpos
 }
