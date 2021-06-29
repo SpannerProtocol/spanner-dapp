@@ -1,31 +1,120 @@
-import Card from 'components/Card'
-import CopyHelper from 'components/Copy/Copy'
-import { Step, StepNumber } from 'components/InstructionSteps'
-import QuestionHelper from 'components/QuestionHelper'
-import { RowBetween } from 'components/Row'
-import Web3Status from 'components/Web3Status/Web3Substrate'
-import { BorderedWrapper, ContentWrapper, PageWrapper, Section, SpacedSection, Wrapper } from 'components/Wrapper'
-import { useBlockManager } from 'hooks/useBlocks'
-import { useSubstrate } from 'hooks/useSubstrate'
+import { PageWrapper, Section, Wrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
 import styled from 'styled-components'
-import truncateString from 'utils/truncateString'
-import { SText, Heading, HeavyText, Header3 } from '../../components/Text'
+import { Heading, HeavyText } from '../../components/Text'
+import { ReactComponent as CircleNext } from '../../assets/svg/circle-next.svg'
+import { UserAssetSummaryContainer } from './UserAssetSummary'
+import { DPOSwiper, DPOV1Stats } from './DPO'
+import { AssetSwiper, BulletTrainStats } from './Asset'
+import { Blockchain } from './BlockchainInfo'
 
 const HomePageTitle = styled.h1`
-  margin: 0;
-  font-size: 20px;
+  margin: 0.1rem 0;
+  font-size: 24px;
   font-weight: bold;
   padding-bottom: 0.5rem;
   color: ${({ theme }) => theme.black};
 `
 
+export const HomeSectionTitle = styled(HeavyText)`
+  font-weight: 700;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  font-size: 24px;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+    font-size: 24px;
+   `};
+`
+export const HomeSectionLabel1 = styled.h4`
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  font-size: 12px;
+  color: ${({ theme }) => theme.text1};
+`
+export const HomeSectionValue1 = styled.h5`
+  font-weight: bold;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  font-size: 24px;
+  color: ${({ theme }) => theme.primary1};
+`
+export const HomeSectionLabel2 = styled.h4`
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  font-size: 14px;
+  color: ${({ theme }) => theme.text1};
+`
+export const HomeSectionValue2 = styled.h5`
+  font-weight: bold;
+  margin: 0.8rem 0.5rem 0.5rem;
+  text-align: left;
+  font-size: 20px;
+  color: ${({ theme }) => theme.primary1};
+`
+export const HomeSectionValue3 = styled.h5`
+  font-weight: bold;
+  margin: 0.8rem 0.5rem 0.5rem;
+  text-align: left;
+  font-size: 14px;
+  color: ${({ theme }) => theme.primary1};
+`
+export const HomeSectionValue4 = styled.h4`
+  margin-top: 0.8rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0.5rem;
+  text-align: left;
+  font-size: 14px;
+  color: ${({ theme }) => theme.text1};
+`
+export const HomeSectionValue5 = styled.h5`
+  font-weight: bold;
+  margin-top: 0.8rem;
+  margin-bottom: 1rem;
+  margin-left: 0.5rem;
+  text-align: center;
+  font-size: 24px;
+  color: ${({ theme }) => theme.primary1};
+`
+
+export const HomeContentWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  ${({ theme }) => theme.mediaWidth.upToSmall`
+    padding: 1rem;
+  `};
+`
+
+export const StyledCircleNext = styled(CircleNext)`
+  width: 30px;
+  height: 30px;
+  margin: 20px;
+`
+
+export const StyledCircleNextWhite = styled(CircleNext)`
+  width: 30px;
+  height: 30px;
+  margin: 20px;
+  fill: white;
+`
+
+export const CircleNextIconWrapper = styled.div`
+  text-align: center;
+  margin: 10px;
+`
+
 export default function Home() {
-  const { lastBlock, expectedBlockTime } = useBlockManager()
-  const constants = useSubstrate()
-  const { chain, genesis } = constants
+  // const { lastBlock, expectedBlockTime } = useBlockManager()
+  // const constants = useSubstrate()
+  // const { chain, genesis } = constants
   const { t } = useTranslation()
 
   return (
@@ -37,125 +126,20 @@ export default function Home() {
           alignItems: 'center',
         }}
       >
-        <Card>
-          <Section style={{ marginBottom: '1rem' }}>
+        <div style={{ margin: '1rem 0rem', textAlign: 'center' }}>
+          <Section>
             <HomePageTitle>{t(`Spanner Dapp`)}</HomePageTitle>
             <Heading>{t(`Dapp for Decentralized Collaboration`)}</Heading>
           </Section>
-          <SpacedSection style={{ wordBreak: 'break-word' }}>
-            <Header3>{t(`Blockchain Info`)}</Header3>
-            <BorderedWrapper style={{ marginTop: '0' }}>
-              <RowBetween>
-                <HeavyText fontSize="14px">{t(`Connected to`)}:</HeavyText>
-                <SText>{chain}</SText>
-              </RowBetween>
-              {genesis && (
-                <RowBetween>
-                  <HeavyText fontSize="14px">{t(`Genesis Hash`)}:</HeavyText>
-                  <CopyHelper toCopy={genesis} childrenIsIcon={true}>
-                    <SText color="#565A69">{truncateString(genesis)}</SText>
-                  </CopyHelper>
-                </RowBetween>
-              )}
-              {expectedBlockTime && (
-                <RowBetween>
-                  <HeavyText fontSize="14px">{t(`Estimated Time per Block`)}:</HeavyText>
-                  <SText>{`${expectedBlockTime.toNumber() / 1000} ${t(`seconds`)}`}</SText>
-                </RowBetween>
-              )}
-            </BorderedWrapper>
-          </SpacedSection>
-          <SpacedSection>
-            {lastBlock && (
-              <div style={{ display: 'block', width: '100%', justifyContent: 'center', textAlign: 'center' }}>
-                <HeavyText style={{ width: '100%' }}>{t(`# of Blocks Finalized`)}</HeavyText>
-                <Heading style={{ fontSize: '28px' }}>{lastBlock.toString()}</Heading>
-              </div>
-            )}
-          </SpacedSection>
-        </Card>
-        <ContentWrapper>
-          <Card style={{ textAlign: 'left' }}>
-            <div
-              style={{
-                display: 'block',
-                alignItems: 'center',
-                justifyContent: 'center',
-                textAlign: 'center',
-                paddingBottom: '0.5rem',
-              }}
-            >
-              <Header3>{t(`Get Started`)}</Header3>
-              <SText>
-                {t(`Follow the steps below to get BOLT and additional rewards from Spanner's BulletTrain campaign.`)}
-              </SText>
-            </div>
-            <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
-                <StepNumber>1</StepNumber>
-                <HeavyText fontSize="12px">{t(`Connect to a Wallet`)}</HeavyText>
-                <QuestionHelper
-                  size={12}
-                  backgroundColor={'transparent'}
-                  text={t(
-                    `Press Connect to a Wallet next to the Account button. If you see a wallet address (e.g. 5JEJ3...i6NwF) then you are already connected.`
-                  )}
-                />
-              </div>
-              <div style={{ width: 'fit-content', margin: 'auto' }}>
-                <Web3Status />
-              </div>
-            </SpacedSection>
-            <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
-                <StepNumber>2</StepNumber>
-                <HeavyText fontSize="12px">{t(`Deposit tokens to Spanner`)}</HeavyText>
-                <QuestionHelper
-                  size={12}
-                  backgroundColor={'transparent'}
-                  text={t(`Use our Ethereum Bridge to exchange Ethereum USDT for Spanner WUSD.`)}
-                />
-              </div>
-              <Link
-                to={{ pathname: '/account/bridge' }}
-                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
-              >
-                <Step>{t(`Use Bridge to deposit`)}</Step>
-              </Link>
-            </SpacedSection>
-            <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
-                <StepNumber>3</StepNumber>
-                <HeavyText fontSize="12px">{t(`Swap WUSD for BOLT`)}</HeavyText>
-                <QuestionHelper
-                  size={12}
-                  backgroundColor={'transparent'}
-                  text={t(`Swap WUSD for BOLT at our Decentralized Exchange (DEX).`)}
-                />
-              </div>
-              <Link to={{ pathname: '/dex' }} style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}>
-                <Step>{t(`Get BOLT at DEX`)}</Step>
-              </Link>
-            </SpacedSection>
-            <SpacedSection>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', paddingBottom: '0.5rem' }}>
-                <StepNumber>4</StepNumber>
-                <HeavyText fontSize="12px">{t(`Board our BulletTrain and get rewarded!`)}</HeavyText>
-                <QuestionHelper
-                  size={12}
-                  backgroundColor={'transparent'}
-                  text={t(`Get rewarded by buying TravelCabins. Get rewarded more by buyin them as a DPO community!`)}
-                />
-              </div>
-              <Link
-                to={{ pathname: '/bullettrain' }}
-                style={{ textDecoration: 'none', width: 'fit-content', margin: 'auto' }}
-              >
-                <Step>{t(`Get aboard Spanner's BulletTrain`)}</Step>
-              </Link>
-            </SpacedSection>
-          </Card>
-        </ContentWrapper>
+        </div>
+        <HomeContentWrapper>
+          <UserAssetSummaryContainer />
+          <DPOSwiper />
+          <DPOV1Stats />
+          <AssetSwiper />
+          <BulletTrainStats />
+          <Blockchain />
+        </HomeContentWrapper>
       </Wrapper>
     </PageWrapper>
   )

@@ -107,8 +107,7 @@ export default function Portfolio(): JSX.Element {
                 >
                   <SText>
                     <Trans>
-                      Could not find any Portfolio Items. Check out our <Link to="/bullettrain/dpos">Growth</Link>{' '}
-                      section.
+                      Could not find any Portfolio Items. Check out our <Link to="/bullettrain">Growth</Link> section.
                     </Trans>
                   </SText>
                 </Card>
