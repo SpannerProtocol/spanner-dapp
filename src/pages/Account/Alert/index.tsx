@@ -9,7 +9,7 @@ export const AlertWrapper = styled.div<{
   fontSize?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '14px')};
-  width: ${({ width }) => (width ? width : '100%')};
+  width: ${({ width }) => (width ? width : 'auto')};
   font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
   max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '125px')};
   justify-content: flex-start;
@@ -18,8 +18,7 @@ export const AlertWrapper = styled.div<{
 `
 
 export const AlertIcon = styled.img`
-  margin: 0.2rem;
-  height: 20px;
+  height: 12px;
   :hover {
     cursor: pointer;
   }

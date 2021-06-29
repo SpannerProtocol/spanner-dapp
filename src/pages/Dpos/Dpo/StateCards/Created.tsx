@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import Balance from 'components/Balance'
 import { ButtonPrimary, ButtonSecondary } from 'components/Button'
 import Divider from 'components/Divider'
-import { SLink } from 'components/Link'
+import { SLink, SHashLink } from 'components/Link'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
 import { CircleProgress } from 'components/ProgressBar'
@@ -22,7 +22,7 @@ import useConsts from 'hooks/useConsts'
 import useDpoFees from 'hooks/useDpoFees'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
-import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
+import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
@@ -325,20 +325,40 @@ function CreateDpoOrBuy({
 function TargetDpoName({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
   return (
-    <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/2`} colorIsBlue>
-      {target?.name.toString()}
-    </SLink>
+    <>
+      <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue>
+        {target?.name.toString()}
+      </SLink>
+    </>
   )
 }
 
 function TargetCabinName({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { t } = useTranslation()
   const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+  const buyerInventoryIndex = useDpoTravelCabinInventoryIndex(
+    dpoInfo.index.toString(),
+    dpoInfo.target.asTravelCabin.toString()
+  )
 
+  if (!target) return null
+  const hasPurchased = buyerInventoryIndex ? true : false
+  const token = dpoInfo.token_id.asToken.toString().toLowerCase()
   return (
-    <SLink to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`} colorIsBlue>
-      {t(`TravelCabin`)}: {target?.name.toString()}
-    </SLink>
+    <>
+      {hasPurchased ? (
+        <SLink
+          to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}/inventory/${buyerInventoryIndex}`}
+          colorIsBlue
+        >
+          {t(`TravelCabin`)}: {target.name.toString()}
+        </SLink>
+      ) : (
+        <SHashLink to={`/projects/${token}?asset=TravelCabin#${target.name.toString()}`} colorIsBlue>
+          {t(`TravelCabin`)}: {target.name.toString()}
+        </SHashLink>
+      )}
+    </>
   )
 }
 

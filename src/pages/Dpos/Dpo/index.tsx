@@ -1,6 +1,6 @@
 import DetailCard from 'components/Card/DetailCard'
 import Divider from 'components/Divider'
-import DpoStateFilter from 'components/DpoStateFilter'
+import DpoStateFilter from 'components/Dpo/DpoStateFilter'
 import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
 import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { usePathDpoInfoTab } from 'hooks/usePath'

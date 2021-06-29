@@ -17,7 +17,7 @@ import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from '
 import styled, { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { getCabinYield } from 'utils/getCabinData'
-import { getDpoCabinInventoryIndex } from 'utils/getTravelCabinBuyer'
+import { getDpoTargetCabinBuyer } from 'utils/getTravelCabinBuyer'
 import WaitingIcon from '../../../../assets/svg/icon-waiting.svg'
 
 const Icon = styled.img`
@@ -131,9 +131,9 @@ function RunningHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
 
   useEffect(() => {
     if (!connected) return
-    getDpoCabinInventoryIndex(api, dpoInfo).then((inventory) => {
-      if (!inventory) return
-      setInventoryIndexes(inventory)
+    getDpoTargetCabinBuyer(api, dpoInfo).then((buyer) => {
+      if (!buyer) return
+      setInventoryIndexes(buyer[0])
     })
   }, [api, connected, dpoInfo])
 
