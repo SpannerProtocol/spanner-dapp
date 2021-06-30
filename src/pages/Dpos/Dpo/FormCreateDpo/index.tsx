@@ -34,8 +34,14 @@ export default function DpoModalForm({
   const { t } = useTranslation()
   const { chainDecimals } = useSubstrate()
   const [selectedTargetType, setTargetType] = useState<string>(targetType)
+  let title = 'Create DPO'
+  if (selectedTargetType === 'DPO') {
+    title = 'Create DPO For DPO'
+  } else if (selectedTargetType === 'TravelCabin') {
+    title = 'Create DPO For TravelCabin'
+  }
   return (
-    <StandardModal title={t(`Create DPO`)} isOpen={isOpen} onDismiss={onDismiss} desktopScroll={true}>
+    <StandardModal title={t(title)} isOpen={isOpen} onDismiss={onDismiss} desktopScroll={true}>
       {selectedTargetType === 'DPO' && dpoInfo && (
         <DpoTargetDpoForm
           dpoInfo={dpoInfo}
