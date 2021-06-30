@@ -4,7 +4,7 @@ import { useSubstrate } from '../../../../hooks/useSubstrate'
 import useSubscribeBalance from '../../../../hooks/useQueryBalance'
 import React, { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../../components/Wrapper'
-import { RowAlignRight, RowBetween, RowFixed, RowFlat } from '../../../../components/Row'
+import { RowAlignRight, RowBetween, RowFixed } from '../../../../components/Row'
 import { SText } from '../../../../components/Text'
 import { formatToUnit } from '../../../../utils/formatUnit'
 import QuestionHelper from '../../../../components/QuestionHelper'
@@ -68,9 +68,9 @@ export function DpoEndHorizontal({
 
   return (
     <Section>
-      <RowFlat>
+      <RowAlignRight>
         {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)}: ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
-      </RowFlat>
+      </RowAlignRight>
       <RowBetween>
         <RowFixed>
           <SText mobileFontSize="10px">
@@ -289,6 +289,59 @@ export function DpoReferralCodeHorizontal({
                 type="string"
                 placeholder="A3FDHC..."
                 onChange={(e) => onChange(e)}
+                style={{ alignItems: 'flex-end', width: '100%' }}
+              />
+            </ColumnCenter>
+          </RowBetween>
+        </Section>
+      )}
+    </>
+  )
+}
+
+export function DpoTargetDpoSeatsHorizontal({
+  seats,
+  seatCap,
+  targetDpoName,
+  emptySeats,
+  onChange,
+}: {
+  seats: number
+  emptySeats: string
+  seatCap?: number
+  targetDpoName: string
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+}) {
+  const { t } = useTranslation()
+
+  return (
+    <>
+      {seatCap && (
+        <Section>
+          <RowAlignRight>
+            <SText mobileFontSize="10px">
+              {t(`Remaining Seats`)}: {emptySeats}
+            </SText>
+          </RowAlignRight>
+          <RowBetween>
+            <RowFixed>
+              <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>
+              <QuestionHelper
+                text={t(
+                  `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
+                )}
+                size={10}
+                backgroundColor={'#fff'}
+              />
+            </RowFixed>
+            <ColumnCenter>
+              <BorderedInput
+                required
+                id="dpo-seats"
+                type="number"
+                placeholder={`1 - ${seatCap}`}
+                onChange={(e) => onChange(e)}
+                value={Number.isNaN(seats) ? '' : seats}
                 style={{ alignItems: 'flex-end', width: '100%' }}
               />
             </ColumnCenter>

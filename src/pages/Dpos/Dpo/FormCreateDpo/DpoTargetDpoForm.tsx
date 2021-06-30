@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import QuestionHelper from 'components/QuestionHelper'
-import { RowBetween, RowFixed } from 'components/Row'
+import { RowAlignRight, RowBetween, RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -16,17 +16,17 @@ import { blockToDays } from 'utils/formatBlocks'
 import { abs, noNan } from 'utils/formatNumbers'
 import { formatToUnit } from 'utils/formatUnit'
 import { isValidSpannerAddress } from 'utils/validAddress'
-import {
-  DpoReferralCode,
-  DpoDefaultTarget,
-  DpoName,
-  DpoEnd,
-  DpoTargetDpoSeats,
-  DpoManagerSeats,
-  DpoBaseFee,
-  DpoDirectReferralRate,
-} from './fields'
 import { DpoFormCoreProps } from './index'
+import {
+  DpoBaseFeeHorizontal,
+  DpoDirectReferralRateHorizontal,
+  DpoEndHorizontal,
+  DpoManagerSeatsHorizontal,
+  DpoNameHorizontal,
+  DpoReferralCodeHorizontal,
+  DpoTargetDpoSeatsHorizontal,
+} from './fieldsHorizontal'
+import { ColumnCenter } from '../../../../components/Column'
 
 interface DpoTargetDpoFormProps extends DpoFormCoreProps {
   dpoInfo: DpoInfo
@@ -157,22 +157,38 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
   return (
     <>
       <Section>
-        <SText>
-          {t(`Create DPO for DPO`)}: {dpoInfo.name.toString()}
-        </SText>
+        {/*<SText>*/}
+        {/*  {t(`Create DPO for DPO`)}: {dpoInfo.name.toString()}*/}
+        {/*</SText>*/}
       </Section>
       <SpacedSection>
         <Section>
           <HeavyText mobileFontSize="14px">{t(`DPO Goal`)}</HeavyText>
           <Divider />
         </Section>
-        <BorderedWrapper>
+        <Section>
           <RowBetween>
-            <SText>{t(`Available Balance`)}</SText>
-            <SText>
-              {formatToUnit(balance, chainDecimals, 2)} {token}
-            </SText>
+            <RowFixed>
+              <SText mobileFontSize="10px">{`${t(`Default Target`)}`}</SText>
+              <QuestionHelper
+                text={t(
+                  `The Default Target is a goal that all members agree to pursue. When the DPO is ACTIVE, the Default Target must be selected if available.`
+                )}
+                size={10}
+                backgroundColor={'#fff'}
+              />
+            </RowFixed>
+            <SText>{`DPO:${dpoInfo.name.toString()}`}</SText>
           </RowBetween>
+        </Section>
+        <DpoTargetDpoSeatsHorizontal
+          seats={seats}
+          emptySeats={dpoInfo.empty_seats.toString()}
+          seatCap={dpoSeatCap}
+          targetDpoName={dpoInfo.name.toString()}
+          onChange={handleSeats}
+        />
+        <Section>
           <RowBetween>
             <RowFixed width="fit-content">
               <SText>{t(`Crowdfund Amount`)}</SText>
@@ -180,70 +196,29 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
                 text={t(`The number of seats to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
-              ></QuestionHelper>
+              />
             </RowFixed>
             <SText>
               {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
-          <RowBetween>
-            <RowFixed width="fit-content">
-              <SText>{t(`Your Deposit`)}</SText>
-              <QuestionHelper
-                text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
-            </RowFixed>
-            <SText>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</SText>
-          </RowBetween>
-        </BorderedWrapper>
-        <DpoDefaultTarget target={dpoInfo.name.toString()} />
-        <DpoName onChange={handleDpoName} error={errNameTooShort} />
-        <DpoEnd end={end} maxEnd={maxEnd} onChange={handleEnd} />
-        <DpoTargetDpoSeats
-          seats={seats}
-          emptySeats={dpoInfo.empty_seats.toString()}
-          seatCap={dpoSeatCap}
-          targetDpoName={dpoInfo.name.toString()}
-          onChange={handleSeats}
-        />
+        </Section>
+      </SpacedSection>
+      <SpacedSection>
+        <Section>
+          <HeavyText mobileFontSize="14px">{t(`DPO Info`)}</HeavyText>
+          <Divider />
+        </Section>
+        <DpoNameHorizontal onChange={handleDpoName} error={errNameTooShort} />
+        <DpoEndHorizontal end={end} maxEnd={maxEnd} onChange={handleEnd} />
       </SpacedSection>
       <SpacedSection>
         <Section>
           <HeavyText mobileFontSize="14px">{t(`Incentive Structure`)}</HeavyText>
           <Divider />
         </Section>
-        <BorderedWrapper>
-          <RowBetween>
-            <RowFixed width="fit-content">
-              <SText>{t(`Management Fee`)}</SText>
-              <QuestionHelper
-                text={t(`Management Fee is charged on all yield releases`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
-            </RowFixed>
-            <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)}) = ${noNan(
-              baseFee + managerSeats
-            )}%`}</SText>
-          </RowBetween>
-          <RowBetween>
-            <RowFixed width="fit-content">
-              <SText>{t(`Referral Rates`)} (%)</SText>
-              <QuestionHelper
-                text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}
-                size={10}
-                backgroundColor={'#fff'}
-              ></QuestionHelper>
-            </RowFixed>
-            <SText>{`${noNan(directReferralRate)} (${t(`Direct`)}) + ${noNan(100 - directReferralRate)} (${t(
-              `2nd`
-            )}) = 100%`}</SText>
-          </RowBetween>
-        </BorderedWrapper>
-        <DpoBaseFee baseFee={baseFee} onChange={handleBaseFee} />
-        <DpoManagerSeats
+        <DpoBaseFeeHorizontal baseFee={baseFee} onChange={handleBaseFee} />
+        <DpoManagerSeatsHorizontal
           seatCap={passengerSeatCap}
           managerSeats={managerSeats}
           dpoName={dpoName ? dpoName : ''}
@@ -252,10 +227,68 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
           onChange={handleManagerSeats}
           errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
         />
-        <DpoDirectReferralRate directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
+        <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
+        <Section>
+          <BorderedWrapper>
+            <RowBetween>
+              <ColumnCenter>
+                <RowFixed width="fit-content">
+                  <SText>{t(`Management Fee`)}</SText>
+                  <QuestionHelper
+                    text={t(`Management Fee is charged on all yield releases`)}
+                    size={10}
+                    backgroundColor={'#fff'}
+                  />
+                </RowFixed>
+                <SText>{`${noNan(baseFee + managerSeats)}%`}</SText>
+                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)})`}</SText>
+              </ColumnCenter>
+              <ColumnCenter>
+                <RowFixed width="fit-content">
+                  <SText>{t(`Referral Rates`)} (%)</SText>
+                  <QuestionHelper
+                    text={t(`The rates for Direct Referrals and 2nd Degree Referrals.`)}
+                    size={10}
+                    backgroundColor={'#fff'}
+                  />
+                </RowFixed>
+                <SText>{`${t(`Direct`)}: ${noNan(directReferralRate)} `}</SText>
+                <SText>{`${t(`2nd`)}: ${noNan(100 - directReferralRate)} `}</SText>
+              </ColumnCenter>
+            </RowBetween>
+          </BorderedWrapper>
+        </Section>
       </SpacedSection>
       <SpacedSection>
-        <DpoReferralCode newReferrer={newReferrer} referralCode={referralCode} onChange={handleReferralCode} />
+        <DpoReferralCodeHorizontal
+          newReferrer={newReferrer}
+          referralCode={referralCode}
+          onChange={handleReferralCode}
+        />
+      </SpacedSection>
+      <SpacedSection>
+        <Section>
+          <RowAlignRight>
+            <SText width={'fit-content'} fontSize="10px">{`${t('Balance')}: ${formatToUnit(
+              balance,
+              chainDecimals,
+              2
+            )} ${token}`}</SText>
+          </RowAlignRight>
+        </Section>
+        <Section>
+          <RowBetween>
+            <RowFixed width="fit-content">
+              <HeavyText>{t(`Your Deposit`)}</HeavyText>
+              <QuestionHelper
+                text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
+                size={10}
+                backgroundColor={'#fff'}
+              />
+            </RowFixed>
+            <HeavyText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</HeavyText>
+          </RowBetween>
+        </Section>
       </SpacedSection>
       <Section style={{ paddingTop: '1rem', paddingBottom: '1rem' }}>
         <ButtonPrimary maxWidth="none" onClick={handleSubmit} disabled={hasError || dpoName.length <= 0}>

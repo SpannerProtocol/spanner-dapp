@@ -185,7 +185,7 @@ export default function DpoTargetCabinForm({
       </SpacedSection>
       <SpacedSection>
         <Section>
-          <HeavyText mobileFontSize="14px">{t(`DPO Goal`)}</HeavyText>
+          <HeavyText mobileFontSize="14px">{t(`DPO Info`)}</HeavyText>
           <Divider />
         </Section>
         <DpoNameHorizontal onChange={handleDpoName} error={errNameTooShort} />
@@ -237,6 +237,8 @@ export default function DpoTargetCabinForm({
             </RowBetween>
           </BorderedWrapper>
         </Section>
+      </SpacedSection>
+      <SpacedSection>
         <DpoReferralCodeHorizontal
           newReferrer={newReferrer}
           referralCode={referralCode}
