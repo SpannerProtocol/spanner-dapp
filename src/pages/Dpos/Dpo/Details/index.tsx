@@ -102,7 +102,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                   </Link>
                 )}
                 {dpoInfo.target.isDpo && (
-                  <Link to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`}>
+                  <Link to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`}>
                     <SText color={theme.blue2}>
                       {t(`DPO`)} {dpoInfo.target.asDpo[0].toString()}
                     </SText>

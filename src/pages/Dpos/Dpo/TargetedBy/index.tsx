@@ -79,8 +79,8 @@ function TargeterRow({
   const { expectedBlockTime } = useBlockManager()
   const theme = useContext(ThemeContext)
   const { t } = useTranslation()
-  const purchasedDpoInfo = useSubDpo(targeter.purchasedIndex)
-  const createdDpoInfo = useSubDpo(targeter.createdIndex)
+  const purchasedDpoInfo = useSubDpo(targeter.purchasedIndex ? targeter.purchasedIndex : undefined)
+  const createdDpoInfo = useSubDpo(targeter.createdIndex ? targeter.createdIndex : undefined)
   const [targetState, setTargetState] = useState<{ defaultDpoName?: string; purchasedDpoName?: string }>({})
 
   useEffect(() => {
@@ -109,7 +109,7 @@ function TargeterRow({
   }, [createdDpoInfo, lastBlock])
 
   return (
-    <SLink to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/details`}>
+    <SLink to={`/dpos/dpo/${targeter.dpoInfo.index.toString()}/activity`}>
       <Row>
         <Cell>
           <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>

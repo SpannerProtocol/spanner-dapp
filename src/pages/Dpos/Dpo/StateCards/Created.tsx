@@ -326,7 +326,7 @@ function TargetDpoName({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
   return (
     <>
-      <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue>
+      <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue>
         {target?.name.toString()}
       </SLink>
     </>
