@@ -1,41 +1,42 @@
+import { SLink } from 'components/Link'
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import 'swiper/components/pagination/pagination.min.css'
+import SwiperCore, { Pagination } from 'swiper/core'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { FlatCard } from '../../components/Card'
-import { Header4, SText } from '../../components/Text'
-import { RowBetween } from '../../components/Row'
-import React from 'react'
-import {
-  CircleNextIconWrapper,
-  HomeSectionLabel2,
-  HomeSectionTitle,
-  HomeSectionValue3,
-  StyledCircleNextWhite,
-} from './index'
-
 // Import Swiper styles
 import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
-
-import SwiperCore, { Pagination } from 'swiper/core'
+import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
+import Card, { BannerCard } from '../../components/Card'
+import { RowBetween } from '../../components/Row'
+import { Header2, Header4, HeavyText, SText } from '../../components/Text'
 import useStats from '../../hooks/useStats'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit } from '../../utils/formatUnit'
-import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { CircleNextIconWrapper, StyledCircleNextWhite } from './index'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
 
 export function AssetSwiper() {
+  const [activeSlide, setAciveSlide] = useState<number>(0)
+
   return (
-    <Swiper pagination={true} spaceBetween={50} className="mySwiper">
-      <SwiperSlide>
-        <BulletTrain />
-      </SwiperSlide>
-      <SwiperSlide>
-        <SpannerNFT />
-      </SwiperSlide>
-    </Swiper>
+    <BannerCard border="1 solid transparent" url={activeSlide === 0 ? bulletTrainBg : undefined} margin="0 0 1rem 0">
+      <Swiper
+        pagination={{ clickable: true }}
+        spaceBetween={50}
+        className="mySwiper"
+        onSlideChange={(swiper) => setAciveSlide(swiper.activeIndex)}
+      >
+        <SwiperSlide>
+          <BulletTrain />
+        </SwiperSlide>
+        <SwiperSlide>
+          <SpannerNFT />
+        </SwiperSlide>
+      </Swiper>
+    </BannerCard>
   )
 }
 
@@ -43,24 +44,15 @@ export function BulletTrain() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard
-        style={{
-          textAlign: 'left',
-          minHeight: '250px',
-          background: `url(${bulletTrainBg}) no-repeat center center`,
-          backgroundSize: 'cover',
-        }}
-      >
-        <HomeSectionTitle color={'white'}>{t('Spanner BulletTrain')}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'} style={{ marginLeft: '0.5rem' }}>
-          {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
-        </SText>
-        <Link to={`/bullettrain`} style={{ textDecoration: 'none' }}>
-          <CircleNextIconWrapper>
-            <StyledCircleNextWhite />
-          </CircleNextIconWrapper>
-        </Link>
-      </FlatCard>
+      <Header2 colorIsPrimary>{t('Spanner BulletTrain')}</Header2>
+      <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
+        {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
+      </SText>
+      <SLink to={`/bullettrain`}>
+        <CircleNextIconWrapper>
+          <StyledCircleNextWhite />
+        </CircleNextIconWrapper>
+      </SLink>
     </>
   )
 }
@@ -69,15 +61,13 @@ export function SpannerNFT() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '250px' }}>
-        <HomeSectionTitle>{t('Spanner NFT')}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
-          {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
-        </SText>
-        <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
-          <Header4>({t('Coming soon')})</Header4>
-        </div>
-      </FlatCard>
+      <Header2>{t('Spanner NFT')}</Header2>
+      <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        {t(`Create NFTs on Spanner and crowdfund for them with DPOs`)}
+      </SText>
+      <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
+        <Header4>({t('Coming soon')})</Header4>
+      </div>
     </>
   )
 }
@@ -89,20 +79,28 @@ export function BulletTrainStats() {
   const { t } = useTranslation()
 
   return (
-    <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-      <HomeSectionTitle>{t('Spanner BulletTrain Stats')}</HomeSectionTitle>
-      <RowBetween>
-        <HomeSectionLabel2>{t('Total Deposited Value')}</HomeSectionLabel2>
-        <HomeSectionValue3> {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}</HomeSectionValue3>
+    <Card margin="0 0 1rem 0">
+      <Header2>{t('Spanner BulletTrain Stats')}</Header2>
+      <RowBetween padding="1rem 0">
+        <HeavyText fontSize="18px" mobileFontSize="14px">
+          {t('Total Deposited Value')}
+        </HeavyText>
+        <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+          {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}
+        </HeavyText>
       </RowBetween>
-      <RowBetween>
-        <HomeSectionLabel2>{t('Total Yield Distributed')}</HomeSectionLabel2>
-        <HomeSectionValue3>{`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}</HomeSectionValue3>
+      <RowBetween padding="0 0 1rem 0">
+        <HeavyText fontSize="18px" mobileFontSize="14px">
+          {t('Total Yield Distributed')}
+        </HeavyText>
+        <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+          {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}
+        </HeavyText>
       </RowBetween>
       {/*<RowBetween>*/}
       {/*  <HomeSectionLabel2>Total Bonus Distributed</HomeSectionLabel2>*/}
       {/*  <HomeSectionValue3>10,049,009 BOLT</HomeSectionValue3>*/}
       {/*</RowBetween>*/}
-    </FlatCard>
+    </Card>
   )
 }

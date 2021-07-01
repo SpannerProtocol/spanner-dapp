@@ -1,38 +1,40 @@
+import { SLink } from 'components/Link'
+import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import 'swiper/components/pagination/pagination.min.css'
+import SwiperCore, { Pagination } from 'swiper/core'
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { FlatCard } from '../../components/Card'
-import { Header4, SText } from '../../components/Text'
-import { RowBetween } from '../../components/Row'
-import React from 'react'
-import {
-  CircleNextIconWrapper,
-  HomeSectionLabel2,
-  HomeSectionTitle,
-  HomeSectionValue2,
-  StyledCircleNext,
-} from './index'
 // Import Swiper styles
 import 'swiper/swiper.min.css'
-import 'swiper/components/pagination/pagination.min.css'
-
-import SwiperCore, { Pagination } from 'swiper/core'
-import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
 import heroBannerBg from '../../assets/images/hero-banner-desktop.jpg'
-import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import Card, { BannerCard } from '../../components/Card'
+import { RowBetween } from '../../components/Row'
+import { Header2, Header4, HeavyText, SText } from '../../components/Text'
+import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
+import { CircleNextIconWrapper, StyledCircleNext } from './index'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
 
 export function DPOSwiper() {
+  const [activeSlide, setAciveSlide] = useState<number>(0)
+
   return (
-    <Swiper pagination={true} spaceBetween={50} className="mySwiper">
-      <SwiperSlide>
-        <DPOV1 />
-      </SwiperSlide>
-      <SwiperSlide>
-        <DPOV2 />
-      </SwiperSlide>
-    </Swiper>
+    <BannerCard border="1 solid transparent" url={activeSlide === 0 ? heroBannerBg : undefined} margin="0 0 1rem 0">
+      <Swiper
+        pagination={{ clickable: true }}
+        spaceBetween={50}
+        className="mySwiper"
+        onSlideChange={(swiper) => setAciveSlide(swiper.activeIndex)}
+      >
+        <SwiperSlide>
+          <DPOV1 />
+        </SwiperSlide>
+        <SwiperSlide>
+          <DPOV2 />
+        </SwiperSlide>
+      </Swiper>
+    </BannerCard>
   )
 }
 
@@ -40,24 +42,15 @@ export function DPOV1() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard
-        style={{
-          textAlign: 'left',
-          minHeight: '250px',
-          background: `url(${heroBannerBg}) no-repeat center center`,
-          backgroundSize: 'cover',
-        }}
-      >
-        <HomeSectionTitle>{'DPO V1'}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
-          {`${t(`Crowdfund for any crypto assets. Create or join one to Earn`)}!`}
-        </SText>
-        <Link to={`/dpos`} style={{ textDecoration: 'none' }}>
-          <CircleNextIconWrapper>
-            <StyledCircleNext />
-          </CircleNextIconWrapper>
-        </Link>
-      </FlatCard>
+      <Header2>{'DPO V1'}</Header2>
+      <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        {`${t(`Crowdfund for any crypto assets. Create or join one to Earn`)}!`}
+      </SText>
+      <SLink to={`/dpos`}>
+        <CircleNextIconWrapper>
+          <StyledCircleNext />
+        </CircleNextIconWrapper>
+      </SLink>
     </>
   )
 }
@@ -66,15 +59,13 @@ export function DPOV2() {
   const { t } = useTranslation()
   return (
     <>
-      <FlatCard style={{ textAlign: 'left', minHeight: '250px' }}>
-        <HomeSectionTitle>{'DPO V2'}</HomeSectionTitle>
-        <SText fontSize={'18px'} mobileFontSize={'18px'} style={{ marginLeft: '0.5rem' }}>
-          {`${t(`Cross-chain assets, membership roles and more`)}.`}
-        </SText>
-        <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
-          <Header4>({t('Coming soon')})</Header4>
-        </div>
-      </FlatCard>
+      <Header2>{'DPO V2'}</Header2>
+      <SText fontSize={'18px'} mobileFontSize={'18px'}>
+        {`${t(`Cross-chain assets, membership roles and more`)}.`}
+      </SText>
+      <div style={{ textAlign: 'center', margin: 'auto', padding: '3rem 0' }}>
+        <Header4>({t('Coming soon')})</Header4>
+      </div>
     </>
   )
 }
@@ -85,18 +76,26 @@ export function DPOV1Stats() {
   const { t } = useTranslation()
 
   return (
-    <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
-      <HomeSectionTitle>{t(`DPO Stats`)}</HomeSectionTitle>
+    <Card margin="0 0 1rem 0">
+      <Header2>{t(`DPO Stats`)}</Header2>
       {dpoCount && (
-        <RowBetween>
-          <HomeSectionLabel2>{t(`Total DPOs`)}</HomeSectionLabel2>
-          <HomeSectionValue2>{dpoCount.toString()}</HomeSectionValue2>
+        <RowBetween padding="1rem 0">
+          <HeavyText fontSize="18px" mobileFontSize="14px">
+            {t(`Total DPOs`)}
+          </HeavyText>
+          <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+            {dpoCount.toString()}
+          </HeavyText>
         </RowBetween>
       )}
-      <RowBetween>
-        <HomeSectionLabel2>{t(`Running Dpos`)}</HomeSectionLabel2>
-        <HomeSectionValue2>{runningDpoCount.toString()}</HomeSectionValue2>
+      <RowBetween padding="0 0 1rem 0">
+        <HeavyText fontSize="18px" mobileFontSize="14px">
+          {t(`Running Dpos`)}
+        </HeavyText>
+        <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+          {runningDpoCount.toString()}
+        </HeavyText>
       </RowBetween>
-    </FlatCard>
+    </Card>
   )
 }
