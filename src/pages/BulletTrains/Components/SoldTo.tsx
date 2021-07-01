@@ -11,40 +11,7 @@ import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } fro
 import { useTravelCabinBuyers } from '../../../hooks/useQueryTravelCabins'
 import { getCabinClassByIndex } from '../../../utils/getCabinClass'
 import { Moment } from '@polkadot/types/interfaces'
-
-export function SoldTo() {
-  const bronzeBuyers = useTravelCabinBuyers('0')
-  const sliverBuyers = useTravelCabinBuyers('1')
-  const goldBuyers = useTravelCabinBuyers('2')
-  const platinumBuyers = useTravelCabinBuyers('3')
-  const diamondBuyers = useTravelCabinBuyers('4')
-  const buyers = bronzeBuyers.concat(sliverBuyers, goldBuyers, platinumBuyers, diamondBuyers)
-  const expectedBlockTime = useExpectedBlockTime()
-  const genesisTs = useGenesisTime()
-  const sortedBuyers = useMemo(
-    () => buyers.sort((b1, b2) => b2[1].purchase_blk.toNumber() - b1[1].purchase_blk.toNumber()),
-    [buyers]
-  )
-
-  return (
-    <>
-      <HeavyText fontSize={'18px'} mobileFontSize={'18px'} padding={'2rem 0rem'}>
-        {'Sold To'}
-      </HeavyText>
-      {sortedBuyers.map((buyer, index) => {
-        return (
-          <SoldToItem
-            key={index}
-            buyer={buyer}
-            index={index}
-            expectedBlockTime={expectedBlockTime}
-            genesisTs={genesisTs}
-          />
-        )
-      })}
-    </>
-  )
-}
+import StandardModal from '../../../components/Modal/StandardModal'
 
 interface CabinSoldToProps {
   buyer: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
@@ -88,5 +55,42 @@ export function SoldToItem(props: CabinSoldToProps) {
         </FlatCard>
       </Link>
     </>
+  )
+}
+
+export function SoldToModal({
+  cabinIndex,
+  isOpen,
+  onDismiss,
+}: {
+  cabinIndex: TravelCabinIndex
+  isOpen: boolean
+  onDismiss: () => void
+}) {
+  const { t } = useTranslation()
+
+  const buyers = useTravelCabinBuyers(cabinIndex)
+  const sortedBuyers = useMemo(
+    () => buyers.sort((b1, b2) => b2[1].purchase_blk.toNumber() - b1[1].purchase_blk.toNumber()),
+    [buyers]
+  )
+
+  const expectedBlockTime = useExpectedBlockTime()
+  const genesisTs = useGenesisTime()
+
+  return (
+    <StandardModal title={t('Inventory')} isOpen={isOpen} onDismiss={onDismiss} desktopScroll={true}>
+      {sortedBuyers.map((buyer, index) => {
+        return (
+          <SoldToItem
+            key={index}
+            buyer={buyer}
+            index={index}
+            expectedBlockTime={expectedBlockTime}
+            genesisTs={genesisTs}
+          />
+        )
+      })}
+    </StandardModal>
   )
 }

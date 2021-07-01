@@ -65,6 +65,7 @@ export const CenteredRow = styled(RowBetween)`
 export const RowAlignRight = styled.div`
   display: flex;
   justify-content: flex-end;
+  align-items: center;
 `
 
 export default Row
