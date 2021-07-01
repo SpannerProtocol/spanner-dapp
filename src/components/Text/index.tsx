@@ -41,6 +41,7 @@ export const ThinText = styled(Base)`
 export const HeavyText = styled(Base)`
   width: ${({ width }) => (width ? width : 'fit-content')};
   font-weight: 700;
+  padding: ${({ padding }) => (padding ? padding : '0')};
 `
 
 export const LightText = styled(Base)`

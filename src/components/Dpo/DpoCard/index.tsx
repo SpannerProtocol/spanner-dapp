@@ -134,7 +134,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <>
           <DetailCardSimple smallDetails details={<DpoCardDetails dpoInfo={dpoInfo} expiry={expiry} />}>
-            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
               <DpoCardGrid>
                 <RowFixed justifyContent="flex-start">
                   {dpoInfo.state.isCreated && expiry.isZero() ? (
@@ -233,7 +233,7 @@ export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   return (
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
-        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
           <Card margin="0 0 0.5rem 0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (

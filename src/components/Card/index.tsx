@@ -111,10 +111,15 @@ export const SecondaryGradientCard = styled(Card)`
   opacity: 1;
 `
 
-export const BannerCard = styled(Card)<{ url?: string; backgroundSize?: string; darkenBackground?: boolean }>`
+export const BannerCard = styled(Card)<{
+  url?: string
+  backgroundSize?: string
+  darkenBackground?: boolean
+  background?: string
+}>`
   background: ${({ darkenBackground }) =>
       darkenBackground && `linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ),`}
-    ${({ url }) => (url ? `url(${url}) no-repeat center center` : `#fff`)};
+    ${({ background, url }) => (url ? `url(${url}) no-repeat center center` : background ? background : `#fff`)};
   background-size: ${({ backgroundSize }) => (backgroundSize ? backgroundSize : 'cover')};
   box-shadow: none;
   border: ${({ border }) => (border ? border : 'none')};
