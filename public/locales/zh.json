@@ -663,5 +663,10 @@
   "Global Milestone Rewards": "全球里程碑奖励",
   "Current": "当前",
   "Failed to crowdfund": "众筹失败",
-  "DPO failed to crowdfund before its expiry. Members received their deposits back": "DPO未能在到期前众筹完成，将返回成员们的抵押资金"
+  "DPO failed to crowdfund before its expiry. Members received their deposits back": "DPO未能在到期前众筹完成，将返回成员们的抵押资金",
+  "What is a DEX and how does Swap work?": "什么是DEX以及DEX如何工作？",
+  "What is a DEX and how does Swap work? (answer)": "Spanner 的去中心化交易所（DEX）基于 Uniswap v2，允许用户与自动市商交换代币，而不是像中心交易所（CEX）中那样的其他用户。您在From的地方输入要交换的金额，兑换的代币的估计金额将在 To 的地方显示，反之亦然。",
+  "Your Balance": "您的余额",
+  "Send Ethereum USDT to Deposit Address for Spanner WUSD": "将以太坊 USDT 发送到Spanner WUSD 的存款地址",
+  "Connected Chain": "已连接的链"
 }
