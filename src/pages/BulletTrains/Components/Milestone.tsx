@@ -9,7 +9,7 @@ import BN from 'bn.js'
 import { BULLETTRAIN_MILESTONES } from '../../../constants'
 import Card from '../../../components/Card'
 import { Header2, HeavyText, SText, TokenText } from '../../../components/Text'
-import { RowBetween, RowFixed } from '../../../components/Row'
+import Row, { RowBetween, RowFixed } from '../../../components/Row'
 import { formatToUnit } from '../../../utils/formatUnit'
 import { LinearProgressBar } from '../../../components/ProgressBar'
 
@@ -106,15 +106,16 @@ export function GlobalMilestoneReward() {
             >{`${rewardsData?.finishedRewards.toString()}`}</HeavyText>
             <TokenText padding="0 0.25rem">{token}</TokenText>
           </RowFixed>
-          <SText
-            fontSize={'18px'}
-            mobileFontSize={'16px'}
-            padding={'0rem 0rem 2rem 0rem'}
-            width="100%"
-            textAlign="center"
-          >
+          <SText fontSize={'18px'} mobileFontSize={'16px'} width="100%" textAlign="center">
             {t('Total Distributed')}
           </SText>
+          <Row align="baseline" justifyContent="space-evenly" padding="1rem 0 2rem 0">
+            <SText textAlign="right">{t('Next Distribute')}</SText>
+            <RowFixed align="baseline" justifyContent="left" width="fit-content">
+              <SText colorIsPrimary>{formatToUnit(nextMilestone[1].toBn(), chainDecimals, 0, false)}</SText>
+              <TokenText padding="0 0.25rem">{token}</TokenText>
+            </RowFixed>
+          </Row>
           <RowBetween>
             <RowFixed align="baseline">
               <SText fontSize={'12px'} mobileFontSize={'12px'}>
