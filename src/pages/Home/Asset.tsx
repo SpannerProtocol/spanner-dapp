@@ -97,10 +97,6 @@ export function BulletTrainStats() {
           {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}
         </HeavyText>
       </RowBetween>
-      {/*<RowBetween>*/}
-      {/*  <HomeSectionLabel2>Total Bonus Distributed</HomeSectionLabel2>*/}
-      {/*  <HomeSectionValue3>10,049,009 BOLT</HomeSectionValue3>*/}
-      {/*</RowBetween>*/}
     </Card>
   )
 }
