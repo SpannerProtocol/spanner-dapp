@@ -1,6 +1,6 @@
 import DetailCard from 'components/Card/DetailCard'
 import Divider from 'components/Divider'
-import DpoStateFilter from 'components/DpoStateFilter'
+import DpoStateFilter from 'components/Dpo/DpoStateFilter'
 import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
 import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { usePathDpoInfoTab } from 'hooks/usePath'
@@ -29,9 +29,9 @@ export default function Dpo(): JSX.Element {
     if (!dpoInfo) return []
     return [
       {
-        id: 'details',
-        label: t('Details'),
-        path: `/dpos/dpo/${dpoInfo.index.toString()}/details`,
+        id: `activity`,
+        label: t(`Activity`),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/activity`,
       },
       {
         id: `organization`,
@@ -39,9 +39,9 @@ export default function Dpo(): JSX.Element {
         path: `/dpos/dpo/${dpoInfo.index.toString()}/organization`,
       },
       {
-        id: `activity`,
-        label: t(`Activity`),
-        path: `/dpos/dpo/${dpoInfo.index.toString()}/activity`,
+        id: 'details',
+        label: t('Details'),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/details`,
       },
     ]
   }, [dpoInfo, t])
@@ -91,9 +91,9 @@ export default function Dpo(): JSX.Element {
           <ContentWrapper padding="0 0.5rem">
             <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0 0 1rem 0" />
           </ContentWrapper>
-          {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
-          {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
           {activeTab === 'activity' && <Activity dpoInfo={dpoInfo} />}
+          {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
+          {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
         </PageWrapper>
       )}
     </>

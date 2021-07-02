@@ -36,19 +36,19 @@ export function useTravelCabins(token?: string): [TravelCabinIndex, TravelCabinI
 }
 
 export function useSubTravelCabin(travelCabinIndex?: number | string | TravelCabinIndex): TravelCabinInfo | undefined {
-  const { api } = useApi()
+  const { api, connected } = useApi()
   const [travelCabinInfo, setTravelCabinInfo] = useState<TravelCabinInfo | undefined>()
 
   useEffect(() => {
-    if (!api || !travelCabinIndex) return
-    api?.query?.bulletTrain.travelCabins(travelCabinIndex, (result) => {
-      if (result.isNone) {
-        setTravelCabinInfo(undefined)
-      } else {
-        setTravelCabinInfo(result.unwrap())
-      }
-    })
-  }, [api, travelCabinIndex])
+    if (!connected || travelCabinIndex === undefined) return
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.query.bulletTrain.travelCabins(travelCabinIndex, (result) => {
+        if (result.isSome) setTravelCabinInfo(result.unwrap())
+      })
+    })()
+    return unsub
+  }, [api, connected, travelCabinIndex])
 
   return travelCabinInfo
 }

@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import { AlertIcon, AlertWrapper } from 'components/Alert'
+import { AlertIcon, AlertWrapper } from 'pages/Account/Alert'
 import Card from 'components/Card'
 import { DetailCardSimple } from 'components/Card/DetailCard'
 import { RowBetween, RowFixed } from 'components/Row'
@@ -7,8 +7,7 @@ import { Header4, HeavyText, ItalicText, SText, TokenText } from 'components/Tex
 import { ContentWrapper, Section, StateWrapper } from 'components/Wrapper'
 import Decimal from 'decimal.js'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useDpoActions } from 'hooks/useDpoActions'
-import { useSubDpo } from 'hooks/useQueryDpos'
+import { useDpoCurrentStateActions } from 'hooks/useDpoActions'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -16,9 +15,9 @@ import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
+import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
-import { ACTION_ICONS, DPO_STATE_COLORS } from '../../constants'
-import { formatToUnit } from '../../utils/formatUnit'
+import { ACTION_ICONS, DPO_STATE_COLORS } from '../../../constants'
 
 const DpoCardGrid = styled.div`
   display: grid;
@@ -135,7 +134,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <>
           <DetailCardSimple smallDetails details={<DpoCardDetails dpoInfo={dpoInfo} expiry={expiry} />}>
-            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
               <DpoCardGrid>
                 <RowFixed justifyContent="flex-start">
                   {dpoInfo.state.isCreated && expiry.isZero() ? (
@@ -211,15 +210,12 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   )
 }
 
-export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
-  const dpoInfo = useSubDpo(dpoIndex)
+export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
   const { lastBlock } = useBlockManager()
   const { expectedBlockTime } = useBlockManager()
-  const dpoActions = useDpoActions(dpoInfo)
+  const actions = useDpoCurrentStateActions(dpoInfo)
   const { t } = useTranslation()
-
-  const actions = dpoActions.dpoActions
 
   const [expiry, setExpiry] = useState<BN>()
 
@@ -237,8 +233,8 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
   return (
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
-        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
-          <Card margin="0">
+        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
+          <Card margin="0 0 0.5rem 0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>
@@ -273,21 +269,17 @@ export function DpoProfileCard({ dpoIndex }: { dpoIndex: string }) {
                     {t(`DPO`)} #{dpoInfo.index.toString()}
                   </ItalicText>
                 </RowBetween>
-                {actions && actions.length > 0 && (
-                  <Section>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <RowFixed>
-                        <HeavyText width="fit-content">{t(`Pending Actions`)}:</HeavyText>
-                        <div style={{ display: 'flex' }}>
-                          {actions.map((action, index) => (
-                            <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
-                              <AlertIcon src={ACTION_ICONS[action.action]} />
-                            </AlertWrapper>
-                          ))}
-                        </div>
-                      </RowFixed>
-                    </div>
-                  </Section>
+                {actions.length > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <RowFixed>
+                      <SText width="fit-content">{t(`Actions`)}:</SText>
+                      {actions.map((action, index) => (
+                        <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
+                          <AlertIcon src={ACTION_ICONS[action.action]} />
+                        </AlertWrapper>
+                      ))}
+                    </RowFixed>
+                  </div>
                 )}
               </Section>
             </ProfileCardGrid>

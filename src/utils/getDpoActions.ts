@@ -1,5 +1,4 @@
 import { BlockNumber } from '@polkadot/types/interfaces'
-import BN from 'bn.js'
 import {
   DpoIndex,
   DpoInfo,
@@ -8,7 +7,6 @@ import {
   TravelCabinInfo,
   TravelCabinInventoryIndex,
 } from 'spanner-interfaces'
-import { WalletInfo } from './getWalletInfo'
 
 export interface DpoAction {
   action: string
@@ -17,16 +15,10 @@ export interface DpoAction {
 
 interface GetDpoActionsParams {
   dpoInfo: DpoInfo
-  isMember: boolean
   lastBlock: BlockNumber
   selectedState?: string
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
-  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
-  targetDpo?: DpoInfo
-  dpoIsMemberOfTargetDpo?: boolean
-  walletInfo: WalletInfo
 }
 
 function actionParser({
@@ -40,15 +32,9 @@ function actionParser({
   dpoInfo: DpoInfo
   dpoState: string
   dpoStateType: string
-  isMember: boolean
   lastBlock: BlockNumber
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
-  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
-  targetDpo?: DpoInfo
-  dpoIsMemberOfTargetDpo?: boolean
-  walletInfo: WalletInfo
 }) {
   const actions: Array<DpoAction> = []
 
@@ -168,49 +154,11 @@ function actionParser({
  * COMPLETED
  * - Someone needs to withdarw from the target
  */
-export default function getDpoActions(props: GetDpoActionsParams): Array<DpoAction> | undefined {
+export default function getDpoActions(props: GetDpoActionsParams): Array<DpoAction> {
   const { selectedState, dpoInfo } = props
   if (selectedState) {
     return actionParser({ ...props, dpoState: selectedState, dpoStateType: 'selected' })
   } else {
     return actionParser({ ...props, dpoState: dpoInfo.state.toString(), dpoStateType: 'dpoinfo' })
   }
-}
-
-/**
- * Get an alert for the DPO based on user type. Alerts are intended to be used
- * in Portfolio because on the DPO page the action is available for all users.
- * Since most actions, any user can perform it but there they are incentivized not to,
- * the alerts will prioritize alerting users based on:
- * - Manager in grace period
- * - Both Manager and Members outside grace period
- */
-export function getDpoAlerts(params: GetDpoActionsParams) {
-  const { walletInfo, dpoInfo } = params
-  const actions = getDpoActions(params)
-
-  // If user is not logged in
-  if (!walletInfo.address) return
-  if (!actions) return
-
-  const userIsManager = walletInfo.address === dpoInfo.manager.toString()
-
-  // Filter actions that require user attention
-  const filteredActions = actions?.map((action) => {
-    // Release periodic drop is special because once state === COMMITTED this action is always available
-    if (action.action === 'releaseFareFromDpo') {
-      // If there's nothing in the periodic drop vault then return nothing
-      if (dpoInfo.vault_yield.toBn().eq(new BN(0))) return
-      if (userIsManager) {
-        // This action always has grace period
-        return action
-      }
-    }
-
-    // If user is manager
-    if (userIsManager) {
-      return action
-    }
-  })
-  return filteredActions
 }

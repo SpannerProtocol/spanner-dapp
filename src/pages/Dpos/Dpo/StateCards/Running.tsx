@@ -1,9 +1,9 @@
 import Divider from 'components/Divider'
-import { SLink } from 'components/Link'
+import { SLink, SHashLink } from 'components/Link'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, Header3, HeavyText, SText, TokenText } from 'components/Text'
 import { useSubDpo } from 'hooks/useQueryDpos'
-import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
+import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +26,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
         ) : (
           <SText width="fit-content">{`${t(`Rewards will be released to this DPO`)} ${t(`by`)}`}</SText>
         )}
-        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0 0 0.25rem">
+        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue padding="0 0 0 0.25rem">
           {target.name.toString()}
         </SLink>
       </RowFixed>
@@ -37,32 +37,56 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
 function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState: string }) {
   const { t } = useTranslation()
   const target = useSubTravelCabin(dpoInfo.target.asTravelCabin.toString())
+  const buyerInventoryIndex = useDpoTravelCabinInventoryIndex(
+    dpoInfo.index.toString(),
+    dpoInfo.target.asTravelCabin.toString()
+  )
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
-  const inventoryCount = useSubTravelCabinInventory(dpoInfo.target.asTravelCabin.toString())
   const dpoStateIsSelectedState = isDpoStateSelectedState(dpoInfo, selectedState)
 
-  if (!target || !inventoryCount) return null
+  if (!target) return null
+  const token = dpoInfo.token_id.asToken.toString().toLowerCase()
   return (
     <>
       <RowFixed>
         {stateCompleted ? (
-          <SText width="fit-content">{`${t(`All yield rewards withdrawn`)} ${t(`from`)}`}</SText>
+          <RowFixed>
+            <SText width="fit-content">{`${t(`All yield rewards withdrawn`)} ${t(`from`)}`}</SText>
+            <SLink
+              to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}/inventory/${buyerInventoryIndex}`}
+              colorIsBlue
+              padding="0 0 0 0.25rem"
+            >
+              {t(`TravelCabin`)}: {target.name.toString()}
+            </SLink>
+          </RowFixed>
         ) : (
           <>
             {dpoStateIsSelectedState ? (
-              <SText width="fit-content">{`${t(`Yield rewards accumulating`)} ${t(`in`)}`}</SText>
+              <RowFixed>
+                <SText width="fit-content">{`${t(`Yield rewards accumulating`)} ${t(`in`)}`}</SText>
+                <SLink
+                  to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}/inventory/${buyerInventoryIndex}`}
+                  colorIsBlue
+                  padding="0 0 0 0.25rem"
+                >
+                  {t(`TravelCabin`)}: {target.name.toString()}
+                </SLink>
+              </RowFixed>
             ) : (
-              <SText width="fit-content">{`${t(`Yield rewards will be withdrawn`)} ${t(`from`)}`}</SText>
+              <RowFixed>
+                <SText width="fit-content">{`${t(`Yield rewards will be withdrawn`)} ${t(`from`)}`}</SText>
+                <SHashLink
+                  to={`/projects/${token}?asset=TravelCabin#${target.name.toString()}`}
+                  colorIsBlue
+                  padding="0 0 0 0.25rem"
+                >
+                  {t(`TravelCabin`)}: {target.name.toString()}
+                </SHashLink>
+              </RowFixed>
             )}
           </>
         )}
-        <SLink
-          to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
-          colorIsBlue
-          padding="0 0 0 0.25rem"
-        >
-          {t(`TravelCabin`)}: {target.name.toString()}
-        </SLink>
       </RowFixed>
     </>
   )

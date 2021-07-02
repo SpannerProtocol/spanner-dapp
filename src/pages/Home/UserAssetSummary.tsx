@@ -1,21 +1,21 @@
-import { FlatCard } from '../../components/Card'
-import React, { useEffect, useMemo, useState } from 'react'
-import { HomeSectionLabel1, HomeSectionTitle, HomeSectionValue1 } from './index'
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { UserTransferOut, UserTransferOutVariables } from '../../queries/graphql/types/UserTransferOut'
-import userTransferOut from '../../queries/graphql/userTransferOut'
-import { UserTransferIn, UserTransferInVariables } from '../../queries/graphql/types/UserTransferIn'
-import userTransferIn from '../../queries/graphql/userTransferIn'
-import { useSubstrate } from '../../hooks/useSubstrate'
-import BN from 'bn.js'
-import useWallet from '../../hooks/useWallet'
-import { useProjectState } from '../../state/project/hooks'
 import { ApolloError } from '@apollo/client/errors'
-import { formatToUnit } from '../../utils/formatUnit'
-import { PairPrice, PairPriceVariables } from '../../queries/graphql/types/PairPrice'
-import pairPrice from '../../queries/graphql/pairPrice'
+import BN from 'bn.js'
+import { RowFixed } from 'components/Row'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { SText } from '../../components/Text'
+import Card from '../../components/Card'
+import { Header2, HeavyText, SText, TokenText } from '../../components/Text'
+import { useSubstrate } from '../../hooks/useSubstrate'
+import useWallet from '../../hooks/useWallet'
+import pairPrice from '../../queries/graphql/pairPrice'
+import { PairPrice, PairPriceVariables } from '../../queries/graphql/types/PairPrice'
+import { UserTransferIn, UserTransferInVariables } from '../../queries/graphql/types/UserTransferIn'
+import { UserTransferOut, UserTransferOutVariables } from '../../queries/graphql/types/UserTransferOut'
+import userTransferIn from '../../queries/graphql/userTransferIn'
+import userTransferOut from '../../queries/graphql/userTransferOut'
+import { useProjectState } from '../../state/project/hooks'
+import { formatToUnit } from '../../utils/formatUnit'
 
 interface TokenDeposits {
   [token: string]: {
@@ -218,13 +218,18 @@ export function UserAssetSummary({
 }) {
   const { t } = useTranslation()
   return (
-    <FlatCard style={{ textAlign: 'left' }}>
-      <HomeSectionTitle>{t('Your portfolio value')}</HomeSectionTitle>
-      <HomeSectionLabel1>{t('Total Deposited')}</HomeSectionLabel1>
-      <HomeSectionValue1>{`${totalDepositedBOLT} BOLT`}</HomeSectionValue1>
+    <Card margin="0 0 1rem 0">
+      <Header2>{t('Your portfolio value')}</Header2>
+      <HeavyText>{t('Total Deposited')}</HeavyText>
+      <RowFixed align="baseline">
+        <HeavyText fontSize="40px" mobileFontSize="30px" colorIsPrimary>
+          {`${totalDepositedBOLT}`}
+        </HeavyText>
+        <TokenText>BOLT</TokenText>
+      </RowFixed>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
       {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}
       {/*<HomeSectionValue1>{'$198.04'}</HomeSectionValue1>*/}
-    </FlatCard>
+    </Card>
   )
 }

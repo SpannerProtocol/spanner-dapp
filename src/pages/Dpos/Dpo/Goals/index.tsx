@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
 import { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
-import { getDpoCabinInventoryIndex } from 'utils/getTravelCabinBuyer'
+import { getDpoTargetCabinBuyer } from 'utils/getTravelCabinBuyer'
 import useDpoFees from 'hooks/useDpoFees'
 import Divider from 'components/Divider'
 import { Grid } from 'components/Grid'
@@ -59,9 +59,9 @@ function TargetCabin({ dpoInfo }: { dpoInfo: DpoInfo }) {
 
   useEffect(() => {
     if (!connected) return
-    getDpoCabinInventoryIndex(api, dpoInfo).then((inventory) => {
-      if (!inventory) return
-      setInventoryIndexes(inventory)
+    getDpoTargetCabinBuyer(api, dpoInfo).then((buyer) => {
+      if (!buyer) return
+      setInventoryIndexes(buyer[0])
     })
   }, [api, connected, dpoInfo])
 
