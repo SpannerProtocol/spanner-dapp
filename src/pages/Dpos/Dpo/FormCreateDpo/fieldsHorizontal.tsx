@@ -4,7 +4,7 @@ import { useSubstrate } from '../../../../hooks/useSubstrate'
 import useSubscribeBalance from '../../../../hooks/useQueryBalance'
 import React, { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../../components/Wrapper'
-import { RowAlignRight, RowBetween, RowFixed } from '../../../../components/Row'
+import Row, { RowBetween, RowFixed } from '../../../../components/Row'
 import { SText } from '../../../../components/Text'
 import { formatToUnit } from '../../../../utils/formatUnit'
 import QuestionHelper from '../../../../components/QuestionHelper'
@@ -68,9 +68,9 @@ export function DpoEndHorizontal({
 
   return (
     <Section>
-      <RowAlignRight>
+      <Row justifyContent="flex-end">
         {maxEnd && <SText mobileFontSize="10px">{`${t(`Max`)}: ${parseFloat(maxEnd) > 0 ? maxEnd : '0'}`}</SText>}
-      </RowAlignRight>
+      </Row>
       <RowBetween>
         <RowFixed>
           <SText mobileFontSize="10px">
@@ -171,11 +171,11 @@ export function DpoManagerSeatsHorizontal({
     <>
       {seatCap && (
         <Section>
-          <RowAlignRight>
+          <Row justifyContent="flex-end">
             <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>
               {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
             </SText>
-          </RowAlignRight>
+          </Row>
           <RowBetween>
             <RowFixed>
               <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
@@ -318,11 +318,11 @@ export function DpoTargetDpoSeatsHorizontal({
     <>
       {seatCap && (
         <Section>
-          <RowAlignRight>
+          <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
               {t(`Remaining Seats`)}: {emptySeats}
             </SText>
-          </RowAlignRight>
+          </Row>
           <RowBetween>
             <RowFixed>
               <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>

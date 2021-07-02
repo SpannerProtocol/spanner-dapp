@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import QuestionHelper from 'components/QuestionHelper'
-import Row, { RowAlignRight, RowBetween, RowFixed } from 'components/Row'
+import Row, { RowBetween, RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import useConsts from 'hooks/useConsts'
@@ -247,13 +247,13 @@ export default function DpoTargetCabinForm({
       </SpacedSection>
       <SpacedSection>
         <Section>
-          <RowAlignRight>
+          <Row justifyContent="flex-end">
             <SText width={'fit-content'} fontSize="10px">{`${t('Balance')}: ${formatToUnit(
               balance,
               chainDecimals,
               2
             )} ${token}`}</SText>
-          </RowAlignRight>
+          </Row>
         </Section>
         <Section>
           <RowBetween>

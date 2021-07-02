@@ -9,7 +9,7 @@ import { TravelCabinInfo } from 'interfaces/bulletTrain'
 import { useBlockManager } from '../../../hooks/useBlocks'
 import { useTranslation } from 'react-i18next'
 import cdDivide from '../../../utils/cdDivide'
-import Row, { RowAlignRight, RowBetween, RowFixed } from '../../../components/Row'
+import Row, { RowBetween, RowFixed } from '../../../components/Row'
 import { ReactComponent as Ticket } from '../../../assets/svg/ticket.svg'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
@@ -310,12 +310,12 @@ function CabinCardDetails(props: TravelCabinCard) {
           </RowBetween>
         )}
         <Section>
-          <RowAlignRight>
+          <Row justifyContent="flex-end">
             <SText onClick={openSoldToModal} color={`${theme.primary1}`}>
               {t('Inventory')}
             </SText>
             <ArrowForwardIos style={{ color: `${theme.primary1}`, width: '12px', height: '12px' }} />
-          </RowAlignRight>
+          </Row>
         </Section>
       </SpacedSection>
       <Row style={{ alignItems: 'stretch', justifyContent: 'space-around' }} marginTop={'1.5rem'}>

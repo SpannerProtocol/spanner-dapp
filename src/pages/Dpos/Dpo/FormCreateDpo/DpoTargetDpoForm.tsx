@@ -2,7 +2,7 @@ import BN from 'bn.js'
 import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import QuestionHelper from 'components/QuestionHelper'
-import { RowAlignRight, RowBetween, RowFixed } from 'components/Row'
+import Row, { RowBetween, RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
@@ -268,13 +268,13 @@ export default function DpoTargetDpoForm({ dpoInfo, token, chainDecimals, onSubm
       </SpacedSection>
       <SpacedSection>
         <Section>
-          <RowAlignRight>
+          <Row justifyContent="flex-end">
             <SText width={'fit-content'} fontSize="10px">{`${t('Balance')}: ${formatToUnit(
               balance,
               chainDecimals,
               2
             )} ${token}`}</SText>
-          </RowAlignRight>
+          </Row>
         </Section>
         <Section>
           <RowBetween>
