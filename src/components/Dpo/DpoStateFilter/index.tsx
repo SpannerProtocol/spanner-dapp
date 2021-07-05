@@ -35,12 +35,12 @@ function getStateMap(state: ValidState): ValidStep {
     ACTIVE: 'ACTIVE',
     RUNNING: 'RUNNING',
     COMPLETED: 'COMPLETED',
-    FAILED: 'CREATED',
+    FAILED: 'FAILED',
   }
   return states[state] as ValidStep
 }
 
-export default function DpoStateFilter({
+export default function DpoStateBar({
   dpoInfo,
   defaultState,
   setSelectedState,
@@ -51,13 +51,11 @@ export default function DpoStateFilter({
 }) {
   const classes = useStyles()
   // FAILED state will be lumped with CREATED and if FAILED then CREATED label will be EXPIRED
-  const steps = useMemo(() => ['CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED'], [])
-  // Set the default step from the DPO State into the useState so that it won't need to render
-  // two different components. disabled exhaustive-deps because we only want this once.
+  const normalSteps = useMemo(() => ['CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED'], [])
+  const failedSteps = useMemo(() => ['CREATED', 'FAILED'], [])
+  const steps = useMemo(() => (dpoInfo.state.isFailed ? failedSteps : normalSteps), [dpoInfo, failedSteps, normalSteps])
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const defaultStep = useMemo(() => getStateMap(defaultState as ValidState), [])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const defaultStepIndex = useMemo(() => steps.findIndex((step) => step === defaultStep), [])
+  const defaultStepIndex = useMemo(() => steps.findIndex((step) => step === defaultState), [])
   const [activeStep, setActiveStep] = React.useState(defaultStepIndex)
   const { t } = useTranslation()
 
