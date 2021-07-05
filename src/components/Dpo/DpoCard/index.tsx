@@ -179,7 +179,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
                         totalDeposit: dpoInfo.target_amount.toBn(),
                         chainDecimals: chainDecimals,
                         blockTime: expectedBlockTime,
-                        period: dpoInfo.target_maturity,
+                        maturity: dpoInfo.target_maturity,
                       }).toString()}%`}
                     </HeavyText>
                   </div>

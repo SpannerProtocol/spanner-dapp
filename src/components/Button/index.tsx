@@ -47,14 +47,13 @@ const Base = styled(RebassButton)<{
   > * {
     user-select: none;
   }
-  ${({ mobileFontSize, mobilePadding, mobileMinWidth, mobileMinHeight, mobileMaxWidth, theme }) => theme.mediaWidth
-    .upToExtraSmall`
-  font-size: ${mobileFontSize ? mobileFontSize : '12px'};
-  padding: ${mobilePadding ? mobilePadding : '0.5rem'};
-  min-width: ${mobileMinWidth ? mobileMinWidth : '100px'};
-  min-height: ${mobileMinHeight ? mobileMinHeight : '25px'};
-  max-width: ${mobileMaxWidth ? mobileMaxWidth : '125px'};
-`};
+  @media only screen and (max-width: 500px) {
+    font-size: ${({ mobileFontSize }) => (mobileFontSize ? mobileFontSize : '12px')};
+    padding: ${({ mobilePadding }) => (mobilePadding ? mobilePadding : '0.5rem')};
+    min-width: ${({ mobileMinWidth }) => (mobileMinWidth ? mobileMinWidth : '100px')};
+    min-height: ${({ mobileMinHeight }) => (mobileMinHeight ? mobileMinHeight : '25px')};
+    max-width: ${({ mobileMaxWidth }) => (mobileMaxWidth ? mobileMaxWidth : '125px')};
+  }
 `
 
 export const ButtonPrimary = styled(Base)`

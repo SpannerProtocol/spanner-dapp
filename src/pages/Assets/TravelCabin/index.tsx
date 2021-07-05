@@ -434,7 +434,7 @@ function SelectedTravelCabin(props: TravelCabinItemProps): JSX.Element {
                           totalDeposit: travelCabinInfo.deposit_amount.toBn(),
                           chainDecimals: chainDecimals,
                           blockTime: expectedBlockTime,
-                          period: travelCabinInfo.maturity,
+                          maturity: travelCabinInfo.maturity,
                           precision: 2,
                         }).toString()}% APY`})`}
                       </SText>
