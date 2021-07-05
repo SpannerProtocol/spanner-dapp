@@ -1,9 +1,10 @@
 import Divider from 'components/Divider'
-import { SLink, SHashLink } from 'components/Link'
+import { SHashLink, SLink } from 'components/Link'
+import { StateOverlay } from 'components/Overlay'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, Header3, HeavyText, SText, TokenText } from 'components/Text'
 import { useSubDpo } from 'hooks/useQueryDpos'
-import { useSubTravelCabin, useDpoTravelCabinInventoryIndex } from 'hooks/useQueryTravelCabins'
+import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -82,7 +83,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   )
 
   return (
-    <>
+    <StateOverlay isOn={!dpoStateIsSelectedState}>
       <RowBetween>
         <div style={{ display: 'block' }}>
           {dpoStateIsSelectedState ? (
@@ -133,7 +134,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
           <SText>{t(`Summary data will be displayed once DPO goal is complete`)}</SText>
         </>
       )}
-    </>
+    </StateOverlay>
   )
 }
 

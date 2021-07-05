@@ -1,6 +1,6 @@
 import DetailCard from 'components/Card/DetailCard'
 import Divider from 'components/Divider'
-import DpoStateFilter from 'components/Dpo/DpoStateFilter'
+import DpoStateBar from 'components/Dpo/DpoStateBar'
 import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
 import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { usePathDpoInfoTab } from 'hooks/usePath'
@@ -48,7 +48,7 @@ export default function Dpo(): JSX.Element {
 
   useEffect(() => {
     if (!dpoInfo) return
-    setSelectedState(dpoInfo.state.isFailed ? 'CREATED' : dpoInfo.state.toString())
+    setSelectedState(dpoInfo.state.toString())
   }, [dpoInfo])
 
   useEffect(() => {
@@ -74,7 +74,7 @@ export default function Dpo(): JSX.Element {
               mobileMargin="0 0 0.5rem 0"
             >
               <SpacedSection>
-                <DpoStateFilter
+                <DpoStateBar
                   dpoInfo={dpoInfo}
                   defaultState={dpoInfo.state.toString()}
                   setSelectedState={setSelectedState}

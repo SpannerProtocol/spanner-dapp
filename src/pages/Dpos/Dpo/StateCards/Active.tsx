@@ -1,4 +1,5 @@
 import { SHashLink, SLink } from 'components/Link'
+import { StateOverlay } from 'components/Overlay'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, SText } from 'components/Text'
 import { useDpoInTargetDpo, useSubDpo } from 'hooks/useQueryDpos'
@@ -139,7 +140,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   )
 
   return (
-    <>
+    <StateOverlay isOn={!dpoStateIsSelectedState}>
       <RowBetween>
         <div style={{ display: 'block' }}>
           {stateCompleted ? (
@@ -170,7 +171,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
         <TargetCabin dpoInfo={dpoInfo} selectedState={selectedState} />
       )}
       <DpoActions dpoInfo={dpoInfo} selectedState={selectedState} />
-    </>
+    </StateOverlay>
   )
 }
 

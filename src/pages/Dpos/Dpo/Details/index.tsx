@@ -154,7 +154,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                       totalDeposit: dpoInfo.target_amount.toBn(),
                       chainDecimals: chainDecimals,
                       blockTime: expectedBlockTime,
-                      period: dpoInfo.target_maturity,
+                      maturity: dpoInfo.target_maturity,
                       precision: 2,
                     }).toString()}% APY)`}
                   </SText>
