@@ -1,38 +1,38 @@
-import { PageWrapper, Section, Wrapper } from '../../components/Wrapper'
-import { HeavyText, SText } from '../../components/Text'
+import { PageWrapper, Section, Wrapper } from '../../../components/Wrapper'
+import { HeavyText, SText } from '../../../components/Text'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import Row, { RowBetween } from '../../components/Row'
-import { getCabinClassByIndex, getCabinClassImage } from '../../utils/getCabinClass'
-import { ReactComponent as Ticket } from '../../assets/svg/ticket.svg'
-import { FlatCard } from '../../components/Card'
+import Row, { RowBetween } from '../../../components/Row'
+import { getCabinClassByIndex, getCabinClassImage } from '../../../utils/getCabinClass'
+import { ReactComponent as Ticket } from '../../../assets/svg/ticket.svg'
+import { FlatCard } from '../../../components/Card'
 import { useTranslation } from 'react-i18next'
-import { ButtonPrimary } from '../../components/Button'
-import { useItemCabinBuyer } from '../../hooks/useItem'
+import { ButtonPrimary } from '../../../components/Button'
+import { useItemCabinBuyer } from '../../../hooks/useItem'
 import {
   useSubTravelCabin,
   useSubTravelCabinBuyerVerbose,
   useTravelCabinBuyers,
-} from '../../hooks/useQueryTravelCabins'
+} from '../../../hooks/useQueryTravelCabins'
 import {
   TravelCabinBuyerInfo,
   TravelCabinIndex,
   TravelCabinInfo,
   TravelCabinInventoryIndex,
 } from 'interfaces/bulletTrain'
-import { bnToUnit, formatToUnit } from '../../utils/formatUnit'
-import { useSubstrate } from '../../hooks/useSubstrate'
-import { shortenAddr } from '../../utils/truncateString'
-import { estimateBlockToTs, tsToDate, tsToTime } from '../../utils/formatBlocks'
+import { bnToUnit, formatToUnit } from '../../../utils/formatUnit'
+import { useSubstrate } from '../../../hooks/useSubstrate'
+import { shortenAddr } from '../../../utils/truncateString'
+import { estimateBlockToTs, tsToDate, tsToTime } from '../../../utils/formatBlocks'
 import BN from 'bn.js'
-import useUserActions from '../../hooks/useUserActions'
-import TxModal from '../../components/Modal/TxModal'
-import TxFee from '../../components/TxFee'
-import useTxHelpers from '../../hooks/useTxHelpers'
+import useUserActions from '../../../hooks/useUserActions'
+import TxModal from '../../../components/Modal/TxModal'
+import TxFee from '../../../components/TxFee'
+import useTxHelpers from '../../../hooks/useTxHelpers'
 import { Step, StepLabel, Stepper } from '@material-ui/core'
 import type { BlockNumber } from '@polkadot/types/interfaces'
 import { Moment } from '@polkadot/types/interfaces'
-import { useBlockManager, useBlockTime } from '../../hooks/useBlocks'
+import { useBlockManager, useBlockTime } from '../../../hooks/useBlocks'
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -206,8 +206,8 @@ export function YieldAvailable(props: CabinInfoProps) {
   const [actionEnable, setActionEnable] = useState<boolean>(false)
   const { actions } = useUserActions(travelCabinInfo.index, travelCabinInventoryIndex)
   useEffect(() => {
-    if (!actions) return
     setActionEnable(false)
+    if (!actions) return
     actions.forEach((action) => {
       if (action.action === 'withdrawYieldFromTravelCabin') {
         setActionEnable(true)
@@ -306,8 +306,8 @@ export function FareAvailable(props: CabinInfoProps) {
   const [actionEnable, setActionEnable] = useState<boolean>(false)
   const { actions } = useUserActions(travelCabinInfo.index, travelCabinInventoryIndex)
   useEffect(() => {
-    if (!actions) return
     setActionEnable(false)
+    if (!actions) return
     actions.forEach((action) => {
       if (action.action === 'withdrawFareFromTravelCabin') {
         setActionEnable(true)
