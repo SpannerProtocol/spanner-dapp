@@ -4,7 +4,7 @@ import BN from 'bn.js'
 import { RowFixed } from 'components/Row'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import Card from '../../components/Card'
+import Card, { BannerCard } from '../../components/Card'
 import { Header2, HeavyText, SText, TokenText } from '../../components/Text'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import useWallet from '../../hooks/useWallet'
@@ -16,6 +16,16 @@ import userTransferIn from '../../queries/graphql/userTransferIn'
 import userTransferOut from '../../queries/graphql/userTransferOut'
 import { useProjectState } from '../../state/project/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
+import BannerSpannerDarkBg from '../../assets/images/banner-spanner-dark.png'
+import { SLink } from '../../components/Link'
+import { CircleNextIconWrapper, StyledCircleNextWhite } from './index'
+import { extrinsicsCountByAddress } from '../../queries/graphql/extrinsics'
+import {
+  ExtrinsicsCountByAddress,
+  ExtrinsicsCountByAddressVariables,
+} from '../../queries/graphql/types/ExtrinsicsCountByAddress'
+import Skeleton from 'react-loading-skeleton'
+import { useChainState } from '../../state/connections/hooks'
 
 interface TokenDeposits {
   [token: string]: {
@@ -171,14 +181,41 @@ export function UserAssetSummaryContainer() {
   const wallet = useWallet()
   const project = useProjectState()
 
+  const [loadExtrinsicsCount, { loading, data }] = useLazyQuery<
+    ExtrinsicsCountByAddress,
+    ExtrinsicsCountByAddressVariables
+  >(extrinsicsCountByAddress, {
+    variables: {
+      address: wallet && wallet.address ? wallet.address : '',
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!wallet || !wallet.address) return
+    loadExtrinsicsCount()
+  }, [loadExtrinsicsCount, wallet])
+
+  // if (wallet === undefined || wallet.address === undefined) {
+  //   return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
+  // }
   if (wallet === undefined || wallet.address === undefined) {
-    return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
+    return <NewUserAdvice />
   }
 
   const address = wallet.address
   const selectedToken = project.selectedProject ? project.selectedProject.token : 'BOLT'
 
-  return <UserAssetSummaryFetch address={address} token={selectedToken} />
+  console.log(`data.extrinsics:${data?.extrinsics}`)
+  console.log(`data.extrinsics.total:${data?.extrinsics?.totalCount}`)
+
+  return loading ? (
+    <Skeleton count={6} style={{ margin: '0.5rem 0' }} />
+  ) : data && data.extrinsics && data.extrinsics.totalCount > 0 ? (
+    <UserAssetSummaryFetch address={address} token={selectedToken} />
+  ) : (
+    <NewUserAdvice />
+  )
 }
 
 export function UserAssetSummaryFetch({ address, token }: { address: string; token: string }) {
@@ -231,5 +268,32 @@ export function UserAssetSummary({
       {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}
       {/*<HomeSectionValue1>{'$198.04'}</HomeSectionValue1>*/}
     </Card>
+  )
+}
+
+export function NewUserAdvice() {
+  const { t } = useTranslation()
+  let linkUrl = ''
+  let firstStepFromWhat = ''
+
+  const { chain } = useChainState()
+
+  if (chain && chain.chain == 'Spanner') {
+    linkUrl = '/bridge'
+    firstStepFromWhat = 'Bridge'
+  } else if (chain && chain.chain == 'Hammer') {
+    linkUrl = '/faucet'
+    firstStepFromWhat = 'Faucet'
+  }
+
+  return (
+    <BannerCard border="1 solid transparent" url={BannerSpannerDarkBg} margin="0 0 1rem 0">
+      <Header2 colorIsPrimary>{t('Start your first step with', { what: t(firstStepFromWhat) })}</Header2>
+      <SLink to={linkUrl}>
+        <CircleNextIconWrapper>
+          <StyledCircleNextWhite />
+        </CircleNextIconWrapper>
+      </SLink>
+    </BannerCard>
   )
 }
