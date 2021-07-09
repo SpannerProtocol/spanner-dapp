@@ -23,7 +23,6 @@ import { noNan } from 'utils/formatNumbers'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
-import { getCabinClassImage } from '../../../../utils/getCabinClass'
 import { ColumnCenter } from '../../../Column'
 import {
   DpoBaseFeeHorizontal,
@@ -269,7 +268,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
         </Section>
         <Section>
           <RowBetween>
-            <RowFixed>
+            <RowFixed width="fit-content">
               <SText>{t(`Default Target`)}</SText>
               <QuestionHelper
                 text={t(
@@ -279,12 +278,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <Row style={{ justifyContent: 'flex-end' }}>
-              <div style={{ maxWidth: '30px', width: '30px' }}>
-                {getCabinClassImage(travelCabinInfo.name.toString())}
-              </div>
-              <SText width={'fit-content'}>{`${t(`TravelCabin`)} ${travelCabinInfo.name.toString()}`}</SText>
-            </Row>
+            <SText width={'fit-content'}>{`${t(`TravelCabin`)}: ${travelCabinInfo.name.toString()}`}</SText>
           </RowBetween>
         </Section>
         <Section>
