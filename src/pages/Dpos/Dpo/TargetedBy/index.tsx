@@ -1,16 +1,19 @@
 import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
 import type { BlockNumber } from '@polkadot/types/interfaces'
+import IconFire from 'assets/images/icon-fire.png'
 import BN from 'bn.js'
 import Divider from 'components/Divider'
+import { SLink } from 'components/Link'
+import { ListItem, UnorderedList } from 'components/List'
 import StandardModal from 'components/Modal/StandardModal'
 import { CircleProgress } from 'components/ProgressBar'
+import { RowFixed } from 'components/Row'
 import { Header4, HeavyText, SText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
-import { LocalSpinner } from 'pages/Spinner'
 import { createdDpoAllArgsOnly } from 'queries/graphql/createdDpoAllArgsOnly'
 import { dposTargetPurchasedIncludes } from 'queries/graphql/dposTargetPurchasedIncludes'
 import { CreatedDpoAllArgsOnly } from 'queries/graphql/types/CreatedDpoAllArgsOnly'
@@ -21,13 +24,10 @@ import {
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { SLink } from 'components/Link'
+import Skeleton from 'react-loading-skeleton'
 import { DpoInfo } from 'spanner-interfaces'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
-import IconFire from 'assets/images/icon-fire.png'
-import { RowFixed } from 'components/Row'
-import { ListItem, UnorderedList } from 'components/List'
 
 const Row = styled.div`
   display: grid;
@@ -343,9 +343,7 @@ export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
       {createdError || purchasedError ? null : (
         <>
           {createdLoading || purchasedLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <LocalSpinner />
-            </div>
+            <Skeleton height={60} count={1} style={{ margin: '0.5rem 0' }} />
           ) : (
             <>
               {targeterRows && targetSections ? (

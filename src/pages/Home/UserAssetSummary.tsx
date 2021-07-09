@@ -225,7 +225,7 @@ export function UserAssetSummary({
         <HeavyText fontSize="40px" mobileFontSize="30px" colorIsPrimary>
           {`${totalDepositedBOLT}`}
         </HeavyText>
-        <TokenText>BOLT</TokenText>
+        <TokenText fontSize="16px" mobileFontSize="14px" padding="0 0.5rem">BOLT</TokenText>
       </RowFixed>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
       {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}

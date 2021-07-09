@@ -1,6 +1,7 @@
+import { CenterWrapper } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { FlatCard } from '../../components/Card'
+import Card from '../../components/Card'
 import { RowBetween } from '../../components/Row'
 import { Header2, Header4, HeavyText } from '../../components/Text'
 import { useBlockManager } from '../../hooks/useBlocks'
@@ -8,14 +9,13 @@ import { useSubstrate } from '../../hooks/useSubstrate'
 
 export function Blockchain() {
   const { lastBlock, expectedBlockTime } = useBlockManager()
-  const constants = useSubstrate()
-  const { chain } = constants
+  const { chain } = useSubstrate()
   const { t } = useTranslation()
 
   return (
-    <FlatCard style={{ textAlign: 'left', paddingBottom: '2rem' }}>
+    <Card>
       <Header2>{t(`Blockchain Info`)}</Header2>
-      <RowBetween>
+      <RowBetween padding="0.5rem 0">
         <HeavyText fontSize="18px" mobileFontSize="14px">
           {t(`Connected to`)}
         </HeavyText>
@@ -24,7 +24,7 @@ export function Blockchain() {
         </HeavyText>
       </RowBetween>
       {expectedBlockTime && (
-        <RowBetween>
+        <RowBetween padding="0.5rem 0">
           <HeavyText fontSize="18px" mobileFontSize="14px">
             {t(`Estimated Time per Block`)}
           </HeavyText>
@@ -34,15 +34,15 @@ export function Blockchain() {
         </RowBetween>
       )}
       {lastBlock && (
-        <>
-          <div style={{ textAlign: 'center', margin: 'auto', padding: '1rem 0' }}>
+        <CenterWrapper>
+          <div style={{ display: 'block', padding: '1rem 0' }}>
             <Header4>{t(`# of Blocks Finalized`)}</Header4>
+            <HeavyText fontSize="30px" mobileFontSize="24px" colorIsPrimary width="100%" textAlign="center">
+              {lastBlock.toString()}
+            </HeavyText>
           </div>
-          <HeavyText fontSize="30px" mobileFontSize="24px" colorIsPrimary width="100%" textAlign="center">
-            {lastBlock.toString()}
-          </HeavyText>
-        </>
+        </CenterWrapper>
       )}
-    </FlatCard>
+    </Card>
   )
 }

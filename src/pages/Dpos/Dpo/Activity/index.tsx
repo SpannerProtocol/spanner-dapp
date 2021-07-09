@@ -214,7 +214,7 @@ function Activities({ eventIds, orderBy }: { eventIds: string[]; orderBy: Events
       {error || loading ? (
         <>
           {error && <SText>{t(`Under maintenance`)}</SText>}
-          {loading && <Skeleton height={30} count={10} style={{ margin: '0.5rem 0' }} />}
+          {loading && <Skeleton height={30} count={3} style={{ margin: '0.5rem 0' }} />}
         </>
       ) : (
         <>

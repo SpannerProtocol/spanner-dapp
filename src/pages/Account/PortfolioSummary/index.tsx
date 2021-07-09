@@ -2,19 +2,19 @@
 import { useLazyQuery } from '@apollo/client'
 import BN from 'bn.js'
 import Card from 'components/Card'
-import { TokenText, HeavyText, Header2, SText } from 'components/Text'
+import { Header2, HeavyText, SText, TokenText } from 'components/Text'
+import { IconWrapper } from 'components/Wrapper'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/UserTransferIn'
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
 import userTransferIn from 'queries/graphql/userTransferIn'
 import userTransferOut from 'queries/graphql/userTransferOut'
-import React, { useEffect, useState, useCallback, useContext } from 'react'
-import { useTranslation } from 'react-i18next'
-import { formatToUnit } from 'utils/formatUnit'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
+import { useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
 import { ThemeContext } from 'styled-components'
-import { IconWrapper } from 'components/Wrapper'
-import { LocalSpinner } from 'pages/Spinner'
+import { formatToUnit } from 'utils/formatUnit'
 
 interface TokenDeposits {
   [token: string]: {
@@ -124,71 +124,74 @@ export default function PortfolioSummary({ address, selectedToken }: { address: 
 
   return (
     <>
-      {inError || outError ? null : (
+      {inLoading ||
+        outLoading ||
+        ((inError || outError) && (
+          <>
+            {(inLoading || outLoading) && (
+              <div style={{ display: 'flex', justifyContent: 'center' }}>
+                <Skeleton height={15} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={50} count={1} style={{ margin: '0.5rem 0' }} />
+              </div>
+            )}
+          </>
+        ))}
+      {!(inLoading || outLoading) && !(inError || outError) && totalDeposited[selectedToken] && (
         <>
-          {(inLoading || outLoading) && (
-            <div style={{ display: 'flex', justifyContent: 'center' }}>
-              <LocalSpinner />
-            </div>
-          )}
-          {!(inLoading || outLoading) && totalDeposited[selectedToken] && (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Header2 width="fit-content" margin="0">
-                  {t(`Portfolio Summary`)}
-                </Header2>
-                <IconWrapper margin="0 0.5rem">
-                  <RefreshCw onClick={getPortfolioSummaryData} size={'16px'} color={theme.text3} />
-                </IconWrapper>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
-                  <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
-                    {t(`Total Deposited`)}
-                  </SText>
-                  {Object.keys(totalDeposited).includes(selectedToken) && (
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+            <Header2 width="fit-content" margin="0">
+              {t(`Portfolio Summary`)}
+            </Header2>
+            <IconWrapper margin="0 0.5rem">
+              <RefreshCw onClick={getPortfolioSummaryData} size={'16px'} color={theme.text3} />
+            </IconWrapper>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
+            <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
+              <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
+                {t(`Total Deposited`)}
+              </SText>
+              {Object.keys(totalDeposited).includes(selectedToken) && (
+                <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                  <HeavyText fontSize="20px" mobileFontSize="18px" colorIsPrimary>
+                    {formatToUnit(totalDeposited[selectedToken].total, chainDecimals)}
+                  </HeavyText>
+                  <TokenText padding="0 0 0 0.5rem">{selectedToken}</TokenText>
+                </div>
+              )}
+            </Card>
+            <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
+              <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
+                {t(`Deposit by Asset`)}
+              </SText>
+              {Object.keys(totalDeposited).includes(selectedToken) && (
+                <div style={{ display: 'block' }}>
+                  {totalDeposited[selectedToken].dpoCount > 0 && (
                     <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                      <HeavyText fontSize="20px" mobileFontSize="18px" colorIsPrimary>
-                        {formatToUnit(totalDeposited[selectedToken].total, chainDecimals)}
-                      </HeavyText>
-                      <TokenText padding="0 0 0 0.5rem">{selectedToken}</TokenText>
+                      <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
+                        {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
+                      </SText>
+                      <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
+                      <SText fontSize="14px" mobileFontSize="10px">
+                        {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
+                      </SText>
                     </div>
                   )}
-                </Card>
-                <Card minHeight="80px" mobileMinHeight="70px" margin="0 0.5rem" padding="0.75rem">
-                  <SText mobileFontSize="12px" padding="0 0 0.5rem 0">
-                    {t(`Deposit by Asset`)}
-                  </SText>
-                  {Object.keys(totalDeposited).includes(selectedToken) && (
-                    <div style={{ display: 'block' }}>
-                      {totalDeposited[selectedToken].dpoCount > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
-                            {formatToUnit(totalDeposited[selectedToken].lockedInDpos, chainDecimals)}
-                          </SText>
-                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
-                          <SText fontSize="14px" mobileFontSize="10px">
-                            {` ${t(`in`)} ${totalDeposited[selectedToken].dpoCount} ${t(`DPOs`)}`}
-                          </SText>
-                        </div>
-                      )}
-                      {totalDeposited[selectedToken].cabinCount > 0 && (
-                        <div style={{ display: 'flex', alignItems: 'baseline' }}>
-                          <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
-                            {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
-                          </SText>
-                          <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
-                          <SText fontSize="14px" mobileFontSize="10px">
-                            {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
-                          </SText>
-                        </div>
-                      )}
+                  {totalDeposited[selectedToken].cabinCount > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'baseline' }}>
+                      <SText fontSize="14px" mobileFontSize="10px" colorIsPrimary>
+                        {formatToUnit(totalDeposited[selectedToken].lockedInCabins, chainDecimals)}
+                      </SText>
+                      <TokenText padding="0 0.25rem 0 0.25rem">{selectedToken}</TokenText>
+                      <SText fontSize="14px" mobileFontSize="10px">
+                        {` ${t(`in`)} ${totalDeposited[selectedToken].cabinCount} ${t(`Cabins`)}`}
+                      </SText>
                     </div>
                   )}
-                </Card>
-              </div>
-            </>
-          )}
+                </div>
+              )}
+            </Card>
+          </div>
         </>
       )}
     </>

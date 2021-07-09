@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next'
 import 'swiper/components/pagination/pagination.min.css'
 import SwiperCore, { Pagination } from 'swiper/core'
 import { Swiper, SwiperSlide } from 'swiper/react'
-// Import Swiper styles
 import 'swiper/swiper.min.css'
 import bulletTrainBg from '../../assets/images/banner-bullettrain-desktop.jpg'
 import Card, { BannerCard } from '../../components/Card'
-import { RowBetween } from '../../components/Row'
-import { Header2, Header4, HeavyText, SText } from '../../components/Text'
+import { RowBetween, RowFixed } from '../../components/Row'
+import { Header2, Header4, HeavyText, SText, TokenText } from '../../components/Text'
 import useStats from '../../hooks/useStats'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import { formatToUnit } from '../../utils/formatUnit'
@@ -85,17 +84,27 @@ export function BulletTrainStats() {
         <HeavyText fontSize="18px" mobileFontSize="14px">
           {t('Total Deposited Value')}
         </HeavyText>
-        <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
-          {`${formatToUnit(stats.totalValueLocked, chainDecimals)} ${token}`}
-        </HeavyText>
+        <RowFixed width="fit-content" align="baseline">
+          <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+            {`${formatToUnit(stats.totalValueLocked, chainDecimals)}`}
+          </HeavyText>
+          <TokenText fontSize="16px" mobileFontSize="12px" padding="0 0.5rem">
+            {`${token}`}
+          </TokenText>
+        </RowFixed>
       </RowBetween>
       <RowBetween padding="0 0 1rem 0">
         <HeavyText fontSize="18px" mobileFontSize="14px">
           {t('Total Yield Distributed')}
         </HeavyText>
-        <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
-          {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)} ${token}`}
-        </HeavyText>
+        <RowFixed width="fit-content" align="baseline">
+          <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
+            {`${formatToUnit(stats.totalYieldWithdrawn, chainDecimals)}`}
+          </HeavyText>
+          <TokenText fontSize="16px" mobileFontSize="12px" padding="0 0.5rem">
+            {`${token}`}
+          </TokenText>
+        </RowFixed>
       </RowBetween>
     </Card>
   )

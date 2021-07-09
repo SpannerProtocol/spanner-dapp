@@ -1,24 +1,24 @@
 import { useLazyQuery } from '@apollo/client'
-import Card from 'components/Card'
 import CabinBuyerCard from 'components/AssetCards/CabinBuyerCard'
+import Card from 'components/Card'
 import { DpoProfileCard } from 'components/Dpo/DpoCard'
-import { WarningMsg, Header2, SText, Header3 } from 'components/Text'
+import DpoProfileFilters from 'components/Dpo/DpoProfileFilters'
+import ProjectSettings from 'components/ProjectSettings'
+import { Header2, Header3, SText, WarningMsg } from 'components/Text'
 import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'
+import { useDposMulti } from 'hooks/useQueryDpos'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
 import userPortfolio from 'queries/graphql/userPortfolio'
-import React, { useCallback, useEffect, useContext, useState } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import PortfolioSummary from './PortfolioSummary'
-import ProjectSettings from 'components/ProjectSettings'
-import { useProjectState } from 'state/project/hooks'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
-import { ThemeContext } from 'styled-components'
-import { LocalSpinner } from 'pages/Spinner'
-import { useDposMulti } from 'hooks/useQueryDpos'
+import { Trans, useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
+import { Link } from 'react-router-dom'
 import { DpoInfo } from 'spanner-interfaces'
-import DpoProfileFilters from 'components/Dpo/DpoProfileFilters'
+import { useProjectState } from 'state/project/hooks'
+import { ThemeContext } from 'styled-components'
+import PortfolioSummary from './PortfolioSummary'
 
 interface Asset {
   dpoIndexes: string[]
@@ -133,7 +133,14 @@ export default function Portfolio(): JSX.Element {
                 <RefreshCw size={'16px'} color={theme.text3} />
               </IconWrapper>
             </div>
-            {loading && <LocalSpinner />}
+            {loading && (
+              <>
+                <Skeleton height={10} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={10} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />
+              </>
+            )}
             {!loading && (
               <>
                 {assets.cabinIndexes.length > 0 && (

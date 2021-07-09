@@ -336,7 +336,6 @@ function MainSection({
           </SText>
         </CenterWrapper>
         <CreateHighlights dpoInfo={dpoInfo} onBuy={openBuyFormModal} />
-        {/* <CreateDpoOrBuy dpoInfo={dpoInfo} onBuy={openBuyFormModal} onCreateDpo={openCreateDpoFormModal} /> */}
       </SpacedSection>
     </>
   )
