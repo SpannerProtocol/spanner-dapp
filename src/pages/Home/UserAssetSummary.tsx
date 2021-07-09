@@ -1,19 +1,28 @@
 import { useLazyQuery, useQuery } from '@apollo/client'
 import { ApolloError } from '@apollo/client/errors'
 import BN from 'bn.js'
+import { FakeButton } from 'components/Button'
 import { RowFixed } from 'components/Row'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
 import Card from '../../components/Card'
+import { SLink } from '../../components/Link'
 import { Header2, HeavyText, SText, TokenText } from '../../components/Text'
 import { useSubstrate } from '../../hooks/useSubstrate'
 import useWallet from '../../hooks/useWallet'
+import { extrinsicsCountByAddress } from '../../queries/graphql/extrinsics'
 import pairPrice from '../../queries/graphql/pairPrice'
+import {
+  ExtrinsicsCountByAddress,
+  ExtrinsicsCountByAddressVariables,
+} from '../../queries/graphql/types/ExtrinsicsCountByAddress'
 import { PairPrice, PairPriceVariables } from '../../queries/graphql/types/PairPrice'
 import { UserTransferIn, UserTransferInVariables } from '../../queries/graphql/types/UserTransferIn'
 import { UserTransferOut, UserTransferOutVariables } from '../../queries/graphql/types/UserTransferOut'
 import userTransferIn from '../../queries/graphql/userTransferIn'
 import userTransferOut from '../../queries/graphql/userTransferOut'
+import { useChainState } from '../../state/connections/hooks'
 import { useProjectState } from '../../state/project/hooks'
 import { formatToUnit } from '../../utils/formatUnit'
 
@@ -171,14 +180,35 @@ export function UserAssetSummaryContainer() {
   const wallet = useWallet()
   const project = useProjectState()
 
+  const [loadExtrinsicsCount, { loading, data }] = useLazyQuery<
+    ExtrinsicsCountByAddress,
+    ExtrinsicsCountByAddressVariables
+  >(extrinsicsCountByAddress, {
+    variables: {
+      address: wallet && wallet.address ? wallet.address : '',
+    },
+    fetchPolicy: 'network-only',
+  })
+
+  useEffect(() => {
+    if (!wallet || !wallet.address) return
+    loadExtrinsicsCount()
+  }, [loadExtrinsicsCount, wallet])
+
   if (wallet === undefined || wallet.address === undefined) {
-    return <UserAssetSummary totalDepositedBOLT={'0'} totalDepositedUSD={'0'} />
+    return <NewUserAdvice />
   }
 
   const address = wallet.address
   const selectedToken = project.selectedProject ? project.selectedProject.token : 'BOLT'
 
-  return <UserAssetSummaryFetch address={address} token={selectedToken} />
+  return loading ? (
+    <Skeleton count={3} height={25} style={{ margin: '0.5rem 0' }} />
+  ) : data && data.extrinsics && data.extrinsics.totalCount > 0 ? (
+    <UserAssetSummaryFetch address={address} token={selectedToken} />
+  ) : (
+    <NewUserAdvice />
+  )
 }
 
 export function UserAssetSummaryFetch({ address, token }: { address: string; token: string }) {
@@ -230,6 +260,39 @@ export function UserAssetSummary({
         </TokenText>
       </RowFixed>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
+    </Card>
+  )
+}
+
+export function NewUserAdvice() {
+  const { t } = useTranslation()
+  let linkUrl = ''
+  let message = ''
+  let buttonText = ''
+
+  const { chain } = useChainState()
+
+  if (chain && chain.chain === 'Spanner') {
+    linkUrl = '/bridge'
+    message = 'Start by transferring crypto to Spanner with our Bridge'
+    buttonText = 'Use Bridge'
+  } else if (chain && chain.chain === 'Hammer') {
+    linkUrl = '/faucet'
+    message = 'Get FREE BOLT to play with on Hammer Testnet'
+    buttonText = 'Use Faucet'
+  }
+
+  return (
+    <Card margin="0">
+      <Header2>{t(`New to Spanner?`)}</Header2>
+      <SText fontSize="22px" mobileFontSize="18px">
+        {t(message)}
+      </SText>
+      <SLink padding="1rem 0" to={linkUrl}>
+        <FakeButton margin="1rem 0" mobileMargin="1rem 0">
+          {t(buttonText)}
+        </FakeButton>
+      </SLink>
     </Card>
   )
 }

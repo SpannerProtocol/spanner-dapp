@@ -87,10 +87,26 @@ export const FakeButton = styled.div<{
   borderRadius?: string
   altDisabledStyle?: boolean
   fontSize?: string
+  color?: string
+  margin?: string
+  borderColor?: string
+  minHeight?: string
+  minWidth?: string
+  maxWidth?: string
+  mobileMargin?: string
+  mobileFontSize?: string
+  mobilePadding?: string
+  mobileMinHeight?: string
+  mobileMinWidth?: string
+  mobileMaxWidth?: string
 }>`
   padding: ${({ padding }) => (padding ? padding : '0.5rem')};
+  margin: ${({ margin }) => (margin ? margin : '0')};
   width: ${({ width }) => (width ? width : '100%')};
-  font-size: ${({ fontSize }) => (fontSize ? fontSize : '14px')};
+  min-width: ${({ minWidth }) => (minWidth ? minWidth : '120px')};
+  min-height: ${({ minHeight }) => (minHeight ? minHeight : '25px')};
+  max-width: ${({ maxWidth }) => (maxWidth ? maxWidth : '160px')};
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '16px')};
   font-weight: 900;
   text-align: center;
   border: 1px solid transparent;
@@ -116,6 +132,14 @@ export const FakeButton = styled.div<{
     border: 1px solid transparent;
     outline: none;
     opacity: ${({ altDisabledStyle }) => (altDisabledStyle ? '0.7' : '1')};
+  }
+  @media only screen and (max-width: 500px) {
+    font-size: ${({ mobileFontSize }) => (mobileFontSize ? mobileFontSize : '12px')};
+    padding: ${({ mobilePadding }) => (mobilePadding ? mobilePadding : '0.5rem')};
+    min-width: ${({ mobileMinWidth }) => (mobileMinWidth ? mobileMinWidth : '100px')};
+    min-height: ${({ mobileMinHeight }) => (mobileMinHeight ? mobileMinHeight : '25px')};
+    max-width: ${({ mobileMaxWidth }) => (mobileMaxWidth ? mobileMaxWidth : '125px')};
+    margin: ${({ mobileMargin }) => (mobileMargin ? mobileMargin : '0')};
   }
 `
 
