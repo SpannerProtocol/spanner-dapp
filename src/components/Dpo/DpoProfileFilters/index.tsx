@@ -98,7 +98,7 @@ export default function DpoProfileFilters({ unfilteredDpos, setFilteredDpos }: D
 
   const [primaryFilteredDpos, setPrimaryFilteredDpos] = useState<DpoInfo[]>([])
   const [finalDpos, setFinalDpos] = useState<DpoInfo[]>([])
-  const { lastBlock } = useGetLastBlock()
+  const lastBlock = useGetLastBlock()
   const { t } = useTranslation()
 
   // Primary Filters - State and Asset

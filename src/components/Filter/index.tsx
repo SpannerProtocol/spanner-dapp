@@ -76,25 +76,23 @@ function FilterOptions({
   return (
     <>
       {options.map((option, index) => (
-        <>
-          <Option
-            key={index}
-            onClick={() => {
-              option.callback(option.label)
-              dismissModal()
-            }}
-            color={activeOption === option.label ? theme.white : theme.text2}
-            background={activeOption === option.label ? theme.primary1 : 'transparent'}
-            borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
-          >
-            <RowFixed>
-              {option.icon && <div style={{ padding: '0 0.5rem 0 0' }}>{option.icon}</div>}
-              <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
-                {t(option.label)}
-              </SText>
-            </RowFixed>
-          </Option>
-        </>
+        <Option
+          key={index}
+          onClick={() => {
+            option.callback(option.label)
+            dismissModal()
+          }}
+          color={activeOption === option.label ? theme.white : theme.text2}
+          background={activeOption === option.label ? theme.primary1 : 'transparent'}
+          borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
+        >
+          <RowFixed>
+            {option.icon && <div style={{ padding: '0 0.5rem 0 0' }}>{option.icon}</div>}
+            <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+              {t(option.label)}
+            </SText>
+          </RowFixed>
+        </Option>
       ))}
     </>
   )

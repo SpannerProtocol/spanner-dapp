@@ -104,8 +104,7 @@ function DpoCardDetails({ dpoInfo, expiry }: { dpoInfo: DpoInfo; expiry?: BN }) 
 
 export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
-  const { lastBlock } = useBlockManager()
-  const { expectedBlockTime } = useBlockManager()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const { t } = useTranslation()
   const [expiry, setExpiry] = useState<BN>(new BN(0))
   const theme = useContext(ThemeContext)
@@ -139,7 +138,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
                 <RowFixed justifyContent="flex-start">
                   {dpoInfo.state.isCreated && expiry.isZero() ? (
                     <>
-                      <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                      <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                         <SText color="#fff" fontSize="12px" mobileFontSize="8px">
                           {t(`EXPIRED`)}
                         </SText>
@@ -212,8 +211,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
 
 export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
-  const { lastBlock } = useBlockManager()
-  const { expectedBlockTime } = useBlockManager()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const actions = useDpoCurrentStateActions(dpoInfo)
   const { t } = useTranslation()
 
@@ -239,7 +237,7 @@ export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>
                   {expiry.isZero() ? (
-                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                       <SText color="#fff" fontSize="12px" mobileFontSize="8px">
                         {t(`EXPIRED`)}
                       </SText>

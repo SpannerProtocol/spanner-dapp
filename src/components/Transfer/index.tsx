@@ -1,6 +1,8 @@
+import SendIcon from 'assets/svg/icon-send.svg'
 import BN from 'bn.js'
 import Balance from 'components/Balance'
 import { ButtonPrimary } from 'components/Button'
+import { Icon } from 'components/Image'
 import { BorderedInput } from 'components/Input'
 import StandardModal from 'components/Modal/StandardModal'
 import TxModal from 'components/Modal/TxModal'
@@ -13,58 +15,57 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import { TokenInputAmount, TokenInputWrapper } from 'pages/Dex/components'
 import TokenSelector from 'pages/Dex/components/TokenSelector'
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { Send } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import styled from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from '../../utils/validAddress'
 import { RowBetween, RowFixed } from '../Row'
 
-const StyledMenuIcon = styled(Send)`
-  height: 30px;
-  width: 30px;
+// const StyledMenuIcon = styled(Send)`
+//   height: 30px;
+//   width: 30px;
 
-  > * {
-    stroke: ${({ theme }) => theme.text1};
-  }
-`
+//   > * {
+//     stroke: ${({ theme }) => theme.text1};
+//   }
+// `
 
-const StyledMenuButton = styled.button`
-  position: relative;
-  width: 100%;
-  height: 100%;
-  border: none;
-  background-color: transparent;
-  margin: 0;
-  padding: 0;
-  height: 40px;
-  background-color: ${({ theme }) => theme.bg3};
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.5rem;
+// const StyledMenuButton = styled.button`
+//   position: relative;
+//   width: 100%;
+//   height: 100%;
+//   border: none;
+//   background-color: transparent;
+//   margin: 0;
+//   padding: 0;
+//   height: 40px;
+//   background-color: ${({ theme }) => theme.bg3};
+//   padding: 0.15rem 0.5rem;
+//   border-radius: 0.5rem;
 
-  :hover,
-  :focus {
-    cursor: pointer;
-    outline: none;
-    background-color: ${({ theme }) => theme.bg4};
-  }
+//   :hover,
+//   :focus {
+//     cursor: pointer;
+//     outline: none;
+//     background-color: ${({ theme }) => theme.bg4};
+//   }
 
-  svg {
-    margin-top: 2px;
-  }
-`
+//   svg {
+//     margin-top: 2px;
+//   }
+// `
 
-const StyledMenu = styled.div`
-  margin-left: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  border: none;
-  text-align: left;
-`
+// const StyledMenu = styled.div`
+//   margin-left: 0.5rem;
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   position: relative;
+//   border: none;
+//   text-align: left;
+// `
 
 function ConfirmTransferContent({
   dest,
@@ -184,11 +185,11 @@ function TransferForm({ onSubmit }: TransferFormProps) {
 
       <Section style={{ marginTop: '1rem' }}>
         {invalidDest ? (
-          <ButtonPrimary onClick={handleSubmit} disabled width="100%" maxWidth="none">
+          <ButtonPrimary onClick={handleSubmit} disabled width="100%" maxWidth="none" mobileMaxWidth="none">
             {t(`Invalid Spanner Address`)}
           </ButtonPrimary>
         ) : (
-          <ButtonPrimary onClick={handleSubmit} width="100%" maxWidth="none">
+          <ButtonPrimary onClick={handleSubmit} width="100%" mobileMaxWidth="none" maxWidth="none">
             <Send size={16} />
             <SText mobileFontSize="14px" color="#fff">
               {t(`Send`)}
@@ -207,7 +208,6 @@ interface TransferData {
 }
 
 export default function Transfer() {
-  const node = useRef<HTMLDivElement>()
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
   const [txModalOpen, setTxModalOpen] = useState<boolean>(false)
@@ -251,7 +251,7 @@ export default function Transfer() {
   }
 
   return (
-    <>
+    <div style={{ padding: '0 0.5rem' }}>
       <StandardModal isOpen={modalOpen} title={t(`Send Funds`)} onDismiss={dismissModal} desktopScroll={true}>
         <TransferForm onSubmit={confirmTransfer} />
       </StandardModal>
@@ -272,11 +272,7 @@ export default function Transfer() {
           estimatedFee={txInfo.estimatedFee}
         />
       </TxModal>
-      <StyledMenu ref={node as any}>
-        <StyledMenuButton onClick={() => setModalOpen(!modalOpen)} id="open-settings-dialog-button">
-          <StyledMenuIcon />
-        </StyledMenuButton>
-      </StyledMenu>
-    </>
+      <Icon onClick={() => setModalOpen(!modalOpen)} src={SendIcon} size="36px" mobileSize="36px" />
+    </div>
   )
 }

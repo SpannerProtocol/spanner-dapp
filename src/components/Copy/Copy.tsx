@@ -20,6 +20,23 @@ const CopyIcon = styled(LinkStyledButton)<{ width?: string }>`
     color: ${({ theme }) => theme.text2};
   }
 `
+
+const CopyIconDiv = styled.div<{ width?: string }>`
+  color: ${({ theme }) => theme.text3};
+  flex-shrink: 0;
+  display: flex;
+  text-decoration: none;
+  font-size: 0.825rem;
+  padding: 0;
+  width: ${({ width }) => (width ? width : 'fit-content')}
+  :hover,
+  :active,
+  :focus {
+    text-decoration: none;
+    color: ${({ theme }) => theme.text2};
+  }
+`
+
 const TransactionStatusText = styled.span`
   margin-left: 0.25rem;
   font-size: 0.825rem;
@@ -52,5 +69,25 @@ export default function CopyHelper(props: CopyHelperProps) {
         </>
       )}
     </CopyIcon>
+  )
+}
+
+export function CopyWrapper(props: CopyHelperProps) {
+  const [isCopied, setCopied] = useCopyClipboard()
+
+  return (
+    <CopyIconDiv onClick={() => setCopied(props.toCopy)} width={props.width}>
+      {isCopied ? (
+        <TransactionStatusText>
+          <CheckCircle size={'16'} />
+          <TransactionStatusText>{props.copiedText ? props.copiedText : 'Copied'}</TransactionStatusText>
+        </TransactionStatusText>
+      ) : (
+        <>
+          {props.children}
+          <TransactionStatusText>{props.childrenIsIcon ? <div /> : <Copy size={'16'} />}</TransactionStatusText>
+        </>
+      )}
+    </CopyIconDiv>
   )
 }
