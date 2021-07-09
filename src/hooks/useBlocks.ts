@@ -8,31 +8,26 @@ import { BlockTimestamp, BlockTimestampVariables } from '../queries/graphql/type
 import { AnyNumber } from '@polkadot/types/types'
 
 export function useExpectedBlockTime(): Moment | undefined {
-  const { api, connected } = useApi()
-  const [time, setTime] = useState<Moment>()
-
-  useEffect(() => {
-    if (!connected) return
-    setTime(api.consts.babe.expectedBlockTime)
-  }, [api, connected])
-
-  return time
+  const { api } = useApi()
+  return api?.consts?.babe.expectedBlockTime
 }
 
 export function useSubLastBlock() {
   const { api, connected } = useApi()
   const [lastBlock, setLastBlock] = useState<BlockNumber>()
-  const [isReady, setIsReady] = useState<boolean>(false)
 
   useEffect(() => {
     if (!connected) return
-    api.rpc.chain.subscribeNewHeads((header) => {
-      setLastBlock(header.number.unwrap())
-    })
-    setIsReady(true)
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.rpc.chain.subscribeNewHeads((header) => {
+        setLastBlock(header.number.unwrap())
+      })
+    })()
+    return () => unsub()
   }, [api, connected])
 
-  return { lastBlock, isReady }
+  return lastBlock
 }
 
 export function useGetLastBlock() {
@@ -41,14 +36,18 @@ export function useGetLastBlock() {
 
   useEffect(() => {
     if (!connected) return
+    let fetched = false
     api.rpc.chain.getFinalizedHead().then((blockHash) =>
       api.rpc.chain.getBlock(blockHash).then((signedBlock) => {
-        setLastBlock(signedBlock.block.header.number.unwrap())
+        !fetched && setLastBlock(signedBlock.block.header.number.unwrap())
       })
     )
+    return () => {
+      fetched = true
+    }
   }, [api, connected])
 
-  return { lastBlock }
+  return lastBlock
 }
 
 export function useCurrentTime(): Moment | undefined {
@@ -56,8 +55,12 @@ export function useCurrentTime(): Moment | undefined {
   const [currentTime, setCurrentTime] = useState<Moment>()
 
   useEffect(() => {
-    if (!api || !connected) return
-    api.query.timestamp.now((result) => setCurrentTime(result))
+    if (!connected) return
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.query.timestamp.now((result) => setCurrentTime(result))
+    })()
+    return () => unsub()
   }, [api, connected])
 
   return currentTime
@@ -96,9 +99,13 @@ export function useGenesisTime(): number | undefined {
   useEffect(() => {
     if (!connected || !expectedBlockTime) return
     // Get Genesis timestamp
+    let fetched = false
     api.rpc.chain.getBlockHash(1).then((blockHash) => {
-      setBlockHash(blockHash)
+      !fetched && setBlockHash(blockHash)
     })
+    return () => {
+      fetched = true
+    }
   }, [api, connected, expectedBlockTime])
 
   const blockHashStr = blockHash ? blockHash.toHex() : ''
@@ -124,9 +131,13 @@ export function useBlockTime(blockNumber?: BlockNumber | AnyNumber | Uint8Array)
   useEffect(() => {
     if (!connected || !expectedBlockTime || !blockNumber) return
     // Get Genesis timestamp
+    let fetched = false
     api.rpc.chain.getBlockHash(blockNumber).then((blockHash) => {
-      setBlockHash(blockHash)
+      !fetched && setBlockHash(blockHash)
     })
+    return () => {
+      fetched = true
+    }
   }, [api, blockNumber, connected, expectedBlockTime])
 
   const blockHashStr = blockHash ? blockHash.toHex() : ''
@@ -149,12 +160,11 @@ interface BlockState {
   expectedBlockTime?: Moment
   currentTime?: Moment
   genesisTs?: number
-  lastBlockReady: boolean
 }
 
 export function useBlockManager(): BlockState {
   const expectedBlockTime = useExpectedBlockTime()
-  const { lastBlock, isReady: lastBlockReady } = useSubLastBlock()
+  const lastBlock = useSubLastBlock()
   const currentTime = useCurrentTime()
   const genesisTs = useGenesisTime()
 
@@ -163,6 +173,5 @@ export function useBlockManager(): BlockState {
     expectedBlockTime,
     currentTime,
     genesisTs,
-    lastBlockReady,
   }
 }

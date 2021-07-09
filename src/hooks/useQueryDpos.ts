@@ -55,7 +55,7 @@ export function useDposMulti(dpoIndexes: string[]) {
         setDpos(allDpos)
       })
     })()
-    return unsub
+    return () => unsub()
   }, [api, connected, dpoIndexes])
 
   return dpos
@@ -73,7 +73,7 @@ export function useSubDpo(dpoIndex: number | string | DpoIndex | undefined): Dpo
         if (result.isSome) setDpoInfo(result.unwrapOrDefault())
       })
     })().catch(console.error)
-    return unsub
+    return () => unsub()
   }, [api, connected, dpoIndex])
 
   return dpoInfo

@@ -47,7 +47,7 @@ export function useSubTravelCabin(travelCabinIndex?: number | string | TravelCab
         if (result.isSome) setTravelCabinInfo(result.unwrap())
       })
     })()
-    return unsub
+    return () => unsub()
   }, [api, connected, travelCabinIndex])
 
   return travelCabinInfo
