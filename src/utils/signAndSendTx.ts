@@ -6,7 +6,7 @@ import { Signer } from '@polkadot/api/types'
 import { ExtrinsicStatus, EventRecord, Event } from '@polkadot/types/interfaces'
 import { CallBase, AnyTuple } from '@polkadot/types/types'
 import { postSignature } from 'bridge'
-import { ToastAction } from 'contexts/ToastContext'
+import { ToastAction, ToastState } from 'contexts/ToastContext'
 import { ethers } from 'ethers'
 import { Dispatcher } from 'types/dispatcher'
 import { WalletInfo } from './getWalletInfo'
@@ -27,6 +27,7 @@ interface SignAndSendCoreParams {
   setErrorMsg: Dispatcher<string | undefined>
   setHash: Dispatcher<string | undefined>
   setPendingMsg: Dispatcher<string | undefined>
+  toasts: ToastState[]
   queueToast: (item: ToastAction) => void
   dismissModal: () => void
   t: any
@@ -121,6 +122,7 @@ function handleTxStatus({
     setHash(status.asInBlock.toString())
     setPendingMsg('Transaction submitted to block')
     queueToast({
+      id: +new Date(),
       type: 'ADD',
       payload: {
         title: `${txInfo.section}.${txInfo.method}`,
@@ -193,6 +195,7 @@ function signAndSendCustodial({
   wallet,
   address,
   custodialProvider,
+  toasts,
   txInfo,
   setErrorMsg,
   setHash,
@@ -224,7 +227,27 @@ function signAndSendCustodial({
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
     } catch (err) {
       if (err.code === 4001) {
-        setErrorMsg(t('Transaction cancelled'))
+        const filteredToast = toasts.find((toastState) => toastState.content === t(`Waiting for signature`))
+        if (filteredToast && filteredToast.id) {
+          queueToast({
+            type: 'UPDATE',
+            payload: {
+              id: filteredToast?.id,
+              title: `${txInfo.section}.${txInfo.method}`,
+              content: `${t(`Transaction cancelled`)}`,
+              type: 'warning',
+            },
+          })
+        } else {
+          queueToast({
+            type: 'ADD',
+            payload: {
+              title: `${txInfo.section}.${txInfo.method}`,
+              content: `${t(`Transaction cancelled`)}`,
+              type: 'warning',
+            },
+          })
+        }
         return undefined
       }
     }
@@ -305,6 +328,7 @@ export default function signAndSendTx({
   tx,
   wallet,
   txInfo,
+  toasts,
   setErrorMsg,
   setHash,
   setPendingMsg,
@@ -325,6 +349,7 @@ export default function signAndSendTx({
       wallet: wallet,
       address: wallet.ethereumAddress,
       custodialProvider: wallet.custodialProvider,
+      toasts,
       txInfo,
       setErrorMsg,
       setHash,
@@ -340,6 +365,7 @@ export default function signAndSendTx({
       txInfo,
       address: wallet.address,
       signer: wallet.injector?.signer,
+      toasts,
       setErrorMsg,
       setHash,
       setPendingMsg,
