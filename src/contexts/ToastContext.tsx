@@ -17,9 +17,11 @@ export interface ToastState {
   title?: string
   content?: string
   type?: 'success' | 'danger' | 'info' | 'warning'
+  published?: boolean
 }
 
 export interface ToastAction {
+  id?: number
   type: 'ADD' | 'UPDATE' | 'REMOVE' | 'REMOVE_ALL'
   payload: ToastState
 }
@@ -39,7 +41,8 @@ export const toastReducer = (state: ToastState[], action: ToastAction) => {
     case 'UPDATE':
       const updateIndex = state.findIndex((t) => t.id === action.payload.id)
       state[updateIndex] = { ...action.payload }
-      return state
+      // return a copy so that it forces a rerender
+      return [...state]
     case 'REMOVE':
       return state.filter((t) => t.id !== action.payload.id)
     case 'REMOVE_ALL':
@@ -54,8 +57,11 @@ interface ToastProviderProps {
 }
 
 export const ToastProvider = (props: ToastProviderProps) => {
-  const [toast, toastDispatch] = useReducer(toastReducer, initialState)
+  const [toasts, toastDispatch] = useReducer(toastReducer, initialState)
   const [toastQueue, setToastQueue] = useState<ToastAction[]>([])
+
+  // [id, id, id]
+  // []
 
   const queueToast = useCallback((item: ToastAction) => {
     setToastQueue((prev) => [...prev, item])
@@ -65,33 +71,33 @@ export const ToastProvider = (props: ToastProviderProps) => {
   useEffect(() => {
     if (toastQueue.length === 0) return
     for (let i = 0; i < toastQueue.length; i++) {
-      const item = toastQueue.pop()
-      if (item) {
-        toastDispatch(item)
+      const queued = toastQueue.pop()
+      if (queued) {
+        toastDispatch(queued)
       }
     }
-  }, [toastQueue])
+  }, [toastQueue, toastQueue.length])
 
   // Remove Items after certain time
   useEffect(() => {
-    if (toast.length === 0) return
+    if (toasts.length === 0) return
     const interval = setInterval(() => {
-      if (toast.length) {
-        toastDispatch({ type: 'REMOVE', payload: { id: toast[0].id } })
+      if (toasts.length) {
+        toastDispatch({ type: 'REMOVE', payload: { id: toasts[0].id } })
       }
     }, 8000)
 
     return () => {
       clearInterval(interval)
     }
-  }, [toast])
+  }, [toasts, toasts.length])
 
-  const toastData = useMemo(() => ({ toast, toastDispatch, queueToast }), [queueToast, toast])
+  const toastData = useMemo(() => ({ toast: toasts, toastDispatch, queueToast }), [queueToast, toasts])
 
   return (
     <ToastContext.Provider value={toastData}>
       {props.children}
-      {createPortal(<Toast toast={toast} />, document.body)}
+      {createPortal(<Toast toast={toasts} />, document.body)}
     </ToastContext.Provider>
   )
 }
