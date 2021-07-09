@@ -1,31 +1,29 @@
-import { useProjectManager } from '../../../state/project/hooks'
-import { useSubstrate } from '../../../hooks/useSubstrate'
-import { useSubTravelCabinInventory, useTravelCabins } from '../../../hooks/useQueryTravelCabins'
-import React, { useCallback, useContext, useMemo, useState } from 'react'
-import { getCabinClassImage, getCabinOrder } from '../../../utils/getCabinClass'
+import { ArrowForwardIos } from '@material-ui/icons'
+import { CopyWrapper } from 'components/Copy/Copy'
+import BuyAssetForm from 'components/Form/FormBuyAsset'
+import { TravelCabinInfo } from 'interfaces/bulletTrain'
+import React, { useContext, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import styled, { ThemeContext } from 'styled-components'
+import { ReactComponent as Ticket } from '../../../assets/svg/ticket.svg'
+import { ButtonPrimary, ButtonSecondary } from '../../../components/Button'
+import { DetailCardSimple } from '../../../components/Card/DetailCard'
+import Row, { RowBetween, RowFixed } from '../../../components/Row'
 import { Header2, HeavyText, SText } from '../../../components/Text'
 import { GridWrapper, Section, SpacedSection } from '../../../components/Wrapper'
-import { TravelCabinInfo } from 'interfaces/bulletTrain'
+import { DAPP_HOST } from '../../../constants'
 import { useBlockManager } from '../../../hooks/useBlocks'
-import { useTranslation } from 'react-i18next'
+import { useSubTravelCabinInventory, useTravelCabins } from '../../../hooks/useQueryTravelCabins'
+import { useSubstrate } from '../../../hooks/useSubstrate'
+import useWallet, { useIsConnected } from '../../../hooks/useWallet'
+import { useProjectManager } from '../../../state/project/hooks'
 import cdDivide from '../../../utils/cdDivide'
-import Row, { RowBetween, RowFixed } from '../../../components/Row'
-import { ReactComponent as Ticket } from '../../../assets/svg/ticket.svg'
+import { blockToDays } from '../../../utils/formatBlocks'
 import { formatToUnit } from '../../../utils/formatUnit'
 import getApy from '../../../utils/getApy'
-import { blockToDays, daysToBlocks } from '../../../utils/formatBlocks'
-import { ButtonPrimary, ButtonSecondary } from '../../../components/Button'
-import useTxHelpers, { TxInfo } from '../../../hooks/useTxHelpers'
-import { useIsConnected } from '../../../hooks/useWallet'
-import TxModal from '../../../components/Modal/TxModal'
-import { TravelCabinJoinTxConfirm } from './modal/TravelCabinJoinTxConfirm'
-import { TravelCabinCrowdfundTxConfirm } from './modal/TravelCabinCrowdfundTxConfirm'
-import DpoModalForm from '../../Dpos/Dpo/FormCreateDpo'
-import { DetailCardSimple } from '../../../components/Card/DetailCard'
-import styled, { ThemeContext } from 'styled-components'
-import { SoldToModal } from './SoldTo'
-import { ArrowForwardIos } from '@material-ui/icons'
+import { getCabinClassImage, getCabinOrder } from '../../../utils/getCabinClass'
 import useTheme from '../../../utils/useTheme'
+import { SoldToModal } from './SoldTo'
 
 export function Cabins() {
   const { projectState } = useProjectManager()
@@ -43,7 +41,7 @@ export function Cabins() {
         const token = travelCabinInfo.token_id.isToken
           ? travelCabinInfo.token_id.asToken.toString()
           : travelCabinInfo.token_id.asDexShare.toString()
-        return <CabinCard key={index} item={entry[1]} token={token} chainDecimals={chainDecimals} />
+        return <CabinCard key={index} travelCabinInfo={entry[1]} token={token} chainDecimals={chainDecimals} />
       })}
     </GridWrapper>
   )
@@ -85,192 +83,35 @@ export const CabinCardGrid = styled.div`
 `
 
 interface TravelCabinCard {
-  item: TravelCabinInfo
+  travelCabinInfo: TravelCabinInfo
   chainDecimals: number
   token: string
 }
 
-interface CrowdfundData {
-  dpoName?: string
-  targetSeats?: string
-  managerSeats?: string
-  baseFee?: string
-  directReferralRate?: string
-  end?: string
-  referrer?: string | null
-  newReferrer?: boolean
-}
-
-function CabinCardDetails(props: TravelCabinCard) {
-  const { item, chainDecimals, token } = props
+function CabinCardDetails({ travelCabinInfo, chainDecimals, token }: TravelCabinCard) {
   const theme = useTheme()
-  const travelCabinInfo = item
   const { t } = useTranslation()
-  const { expectedBlockTime, lastBlock } = useBlockManager()
+  const { expectedBlockTime } = useBlockManager()
+  const wallet = useWallet()
 
   const inventoryCount = useSubTravelCabinInventory(travelCabinInfo.index)
 
-  const [crowdfundFormModalOpen, setCrowdfundFormModalOpen] = useState<boolean>(false)
-  const [joinTxModalOpen, setJoinTxModalOpen] = useState<boolean>(false)
-  const [crowdfundTxModalOpen, setCrowdfundTxModalOpen] = useState<boolean>(false)
-  const [txHash, setTxHash] = useState<string | undefined>()
-  const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
-  const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const [crowdfundData, setCrowdfundData] = useState<CrowdfundData>({})
-  const { createTx, submitTx } = useTxHelpers()
-  const [txInfo, setTxInfo] = useState<TxInfo>()
+  const [buyOpen, setBuyOpen] = useState<boolean>(false)
   const isConnected = useIsConnected()
   const travelCabinIndex = travelCabinInfo.index
 
   const [soldToModalOpen, setSoldToModalOpen] = useState<boolean>(false)
 
-  const openJoinTxModal = () => {
-    setCrowdfundFormModalOpen(false)
-    setSoldToModalOpen(false)
-    setJoinTxModalOpen(true)
-  }
-
-  const openCrowdfundTxModal = () => {
-    setCrowdfundFormModalOpen(false)
-    setSoldToModalOpen(false)
-    setCrowdfundTxModalOpen(true)
-  }
-
-  const openCrowdfundFormModal = () => {
-    setCrowdfundTxModalOpen(false)
-    setSoldToModalOpen(false)
-    setCrowdfundFormModalOpen(true)
-  }
-
-  const openSoldToModal = () => {
-    setCrowdfundTxModalOpen(false)
-    setCrowdfundFormModalOpen(false)
-    setSoldToModalOpen(true)
-  }
-
-  const dismissModal = () => {
-    ;[setCrowdfundFormModalOpen, setJoinTxModalOpen, setCrowdfundTxModalOpen, setSoldToModalOpen].forEach((fn) =>
-      fn(false)
-    )
-    ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
-  }
-
-  const handleCrowdfundFormCallback = ({
-    dpoName,
-    managerSeats,
-    baseFee,
-    directReferralRate,
-    end,
-    referrer,
-    newReferrer,
-  }: {
-    dpoName: string
-    managerSeats: number
-    baseFee: number
-    directReferralRate: number
-    end: number
-    referrer: string
-    newReferrer: boolean
-  }) => {
-    if (!lastBlock || !expectedBlockTime) {
-      return
-    }
-    const daysBlocks = daysToBlocks(end, expectedBlockTime)
-    const endBlock = lastBlock.add(daysBlocks)
-    setCrowdfundData({
-      dpoName,
-      managerSeats: managerSeats.toString(),
-      baseFee: baseFee.toString(),
-      directReferralRate: directReferralRate.toString(),
-      end: endBlock.toString(),
-      referrer,
-      newReferrer,
-    })
-    if (!travelCabinIndex) {
-      setTxErrorMsg(t(`Information provided was not sufficient.`))
-    }
-    const txData = createTx({
-      section: 'bulletTrain',
-      method: 'createDpo',
-      params: {
-        name: dpoName,
-        target: { TravelCabin: travelCabinIndex },
-        managerSeats,
-        baseFee: baseFee * 10,
-        directReferralRate: directReferralRate * 10,
-        end: endBlock.toString(),
-        referrer,
-      },
-    })
-    if (!txData) return
-    txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
-    openCrowdfundTxModal()
-  }
-
-  const handleJoin = useCallback(() => {
-    if (!travelCabinIndex) {
-      setTxErrorMsg(t(`Information provided was not sufficient.`))
-    }
-    const txData = createTx({
-      section: 'bulletTrain',
-      method: 'passengerBuyTravelCabin',
-      params: { travelCabinIdx: travelCabinIndex },
-    })
-    if (!txData) return
-    txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
-    openJoinTxModal()
-  }, [createTx, t, travelCabinIndex])
-
   return (
     <>
-      <SoldToModal cabinIndex={travelCabinIndex} isOpen={soldToModalOpen} onDismiss={dismissModal} />
-      <DpoModalForm
+      <SoldToModal cabinIndex={travelCabinIndex} isOpen={soldToModalOpen} onDismiss={() => setSoldToModalOpen(false)} />
+      <BuyAssetForm
         targetType={'TravelCabin'}
-        isOpen={crowdfundFormModalOpen}
-        onDismiss={dismissModal}
+        buyType={'CreateDpo'}
         travelCabinInfo={travelCabinInfo}
-        onSubmit={handleCrowdfundFormCallback}
+        isOpen={buyOpen}
+        setIsOpen={setBuyOpen}
       />
-      <TxModal
-        isOpen={joinTxModalOpen}
-        onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
-        title={t(`Buy TravelCabin`)}
-        buttonText={t(`Confirm`)}
-        txError={txErrorMsg}
-        txHash={txHash}
-        txPending={txPendingMsg}
-      >
-        <TravelCabinJoinTxConfirm
-          deposit={formatToUnit(travelCabinInfo.deposit_amount.toString(), chainDecimals, 2)}
-          token={token}
-          estimatedFee={txInfo?.estimatedFee}
-        />
-      </TxModal>
-      <TxModal
-        isOpen={crowdfundTxModalOpen}
-        onDismiss={dismissModal}
-        onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
-        title={t(`Create DPO`)}
-        buttonText={t(`Confirm`)}
-        txError={txErrorMsg}
-        txHash={txHash}
-        txPending={txPendingMsg}
-      >
-        <TravelCabinCrowdfundTxConfirm
-          target={travelCabinInfo.name.toString()}
-          targetAmount={travelCabinInfo.deposit_amount.toString()}
-          dpoName={crowdfundData.dpoName}
-          managerSeats={crowdfundData.managerSeats}
-          baseFee={crowdfundData.baseFee}
-          directReferralRate={crowdfundData.directReferralRate}
-          end={crowdfundData.end}
-          referrer={crowdfundData.referrer}
-          newReferrer={crowdfundData.newReferrer}
-          token={token}
-          estimatedFee={txInfo?.estimatedFee}
-        />
-      </TxModal>
       <SpacedSection margin="0.5rem 4rem" mobileMargin="0.5rem 4rem">
         <RowBetween>
           <HeavyText fontSize={'12px'} mobileFontSize={'12px'}>
@@ -311,7 +152,7 @@ function CabinCardDetails(props: TravelCabinCard) {
         )}
         <Section>
           <Row justifyContent="flex-end">
-            <SText onClick={openSoldToModal} color={`${theme.primary1}`}>
+            <SText onClick={() => setSoldToModalOpen(true)} color={`${theme.primary1}`}>
               {t('Inventory')}
             </SText>
             <ArrowForwardIos style={{ color: `${theme.primary1}`, width: '12px', height: '12px' }} />
@@ -319,32 +160,37 @@ function CabinCardDetails(props: TravelCabinCard) {
         </Section>
       </SpacedSection>
       <Row style={{ alignItems: 'stretch', justifyContent: 'space-around' }} marginTop={'1.5rem'}>
+        {/* BuyAssets */}
         <ButtonPrimary
-          padding="1rem"
-          fontSize="14px"
+          mobileMinWidth="120px"
+          maxHeight="31px"
+          width="100%"
+          margin="0 1rem"
           disabled={!isConnected}
-          mobileFontSize="14px"
-          onClick={openCrowdfundFormModal}
+          onClick={() => setBuyOpen(true)}
         >
           {t(`Buy with DPO`)}
         </ButtonPrimary>
-        <ButtonSecondary
-          padding="1rem"
-          fontSize="14px"
-          disabled={!isConnected}
-          mobileFontSize="14px"
-          onClick={handleJoin}
-        >
-          {t(`Buy`)}
-        </ButtonSecondary>
+        {/* Invite */}
+        {wallet && wallet.address && (
+          <CopyWrapper
+            toCopy={`${DAPP_HOST}/#/projects/${travelCabinInfo.token_id.asToken.toString()}?asset=${'TravelCabin'}&ref=${
+              wallet.address
+            }&project=${travelCabinInfo.token_id.asToken.toString()}`}
+            childrenIsIcon={true}
+            width="fit-content"
+          >
+            <ButtonSecondary mobileMinWidth="120px" maxHeight="31px" width="100%" margin="0 1rem">
+              {t(`Invite`)}
+            </ButtonSecondary>
+          </CopyWrapper>
+        )}
       </Row>
     </>
   )
 }
 
-export function CabinCard(props: TravelCabinCard) {
-  const { item, chainDecimals, token } = props
-  const travelCabinInfo = item
+export function CabinCard({ travelCabinInfo, chainDecimals, token }: TravelCabinCard) {
   const { expectedBlockTime } = useBlockManager()
   const { t } = useTranslation()
 
@@ -361,7 +207,7 @@ export function CabinCard(props: TravelCabinCard) {
       <DetailCardSimple
         smallDetails
         defaultShow={true}
-        details={<CabinCardDetails item={item} token={token} chainDecimals={chainDecimals} />}
+        details={<CabinCardDetails travelCabinInfo={travelCabinInfo} token={token} chainDecimals={chainDecimals} />}
       >
         <CabinCardGrid id={travelCabinInfo.name.toString()}>
           <div style={{ maxWidth: '30px', width: '30px' }}>{getCabinClassImage(travelCabinInfo.name.toString())}</div>
