@@ -218,18 +218,18 @@ export function UserAssetSummary({
 }) {
   const { t } = useTranslation()
   return (
-    <Card margin="0 0 1rem 0">
+    <Card margin="0">
       <Header2>{t('Your portfolio value')}</Header2>
       <HeavyText>{t('Total Deposited')}</HeavyText>
       <RowFixed align="baseline">
         <HeavyText fontSize="40px" mobileFontSize="30px" colorIsPrimary>
           {`${totalDepositedBOLT}`}
         </HeavyText>
-        <TokenText fontSize="16px" mobileFontSize="14px" padding="0 0.5rem">BOLT</TokenText>
+        <TokenText fontSize="16px" mobileFontSize="14px" padding="0 0.5rem">
+          BOLT
+        </TokenText>
       </RowFixed>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
-      {/*<HomeSectionLabel1>{'Earned Yesterday'}</HomeSectionLabel1>*/}
-      {/*<HomeSectionValue1>{'$198.04'}</HomeSectionValue1>*/}
     </Card>
   )
 }

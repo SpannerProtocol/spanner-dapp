@@ -1,13 +1,15 @@
-import { CenterWrapper, PageWrapper, Section } from 'components/Wrapper'
+import { PageWrapper, SpacedSection } from 'components/Wrapper'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ReactComponent as CircleNext } from '../../assets/svg/circle-next.svg'
-import { Header1, Header2 } from '../../components/Text'
+import { Header1, SText } from '../../components/Text'
 import { AssetSwiper, BulletTrainStats } from './Asset'
 import { Blockchain } from './BlockchainInfo'
 import { DPOSwiper, DPOV1Stats } from './DPO'
 import { UserAssetSummaryContainer } from './UserAssetSummary'
+import SpannerBanner from 'assets/images/hero-banner-desktop.jpg'
+import { BannerCard } from 'components/Card'
 
 export const HomeContentWrapper = styled.div`
   position: relative;
@@ -43,14 +45,23 @@ export default function Home() {
 
   return (
     <PageWrapper style={{ width: '100%', maxWidth: '640px', justifyContent: 'center', alignItems: 'center' }}>
-      <CenterWrapper>
-        <Section>
-          <Header1>{t(`Spanner Dapp`)}</Header1>
-          <Header2>{t(`Dapp for Decentralized Collaboration`)}</Header2>
-        </Section>
-      </CenterWrapper>
+      <BannerCard
+        url={SpannerBanner}
+        borderRadius="0"
+        padding="1rem"
+        margin="0 0 1rem 0"
+        minHeight="400px"
+        mobileMinHeight="300px"
+      >
+        <Header1 colorIsPrimary>{t(`Spanner Dapp`)}</Header1>
+        <SText fontSize="22px" mobileFontSize="18px">
+          {t(`Dapp for Decentralized Collaboration`)}
+        </SText>
+        <SpacedSection margin="2rem 0 1rem 0" mobileMargin="2rem 0 1rem 0">
+          <UserAssetSummaryContainer />
+        </SpacedSection>
+      </BannerCard>
       <HomeContentWrapper>
-        <UserAssetSummaryContainer />
         <DPOSwiper />
         <DPOV1Stats />
         <AssetSwiper />

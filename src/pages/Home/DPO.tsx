@@ -6,12 +6,12 @@ import SwiperCore, { Pagination } from 'swiper/core'
 import { Swiper, SwiperSlide } from 'swiper/react'
 // Import Swiper styles
 import 'swiper/swiper.min.css'
-import heroBannerBg from '../../assets/images/hero-banner-desktop.jpg'
+import dpoBanner from '../../assets/images/banner-dpo.jpg'
 import Card, { BannerCard } from '../../components/Card'
 import { RowBetween } from '../../components/Row'
 import { Header2, Header4, HeavyText, SText } from '../../components/Text'
 import { useQueryRunningDpoCount, useQuerySubscribeDpoCount } from '../../hooks/useQueryDpos'
-import { CircleNextIconWrapper, StyledCircleNext } from './index'
+import { CircleNextIconWrapper, StyledCircleNextWhite } from './index'
 
 // install Swiper modules
 SwiperCore.use([Pagination])
@@ -20,7 +20,7 @@ export function DPOSwiper() {
   const [activeSlide, setAciveSlide] = useState<number>(0)
 
   return (
-    <BannerCard border="1 solid transparent" url={activeSlide === 0 ? heroBannerBg : undefined} margin="0 0 1rem 0">
+    <BannerCard border="1 solid transparent" url={activeSlide === 0 ? dpoBanner : undefined} margin="0 0 1rem 0">
       <Swiper
         pagination={{ clickable: true }}
         spaceBetween={50}
@@ -42,13 +42,13 @@ export function DPOV1() {
   const { t } = useTranslation()
   return (
     <>
-      <Header2>{'DPO V1'}</Header2>
-      <SText fontSize={'18px'} mobileFontSize={'18px'}>
+      <Header2 colorIsPrimary>{'DPO V1'}</Header2>
+      <SText fontSize={'18px'} mobileFontSize={'18px'} color="#fff">
         {`${t(`Crowdfund for any crypto assets. Create or join one to Earn`)}!`}
       </SText>
       <SLink to={`/dpos`}>
         <CircleNextIconWrapper>
-          <StyledCircleNext />
+          <StyledCircleNextWhite />
         </CircleNextIconWrapper>
       </SLink>
     </>
@@ -90,7 +90,7 @@ export function DPOV1Stats() {
       )}
       <RowBetween padding="0 0 1rem 0">
         <HeavyText fontSize="18px" mobileFontSize="14px">
-          {t(`Running Dpos`)}
+          {t(`Running DPOs`)}
         </HeavyText>
         <HeavyText fontSize="22px" mobileFontSize="18px" colorIsPrimary>
           {runningDpoCount.toString()}
