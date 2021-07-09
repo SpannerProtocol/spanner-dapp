@@ -4,7 +4,7 @@ import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import TxModal from 'components/Modal/TxModal'
 import QuestionHelper from 'components/QuestionHelper'
-import Row, { RowBetween, RowFixed } from 'components/Row'
+import { RowBetween, RowFixed } from 'components/Row'
 import { HeavyText, SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { BorderedWrapper, Section, SpacedSection } from 'components/Wrapper'
@@ -361,13 +361,10 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
       </SpacedSection>
       <SpacedSection>
         <Section>
-          <Row justifyContent="flex-end">
-            <SText width={'fit-content'} fontSize="10px">{`${t('Balance')}: ${formatToUnit(
-              balance,
-              chainDecimals,
-              2
-            )} ${token}`}</SText>
-          </Row>
+          <RowBetween>
+            <SText>{t('Available Balance')}</SText>
+            <SText>{`${formatToUnit(balance, chainDecimals, 2)} ${token}`}</SText>
+          </RowBetween>
         </Section>
         <Section>
           <RowBetween>

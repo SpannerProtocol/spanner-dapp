@@ -202,12 +202,16 @@ export function UserAssetSummaryContainer() {
   const address = wallet.address
   const selectedToken = project.selectedProject ? project.selectedProject.token : 'BOLT'
 
-  return loading ? (
-    <Skeleton count={3} height={25} style={{ margin: '0.5rem 0' }} />
-  ) : data && data.extrinsics && data.extrinsics.totalCount > 0 ? (
-    <UserAssetSummaryFetch address={address} token={selectedToken} />
-  ) : (
-    <NewUserAdvice />
+  return (
+    <Card margin="0">
+      {loading ? (
+        <Skeleton count={3} height={25} style={{ margin: '0.5rem 0' }} />
+      ) : data && data.extrinsics && data.extrinsics.totalCount > 0 ? (
+        <UserAssetSummaryFetch address={address} token={selectedToken} />
+      ) : (
+        <NewUserAdvice />
+      )}
+    </Card>
   )
 }
 
@@ -248,7 +252,7 @@ export function UserAssetSummary({
 }) {
   const { t } = useTranslation()
   return (
-    <Card margin="0">
+    <>
       <Header2>{t('Your portfolio value')}</Header2>
       <HeavyText>{t('Total Deposited')}</HeavyText>
       <RowFixed align="baseline">
@@ -260,7 +264,7 @@ export function UserAssetSummary({
         </TokenText>
       </RowFixed>
       <SText padding={'0.1rem 0.5rem'}>{`≈ ${totalDepositedUSD} USD`}</SText>
-    </Card>
+    </>
   )
 }
 
@@ -283,7 +287,7 @@ export function NewUserAdvice() {
   }
 
   return (
-    <Card margin="0">
+    <>
       <Header2>{t(`New to Spanner?`)}</Header2>
       <SText fontSize="22px" mobileFontSize="18px">
         {t(message)}
@@ -293,6 +297,6 @@ export function NewUserAdvice() {
           {t(buttonText)}
         </FakeButton>
       </SLink>
-    </Card>
+    </>
   )
 }
