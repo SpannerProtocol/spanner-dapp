@@ -9,8 +9,8 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces/types'
 import { shortenAddr } from 'utils/truncateString'
-import DpoIcon from '../../../../assets/svg/icon-dpo.svg'
-import UserIcon from '../../../../assets/svg/icon-user.svg'
+import DpoIcon from 'assets/svg/icon-dpo.svg'
+import UserIcon from 'assets/svg/icon-user.svg'
 
 export function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
   const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())

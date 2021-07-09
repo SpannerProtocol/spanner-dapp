@@ -149,26 +149,19 @@ function Released({ txEvents }: { txEvents: EventsByIds_events_nodes_extrinsic_e
   )
 }
 
-function Activities({
-  dpoInfo,
-  eventIds,
-  orderBy,
-}: {
-  dpoInfo: DpoInfo
-  eventIds: string[]
-  orderBy: EventsOrderBy[]
-}) {
+function Activities({ eventIds, orderBy }: { eventIds: string[]; orderBy: EventsOrderBy[] }) {
   const methodArgs = useBulletTrainArgs()
   const [page, setPage] = useState(1)
   const [pagination, setPagination] = useState<{ first: number; offset: number }>({ first: 10, offset: 0 })
   const [totalCount, setTotalCount] = useState<number>(0)
-  const { loading, error, data, stopPolling } = useQuery<EventsByIds, EventsByIdsVariables>(eventsByIds, {
+  const { loading, error, data } = useQuery<EventsByIds, EventsByIdsVariables>(eventsByIds, {
     variables: {
       eventIds,
       orderBy,
       first: pagination.first,
       offset: pagination.offset,
     },
+    fetchPolicy: 'network-only',
   })
   const { t } = useTranslation()
   const [timelineActivities, setTimelineActivities] = useState<ItemWithOpposite[]>([])
@@ -209,8 +202,7 @@ function Activities({
       })
     })
     setTimelineActivities(timelineActivities)
-    return stopPolling
-  }, [data, methodArgs, stopPolling])
+  }, [data, methodArgs])
 
   useEffect(() => {
     const offset = (page - 1) * 10 > 0 ? (page - 1) * 10 : 0
@@ -272,7 +264,7 @@ export default function Activity({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element
               {loading && <Skeleton height={30} count={10} style={{ margin: '0.5rem 0' }} />}
             </>
           ) : (
-            <Activities dpoInfo={dpoInfo} eventIds={eventIds} orderBy={[EventsOrderBy.ID_DESC]} />
+            <Activities eventIds={eventIds} orderBy={[EventsOrderBy.ID_DESC]} />
           )}
         </Card>
       </ContentWrapper>

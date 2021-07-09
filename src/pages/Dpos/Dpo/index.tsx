@@ -7,6 +7,7 @@ import { usePathDpoInfoTab } from 'hooks/usePath'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
 import Activity from './Activity'
 import Details from './Details'
 import Organization from './Organization'
@@ -58,7 +59,7 @@ export default function Dpo(): JSX.Element {
 
   return (
     <>
-      {dpoInfo && selectedState && (
+      {dpoInfo && selectedState ? (
         <PageWrapper>
           <Overview dpoInfo={dpoInfo} />
           <ContentWrapper>
@@ -95,6 +96,12 @@ export default function Dpo(): JSX.Element {
           {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
           {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
         </PageWrapper>
+      ) : (
+        <>
+          <Skeleton height={30} count={1} style={{ margin: '0.5rem 0' }} />
+          <Skeleton height={100} count={1} style={{ margin: '0.5rem 0' }} />
+          <Skeleton height={50} count={1} style={{ margin: '0.5rem 0' }} />
+        </>
       )}
     </>
   )

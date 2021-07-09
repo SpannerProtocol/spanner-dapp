@@ -473,11 +473,11 @@ export default function SwapConsole(): JSX.Element {
         </Section>
         <Section>
           {supplyAmount.gt(balanceA) || supplyAmount.isZero() || poolQueryError || tokenA === tokenB ? (
-            <ButtonPrimary maxWidth="none" disabled>
+            <ButtonPrimary maxWidth="none" mobileMaxWidth="none" disabled>
               {t(`Enter an amount`)}
             </ButtonPrimary>
           ) : (
-            <ButtonPrimary maxWidth="none" onClick={openModal}>
+            <ButtonPrimary maxWidth="none" mobileMaxWidth="none" onClick={openModal}>
               {t(`Swap`)}
             </ButtonPrimary>
           )}

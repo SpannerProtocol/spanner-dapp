@@ -95,7 +95,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </Header1>
             <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
               {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) ? (
-                <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                   {t(`EXPIRED`)}
                 </StateWrapper>
               ) : (
