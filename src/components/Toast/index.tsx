@@ -7,6 +7,7 @@ import { AlertCircle, CheckCircle, Info, XCircle } from 'react-feather'
 import styled, { keyframes } from 'styled-components'
 import { ToastState, useToastContext } from '../../contexts/ToastContext'
 import { ReactComponent as CloseIcon } from '../../assets/svg/icon-close.svg'
+import { useTranslation } from 'react-i18next'
 
 const ToastMain = styled.div`
   position: fixed;
@@ -15,7 +16,7 @@ const ToastMain = styled.div`
   width: 300px;
   max-height: 90vh;
   overflow-y: scroll;
-  z-index: 3;
+  z-index: 3300;
 `
 
 const ToastContainer = styled.div`
@@ -70,10 +71,14 @@ const ITEM_ICONS = {
 }
 
 const CloseAllButtonWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   width: fit-content;
-  background: #ffffff;
-  border-radius: 10rem;
-  padding: 0.7rem;
+  background: ${({ theme }) => theme.secondary1};
+  opacity: 0.9;
+  border-radius: 8rem;
+  padding: 0.4rem 1.5rem;
   margin: 3px 0.25rem;
   box-shadow: ${({ theme }) => theme.primary1} 0px 0px 1px;
   cursor: pointer;
@@ -97,8 +102,8 @@ const CloseAllButtonWrap = styled.div`
 `
 
 const StyledCloseIcon = styled(CloseIcon)`
-  height: 1rem;
-  width: 1.2rem;
+  height: 0.8rem;
+  width: 0.8rem;
   path {
     fill: #ffa521;
   }
@@ -121,12 +126,18 @@ const StyledCloseIcon = styled(CloseIcon)`
 
 export default function Toast({ toast }: { toast: ToastState[] }) {
   const { toastDispatch } = useToastContext()
+  const { t } = useTranslation()
   return (
     <ToastMain className="toast">
       {toast.length > 0 && (
-        <CloseAllButtonWrap onClick={() => toastDispatch({ type: 'REMOVE_ALL', payload: {} })}>
-          <StyledCloseIcon />
-        </CloseAllButtonWrap>
+        <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+          <CloseAllButtonWrap onClick={() => toastDispatch({ type: 'REMOVE_ALL', payload: {} })}>
+            <HeavyText color="#fff" padding="0 0.5rem 0 0">
+              {t(`Close all`)}
+            </HeavyText>
+            <StyledCloseIcon />
+          </CloseAllButtonWrap>
+        </div>
       )}
       <ToastContainer className="toast-container">
         {toast.map((item) => {

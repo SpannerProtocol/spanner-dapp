@@ -191,7 +191,7 @@ function TransferForm({ onSubmit }: TransferFormProps) {
         ) : (
           <ButtonPrimary onClick={handleSubmit} width="100%" mobileMaxWidth="none" maxWidth="none">
             <Send size={16} />
-            <SText mobileFontSize="14px" color="#fff">
+            <SText mobileFontSize="14px" color="#fff" padding="0 0.5rem">
               {t(`Send`)}
             </SText>
           </ButtonPrimary>
