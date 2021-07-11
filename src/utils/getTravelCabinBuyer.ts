@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api'
-import { DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
 
 export function getTravelCabinBuyer(api: ApiPromise) {
   return api.query.bulletTrain.travelCabinBuyer.entries()
@@ -32,22 +32,24 @@ export async function getUserCabinInventoryIndexes(
   return userInventoryIndexes
 }
 
-export async function getDpoCabinInventoryIndex(api: ApiPromise, dpoInfo: DpoInfo) {
-  if (!dpoInfo.target.isTravelCabin) return
+export async function getDpoTargetCabinBuyer(
+  api: ApiPromise,
+  dpoInfo: DpoInfo
+): Promise<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo] | undefined> {
+  if (!dpoInfo.target.isTravelCabin) return undefined
   const buyers = await api.query.bulletTrain.travelCabinBuyer.entries(dpoInfo.target.asTravelCabin.toString())
 
   const found = buyers.find((buyer) => {
     if (buyer[1].isNone) return false
     const buyerInfo = buyer[1].unwrapOrDefault()
     if (buyerInfo.buyer.isDpo) {
-      if (buyerInfo.buyer.asDpo.eq(dpoInfo.index.toString())) {
-        return true
-      }
+      if (buyerInfo.buyer.asDpo.eq(dpoInfo.index.toString())) return true
     }
     return false
   })
   if (found) {
-    return found[0].args
+    // [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+    return [found[0].args, found[1].unwrapOrDefault()]
   }
   return undefined
 }

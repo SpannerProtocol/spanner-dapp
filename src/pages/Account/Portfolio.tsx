@@ -1,21 +1,24 @@
 import { useLazyQuery } from '@apollo/client'
-import Card from 'components/Card'
 import CabinBuyerCard from 'components/AssetCards/CabinBuyerCard'
-import { DpoProfileCard } from 'components/DpoCard'
-import { WarningMsg, Header2, SText, Header3 } from 'components/Text'
+import Card from 'components/Card'
+import { DpoProfileCard } from 'components/Dpo/DpoCard'
+import DpoProfileFilters from 'components/Dpo/DpoProfileFilters'
+import ProjectSettings from 'components/ProjectSettings'
+import { Header2, Header3, SText, WarningMsg } from 'components/Text'
 import { GridWrapper, IconWrapper, Wrapper } from 'components/Wrapper'
+import { useDposMulti } from 'hooks/useQueryDpos'
 import useWallet from 'hooks/useWallet'
 import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/UserPortfolio'
 import userPortfolio from 'queries/graphql/userPortfolio'
-import React, { useCallback, useEffect, useContext, useState } from 'react'
-import { Trans, useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
-import PortfolioSummary from './components/PortfolioSummary'
-import ProjectSettings from 'components/ProjectSettings'
-import { useProjectState } from 'state/project/hooks'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
+import { Trans, useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
+import { Link } from 'react-router-dom'
+import { DpoInfo } from 'spanner-interfaces'
+import { useProjectState } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
-import { LocalSpinner } from 'pages/Spinner'
+import PortfolioSummary from './PortfolioSummary'
 
 interface Asset {
   dpoIndexes: string[]
@@ -28,6 +31,8 @@ export default function Portfolio(): JSX.Element {
   const project = useProjectState()
   const theme = useContext(ThemeContext)
   const [assets, setAssets] = useState<Asset>({ dpoIndexes: [], cabinIndexes: [] })
+  const dpos = useDposMulti(assets.dpoIndexes)
+  const [filteredDpos, setFilteredDpos] = useState<DpoInfo[]>([])
 
   const [loadPortfolio, { loading, error, data }] = useLazyQuery<UserPortfolio, UserPortfolioVariables>(userPortfolio, {
     variables: {
@@ -107,8 +112,7 @@ export default function Portfolio(): JSX.Element {
                 >
                   <SText>
                     <Trans>
-                      Could not find any Portfolio Items. Check out our <Link to="/bullettrain/dpos">Growth</Link>{' '}
-                      section.
+                      Could not find any Portfolio Items. Check out our <Link to="/bullettrain">Growth</Link> section.
                     </Trans>
                   </SText>
                 </Card>
@@ -129,7 +133,14 @@ export default function Portfolio(): JSX.Element {
                 <RefreshCw size={'16px'} color={theme.text3} />
               </IconWrapper>
             </div>
-            {loading && <LocalSpinner />}
+            {loading && (
+              <>
+                <Skeleton height={10} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={10} count={1} style={{ margin: '0.5rem 0' }} />
+                <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />
+              </>
+            )}
             {!loading && (
               <>
                 {assets.cabinIndexes.length > 0 && (
@@ -144,16 +155,15 @@ export default function Portfolio(): JSX.Element {
                     </GridWrapper>
                   </>
                 )}
-                {assets.dpoIndexes.length > 0 && (
+                {dpos.length > 0 && (
                   <>
-                    <div style={{ display: 'flex', padding: '1rem 0' }}>
+                    <div style={{ display: 'flex', padding: '1rem 0 0 0' }}>
                       <Header3>{t(`Your DPOs`)}</Header3>
                     </div>
-                    <GridWrapper columns="2">
-                      {assets.dpoIndexes.map((dpoIndex, index) => (
-                        <DpoProfileCard key={index} dpoIndex={dpoIndex} />
-                      ))}
-                    </GridWrapper>
+                    <DpoProfileFilters unfilteredDpos={dpos} setFilteredDpos={setFilteredDpos} />
+                    {filteredDpos.map((dpoInfo, index) => (
+                      <DpoProfileCard key={index} dpoInfo={dpoInfo} />
+                    ))}
                   </>
                 )}
               </>

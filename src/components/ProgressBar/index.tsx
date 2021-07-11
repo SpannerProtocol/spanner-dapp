@@ -12,6 +12,9 @@ const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
       position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
     bottom: {
       color: theme.palette.grey[theme.palette.type === 'light' ? 200 : 700],
@@ -73,12 +76,12 @@ export function CircleProgress(
   const { fontSize, mobileFontSize, displayFilled, ...muiProps } = props
   return (
     <div className={classes.root}>
-      <Box position="relative" display="inline-flex">
+      <Box position="relative" display="inline-flex" justifyContent="center">
         <CircularProgress
           variant="determinate"
           className={classes.bottom}
           size={props.size ? props.size : 80}
-          thickness={4}
+          thickness={props.thickness ? props.thickness : 4}
           {...muiProps}
           value={100}
         />
@@ -89,7 +92,7 @@ export function CircleProgress(
             circle: classes.circle,
           }}
           size={props.size ? props.size : 80}
-          thickness={4}
+          thickness={props.thickness ? props.thickness : 4}
           {...muiProps}
         />
         <Box
@@ -105,13 +108,13 @@ export function CircleProgress(
           <Typography variant="caption" component="div" color="textSecondary">
             <SText
               fontSize={fontSize ? fontSize : '10px'}
-              mobileFontSize={mobileFontSize ? mobileFontSize : '11px'}
+              mobileFontSize={mobileFontSize ? mobileFontSize : '10px'}
               style={{ margin: 'auto' }}
             >{`${Math.round(props.value)}%`}</SText>
             {displayFilled && (
               <SText
                 fontSize={fontSize ? fontSize : '10px'}
-                mobileFontSize={mobileFontSize ? mobileFontSize : '11px'}
+                mobileFontSize={mobileFontSize ? mobileFontSize : '10px'}
                 style={{ margin: 'auto' }}
               >
                 {t(`Filled`)}

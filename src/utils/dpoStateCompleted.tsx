@@ -7,8 +7,9 @@ import { DpoInfo } from 'spanner-interfaces'
  * @param selectedState CREATED | ACTIVE | RUNNING | COMPLETED | FAILED
  * @returns boolean
  */
-export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState: string): boolean {
-  const stateOrder = ['CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED']
+export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState?: string): boolean {
+  if (!selectedState) return false
+  const stateOrder = ['CREATED', 'ACTIVE', 'RUNNING', 'COMPLETED', 'FAILED']
 
   const selectedStateIndex = stateOrder.findIndex((state) => state === selectedState)
   let dpoStateIndex: number
@@ -22,9 +23,9 @@ export default function isDpoStateCompleted(dpoInfo: DpoInfo, selectedState: str
   return dpoStateIndex > selectedStateIndex
 }
 
-export function isDpoStateSelectedState(dpoInfo: DpoInfo, selectedState: string): boolean {
-  const isFailed = selectedState === 'CREATED' && dpoInfo.state.isFailed
-  return dpoInfo.state.eq(selectedState) || isFailed
+export function isDpoStateSelectedState(dpoInfo: DpoInfo, selectedState?: string): boolean {
+  if (!selectedState) return false
+  return dpoInfo.state.eq(selectedState)
 }
 
 export function getDpoCompletedStates(dpoInfo: DpoInfo) {

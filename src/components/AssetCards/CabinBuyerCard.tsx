@@ -6,12 +6,24 @@ import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
-import { blockToDays } from 'utils/formatBlocks'
+import { blocksToCountDown, blockToDays } from 'utils/formatBlocks'
 import { getCabinClassImage } from 'utils/getCabinClass'
 import { getCabinYield } from 'utils/getCabinData'
 import { useSubTravelCabin, useSubTravelCabinBuyer } from '../../hooks/useQueryTravelCabins'
 import { formatToUnit } from '../../utils/formatUnit'
-import { CabinCard, CabinData1, CabinData2, CabinTitle, CabinWrapper, IconWrapper } from './TravelCabinCard'
+import {
+  CabinAction,
+  CabinCard,
+  CabinData1,
+  CabinData2,
+  CabinTitle,
+  CabinWrapper,
+  IconWrapper,
+} from './TravelCabinCard'
+import useUserActions from '../../hooks/useUserActions'
+import { AlertIcon, AlertWrapper } from '../../pages/Account/Alert'
+import { ACTION_ICONS } from '../../constants'
+import BN from 'bn.js'
 
 interface TravelCabinCard {
   cabinIndex: string | number | TravelCabinIndex
@@ -26,13 +38,24 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
   const cabinInfo = useSubTravelCabin(cabinIndex)
   const buyerInfo = useSubTravelCabinBuyer(cabinIndex, inventoryIndex)
   const [yieldAvailable, setYieldAvailable] = useState<string>()
+  const { actions } = useUserActions(cabinIndex, inventoryIndex)
+  const [leftBlock, setLeftBlock] = useState<BN>()
 
   useEffect(() => {
     if (!cabinInfo || !buyerInfo || !lastBlock) return
     setYieldAvailable(getCabinYield(cabinInfo, buyerInfo, lastBlock, chainDecimals))
   }, [cabinInfo, buyerInfo, lastBlock, chainDecimals])
 
+  useEffect(() => {
+    if (!cabinInfo || !buyerInfo || !lastBlock) return
+    const leftNumber = buyerInfo.purchase_blk.add(cabinInfo.maturity).sub(lastBlock)
+    setLeftBlock(leftNumber)
+  }, [cabinInfo, buyerInfo, lastBlock])
+
   const token = cabinInfo && cabinInfo.token_id.isToken && cabinInfo.token_id.asToken.toString()
+
+  const withdrawnFormat = buyerInfo ? formatToUnit(buyerInfo.yield_withdrawn.toString(), chainDecimals, 2) : ''
+  const yieldTotalFormat = cabinInfo ? formatToUnit(cabinInfo.yield_total.toString(), chainDecimals, 2) : ''
 
   return (
     <>
@@ -68,23 +91,43 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
                 )}
               </CabinData1>
               <CabinData2>
-                <InlineSection>
-                  <HeavyText width="fit-content">{t(`Yield`)}:</HeavyText>
-                  <SText width="fit-content" padding={'0 0.5rem'}>
-                    {`${yieldAvailable} ${token}`}
-                  </SText>
-                </InlineSection>
-                {buyerInfo && (
+                {yieldAvailable && parseFloat(yieldAvailable) > 0 ? (
                   <InlineSection>
-                    <HeavyText width="fit-content">{t(`Bonus`)}:</HeavyText>
+                    <HeavyText width="fit-content">{t(`Yield Available`)}:</HeavyText>
                     <SText width="fit-content" padding={'0 0.5rem'}>
-                      {!buyerInfo.fare_withdrawn
-                        ? `0 ${token}`
-                        : formatToUnit(cabinInfo.bonus_total.toString(), chainDecimals, 2) + ` ${token}`}
+                      {`${yieldAvailable} ${token}`}
+                    </SText>
+                  </InlineSection>
+                ) : (
+                  <InlineSection>
+                    <HeavyText width="fit-content">{t(`Yield Withdrawn`)}:</HeavyText>
+                    <SText width="fit-content" padding={'0 0.5rem'}>
+                      {`${withdrawnFormat}/${yieldTotalFormat} ${token}`}
+                    </SText>
+                  </InlineSection>
+                )}
+
+                {expectedBlockTime && leftBlock && (
+                  <InlineSection>
+                    <HeavyText>{`${t(`Time left`)}:`}</HeavyText>
+                    <SText style={{ paddingLeft: '0.5rem' }}>
+                      {blocksToCountDown(leftBlock, expectedBlockTime, t('End'), ['m', 's'])}
                     </SText>
                   </InlineSection>
                 )}
               </CabinData2>
+              {actions && actions.length > 0 && (
+                <CabinAction>
+                  <InlineSection>
+                    <HeavyText width="fit-content">{t(`Actions`)}:</HeavyText>
+                    {actions.map((action, index) => (
+                      <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>
+                        <AlertIcon src={ACTION_ICONS[action.action]} />
+                      </AlertWrapper>
+                    ))}
+                  </InlineSection>
+                </CabinAction>
+              )}
             </CabinCard>
           </Link>
         </CabinWrapper>

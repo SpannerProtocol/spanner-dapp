@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 
 const ToggleElement = styled.span<{
+  padding?: string
   isActive?: boolean
   isOnSwitch?: boolean
   inActiveBg?: string
   inActiveColor?: string
 }>`
-  padding: 0.5rem 0.8rem;
+  padding: ${({ padding }) => (padding ? padding : '0.5rem 0.8rem;')};
   border-radius: 12px;
   background: ${({ theme, isActive, isOnSwitch, inActiveBg }) =>
     isActive ? (isOnSwitch ? theme.primary1 : inActiveBg ? inActiveBg : theme.text4) : 'none'};
@@ -48,8 +49,10 @@ export interface ToggleProps {
   labelInactive?: string
   toggleLabel?: string
   margin?: string
+  centered?: boolean
   inActiveColor?: string
   inActiveBg?: string
+  buttonPadding?: string
 }
 
 export default function PillToggleFilter({
@@ -59,6 +62,8 @@ export default function PillToggleFilter({
   labelActive,
   labelInactive,
   margin,
+  buttonPadding,
+  centered,
   toggleLabel,
   inActiveColor,
   inActiveBg,
@@ -71,11 +76,17 @@ export default function PillToggleFilter({
           {t(toggleLabel)}
         </SText>
       )}
-      <StyledToggle id={id} isActive={isActive} onClick={toggle}>
-        <ToggleElement isActive={isActive} isOnSwitch={true}>
+      <StyledToggle id={id} isActive={isActive} onClick={toggle} margin={centered ? 'auto' : '0'}>
+        <ToggleElement isActive={isActive} isOnSwitch={true} padding={buttonPadding}>
           {t(labelActive)}
         </ToggleElement>
-        <ToggleElement isActive={!isActive} isOnSwitch={false} inActiveColor={inActiveColor} inActiveBg={inActiveBg}>
+        <ToggleElement
+          isActive={!isActive}
+          isOnSwitch={false}
+          inActiveColor={inActiveColor}
+          inActiveBg={inActiveBg}
+          padding={buttonPadding}
+        >
           {t(labelInactive)}
         </ToggleElement>
       </StyledToggle>

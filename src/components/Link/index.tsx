@@ -1,7 +1,7 @@
 import { darken } from 'polished'
 import React, { useContext } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
-import { HashLink } from 'react-router-hash-link'
+import { HashLink, HashLinkProps } from 'react-router-hash-link'
 import styled, { ThemeContext } from 'styled-components'
 import { ExternalLink } from 'theme'
 
@@ -51,7 +51,7 @@ export const StyledLink = styled(Link)<{
 `};
 `
 
-export const SHashLink = styled(HashLink)<{
+export const StyledHashLink = styled(HashLink)<{
   fontWeight?: number
   color?: string
   fontSize?: string
@@ -83,6 +83,16 @@ interface SLinkProps extends LinkProps {
   children: React.ReactNode
 }
 
+interface SHashLinkProps extends HashLinkProps {
+  fontWeight?: number
+  color?: string
+  colorIsBlue?: boolean
+  fontSize?: string
+  width?: string
+  padding?: string
+  children: React.ReactNode
+}
+
 export function SLink(props: SLinkProps) {
   const { fontWeight, color, colorIsBlue, fontSize, width, padding, children, ...linkProps } = props
   const customProps = { fontWeight, color, fontSize, width, padding }
@@ -91,5 +101,16 @@ export function SLink(props: SLinkProps) {
     <StyledLink {...linkProps} {...customProps} color={color ? color : colorIsBlue ? theme.blue2 : theme.text1}>
       {children}
     </StyledLink>
+  )
+}
+
+export function SHashLink(props: SHashLinkProps) {
+  const { fontWeight, color, colorIsBlue, fontSize, width, padding, children, ...linkProps } = props
+  const customProps = { fontWeight, color, fontSize, width, padding }
+  const theme = useContext(ThemeContext)
+  return (
+    <StyledHashLink {...linkProps} {...customProps} color={color ? color : colorIsBlue ? theme.blue2 : theme.text1}>
+      {children}
+    </StyledHashLink>
   )
 }

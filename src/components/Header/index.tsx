@@ -20,20 +20,16 @@ import { Link, useLocation } from 'react-router-dom'
 import { useMedia } from 'react-use'
 import { useChainState } from 'state/connections/hooks'
 import styled from 'styled-components'
-import BridgeIcon from '../../assets/svg/icon-bridge-1.svg'
+import BridgeIcon from '../../assets/svg/icon-bridge.svg'
 import DpoIcon from '../../assets/svg/icon-dpo.svg'
-// import DexIcon from '../../assets/svg/icon-dex.svg'
+import DexIcon from '../../assets/svg/icon-dex.svg'
 import EarnIcon from '../../assets/svg/icon-earn.svg'
-// import SpaceshipIcon from '../../assets/svg/icon-spaceship.svg'
-import ExplorIcon from '../../assets/svg/icon-explore.svg'
+import ExplorerIcon from '../../assets/svg/icon-explorer.svg'
 import FaqIcon from '../../assets/svg/icon-faq.svg'
-import hamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
+import HamburgerIcon from '../../assets/svg/icon-hamburger-gradient.svg'
 import InfoIcon from '../../assets/svg/icon-info.svg'
-// import NewsIcon from '../../assets/svg/icon-news.svg'
-import ProjectIcon from '../../assets/svg/icon-project.svg'
-// import LaunchpadIconBlack from '../../assets/svg/icon-launchpad-black.svg'
-import SwapIconBlack from '../../assets/svg/icon-swap-arrows-black.svg'
-import TrainIconBlack from '../../assets/svg/icon-train-black.svg'
+import ProjectIcon from '../../assets/svg/icon-projects.svg'
+import BulletTrainIcon from '../../assets/svg/icon-bullettrain.svg'
 import Logo from '../../assets/svg/logo-spanner-gradient.svg'
 import { useActiveWeb3React } from '../../hooks'
 import { ExternalLink, MEDIA_WIDTHS } from '../../theme'
@@ -95,7 +91,8 @@ const HeaderElement = styled.div`
 const HeaderElementWrap = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+  padding: 1rem;
 `
 
 const HeaderRow = styled(RowFixed)`
@@ -289,17 +286,10 @@ export default function Header(props: HeaderProps) {
       children: [
         {
           text: 'BulletTrain',
-          link: '/bullettrain',
-          iconLink: TrainIconBlack,
+          link: '/assets/travelcabin',
+          iconLink: BulletTrainIcon,
           internal: true,
         },
-        // {
-        //   text: 'SpaceShip',
-        //   link: '',
-        //   iconLink: SpaceshipIcon,
-        //   internal: true,
-        //   enable: false
-        // }
       ],
     },
     {
@@ -317,7 +307,7 @@ export default function Header(props: HeaderProps) {
     {
       text: 'DEX',
       link: '/dex',
-      iconLink: SwapIconBlack,
+      iconLink: DexIcon,
       internal: true,
     },
     {
@@ -329,7 +319,7 @@ export default function Header(props: HeaderProps) {
     {
       text: 'Explorer',
       link: chain ? (chain.url ? chain.url : '') : '',
-      iconLink: ExplorIcon,
+      iconLink: ExplorerIcon,
       internal: false,
     },
     {
@@ -338,24 +328,12 @@ export default function Header(props: HeaderProps) {
       iconLink: InfoIcon,
       internal: true,
       children: [
-        // {
-        //   text: 'News',
-        //   link: '/bullettrain/travelcabins',
-        //   iconLink: NewsIcon,
-        //   internal: true,
-        // },
         {
           text: 'FAQ',
           link: '/faq',
           iconLink: FaqIcon,
           internal: true,
         },
-        // {
-        //   text: 'Guides',
-        //   link: '/bullettrain/travelcabins',
-        //   iconLink: GuideIcon,
-        //   internal: true,
-        // },
       ],
     },
   ]
@@ -384,7 +362,7 @@ interface DesktopNavProp {
 
 const useStyles = makeStyles({
   drawer: {
-    width: '250px',
+    width: '210px',
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -444,13 +422,13 @@ export function DesktopNav(props: DesktopNavProp) {
         </div>
         <MenuBottom>
           <Divider />
-          <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-            <NetworkSelector />
-          </div>
           <HeaderElementWrap>
             <Transfer />
             <LanguageSwitch />
           </HeaderElementWrap>
+          <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
+            <NetworkSelector />
+          </div>
         </MenuBottom>
       </DesktopHeaderWrpper>
     </HeaderLinks>
@@ -536,8 +514,7 @@ function NavItem({ iconLink, text, link, classes, internal, nested, selected, su
             <ExternalLink href={link} target="_blank" download>
               <ListItem button>
                 {iconLink && (
-                  <ListItemIcon>
-                    {' '}
+                  <ListItemIcon style={{ minWidth: '35px' }}>
                     <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
                   </ListItemIcon>
                 )}
@@ -570,8 +547,7 @@ export function NavItemContent({ iconLink, text, classes, nested, selected, subs
     <>
       <ListItem button onClick={handleClick} selected={itemSelected} className={nested ? classes.nested : ''}>
         {iconLink && (
-          <ListItemIcon>
-            {' '}
+          <ListItemIcon style={{ minWidth: '35px' }}>
             <img width={'18px'} style={{ marginRight: '0.5rem' }} src={iconLink} alt={text} />
           </ListItemIcon>
         )}
@@ -644,7 +620,7 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
           <Web3Status />
         </HeaderElement>
         <HamburgerWrapper onClick={toggleDrawer(true)}>
-          <img src={hamburgerIcon} width="30px" alt="hamburgerIcon" />
+          <img src={HamburgerIcon} width="30px" alt="hamburgerIcon" />
         </HamburgerWrapper>
         <Drawer
           classes={{
@@ -682,13 +658,13 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
           </div>
           <MenuBottom>
             <Divider />
-            <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-              <NetworkSelector />
-            </div>
             <HeaderElementWrap>
               <Transfer />
               <LanguageSwitch />
             </HeaderElementWrap>
+            <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
+              <NetworkSelector />
+            </div>
           </MenuBottom>
         </Drawer>
         {/* </MobileWrapper> */}

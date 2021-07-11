@@ -63,20 +63,48 @@ export function useSubscribeBalances(tokens: string[]): BN[] {
   return balances
 }
 
-export function useAllTokenBalances(): Array<[StorageKey, AccountData]> | undefined {
+export function useSubAllTokenBalances(): Array<[StorageKey, AccountData]> | undefined {
   const { api, connected } = useApi()
   const [balances, setBalances] = useState<Array<[StorageKey, AccountData]>>()
   const wallet = useWallet()
+  const [storageKey, setStorageKey] = useState<StorageKey[]>()
 
   useEffect(() => {
     if (!connected || !wallet || !wallet.address) return
     api.query.tokens.accounts
       .entries(wallet.address)
-      .then((result) => {
-        setBalances(result)
+      .then((entries) => {
+        const storageKeys: StorageKey[] = []
+        entries.forEach((entry) => {
+          storageKeys.push(entry[0])
+        })
+        setStorageKey(storageKeys)
       })
       .catch((err) => console.log(err))
   }, [api, connected, wallet])
+
+  useEffect(() => {
+    if (!connected || !wallet || !wallet.address || !storageKey) return
+    let unsub: void | (() => void) = () => undefined
+    ;(async () => {
+      const currencyIds: [string, CurrencyId][] = []
+      storageKey.forEach((key) => {
+        const keyCodecs = key.args.map((k) => k)
+        const currencyId = (keyCodecs as [AccountId, CurrencyId])[1]
+        currencyIds.push([wallet.address!!, currencyId])
+      })
+      unsub = await api.query.tokens.accounts.multi(currencyIds, (result) => {
+        const accountDatas: [StorageKey, AccountData][] = []
+        result.forEach((entry, index) => {
+          const accountData = entry as AccountData
+          const key = storageKey[index]
+          accountDatas.push([key, accountData])
+        })
+        setBalances(accountDatas)
+      })
+    })()
+    return unsub
+  }, [api, connected, wallet, storageKey])
 
   return balances
 }
@@ -89,21 +117,22 @@ export interface BalanceData {
   feeFrozen: string
 }
 
-export function useAllBalances(): Array<BalanceData> | undefined {
+export function useSubAllBalances(): Array<BalanceData> | undefined {
   const { api, connected } = useApi()
-  const tokenBalances = useAllTokenBalances()
+  const tokenBalances = useSubAllTokenBalances()
   const [balance, setBalance] = useState<AccountInfo>()
   const [allBalances, setAllBalances] = useState<Array<BalanceData>>()
   const wallet = useWallet()
 
   useEffect(() => {
     if (!connected || !wallet || !wallet.address) return
-    api.query.system
-      .account(wallet.address)
-      .then((result) => {
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.query.system.account(wallet.address, (result: AccountInfo) => {
         setBalance(result)
       })
-      .catch((err) => console.log(err))
+    })()
+    return unsub
   }, [api, connected, wallet])
 
   useEffect(() => {

@@ -1,7 +1,9 @@
+import { SText } from 'components/Text'
 import { Section, SpacedSection } from 'components/Wrapper'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
+import useTheme from 'utils/useTheme'
 
 const PageButtons = styled.button`
   background: transparent;
@@ -47,21 +49,25 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
   const [page, setPage] = useState(1)
   const [canPreviousPage, setCanPreviousPage] = useState(false)
   const [canNextPage, setCanNextPage] = useState(true)
+  const theme = useTheme()
 
-  const previousPage = () => {
+  const previousPage = useCallback(() => {
     setPage((prev) => (prev > 1 ? prev - 1 : 1))
-  }
+  }, [])
 
-  const nextPage = () => {
+  const nextPage = useCallback(() => {
     if (maxPage && page >= maxPage) setCanNextPage(false)
     setPage((prev) => (maxPage ? (prev === maxPage ? maxPage : prev + 1) : prev + 1))
-  }
+  }, [maxPage, page])
 
-  const handleInput = (value: string) => {
-    const inputPage = parseInt(value)
-    if (maxPage && inputPage > maxPage) return
-    setPage(inputPage)
-  }
+  const handleInput = useCallback(
+    (value: string) => {
+      const inputPage = parseInt(value)
+      if (maxPage && inputPage > maxPage) return
+      setPage(inputPage)
+    },
+    [maxPage]
+  )
 
   useEffect(() => {
     page > 1 ? setCanPreviousPage(true) : setCanPreviousPage(false)
@@ -89,7 +95,9 @@ export default function Pagination({ currentPage, maxPage }: PaginationProps) {
         </PageButtons>
       </div>
       {maxPage && maxPage !== 0 && (
-        <SpacedSection style={{ display: 'inline', width: 'fit-content' }}>1 - {maxPage}</SpacedSection>
+        <SpacedSection style={{ display: 'inline', width: 'fit-content' }}>
+          <SText color={theme.text3}>1 - {maxPage}</SText>
+        </SpacedSection>
       )}
     </Section>
   )

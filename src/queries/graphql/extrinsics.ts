@@ -42,4 +42,12 @@ export const extrinsicsBySectionAndMethods = gql`
   }
 `
 
+export const extrinsicsCountByAddress = gql`
+  query ExtrinsicsCountByAddress($address: String!) {
+    extrinsics(filter: { signerId: { equalTo: $address } }) {
+      totalCount
+    }
+  }
+`
+
 export default extrinsicsByAddress

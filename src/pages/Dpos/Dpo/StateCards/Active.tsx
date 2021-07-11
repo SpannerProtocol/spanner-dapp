@@ -1,8 +1,14 @@
-import { SLink } from 'components/Link'
+import { SHashLink, SLink } from 'components/Link'
+import { StateOverlay } from 'components/Overlay'
 import { RowBetween, RowFixed } from 'components/Row'
 import { Header2, SText } from 'components/Text'
 import { useDpoInTargetDpo, useSubDpo } from 'hooks/useQueryDpos'
-import { useDpoPurchasedCabin, useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
+import {
+  useDpoPurchasedCabin,
+  useDpoTravelCabinInventoryIndex,
+  useSubTravelCabin,
+  useSubTravelCabinInventory,
+} from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -25,13 +31,21 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
           {stateCompleted ? (
             <>
               <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
-              <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem 0 0">
+              <SLink
+                to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`}
+                colorIsBlue
+                padding="0 0.25rem 0 0"
+              >
                 {target.name.toString()}
               </SLink>
             </>
           ) : (
             <>
-              <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem 0 0">
+              <SLink
+                to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`}
+                colorIsBlue
+                padding="0 0.25rem 0 0"
+              >
                 {target.name.toString()}
               </SLink>
               {!target.empty_seats.isZero() ? (
@@ -48,7 +62,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
       {isTargetMember && (
         <RowFixed>
           <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
-          <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0.25rem">
+          <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue padding="0 0.25rem">
             {target.name.toString()}
           </SLink>
         </RowFixed>
@@ -63,20 +77,25 @@ function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   const inventoryCount = useSubTravelCabinInventory(dpoInfo.target.asTravelCabin.toString())
   const targetPurchased = useDpoPurchasedCabin(dpoInfo.index.toString(), target?.index.toString())
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
+  const buyerInventoryIndex = useDpoTravelCabinInventoryIndex(
+    dpoInfo.index.toString(),
+    dpoInfo.target.asTravelCabin.toString()
+  )
 
   if (!target || !inventoryCount) return null
+  const token = dpoInfo.token_id.asToken.toString().toLowerCase()
   return (
     <>
       {!targetPurchased && (
         <RowFixed>
           <>
-            <SLink
-              to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
+            <SHashLink
+              to={`/projects/${token}?asset=TravelCabin#${target.name.toString()}`}
               colorIsBlue
               padding="0 0.25rem 0 0"
             >
               {t(`TravelCabin`)}: {target.name.toString()}
-            </SLink>
+            </SHashLink>
             {stateCompleted ? (
               <SText>{t(`has been purchased`)}</SText>
             ) : (
@@ -96,7 +115,7 @@ function TargetCabin({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
       {targetPurchased && (
         <RowFixed>
           <SLink
-            to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}`}
+            to={`/assets/travelcabin/${dpoInfo.target.asTravelCabin.toString()}/inventory/${buyerInventoryIndex}`}
             colorIsBlue
             padding="0 0.25rem 0 0"
           >
@@ -121,7 +140,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   )
 
   return (
-    <>
+    <StateOverlay isOn={!dpoStateIsSelectedState}>
       <RowBetween>
         <div style={{ display: 'block' }}>
           {stateCompleted ? (
@@ -152,7 +171,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
         <TargetCabin dpoInfo={dpoInfo} selectedState={selectedState} />
       )}
       <DpoActions dpoInfo={dpoInfo} selectedState={selectedState} />
-    </>
+    </StateOverlay>
   )
 }
 
