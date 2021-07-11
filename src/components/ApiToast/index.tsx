@@ -10,7 +10,7 @@ import styled, { keyframes, ThemeContext } from 'styled-components'
 
 const ToastMain = styled.div`
   position: fixed;
-  bottom: 100px;
+  bottom: 70px;
   right: 10px;
   width: 300px;
   max-height: 90vh;

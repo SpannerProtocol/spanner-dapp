@@ -4,7 +4,7 @@ import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
 import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
-import { HeavyText, ItalicText, Header2 } from 'components/Text'
+import { Header2, HeavyText, ItalicText } from 'components/Text'
 import { IconWrapper, SpacedSection, TransferWrapper } from 'components/Wrapper'
 import useWallet from 'hooks/useWallet'
 import extrinsics from 'queries/graphql/extrinsics'
@@ -16,12 +16,12 @@ import {
 import React, { useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
 import { useChainState } from 'state/connections/hooks'
 import { ThemeContext } from 'styled-components'
 import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import truncateString from 'utils/truncateString'
 import { TxCell, TxRow } from '.'
-import { LocalSpinner } from 'pages/Spinner'
 
 // Tx Hash | Extrinsic Info
 function TransactionRow({ id, section, method, timestamp, isSuccess, block }: ExtrinsicsByAddress_extrinsics_nodes) {
@@ -73,7 +73,7 @@ function TransactionRows({
   return (
     <>
       {error && <div>{error.message}</div>}
-      {loading && <LocalSpinner />}
+      {loading && <Skeleton height={40} count={3} style={{ margin: '0.5rem 0' }} />}
       {!loading &&
         data &&
         data.extrinsics &&

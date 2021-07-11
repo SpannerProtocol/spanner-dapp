@@ -3,6 +3,8 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowFixed } from 'components/Row'
 import { Header3 } from 'components/Text'
 import { useDpoActions } from 'hooks/useDpoActions'
+import { useSubDpo } from 'hooks/useQueryDpos'
+import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
@@ -25,7 +27,12 @@ interface ActionProviderProps {
  * Provides Action components for a single DPO
  */
 function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.Element {
-  const { dpoActions, targetTravelCabinInventory, targetDpo } = useDpoActions(dpoInfo, selectedState)
+  const dpoActions = useDpoActions(dpoInfo, selectedState)
+  // IF TARGET IS DPO
+  const targetDpo = useSubDpo(dpoInfo.index)
+  // IF TARGET IS CABIN this is okay because the hooks can accept undefined
+  const targetCabin = useSubTravelCabin(dpoInfo.target.isTravelCabin ? dpoInfo.target.asTravelCabin : undefined)
+  const targetCabinInventoryCount = useSubTravelCabinInventory(targetCabin ? targetCabin.index : undefined)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
   const { t } = useTranslation()
 
@@ -59,9 +66,9 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
       } else if (dpoAction.action === 'dpoBuyTravelCabin') {
         // If not available, user needs to set a new target
         if (
-          targetTravelCabinInventory &&
-          isTravelCabinAvailable(targetTravelCabinInventory) &&
-          dpoInfo.target.isTravelCabin
+          dpoInfo.target.isTravelCabin &&
+          targetCabinInventoryCount &&
+          isTravelCabinAvailable(targetCabinInventoryCount)
         ) {
           filteredDpoActions.push(
             <DpoBuyTravelCabinAvailable
@@ -141,7 +148,7 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
       }
     })
     setUserActions(filteredDpoActions)
-  }, [dpoActions, dpoInfo, selectedState, targetDpo, targetTravelCabinInventory])
+  }, [dpoActions, dpoInfo, selectedState, targetDpo, targetCabin, targetCabinInventoryCount])
 
   return (
     <>

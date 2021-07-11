@@ -20,7 +20,7 @@ interface TxMeta extends CreateTxParams {
   unsignedTx: SubmittableExtrinsic
 }
 
-interface SubmitTxParams {
+export interface SubmitTxParams {
   setTxErrorMsg: Dispatcher<string | undefined>
   setTxHash: Dispatcher<string | undefined>
   setTxPendingMsg: Dispatcher<string | undefined>
@@ -62,7 +62,10 @@ export default function useTxHelpers() {
       .then((fee) => formatToUnit(fee.partialFee.toString(), chainDecimals, 2))
     // Saving the transaction information in the event submitTx is called
     setTxMeta({ unsignedTx, section, method, params })
-    queueToast({ type: 'ADD', payload: { title: `${section}.${method}`, content: t(`Transaction created`) } })
+    queueToast({
+      type: 'ADD',
+      payload: { title: `${section}.${method}`, content: t(`Transaction created`) },
+    })
     return { unsignedTx, estimatedFee }
   }
 
@@ -104,6 +107,7 @@ export default function useTxHelpers() {
           setErrorMsg: setTxErrorMsg,
           setHash: setTxHash,
           setPendingMsg: setTxPendingMsg,
+          toasts: toast,
           queueToast: queueToast,
           custodialProvider: wallet.custodialProvider,
           txInfo: {

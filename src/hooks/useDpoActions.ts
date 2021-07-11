@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import type { BlockNumber } from '@polkadot/types/interfaces'
+import { useEffect, useMemo, useState } from 'react'
 import {
   DpoInfo,
   TravelCabinBuyerInfo,
@@ -7,139 +8,96 @@ import {
   TravelCabinInventoryIndex,
 } from 'spanner-interfaces'
 import getDpoActions, { DpoAction } from 'utils/getDpoActions'
-import { getTargetDpo, getTargetTravelCabin } from 'utils/getDpoTargets'
-import { getDpoCabinInventoryIndex, getTravelCabinBuyer } from 'utils/getTravelCabinBuyer'
-import getTravelCabinInventory from 'utils/getTravelCabinInventory'
-import { WalletInfo } from 'utils/getWalletInfo'
+import { getTargetTravelCabin } from 'utils/getDpoTargets'
+import { getDpoTargetCabinBuyer } from 'utils/getTravelCabinBuyer'
 import { useApi } from './useApi'
 import { useBlockManager } from './useBlocks'
-import useWallet from './useWallet'
-import type { BlockNumber } from '@polkadot/types/interfaces'
-import { useUserIsDpoMember } from './useUser'
-import { getDpoMembers } from 'utils/getDpoMembers'
-import { useChainState } from 'state/connections/hooks'
 
-interface ActionReq {
+interface DpoActionParams {
   dpoInfo?: DpoInfo
   selectedState?: string
   lastBlock?: BlockNumber
   targetTravelCabin?: TravelCabinInfo
   targetTravelCabinBuyer?: [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  targetTravelCabinInventory?: [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
-  targetTravelCabinInventoryIndex?: TravelCabinInventoryIndex
   targetDpo?: DpoInfo
-  dpoIsMemberOfTargetDpo?: boolean
-  walletInfo?: WalletInfo
 }
-
-interface NewActionReq {
-  [index: string]:
-    | DpoInfo
-    | BlockNumber
-    | WalletInfo
-    | TravelCabinInfo
-    | [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-    | [TravelCabinInventoryIndex, TravelCabinInventoryIndex]
-    | boolean
-}
-
-// targetTravelCabin and targetTravelCabinInventory are mandatory for all cabin target related actions
-const travelCabinKeys = ['targetTravelCabin', 'targetTravelCabinInventory']
 
 // Get all actions for a single DPO
 export function useDpoActions(dpoInfo: DpoInfo | undefined, selectedState?: string) {
   const { api, connected } = useApi()
   const { lastBlock } = useBlockManager()
-  const wallet = useWallet()
-  const isMember = useUserIsDpoMember(dpoInfo?.index, wallet?.address)
-  const [actionsReq, setActionsReq] = useState<ActionReq>()
+  const [actionsReq, setActionsReq] = useState<DpoActionParams>()
   const [dpoActions, setDpoActions] = useState<DpoAction[]>()
-  const { chain } = useChainState()
 
-  const addActionReq = useCallback((newAction: NewActionReq) => {
-    setActionsReq((prev) => {
-      return { ...prev, ...newAction }
-    })
-  }, [])
-
+  // Target Cabin needed to parse actions centrally
   useEffect(() => {
-    if (!connected || !wallet || !wallet.address || !dpoInfo || !chain) return
-    if (dpoInfo.target.isDpo) {
-      getTargetDpo(api, dpoInfo).then((result) => {
-        if (result.isSome) {
-          addActionReq({ targetDpo: result.unwrapOrDefault() })
+    if (!connected || !dpoInfo) return
+    ;(async () => {
+      const req: DpoActionParams = {}
+      if (dpoInfo.target.isTravelCabin) {
+        const targetTravelCabin = await getTargetTravelCabin(api, dpoInfo)
+        if (targetTravelCabin && targetTravelCabin.isSome) {
+          req.targetTravelCabin = targetTravelCabin.unwrapOrDefault()
         }
-      })
-      // Get Target DPO's members to check if dpo is a member already
-      getDpoMembers(api, dpoInfo.target.asDpo[0]).then((results) => {
-        results.forEach((result) => {
-          if (result[1].isSome) {
-            const dpoMember = result[1].unwrapOrDefault()
-            if (dpoMember.buyer.isDpo) {
-              dpoMember.buyer.asDpo.eq(dpoInfo.index) && addActionReq({ dpoIsMemberOfTargetDpo: true })
-            }
-          }
-        })
-      })
-    } else {
-      getTargetTravelCabin(api, dpoInfo).then((result) => {
-        if (result && result.isSome) {
-          addActionReq({ targetTravelCabin: result.unwrapOrDefault() })
+        const buyer = await getDpoTargetCabinBuyer(api, dpoInfo)
+        if (buyer) {
+          req.targetTravelCabinBuyer = buyer
         }
-      })
-      getDpoCabinInventoryIndex(api, dpoInfo).then((result) => {
-        if (result) {
-          addActionReq({ targetTravelCabinInventoryIndex: result[1] })
-        }
-      })
-      getTravelCabinInventory(api, dpoInfo.target.asTravelCabin).then((result) => {
-        if (result.isSome) {
-          addActionReq({ targetTravelCabinInventory: result.unwrapOrDefault() })
-        }
-      })
-      getTravelCabinBuyer(api).then((results) => {
-        results.forEach((result) => {
-          if (result[1].isSome) {
-            const travelCabinBuyerInfo = result[1].unwrapOrDefault()
-            if (travelCabinBuyerInfo.buyer.isDpo) {
-              const buyerIndex = travelCabinBuyerInfo.buyer.asDpo
-              if (buyerIndex.eq(dpoInfo.index)) {
-                addActionReq({ targetTravelCabinBuyer: [result[0].args, result[1].unwrapOrDefault()] })
-              }
-            }
-          }
-        })
-      })
-    }
-  }, [addActionReq, api, connected, dpoInfo, wallet, chain])
+      }
+      setActionsReq(req)
+    })()
+  }, [api, connected, dpoInfo])
 
-  // Every block change causes a rerender might might be necessary if we want
-  // the DPO State and Actions to update.
+  // Separating from useEffect above because we don't want to make queries every block change
   useEffect(() => {
-    if (!lastBlock || !wallet || !dpoInfo || !actionsReq) return
+    if (!lastBlock || !dpoInfo || !actionsReq) return
     // If DPOInfo, just need dpoInfo, else need all keys in travelCabinKeys
-    if (
-      Object.keys(actionsReq).includes('targetDpo') ||
-      travelCabinKeys.every((key) => Object.keys(actionsReq).includes(key))
-    ) {
-      const allActions = getDpoActions({
-        dpoInfo,
-        selectedState,
-        lastBlock,
-        walletInfo: wallet,
-        isMember,
-        ...actionsReq,
-      })
-      setDpoActions(allActions)
-    }
-  }, [lastBlock, wallet, actionsReq, dpoInfo, isMember, selectedState])
+    const allActions = getDpoActions({
+      dpoInfo,
+      selectedState,
+      lastBlock,
+      ...actionsReq,
+    })
+    setDpoActions(allActions)
+  }, [lastBlock, actionsReq, dpoInfo, selectedState])
 
-  return {
-    dpoActions,
-    targetTravelCabin: actionsReq?.targetTravelCabin,
-    targetTravelCabinBuyer: actionsReq?.targetTravelCabinBuyer,
-    targetTravelCabinInventory: actionsReq?.targetTravelCabinInventory,
-    targetTravelCabinInventoryIndex: actionsReq?.targetTravelCabinInventoryIndex,
-    targetDpo: actionsReq?.targetDpo,
-  }
+  return dpoActions
+}
+
+/**
+ * Get all actions for the current state filtered for conditions
+ * @param dpoInfo
+ * @returns
+ */
+export function useDpoCurrentStateActions(dpoInfo?: DpoInfo) {
+  const dpoActions = useDpoActions(dpoInfo, dpoInfo ? dpoInfo.state.toString() : 'CREATED')
+
+  const filteredActions = useMemo(() => {
+    if (!dpoActions || !dpoInfo) return []
+    const filteredDpoActions: DpoAction[] = []
+    dpoActions.forEach((dpoAction) => {
+      if (dpoAction.action === 'releaseFareFromDpo') {
+        if (!dpoInfo.vault_withdraw.isZero()) filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'withdrawFareFromTravelCabin') {
+        filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'dpoBuyTravelCabin') {
+        // If not available, user needs to set a new target
+        filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'dpoBuyDpoSeats') {
+        if (!dpoInfo.target.isDpo) return
+        // If not available, user needs to enter index of cabin that is
+        filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'withdrawYieldFromTravelCabin') {
+        if (!dpoInfo.target.isTravelCabin) return
+        filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'releaseYieldFromDpo') {
+        if (!dpoInfo.vault_yield.isZero()) filteredDpoActions.push(dpoAction)
+      } else if (dpoAction.action === 'releaseBonusFromDpo') {
+        if (!dpoInfo.vault_bonus.isZero()) filteredDpoActions.push(dpoAction)
+      }
+    })
+    return filteredDpoActions
+  }, [dpoActions, dpoInfo])
+
+  return filteredActions
 }

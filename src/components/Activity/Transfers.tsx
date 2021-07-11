@@ -21,6 +21,7 @@ import { tsToDateTimeHuman, tsToRelative } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { TxCell, TxRow } from '.'
+import Skeleton from 'react-loading-skeleton'
 
 interface TransferProp {
   id: string
@@ -100,12 +101,12 @@ function TransferInRows({
 }: {
   error: ApolloError | undefined
   loading: boolean
-  data: TransferIn
+  data?: TransferIn
 }) {
   return (
     <>
       {error && <div>{error.message}</div>}
-      {loading && <div>Loading</div>}
+      {loading && <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />}
       {!loading &&
         data &&
         data.account &&
@@ -121,12 +122,12 @@ function TransferOutRows({
 }: {
   error: ApolloError | undefined
   loading: boolean
-  data: TransferOut
+  data?: TransferOut
 }) {
   return (
     <>
       {error && <div>{error.message}</div>}
-      {loading && <div>Loading</div>}
+      {loading && <Skeleton height={40} count={1} style={{ margin: '0.5rem 0' }} />}
       {!loading &&
         data &&
         data.account &&
@@ -250,8 +251,8 @@ export default function Transfers() {
         <Filter options={filterTransferType} activeOption={transferType} modalTitle={t(`Filter transfer type`)} />
       </SpacedSection>
       <SpacedSection>
-        {transferType === 'Received' && inData && <TransferInRows data={inData} error={inError} loading={inLoading} />}
-        {transferType === 'Sent' && outData && <TransferOutRows data={outData} error={outError} loading={outLoading} />}
+        {transferType === 'Received' && <TransferInRows data={inData} error={inError} loading={inLoading} />}
+        {transferType === 'Sent' && <TransferOutRows data={outData} error={outError} loading={outLoading} />}
       </SpacedSection>
       <Pagination currentPage={setPage} maxPage={Math.ceil(totalCount / 10)} />
     </>
