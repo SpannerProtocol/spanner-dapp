@@ -25,7 +25,7 @@ const Base = styled.p<{
   `};
 `
 
-export const SText = styled(Base)<{ fontWeight?: string }>`
+export const SText = styled(Base)<{ fontWeight?: string; mobileFontSize?: string }>`
   width: ${({ width }) => (width ? width : 'fit-content')};
   font-weight: ${({ fontWeight }) => (fontWeight ? fontWeight : '400')};
   padding: ${({ padding }) => (padding ? padding : '0')};
@@ -41,6 +41,7 @@ export const ThinText = styled(Base)`
 export const HeavyText = styled(Base)`
   width: ${({ width }) => (width ? width : 'fit-content')};
   font-weight: 700;
+  padding: ${({ padding }) => (padding ? padding : '0')};
 `
 
 export const LightText = styled(Base)`

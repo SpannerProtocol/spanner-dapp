@@ -10,16 +10,18 @@ export function useCabinKeys(token: string) {
 
   useEffect(() => {
     if (!connected) return
-    api.query.bulletTrain.travelCabins.entries().then((entries) =>
+    api.query.bulletTrain.travelCabins.entries().then((entries) => {
+      const keys: TravelCabinIndex[] = []
       entries.forEach(([storageKey, cabinInfoOption]) => {
         if (cabinInfoOption.isSome) {
           const cabinInfo = cabinInfoOption.unwrapOrDefault()
           if (cabinInfo.token_id.isToken && cabinInfo.token_id.asToken.eq(token.toUpperCase())) {
-            setCabinKeys((prev) => [...prev, storageKey.args[0]])
+            keys.push(storageKey.args[0])
           }
         }
       })
-    )
+      setCabinKeys(keys)
+    })
   }, [connected, api, token])
 
   return cabinKeys
@@ -70,11 +72,16 @@ export function useTotalPassengers(token: string) {
 
   useEffect(() => {
     if (!connected || !dpoKeys) return
-    dpoKeys.forEach((key) => {
+    const promises = dpoKeys.map((key) => {
       const dpoIndex = key.args[0]
-      api.query.bulletTrain.dpoMembers.entries(dpoIndex).then((dpoMembersEntries) => {
-        setPassengerCount((prev) => prev + dpoMembersEntries.length)
+      return api.query.bulletTrain.dpoMembers.entries(dpoIndex).then((entries) => entries.length)
+    })
+    Promise.all(promises).then((results) => {
+      let totalMembers = 0
+      results.forEach((numMembers) => {
+        totalMembers = totalMembers + numMembers
       })
+      setPassengerCount(totalMembers)
     })
   }, [api, connected, dpoKeys])
 
@@ -120,14 +127,14 @@ export function useTotalValueLocked(cabinKeys: TravelCabinIndex[]) {
   useEffect(() => {
     if (!connected) return
     api.query.bulletTrain.travelCabins.entries().then((entries) => {
+      const valueObj: ValueObj = {}
       entries.forEach((cabinInfo) => {
         if (cabinInfo[1].isSome) {
-          setValueObj((prev) => ({
-            [cabinInfo[1].unwrapOrDefault().index.toString()]: cabinInfo[1].unwrapOrDefault().deposit_amount.toBn(),
-            ...prev,
-          }))
+          const cabinIndex = cabinInfo[1].unwrapOrDefault().index.toString()
+          valueObj[cabinIndex] = cabinInfo[1].unwrapOrDefault().deposit_amount.toBn()
         }
       })
+      setValueObj(valueObj)
     })
   }, [api, connected])
 

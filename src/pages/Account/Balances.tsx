@@ -1,7 +1,7 @@
 import Card from 'components/Card'
 import QuestionHelper from 'components/QuestionHelper'
 import { HeavyText, Header2, SText } from 'components/Text'
-import { BalanceData, useAllBalances } from 'hooks/useQueryBalance'
+import { BalanceData, useSubAllBalances } from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
@@ -71,7 +71,7 @@ export const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%
+  width: 100%;
   max-width: 25px;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     padding: 0;
@@ -107,7 +107,7 @@ function Balance({ icon, token, type, balance, isLast }: BalanceRowProps) {
 
 export default function Balances() {
   const { chainDecimals } = useSubstrate()
-  const balances = useAllBalances()
+  const balances = useSubAllBalances()
   const data = React.useMemo(() => structureBalanceData({ balances, decimals: chainDecimals }), [
     balances,
     chainDecimals,

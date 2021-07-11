@@ -8,7 +8,7 @@ interface GetApyParams {
   totalDeposit: BN
   blockTime: Moment
   chainDecimals: number
-  period?: u32
+  maturity?: u32 | string
   precision?: number
 }
 
@@ -20,7 +20,7 @@ export default function getApy({
   totalDeposit,
   blockTime,
   chainDecimals,
-  period,
+  maturity,
   precision,
 }: GetApyParams) {
   const cd = new Decimal(chainDecimals)
@@ -29,8 +29,8 @@ export default function getApy({
   const yieldInUnit = yieldDec.div(new Decimal(10).pow(cd))
   const depositInUnit = depositDec.div(new Decimal(10).pow(cd))
   // period is the maturity
-  if (period) {
-    const periodInDays = parseFloat(blockToDays(period, blockTime, 8))
+  if (maturity) {
+    const periodInDays = parseFloat(blockToDays(maturity, blockTime, 8))
     return yieldInUnit
       .div(depositInUnit)
       .mul(new Decimal(360 / periodInDays))

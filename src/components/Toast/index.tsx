@@ -6,6 +6,8 @@ import React from 'react'
 import { AlertCircle, CheckCircle, Info, XCircle } from 'react-feather'
 import styled, { keyframes } from 'styled-components'
 import { ToastState, useToastContext } from '../../contexts/ToastContext'
+import { ReactComponent as CloseIcon } from '../../assets/svg/icon-close.svg'
+import { useTranslation } from 'react-i18next'
 
 const ToastMain = styled.div`
   position: fixed;
@@ -14,7 +16,7 @@ const ToastMain = styled.div`
   width: 300px;
   max-height: 90vh;
   overflow-y: scroll;
-  z-index: 3;
+  z-index: 3300;
 `
 
 const ToastContainer = styled.div`
@@ -68,11 +70,75 @@ const ITEM_ICONS = {
   danger: <XCircle color="#fff" size="24px" />,
 }
 
+const CloseAllButtonWrap = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: fit-content;
+  background: ${({ theme }) => theme.secondary1};
+  opacity: 0.9;
+  border-radius: 8rem;
+  padding: 0.4rem 1.5rem;
+  margin: 3px 0.25rem;
+  box-shadow: ${({ theme }) => theme.primary1} 0px 0px 1px;
+  cursor: pointer;
+  color: ${({ theme }) => theme.white};
+  align-content: center;
+
+  &:focus {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.05, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:hover {
+    background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+  &:active {
+    box-shadow: 0 0 0 1pt ${({ theme }) => darken(0.1, theme.primary1)};
+    background-color: ${({ theme }) => darken(0.1, theme.primary1)};
+    color: ${({ theme }) => theme.white};
+  }
+`
+
+const StyledCloseIcon = styled(CloseIcon)`
+  height: 0.8rem;
+  width: 0.8rem;
+  path {
+    fill: #ffa521;
+  }
+  ${CloseAllButtonWrap}:focus & {
+    path {
+      fill: #262a41;
+    }
+  }
+  ${CloseAllButtonWrap}:hover & {
+    path {
+      fill: #262a41;
+    }
+  }
+  ${CloseAllButtonWrap}:active & {
+    path {
+      fill: #262a41;
+    }
+  }
+`
+
 export default function Toast({ toast }: { toast: ToastState[] }) {
   const { toastDispatch } = useToastContext()
-
+  const { t } = useTranslation()
   return (
     <ToastMain className="toast">
+      {toast.length > 0 && (
+        <div style={{ display: 'flex', width: '100%', justifyContent: 'flex-end' }}>
+          <CloseAllButtonWrap onClick={() => toastDispatch({ type: 'REMOVE_ALL', payload: {} })}>
+            <HeavyText color="#fff" padding="0 0.5rem 0 0">
+              {t(`Close all`)}
+            </HeavyText>
+            <StyledCloseIcon />
+          </CloseAllButtonWrap>
+        </div>
+      )}
       <ToastContainer className="toast-container">
         {toast.map((item) => {
           return (

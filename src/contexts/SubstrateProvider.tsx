@@ -25,7 +25,11 @@ export function SubstrateProvider({ children }: any): JSX.Element {
 
   useEffect(() => {
     if (!connected) return
-    api.rpc.system.chain((result) => setNetworkName(result.toString()))
+    let unsub: () => void = () => undefined
+    ;(async () => {
+      unsub = await api.rpc.system.chain((result) => setNetworkName(result.toString()))
+    })()
+    return () => unsub()
   }, [api, connected])
 
   useEffect(() => {

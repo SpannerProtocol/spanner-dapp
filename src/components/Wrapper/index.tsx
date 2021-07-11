@@ -150,6 +150,7 @@ export const StateWrapper = styled(RoundWrapper)`
   padding: 0.5rem;
   width: auto;
   border: 1px solid ${({ borderColor }) => (borderColor ? borderColor : 'transparent')} !important;
+  overflow-wrap: break-word;
 `
 
 export const TransferWrapper = styled.div<{ borderColor?: string; background?: string }>`
