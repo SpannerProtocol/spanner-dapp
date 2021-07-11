@@ -18,7 +18,7 @@ export const CabinCard = styled.div`
     'icon icon'
     'title title'
     'data1 data2'
-    'data1 data2';
+    'action action';
   grid-template-columns: auto auto;
   grid-template-rows: auto auto;
   grid-column-gap: 0.5rem;
@@ -30,7 +30,8 @@ export const CabinCard = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     grid-template-areas:
     'icon title title'
-    'icon data1 data2';
+    'icon data1 data2'
+    'icon action action';
     grid-template-columns: minmax(40px, 40px) auto;
     grid-template-rows: auto auto;
     grid-column-gap: 0.5rem;
@@ -65,6 +66,14 @@ export const CabinTitle = styled.div`
   padding-bottom: 0.5rem;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   padding-bottom: 0;
+  `};
+`
+
+export const CabinAction = styled.div`
+  grid-area: action;
+  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+  display: block;
+  padding-bottom: 0.5rem;
   `};
 `
 
@@ -158,7 +167,7 @@ export default function TravelCabinCard(props: TravelCabinCard) {
                       totalDeposit: travelCabinInfo.deposit_amount.toBn(),
                       chainDecimals: chainDecimals,
                       blockTime: expectedBlockTime,
-                      period: travelCabinInfo.maturity,
+                      maturity: travelCabinInfo.maturity,
                       precision: 2,
                     })}%`}
                   </>

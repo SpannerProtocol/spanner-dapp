@@ -2,12 +2,11 @@ import { useLazyQuery } from '@apollo/client'
 import { SText } from 'components/Text'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import { LocalSpinner } from 'pages/Spinner'
 import { darken } from 'polished'
 import pairPrice from 'queries/graphql/pairPrice'
 import { PairPrice, PairPriceVariables } from 'queries/graphql/types/PairPrice'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
-// import { useMedia } from 'react-use'
+import Skeleton from 'react-loading-skeleton'
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import styled, { ThemeContext } from 'styled-components'
 import { useTranslation } from 'translate'
@@ -104,7 +103,7 @@ export default function PriceChart({ token1, token2, setAvailable, setLatestPric
 
   return (
     <>
-      {loading && <LocalSpinner />}
+      {loading && <Skeleton height={60} count={1} style={{ margin: '0.5rem 0' }} />}
       {error && <SText>{t(`Price data unavailable. Please try again later.`)}</SText>}
       {priceData.length > 0 && (
         <ChartWrapper>

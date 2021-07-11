@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const Grid = styled.div<{ columns?: string; mobileColumns?: string }>`
+export const Grid = styled.div<{ columns?: string; mobileColumns?: string; margin?: string }>`
   display: grid;
   width: 100%;
   grid-template-columns: repeat(
@@ -10,14 +10,12 @@ export const Grid = styled.div<{ columns?: string; mobileColumns?: string }>`
   grid-column-gap: 1rem;
   grid-row-gap: 1rem;
   justify-content: center;
+  margin: ${({ margin }) => (margin ? margin : '0')};
 
   ${({ mobileColumns, theme }) => theme.mediaWidth.upToExtraSmall`
-  display:grid;
   grid-template-columns: repeat(${mobileColumns ? mobileColumns : '1'}, minmax(0, ${
     mobileColumns ? mobileColumns : '1'
   }fr));
-  grid-column-gap: 0.5rem;
-  grid-row-gap: 0.5rem;
   `};
 `
 
@@ -70,4 +68,18 @@ export const GridCell = styled.div`
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
   padding: 0.25rem;
 `};
+`
+
+export const EvenGrid = styled(Grid)<{ columns?: string; mobileColumns?: string; rows?: string; mobileRows?: string }>`
+  display: grid;
+  grid-template-columns: repeat(${({ columns }) => (columns ? columns : '1')}, 1fr);
+  grid-template-rows: repeat(${({ rows }) => (rows ? rows : '1')}, 1fr);
+  margin: 0.5rem 0;
+  grid-column-gap: 0;
+  grid-row-gap: 0;
+
+  ${({ mobileColumns, mobileRows, theme }) => theme.mediaWidth.upToExtraSmall`
+  grid-template-columns: repeat(${mobileColumns ? mobileColumns : '1'}, 1fr);
+  grid-template-rows: repeat(${mobileRows ? mobileRows : '1'}, 1fr);
+  `};
 `

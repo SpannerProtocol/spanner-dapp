@@ -1,6 +1,7 @@
 import Divider from 'components/Divider'
 import { SLink, SHashLink } from 'components/Link'
 import { RowBetween, RowFixed } from 'components/Row'
+import { StateOverlay } from 'components/Overlay'
 import { Header2, Header3, HeavyText, SText, TokenText } from 'components/Text'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
@@ -26,7 +27,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
         ) : (
           <SText width="fit-content">{`${t(`Rewards will be released to this DPO`)} ${t(`by`)}`}</SText>
         )}
-        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} colorIsBlue padding="0 0 0 0.25rem">
+        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue padding="0 0 0 0.25rem">
           {target.name.toString()}
         </SLink>
       </RowFixed>
@@ -98,7 +99,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
   const dpoStateIsSelectedState = isDpoStateSelectedState(dpoInfo, selectedState)
 
   return (
-    <>
+    <StateOverlay isOn={!dpoStateIsSelectedState}>
       <RowBetween>
         <div style={{ display: 'block' }}>
           {stateCompleted ? (
@@ -122,7 +123,7 @@ function MainSection({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedSta
         <TargetCabin dpoInfo={dpoInfo} selectedState={selectedState} />
       )}
       <DpoActions dpoInfo={dpoInfo} selectedState={selectedState} />
-    </>
+    </StateOverlay>
   )
 }
 

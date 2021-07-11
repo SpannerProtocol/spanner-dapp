@@ -55,25 +55,25 @@ export function useDposMulti(dpoIndexes: string[]) {
         setDpos(allDpos)
       })
     })()
-    return unsub
+    return () => unsub()
   }, [api, connected, dpoIndexes])
 
   return dpos
 }
 
-export function useSubDpo(dpoIndex: number | string | DpoIndex | null | undefined): DpoInfo | undefined {
+export function useSubDpo(dpoIndex: number | string | DpoIndex | undefined): DpoInfo | undefined {
   const { api, connected } = useApi()
   const [dpoInfo, setDpoInfo] = useState<DpoInfo | undefined>()
 
   useEffect(() => {
-    if (!connected || !dpoIndex) return
+    if (!connected || dpoIndex === undefined) return
+    let unsub: () => void = () => undefined
     ;(async () => {
-      await api.query.bulletTrain.dpos(dpoIndex, (result) => {
-        if (result.isSome) {
-          setDpoInfo(result.unwrapOrDefault())
-        }
+      unsub = await api.query.bulletTrain.dpos(dpoIndex, (result) => {
+        if (result.isSome) setDpoInfo(result.unwrapOrDefault())
       })
     })().catch(console.error)
+    return () => unsub()
   }, [api, connected, dpoIndex])
 
   return dpoInfo

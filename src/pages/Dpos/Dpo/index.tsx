@@ -1,12 +1,13 @@
 import DetailCard from 'components/Card/DetailCard'
 import Divider from 'components/Divider'
-import DpoStateFilter from 'components/Dpo/DpoStateFilter'
+import DpoStateBar from 'components/Dpo/DpoStateBar'
 import { RouteTabBar, RouteTabMetaData } from 'components/TabBar'
 import { ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { usePathDpoInfoTab } from 'hooks/usePath'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import Skeleton from 'react-loading-skeleton'
 import Activity from './Activity'
 import Details from './Details'
 import Organization from './Organization'
@@ -29,9 +30,9 @@ export default function Dpo(): JSX.Element {
     if (!dpoInfo) return []
     return [
       {
-        id: 'details',
-        label: t('Details'),
-        path: `/dpos/dpo/${dpoInfo.index.toString()}/details`,
+        id: `activity`,
+        label: t(`Activity`),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/activity`,
       },
       {
         id: `organization`,
@@ -39,16 +40,16 @@ export default function Dpo(): JSX.Element {
         path: `/dpos/dpo/${dpoInfo.index.toString()}/organization`,
       },
       {
-        id: `activity`,
-        label: t(`Activity`),
-        path: `/dpos/dpo/${dpoInfo.index.toString()}/activity`,
+        id: 'details',
+        label: t('Details'),
+        path: `/dpos/dpo/${dpoInfo.index.toString()}/details`,
       },
     ]
   }, [dpoInfo, t])
 
   useEffect(() => {
     if (!dpoInfo) return
-    setSelectedState(dpoInfo.state.isFailed ? 'CREATED' : dpoInfo.state.toString())
+    setSelectedState(dpoInfo.state.toString())
   }, [dpoInfo])
 
   useEffect(() => {
@@ -58,7 +59,7 @@ export default function Dpo(): JSX.Element {
 
   return (
     <>
-      {dpoInfo && selectedState && (
+      {dpoInfo && selectedState ? (
         <PageWrapper>
           <Overview dpoInfo={dpoInfo} />
           <ContentWrapper>
@@ -74,7 +75,7 @@ export default function Dpo(): JSX.Element {
               mobileMargin="0 0 0.5rem 0"
             >
               <SpacedSection>
-                <DpoStateFilter
+                <DpoStateBar
                   dpoInfo={dpoInfo}
                   defaultState={dpoInfo.state.toString()}
                   setSelectedState={setSelectedState}
@@ -91,10 +92,16 @@ export default function Dpo(): JSX.Element {
           <ContentWrapper padding="0 0.5rem">
             <RouteTabBar tabs={tabData} activeTab={activeTab} level={'primary'} margin="0 0 1rem 0" />
           </ContentWrapper>
-          {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
-          {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
           {activeTab === 'activity' && <Activity dpoInfo={dpoInfo} />}
+          {activeTab === 'organization' && <Organization dpoInfo={dpoInfo} />}
+          {activeTab === 'details' && <Details dpoInfo={dpoInfo} />}
         </PageWrapper>
+      ) : (
+        <>
+          <Skeleton height={30} count={1} style={{ margin: '0.5rem 0' }} />
+          <Skeleton height={100} count={1} style={{ margin: '0.5rem 0' }} />
+          <Skeleton height={50} count={1} style={{ margin: '0.5rem 0' }} />
+        </>
       )}
     </>
   )

@@ -26,7 +26,7 @@ function TargetDpo({ dpoInfo }: { dpoInfo: DpoInfo }) {
     <>
       <RowFixed>
         <SText width="fit-content">{`${t(`Crowdfunding`)} ${t(`for`)}`}</SText>
-        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/details`} padding="0 0 0 0.25rem" colorIsBlue>
+        <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} padding="0 0 0 0.25rem" colorIsBlue>
           {t(`DPO`)}: {target.name.toString()}
         </SLink>
       </RowFixed>
@@ -95,7 +95,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             </Header1>
             <AnyQuestionHelper text={DPO_STATE_TOOLTIPS[dpoInfo.state.toString()]}>
               {lastBlock && dpoInfo.state.isCreated && dpoInfo.expiry_blk.lt(lastBlock) ? (
-                <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                   {t(`EXPIRED`)}
                 </StateWrapper>
               ) : (
@@ -111,7 +111,7 @@ export default function Overview({ dpoInfo }: { dpoInfo: DpoInfo }) {
             {dpoInfo.target.isTravelCabin && <TargetCabin dpoInfo={dpoInfo} />}
             {projectState.selectedProject && wallet && wallet.address && (
               <CopyHelper
-                toCopy={`${DAPP_HOST}/#/dpos/dpo/${dpoInfo.index.toString()}/details?ref=${wallet.address}&project=${
+                toCopy={`${DAPP_HOST}/#/dpos/dpo/${dpoInfo.index.toString()}/activity?ref=${wallet.address}&project=${
                   projectState.selectedProject.token
                 }`}
                 childrenIsIcon={true}

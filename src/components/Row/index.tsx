@@ -42,6 +42,11 @@ export const RowFixed = styled(Row)<{ gap?: string; justify?: string }>`
   margin: ${({ gap }) => gap && `-${gap}`};
 `
 
+export const RowBlock = styled(Row)<{ gap?: string; justify?: string }>`
+  display: block;
+  width: ${({ width }) => (width ? width : '100%')};
+`
+
 export const FlexRow = styled.div`
   display: flex;
   flex-direction: row;

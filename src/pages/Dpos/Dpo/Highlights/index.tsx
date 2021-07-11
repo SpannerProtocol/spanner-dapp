@@ -278,7 +278,7 @@ interface HighlightsProps {
 
 export default function Highlights({ dpoInfo }: HighlightsProps) {
   const { t } = useTranslation()
-  const targetDpo = useSubDpo(dpoInfo.target.isDpo ? dpoInfo.target.asDpo[0].toString() : null)
+  const targetDpo = useSubDpo(dpoInfo.target.isDpo ? dpoInfo.target.asDpo[0].toString() : undefined)
 
   if (!(dpoInfo.state.isCreated || dpoInfo.state.isActive || dpoInfo.state.isRunning)) return null
 

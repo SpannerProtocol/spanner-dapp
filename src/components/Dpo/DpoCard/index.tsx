@@ -104,8 +104,7 @@ function DpoCardDetails({ dpoInfo, expiry }: { dpoInfo: DpoInfo; expiry?: BN }) 
 
 export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
-  const { lastBlock } = useBlockManager()
-  const { expectedBlockTime } = useBlockManager()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const { t } = useTranslation()
   const [expiry, setExpiry] = useState<BN>(new BN(0))
   const theme = useContext(ThemeContext)
@@ -134,12 +133,12 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <>
           <DetailCardSimple smallDetails details={<DpoCardDetails dpoInfo={dpoInfo} expiry={expiry} />}>
-            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+            <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
               <DpoCardGrid>
                 <RowFixed justifyContent="flex-start">
                   {dpoInfo.state.isCreated && expiry.isZero() ? (
                     <>
-                      <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                      <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                         <SText color="#fff" fontSize="12px" mobileFontSize="8px">
                           {t(`EXPIRED`)}
                         </SText>
@@ -179,7 +178,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
                         totalDeposit: dpoInfo.target_amount.toBn(),
                         chainDecimals: chainDecimals,
                         blockTime: expectedBlockTime,
-                        period: dpoInfo.target_maturity,
+                        maturity: dpoInfo.target_maturity,
                       }).toString()}%`}
                     </HeavyText>
                   </div>
@@ -212,8 +211,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
 
 export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { chainDecimals } = useSubstrate()
-  const { lastBlock } = useBlockManager()
-  const { expectedBlockTime } = useBlockManager()
+  const { expectedBlockTime, lastBlock } = useBlockManager()
   const actions = useDpoCurrentStateActions(dpoInfo)
   const { t } = useTranslation()
 
@@ -233,13 +231,13 @@ export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
   return (
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
-        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/details`} style={{ textDecoration: 'none' }}>
+        <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
           <Card margin="0 0 0.5rem 0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>
                   {expiry.isZero() ? (
-                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS[dpoInfo.state.toString()]}>
+                    <StateWrapper color={'#fff'} background={DPO_STATE_COLORS['EXPIRED']}>
                       <SText color="#fff" fontSize="12px" mobileFontSize="8px">
                         {t(`EXPIRED`)}
                       </SText>

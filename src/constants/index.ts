@@ -1,11 +1,11 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import BronzeIcon from '../assets/svg/icon-bronze.svg'
-import DiamondIcon from '../assets/svg/icon-diamond.svg'
-import GoldIcon from '../assets/svg/icon-gold.svg'
-import PlatinumIcon from '../assets/svg/icon-platinum.svg'
+import CabinBronzeIcon from '../assets/svg/icon-cabin-bronze.svg'
+import CabinDiamondIcon from '../assets/svg/icon-cabin-diamond.svg'
+import CabinGoldIcon from '../assets/svg/icon-cabin-gold.svg'
+import CabinPlatinumIcon from '../assets/svg/icon-cabin-platinum.svg'
+import CabinSilverIcon from '../assets/svg/icon-cabin-silver.svg'
+import TicketIcon from '../assets/svg/icon-tickets.svg'
 import ReleaseIcon from '../assets/svg/icon-release.svg'
-import SilverIcon from '../assets/svg/icon-silver.svg'
-import TicketIcon from '../assets/svg/icon-ticket.svg'
 import WithdrawIcon from '../assets/svg/icon-withdraw.svg'
 import { injected, walletconnect } from '../connectors'
 
@@ -57,11 +57,11 @@ export const SPANNER_SUBQL = process.env.REACT_APP_SPANNER_SUBQL
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {
-  Bronze: { name: 'Bronze', image: BronzeIcon, order: 0 },
-  Silver: { name: 'Silver', image: SilverIcon, order: 1 },
-  Gold: { name: 'Gold', image: GoldIcon, order: 2 },
-  Platinum: { name: 'Platinum', image: PlatinumIcon, order: 3 },
-  Diamond: { name: 'Diamond', image: DiamondIcon, order: 4 },
+  Bronze: { name: 'Bronze', image: CabinBronzeIcon, order: 0 },
+  Silver: { name: 'Silver', image: CabinSilverIcon, order: 1 },
+  Gold: { name: 'Gold', image: CabinGoldIcon, order: 2 },
+  Platinum: { name: 'Platinum', image: CabinPlatinumIcon, order: 3 },
+  Diamond: { name: 'Diamond', image: CabinDiamondIcon, order: 4 },
 }
 
 export const BULLETTRAIN_MILESTONES = [
@@ -110,6 +110,8 @@ export const DPO_STATE_COLORS: { [index: string]: any } = {
   RUNNING: `#8CD88C`,
   COMPLETED: `#5BC85B`,
   FAILED: `#C3C5CB`,
+  // Not a real state
+  EXPIRED: `#1B488B`,
 }
 
 export interface WalletInfo {

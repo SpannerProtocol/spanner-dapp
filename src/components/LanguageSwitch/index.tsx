@@ -1,54 +1,11 @@
-import React, { useCallback, useRef } from 'react'
+import LanguageIcon from 'assets/svg/icon-language.svg'
+import { Icon } from 'components/Image'
+import React, { useCallback } from 'react'
 import styled from 'styled-components'
-import { ReactComponent as Earth } from '../../assets/images/earth.svg'
-import { useOnClickOutside } from '../../hooks/useOnClickOutside'
+import i18n from '../../i18n'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useToggleModal } from '../../state/application/hooks'
 import { LinkStyledButton } from '../../theme'
-import i18n from '../../i18n'
-
-const StyledEarthIcon = styled(Earth)`
-  height: 30px;
-  width: 30px;
-  path {
-    stroke: ${({ theme }) => theme.text1};
-  }
-`
-
-const StyledMenuButton = styled.button`
-  width: 100%;
-  height: 100%;
-  border: none;
-  background-color: transparent;
-  margin: 0;
-  padding: 0;
-  height: 40px;
-  background-color: ${({ theme }) => theme.bg3};
-
-  padding: 0.15rem 0.5rem;
-  border-radius: 0.5rem;
-
-  :hover,
-  :focus {
-    cursor: pointer;
-    outline: none;
-    background-color: ${({ theme }) => theme.bg4};
-  }
-
-  svg {
-    margin-top: 2px;
-  }
-`
-
-const StyledMenu = styled.div`
-  margin-left: 0.5rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  border: none;
-  text-align: left;
-`
 
 const MenuFlyout = styled.span`
   min-width: 8.125rem;
@@ -61,11 +18,12 @@ const MenuFlyout = styled.span`
   flex-direction: column;
   font-size: 1rem;
   position: absolute;
-  top: -8.25rem;
+  bottom: 9.75rem;
+  right: 9.25rem;
   z-index: 100;
 
   ${({ theme }) => theme.mediaWidth.upToMedium`
-    top: -8.25rem;
+  right: 4.25rem;
   `};
 `
 
@@ -87,10 +45,8 @@ const MenuItem = styled(LinkStyledButton)`
 `
 
 export default function LanguageSwitch() {
-  const node = useRef<HTMLDivElement>()
   const open = useModalOpen(ApplicationModal.LANGUAGE)
   const toggle = useToggleModal(ApplicationModal.LANGUAGE)
-  useOnClickOutside(node, open ? toggle : undefined)
 
   const changeLanguage = useCallback(
     (lang: string) => {
@@ -101,20 +57,14 @@ export default function LanguageSwitch() {
   )
 
   return (
-    <StyledMenu ref={node as any}>
-      <StyledMenuButton onClick={toggle}>
-        <StyledEarthIcon />
-      </StyledMenuButton>
+    <div style={{ padding: '0 0.5rem' }}>
+      <Icon onClick={toggle} src={LanguageIcon} size="36px" mobileSize="36px" />
       {open && (
         <MenuFlyout>
-          <MenuItem id="link-about" onClick={() => changeLanguage('en')}>
-            English
-          </MenuItem>
-          <MenuItem id="link-docs" onClick={() => changeLanguage('zh')}>
-            中文(简体)
-          </MenuItem>
+          <MenuItem onClick={() => changeLanguage('en')}>English</MenuItem>
+          <MenuItem onClick={() => changeLanguage('zh')}>中文(简体)</MenuItem>
         </MenuFlyout>
       )}
-    </StyledMenu>
+    </div>
   )
 }
