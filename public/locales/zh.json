@@ -230,7 +230,7 @@
   "Last Withdrawal (Date & Time)": "最新取回 (日期时间)",
   "Sold to": "售给",
   "Passengers and DPOs that have purchased this TravelCabin class. Click for more information.": "已购买此客舱的旅客和DPOs，点击查看更多信息。",
-  "Inventory": "库存",
+  "Inventory": "销售清单",
   "TravelCabin Inventory": "客舱库存",
   "Confirm Withdraw Ticket Fare from TravelCabin": "确认从客舱取回票价",
   "Withdraw Ticket Fare": "取回票价",
@@ -671,5 +671,11 @@
   "Connected Chain": "已连接的链",
   "A list of activities your DPO performed. Amounts shown only account for User members.": "DPO的操作活动列表，仅显示用户成员的金额",
   "Under maintenance": "正在维护中",
-  "Next Distribute": "下一次分发"
+  "2nd ° Referral Rate": "2nd ° Referral Rate",
+  "Invite": "邀请",
+  "Crowdfunding period over": "众筹期结束",
+  "Next Distribute": "下一次分发",
+  "Use Bridge": "使用跨链桥",
+  "Start by transferring crypto to Spanner with our Bridge": "通过跨链桥将您的加密资产转入Spanner开始使用",
+  "Get FREE BOLT to play with on Hammer Testnet": "获得免费的BOLT代币在Hammer测试网上进行体验"
 }
