@@ -196,7 +196,11 @@ export function UserAssetSummaryContainer() {
   }, [loadExtrinsicsCount, wallet])
 
   if (wallet === undefined || wallet.address === undefined) {
-    return <NewUserAdvice />
+    return (
+      <Card margin="0">
+        <NewUserAdvice />
+      </Card>
+    )
   }
 
   const address = wallet.address
