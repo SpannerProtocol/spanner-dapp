@@ -119,12 +119,18 @@ export default function DpoBuyTargetNotAvailable({
     })()
   }, [chainDecimals, getAvailableCabins, getAvailableDpos, t, targetType])
 
+  const dpoTargetStr = dpoInfo.target.isDpo
+    ? dpoInfo.target.asDpo[0].toString()
+    : dpoInfo.target.isTravelCabin
+    ? dpoInfo.target.asTravelCabin.toString
+    : ''
+
   return (
     <ActionRow
       dpoInfo={dpoInfo}
       selectedState={selectedState}
       actionName={t('Buy Target')}
-      tip={`${t(`Use DPO's funds to purchase target.`)} ${dpoInfo.target.asDpo[0].toString()}`}
+      tip={`${t(`Use DPO's funds to purchase target.`)} ${dpoTargetStr}`}
       form={
         <>
           <SpacedSection>
