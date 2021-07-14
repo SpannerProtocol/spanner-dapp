@@ -42,14 +42,14 @@ const DpoCardGrid = styled.div`
 
 const ProfileCardGrid = styled.div`
   display: grid;
-  grid-template-areas: 'title title';
-  grid-template-columns: auto auto;
+  grid-template-areas: 'state info';
+  grid-template-columns: minmax(40px, 80px) 2fr;
   grid-template-rows: auto auto;
   grid-column-gap: 0.5rem;
   align-items: center;
-  padding: 1rem;
-  justify-content: center;
-  text-align: center;
+  padding: 0.25rem;
+  justify-content: flex-start;
+  text-align: left;
   width: 100%;
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     grid-template-areas: 'state info';
@@ -232,7 +232,7 @@ export function DpoProfileCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
     <>
       {dpoInfo && chainDecimals && expectedBlockTime && (
         <Link to={`/dpos/dpo/${dpoInfo.index.toString()}/activity`} style={{ textDecoration: 'none' }}>
-          <Card margin="0 0 0.5rem 0">
+          <Card margin="0 0 0rem 0">
             <ProfileCardGrid>
               {dpoInfo.state.isCreated && expiry && (
                 <RowFixed>
