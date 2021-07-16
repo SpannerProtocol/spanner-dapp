@@ -11,6 +11,7 @@ import React, { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import useTheme from 'utils/useTheme'
 import LargePopover, { PopoverProps } from '../Popover/LargePopOver'
+import { useTranslation } from 'react-i18next'
 
 const TooltipContainer = styled.div`
   width: 228px;
@@ -110,6 +111,7 @@ export default function TimelineSimple({ items }: { items: ItemSimple[] }) {
 }
 
 export function TimelineWithOpposite({ items }: { items: ItemWithOpposite[] }) {
+  const { t } = useTranslation()
   return (
     <>
       <Timeline style={{ padding: '0' }}>
@@ -125,7 +127,7 @@ export function TimelineWithOpposite({ items }: { items: ItemWithOpposite[] }) {
                   </TimelineOppositeContent>
                   <Separator isLast={index === items.length - 1} />
                   <TimelineContent style={{ padding: '0.25rem 0 0 1rem' }}>
-                    <HeavyText width="100%">{item.rightLabel}</HeavyText>
+                    <HeavyText width="100%">{t(item.rightLabel)}</HeavyText>
                   </TimelineContent>
                 </TimelineItem>
               </TimelineMouseOver>

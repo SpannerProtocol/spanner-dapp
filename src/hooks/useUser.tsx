@@ -12,6 +12,7 @@ export function useUserIsDpoMember(
 
   useEffect(() => {
     if (!address || !connected || !dpoIndex) return
+    setIsMember(false)
     api.query.bulletTrain.dpoMembers.entries(dpoIndex).then((result) => {
       result.forEach((member) => {
         if (member[1].isNone) return
@@ -34,6 +35,7 @@ export function useUserIsDpoManager(dpoIndex: number | string | DpoIndex, addres
 
   useEffect(() => {
     if (!address || !connected) return
+    setIsManager(false)
     api.query.bulletTrain.dpos(dpoIndex, (result) => {
       if (result.isNone) return
       if (result.unwrapOrDefault().manager.eq(address)) {

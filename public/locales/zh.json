@@ -575,7 +575,7 @@
   "Search for Name": "通过名称搜索",
   "Earn Yield on Deposits, Management Fee for Creating a DPO, Bonus for Referrals and Milestone Rewards just for participating": "参与即可赚取存款收益、创建DPO的管理费、推荐奖金和里程碑奖励",
   "Yield rewards will be withdrawn": "收益奖励将被提取",
-  "needs to raise": "需要提高",
+  "needs to raise": "需要筹集",
   "has been purchased": "已购买",
   "Create a token, add assets and grow your community with DPOs": "使用DPO创建代币、添加资产并发展您的社区",
   "Used by": "使用者",
@@ -681,5 +681,10 @@
   "This DPO": "此DPO",
   "Lead DPO": "领头DPO",
   "Collaboration": "合作",
-  "Close all": "关闭全部"
+  "Close all": "关闭全部",
+  "Withdrew Fare": "取回票价",
+  "Yield Released": "释放收益",
+  "Bonus Released": "释放奖励",
+  "Created Dpo": "创建Dpo",
+  "Chain maintenance message": "{{chain}} 正在升级，将尽快恢复，敬请期待"
 }

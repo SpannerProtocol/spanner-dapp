@@ -66,7 +66,7 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
       if (Object.keys(target).includes('travelCabin')) {
         args.push(
           <RowBetween key={index}>
-            <HeavyText>{ARGS_HUMAN_APPROVED[pair[0]]}</HeavyText>
+            <HeavyText>{t(ARGS_HUMAN_APPROVED[pair[0]])}</HeavyText>
             <CabinName cabinIndex={target['travelCabin']} />
           </RowBetween>
         )
@@ -74,7 +74,7 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
         args.push(
           <div key={index}>
             <RowBetween>
-              <HeavyText>{ARGS_HUMAN_APPROVED[pair[0]]}</HeavyText>
+              <HeavyText>{t(ARGS_HUMAN_APPROVED[pair[0]])}</HeavyText>
               <DpoName dpoIndex={target['dpo'][0]} />
             </RowBetween>
             <RowBetween>
@@ -88,7 +88,7 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
     if (['directReferralRate', 'baseFee'].includes(pair[0])) {
       args.push(
         <RowBetween key={index}>
-          <HeavyText>{ARGS_HUMAN_APPROVED[pair[0]]}</HeavyText>
+          <HeavyText>{t(ARGS_HUMAN_APPROVED[pair[0]])}</HeavyText>
           <SText>{parseInt(pair[1]) / 10}%</SText>
         </RowBetween>
       )
@@ -96,7 +96,7 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
     if (['managerSeats'].includes(pair[0])) {
       args.push(
         <RowBetween key={index}>
-          <HeavyText>{ARGS_HUMAN_APPROVED[pair[0]]}</HeavyText>
+          <HeavyText>{t(ARGS_HUMAN_APPROVED[pair[0]])}</HeavyText>
           <SText>{pair[1]}</SText>
         </RowBetween>
       )
