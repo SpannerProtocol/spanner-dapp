@@ -118,7 +118,7 @@ export default function CabinBuyerCard({ cabinIndex, inventoryIndex }: TravelCab
               </CabinData2>
               {actions && actions.length > 0 && (
                 <CabinAction>
-                  <InlineSection>
+                  <InlineSection style={{ alignItems: 'center' }}>
                     <HeavyText width="fit-content">{t(`Actions`)}:</HeavyText>
                     {actions.map((action, index) => (
                       <AlertWrapper key={index} padding="0" style={{ paddingLeft: '0.5rem' }}>

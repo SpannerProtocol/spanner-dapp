@@ -148,7 +148,7 @@ export default function Portfolio(): JSX.Element {
                     <div style={{ display: 'flex', padding: '1rem 0' }}>
                       <Header3>{t(`Your TravelCabins`)}</Header3>
                     </div>
-                    <GridWrapper columns="2">
+                    <GridWrapper columns="1">
                       {assets.cabinIndexes.map((inventory, index) => {
                         return <CabinBuyerCard key={index} cabinIndex={inventory[0]} inventoryIndex={inventory[1]} />
                       })}
@@ -161,9 +161,11 @@ export default function Portfolio(): JSX.Element {
                       <Header3>{t(`Your DPOs`)}</Header3>
                     </div>
                     <DpoProfileFilters unfilteredDpos={dpos} setFilteredDpos={setFilteredDpos} />
-                    {filteredDpos.map((dpoInfo, index) => (
-                      <DpoProfileCard key={index} dpoInfo={dpoInfo} />
-                    ))}
+                    <GridWrapper columns="2">
+                      {filteredDpos.map((dpoInfo, index) => (
+                        <DpoProfileCard key={index} dpoInfo={dpoInfo} />
+                      ))}
+                    </GridWrapper>
                   </>
                 )}
               </>
