@@ -1,4 +1,4 @@
-import { DpoInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinInventoryIndex } from 'spanner-api/types'
 
 /**
  * Check if Target DPO is available for purchase

@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import type { Moment } from '@polkadot/types/interfaces'
+import type { Moment } from 'spanner-api/types'
 import { blockToDays } from './formatBlocks'
 import { u32 } from '@polkadot/types'
 import { Decimal } from 'decimal.js'

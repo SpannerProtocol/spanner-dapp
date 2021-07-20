@@ -9,7 +9,7 @@ import { ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useDpoManager, useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import { shortenAddr } from 'utils/truncateString'
 
 export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {

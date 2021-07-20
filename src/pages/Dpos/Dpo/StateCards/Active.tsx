@@ -12,7 +12,7 @@ import {
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import isDpoStateCompleted, { isDpoStateSelectedState } from 'utils/dpoStateCompleted'
 import { formatToUnit } from 'utils/formatUnit'
 import DpoActions from '.'

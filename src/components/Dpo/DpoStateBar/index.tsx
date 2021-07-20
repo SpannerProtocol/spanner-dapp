@@ -6,7 +6,7 @@ import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { SText } from 'components/Text'
 import React, { useEffect, useMemo } from 'react'
 import { Dispatcher } from 'types/dispatcher'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { getDpoCompletedStates } from 'utils/dpoStateCompleted'
 import { useTranslation } from 'react-i18next'
 

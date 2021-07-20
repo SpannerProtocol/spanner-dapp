@@ -13,7 +13,7 @@ import { UserPortfolio, UserPortfolioVariables } from 'queries/graphql/types/Use
 import userPortfolio from 'queries/graphql/userPortfolio'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { firstBy } from 'thenby'

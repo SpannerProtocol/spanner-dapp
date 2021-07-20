@@ -1,6 +1,6 @@
-import { DpoInfo, TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-api/types'
 import BN from 'bn.js'
-import { BlockNumber, Moment } from '@polkadot/types/interfaces'
+import { BlockNumber, Moment } from 'spanner-api/types'
 import { bnToUnit } from './formatUnit'
 import { daysToBlocks } from './formatBlocks'
 

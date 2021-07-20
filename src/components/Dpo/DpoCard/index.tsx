@@ -12,7 +12,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
@@ -178,7 +178,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
                         totalDeposit: dpoInfo.target_amount.toBn(),
                         chainDecimals: chainDecimals,
                         blockTime: expectedBlockTime,
-                        maturity: dpoInfo.target_maturity,
+                        maturity: dpoInfo.target_maturity.toString(),
                       }).toString()}%`}
                     </HeavyText>
                   </div>

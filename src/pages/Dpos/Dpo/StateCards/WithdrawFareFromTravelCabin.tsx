@@ -7,7 +7,7 @@ import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQue
 import ActionRow from 'components/Actions/ActionRow'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
 

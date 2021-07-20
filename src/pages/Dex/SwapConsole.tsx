@@ -1,7 +1,7 @@
 import { faArrowDown } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { u32 } from '@polkadot/types'
-import { Balance } from '@polkadot/types/interfaces'
+import { Balance } from 'spanner-api/types'
 import BN from 'bn.js'
 import PriceChart from 'components/Chart'
 import TxModal from 'components/Modal/TxModal'

@@ -1,4 +1,4 @@
-import { BlockNumber } from '@polkadot/types/interfaces'
+import { BlockNumber } from 'spanner-api/types'
 import {
   DpoIndex,
   DpoInfo,
@@ -6,7 +6,7 @@ import {
   TravelCabinIndex,
   TravelCabinInfo,
   TravelCabinInventoryIndex,
-} from 'spanner-interfaces'
+} from 'spanner-api/types'
 
 export interface DpoAction {
   action: string

@@ -16,7 +16,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TravelCabinInfo } from 'spanner-interfaces'
+import { TravelCabinInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { blockToDays } from 'utils/formatBlocks'
 import { noNan } from 'utils/formatNumbers'
@@ -244,10 +244,10 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     }
   }, [referralCode, referrer])
 
-  const requiredDeposit = useMemo(() => new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))), [
-    travelCabinInfo,
-    managerSeats,
-  ])
+  const requiredDeposit = useMemo(
+    () => new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))),
+    [travelCabinInfo, managerSeats]
+  )
 
   useEffect(() => {
     if (balance.lt(requiredDeposit)) {

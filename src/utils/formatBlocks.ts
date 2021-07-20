@@ -1,5 +1,5 @@
 import { u32 } from '@polkadot/types'
-import type { BlockNumber, Moment } from '@polkadot/types/interfaces'
+import type { BlockNumber, Moment } from 'spanner-api/types'
 import BN from 'bn.js'
 import { Decimal } from 'decimal.js'
 import moment from 'moment'

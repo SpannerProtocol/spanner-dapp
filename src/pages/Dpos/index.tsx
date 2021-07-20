@@ -11,7 +11,7 @@ import { useDpoCount, useDpos } from 'hooks/useQueryDpos'
 import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { useProjectManager } from 'state/project/hooks'
 import { formatToUnit } from 'utils/formatUnit'
 

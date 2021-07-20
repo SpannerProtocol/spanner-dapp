@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TradingPair } from 'spanner-interfaces'
+import { TradingPair } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 interface ValidPair {

@@ -10,12 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { ButtonPrimary } from 'components/Button'
 import { useItemCabinBuyer } from 'hooks/useItem'
 import { useSubTravelCabin, useSubTravelCabinBuyerVerbose, useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
-import {
-  TravelCabinBuyerInfo,
-  TravelCabinIndex,
-  TravelCabinInfo,
-  TravelCabinInventoryIndex,
-} from 'interfaces/bulletTrain'
+import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-api/types'
 import { bnToUnit, formatToUnit } from 'utils/formatUnit'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { shortenAddr } from 'utils/truncateString'
@@ -26,8 +21,8 @@ import TxModal from 'components/Modal/TxModal'
 import TxFee from 'components/TxFee'
 import useTxHelpers from 'hooks/useTxHelpers'
 import { Step, StepLabel, Stepper } from '@material-ui/core'
-import type { BlockNumber } from '@polkadot/types/interfaces'
-import { Moment } from '@polkadot/types/interfaces'
+import type { BlockNumber } from 'spanner-api/types'
+import { Moment } from 'spanner-api/types'
 import { useBlockManager, useBlockTime } from 'hooks/useBlocks'
 
 export const HomeContentWrapper = styled.div`

@@ -1,7 +1,7 @@
 import { ArrowForwardIos } from '@material-ui/icons'
 import { CopyWrapper } from 'components/Copy/Copy'
 import BuyAssetForm from 'components/Form/FormBuyAsset'
-import { TravelCabinInfo } from 'interfaces/bulletTrain'
+import { TravelCabinInfo } from 'spanner-api/types'
 import React, { useContext, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled, { ThemeContext } from 'styled-components'

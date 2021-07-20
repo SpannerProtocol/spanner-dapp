@@ -8,7 +8,7 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams } from 'hooks/useTxHelpers'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TravelCabinInfo } from 'spanner-interfaces'
+import { TravelCabinInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { formatToUnit } from 'utils/formatUnit'
 
