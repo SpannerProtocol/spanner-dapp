@@ -76,7 +76,6 @@ export function ApiProvider({ children }: any): JSX.Element {
         })
 
         apiPromise.on('disconnected', () => {
-          console.log()
           setApiState((prev) => ({ ...prev, connected: false, needReconnect: true, lastState: 'disconnected' }))
           toastDispatch({
             type: 'ADD',
