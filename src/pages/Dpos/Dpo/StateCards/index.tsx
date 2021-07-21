@@ -31,7 +31,7 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
   // IF TARGET IS DPO
   const targetDpo = useSubDpo(dpoInfo.target.isDpo ? dpoInfo.target.asDpo[0] : undefined)
   // IF TARGET IS CABIN this is okay because the hooks can accept undefined
-  const targetCabin = useSubTravelCabin(dpoInfo.target.isTravelCabin ? dpoInfo.target.asTravelCabin: undefined)
+  const targetCabin = useSubTravelCabin(dpoInfo.target.isTravelCabin ? dpoInfo.target.asTravelCabin : undefined)
   const targetCabinInventoryCount = useSubTravelCabinInventory(targetCabin ? targetCabin.index : undefined)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
   const { t } = useTranslation()
