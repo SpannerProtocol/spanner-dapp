@@ -112,7 +112,6 @@ export default function DpoBuyDpoSeatsAvailable({
       }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
-      disableButton={true}
     />
   )
 }
