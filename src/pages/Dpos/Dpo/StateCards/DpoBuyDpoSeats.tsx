@@ -5,7 +5,7 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubDpo } from 'hooks/useQueryDpos'
+import { useDpoInTargetDpo, useSubDpo } from 'hooks/useQueryDpos'
 import { useSubstrate } from 'hooks/useSubstrate'
 import ActionRow from 'components/Actions/ActionRow'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -34,6 +34,7 @@ export default function DpoBuyDpoSeatsAvailable({
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
   const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
+  const inTarget = useDpoInTargetDpo(dpoInfo)
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
   const { chainDecimals } = useSubstrate()
@@ -112,6 +113,7 @@ export default function DpoBuyDpoSeatsAvailable({
       }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
+      disableButton={inTarget ? true : false}
     />
   )
 }
