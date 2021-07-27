@@ -3,15 +3,11 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowFixed } from 'components/Row'
 import { Header3 } from 'components/Text'
 import { useDpoActions } from 'hooks/useDpoActions'
-import { useSubDpo } from 'hooks/useQueryDpos'
-import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-interfaces'
-import { isDpoAvailable, isTravelCabinAvailable } from 'utils/isTargetAvailable'
-import DpoBuyDpoSeatsAvailable from './DpoBuyDpoSeats'
-import DpoBuyTargetNotAvailable from './DpoBuyTargetNotAvailable'
-import DpoBuyTravelCabinAvailable from './DpoBuyTravelCabin'
+import DpoBuyDpoSeats from './DpoBuyDpoSeats'
+import DpoBuyTravelCabin from './DpoBuyTravelCabin'
 import ReleaseBonusFromDpo from './ReleaseBonusFromDpo'
 import ReleaseFareFromDpo from './ReleaseFareFromDpo'
 import ReleaseYieldFromDpo from './ReleaseYieldFromDpo'
@@ -28,11 +24,6 @@ interface ActionProviderProps {
  */
 function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.Element {
   const dpoActions = useDpoActions(dpoInfo, selectedState)
-  // IF TARGET IS DPO
-  const targetDpo = useSubDpo(dpoInfo.target.isDpo ? dpoInfo.target.asDpo[0] : undefined)
-  // IF TARGET IS CABIN this is okay because the hooks can accept undefined
-  const targetCabin = useSubTravelCabin(dpoInfo.target.isTravelCabin ? dpoInfo.target.asTravelCabin: undefined)
-  const targetCabinInventoryCount = useSubTravelCabinInventory(targetCabin ? targetCabin.index : undefined)
   const [userActions, setUserActions] = useState<Array<JSX.Element>>()
   const { t } = useTranslation()
 
@@ -64,56 +55,27 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
           />
         )
       } else if (dpoAction.action === 'dpoBuyTravelCabin') {
-        // If not available, user needs to set a new target
-        if (
-          dpoInfo.target.isTravelCabin &&
-          targetCabinInventoryCount &&
-          isTravelCabinAvailable(targetCabinInventoryCount)
-        ) {
-          filteredDpoActions.push(
-            <DpoBuyTravelCabinAvailable
-              key={index}
-              dpoInfo={dpoInfo}
-              dpoAction={dpoAction}
-              selectedState={selectedState}
-              isLast={isLast}
-            />
-          )
-        } else {
-          filteredDpoActions.push(
-            <DpoBuyTargetNotAvailable
-              key={index}
-              dpoInfo={dpoInfo}
-              dpoAction={dpoAction}
-              selectedState={selectedState}
-              isLast={isLast}
-            />
-          )
-        }
+        if (!dpoInfo.target.isTravelCabin) return
+        filteredDpoActions.push(
+          <DpoBuyTravelCabin
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
+        )
       } else if (dpoAction.action === 'dpoBuyDpoSeats') {
-        if (!targetDpo || !dpoInfo.target.isDpo) return
-        // If not available, user needs to enter index of cabin that is
-        if (isDpoAvailable(dpoInfo, targetDpo)) {
-          filteredDpoActions.push(
-            <DpoBuyDpoSeatsAvailable
-              key={index}
-              dpoInfo={dpoInfo}
-              dpoAction={dpoAction}
-              selectedState={selectedState}
-              isLast={isLast}
-            />
-          )
-        } else {
-          filteredDpoActions.push(
-            <DpoBuyTargetNotAvailable
-              key={index}
-              dpoInfo={dpoInfo}
-              dpoAction={dpoAction}
-              selectedState={selectedState}
-              isLast={isLast}
-            />
-          )
-        }
+        if (!dpoInfo.target.isDpo) return
+        filteredDpoActions.push(
+          <DpoBuyDpoSeats
+            key={index}
+            dpoInfo={dpoInfo}
+            dpoAction={dpoAction}
+            selectedState={selectedState}
+            isLast={isLast}
+          />
+        )
       } else if (dpoAction.action === 'withdrawYieldFromTravelCabin') {
         if (!dpoInfo.target.isTravelCabin) return
         filteredDpoActions.push(
@@ -148,7 +110,7 @@ function ActionProvider({ dpoInfo, selectedState }: ActionProviderProps): JSX.El
       }
     })
     setUserActions(filteredDpoActions)
-  }, [dpoActions, dpoInfo, selectedState, targetDpo, targetCabin, targetCabinInventoryCount])
+  }, [dpoActions, dpoInfo, selectedState])
 
   return (
     <>
