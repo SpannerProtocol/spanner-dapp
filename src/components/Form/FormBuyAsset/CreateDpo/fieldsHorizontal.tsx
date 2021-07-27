@@ -1,4 +1,3 @@
-import BN from 'bn.js'
 import { useTranslation } from 'react-i18next'
 import { useSubstrate } from '../../../../hooks/useSubstrate'
 import useSubscribeBalance from '../../../../hooks/useQueryBalance'
@@ -6,13 +5,14 @@ import React, { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../Wrapper'
 import Row, { RowBetween, RowFixed } from '../../../Row'
 import { SText } from '../../../Text'
-import { formatToUnit } from '../../../../utils/formatUnit'
+import { bnToUnit, formatToUnit } from '../../../../utils/formatUnit'
 import QuestionHelper from '../../../QuestionHelper'
 import { BorderedInput, SInput } from '../../../Input'
 import { PillButton } from '../../../Button'
 import { ErrorMsg } from 'pages/Dex/components'
 import { ThemeContext } from 'styled-components'
 import { ColumnCenter } from '../../../Column'
+import BN from 'bn.js'
 
 export function DpoNameHorizontal({
   onChange,
@@ -136,19 +136,19 @@ export function DpoBaseFeeHorizontal({
 
 export function DpoManagerSeatsHorizontal({
   dpoName,
-  managerSeats,
-  seatCap,
-  costPerSeat,
+  managerAmount,
+  passengerShareCap,
+  passengerShareMinimum,
   token,
   errMsg,
   onChange,
 }: {
-  seatCap?: number
-  managerSeats: number
+  managerAmount?: number
+  passengerShareCap?: BN
+  passengerShareMinimum?: BN
   dpoName: string
-  costPerSeat: BN
   token: string
-  onChange: (seats: string) => void
+  onChange: (managerAmount: number) => void
   errMsg?: string
 }) {
   const { t } = useTranslation()
@@ -156,29 +156,26 @@ export function DpoManagerSeatsHorizontal({
   const balance = useSubscribeBalance(token)
 
   const handleMax = useCallback(() => {
-    if (!seatCap) return
-    const seatCapBn = new BN(seatCap)
-    const affordableSeats = balance.div(costPerSeat)
-    if (affordableSeats.gt(seatCapBn)) {
-      onChange(seatCapBn.toString())
+    if (!passengerShareCap) return
+    if (balance.gt(passengerShareCap)) {
+      onChange(parseFloat(bnToUnit(passengerShareCap, chainDecimals, 0, true)))
     } else {
-      const seats = Math.floor(affordableSeats.toNumber()).toString()
-      onChange(seats)
+      onChange(parseFloat(bnToUnit(balance, chainDecimals, 0, true)))
     }
-  }, [balance, costPerSeat, onChange, seatCap])
+  }, [balance, onChange, passengerShareCap, chainDecimals])
 
   return (
     <>
-      {seatCap && (
+      {passengerShareCap && passengerShareMinimum && (
         <Section>
-          <Row justifyContent="flex-end">
-            <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>
-              {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
-            </SText>
-          </Row>
+          {/*<Row justifyContent="flex-end">*/}
+          {/*  <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>*/}
+          {/*    {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}*/}
+          {/*  </SText>*/}
+          {/*</Row>*/}
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t(`Manager Amount`)}: ${dpoName}`}</SText>
               <QuestionHelper
                 text={t(
                   `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
@@ -194,9 +191,13 @@ export function DpoManagerSeatsHorizontal({
                     required
                     id="dpo-manager-seats"
                     type="number"
-                    placeholder={`0 - ${seatCap}`}
-                    onChange={(e) => onChange(e.target.value)}
-                    value={Number.isNaN(managerSeats) ? '' : managerSeats}
+                    placeholder={`${formatToUnit(passengerShareMinimum, chainDecimals, 2)} - ${formatToUnit(
+                      passengerShareCap,
+                      chainDecimals,
+                      2
+                    )}`}
+                    onChange={(e) => onChange(parseFloat(e.target.value))}
+                    value={Number.isNaN(managerAmount) || !managerAmount ? '' : managerAmount.toString()}
                     style={{ alignItems: 'flex-end', width: '100%' }}
                   />
                   <PillButton
@@ -300,32 +301,36 @@ export function DpoReferralCodeHorizontal({
 }
 
 export function DpoTargetDpoSeatsHorizontal({
-  seats,
-  seatCap,
+  targetAmount,
+  dpoShareCap,
+  dpoShareMinimum,
   targetDpoName,
-  emptySeats,
+  emptyAmount,
+  targetDPOTargetAmount,
   onChange,
 }: {
-  seats: number
-  emptySeats: string
-  seatCap?: number
+  targetAmount: number
+  emptyAmount: BN
+  dpoShareCap?: BN
+  dpoShareMinimum?: BN
   targetDpoName: string
+  targetDPOTargetAmount?: BN
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }) {
   const { t } = useTranslation()
-
+  const { chainDecimals } = useSubstrate()
   return (
     <>
-      {seatCap && (
+      {targetDPOTargetAmount && dpoShareCap && dpoShareMinimum && (
         <Section>
           <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
-              {t(`Remaining Seats`)}: {emptySeats}
+              {t(`Remaining`)}: {formatToUnit(emptyAmount, chainDecimals, 2)}
             </SText>
           </Row>
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t(`# Amount in`)}: ${targetDpoName}`}</SText>
               <QuestionHelper
                 text={t(
                   `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
@@ -339,9 +344,13 @@ export function DpoTargetDpoSeatsHorizontal({
                 required
                 id="dpo-seats"
                 type="number"
-                placeholder={`1 - ${seatCap}`}
+                placeholder={`${formatToUnit(dpoShareMinimum, chainDecimals, 2)} - ${formatToUnit(
+                  dpoShareCap,
+                  chainDecimals,
+                  2
+                )}`}
                 onChange={(e) => onChange(e)}
-                value={Number.isNaN(seats) ? '' : seats}
+                value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}
               />
             </ColumnCenter>

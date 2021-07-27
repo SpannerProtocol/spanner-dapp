@@ -20,7 +20,7 @@ import { TravelCabinInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { blockToDays } from 'utils/formatBlocks'
 import { noNan } from 'utils/formatNumbers'
-import { formatToUnit } from 'utils/formatUnit'
+import { bnToUnit, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { ColumnCenter } from '../../../Column'
@@ -33,6 +33,7 @@ import {
   DpoReferralCodeHorizontal,
 } from './fieldsHorizontal'
 import { DpoFormCoreProps } from './index'
+import { Decimal } from 'decimal.js'
 
 interface DpoTargetCabinFormProps extends DpoFormCoreProps {
   travelCabinInfo: TravelCabinInfo
@@ -160,7 +161,8 @@ export function TxConfirm({
 }
 
 export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }: DpoTargetCabinFormProps) {
-  const [managerSeats, setManagerSeats] = useState<number>(0)
+  const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<BN>(new BN(0))
+  const [managerShareRate, setManagerShareRate] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string>('')
   const [baseFee, setBaseFee] = useState<number>(0)
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
@@ -169,7 +171,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   const referrer = useReferrer()
   const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const { t } = useTranslation()
-  const { passengerSeatCap } = useConsts()
+  const { passengerSharePercentCap, passengerSharePercentMinimum } = useConsts()
   const balance = useSubscribeBalance(token.toUpperCase())
   const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
@@ -177,8 +179,21 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
 
   const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
 
-  const costPerSeat = useMemo(() => travelCabinInfo.deposit_amount.div(new BN(100)), [travelCabinInfo])
+  const cabinDepositAmountDecimal = new Decimal(travelCabinInfo.deposit_amount.toString())
+  const passengerShareCap = passengerSharePercentCap
+    ? new BN(cabinDepositAmountDecimal.mul(passengerSharePercentCap).toString())
+    : new BN(0)
+  const passengerShareMinimum = passengerSharePercentMinimum
+    ? new BN(cabinDepositAmountDecimal.mul(passengerSharePercentMinimum).toString())
+    : new BN(0)
 
+  console.log(
+    'passengerSharePercentCap-passengerSharePercentMinimum',
+    passengerSharePercentCap,
+    passengerSharePercentMinimum
+  )
+  console.log('deposit_amount', travelCabinInfo.deposit_amount.toString())
+  console.log('passengerShareCap-passengerShareMinimum', passengerShareCap.toString(), passengerShareMinimum.toString())
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     if (value.length === 0) {
@@ -206,15 +221,28 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   }
 
   const handleBaseFee = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+    let value = parseFloat(event.target.value)
     if (value > 5) return
+    if (value + managerShareRate > 20) {
+      value = 20 - managerShareRate
+    }
     setBaseFee(value)
   }
 
-  const handleManagerSeats = (seats: string) => {
-    const value = parseFloat(seats)
-    if (value > 15) return
-    setManagerSeats(value)
+  const handleManagerPurchaseAmount = (value: number) => {
+    const managerAmount = Number.isNaN(value) ? new BN(0) : unitToBnWithDecimal(value, chainDecimals)
+    if (!passengerShareCap || !passengerShareMinimum) return
+    if (managerAmount.gt(passengerShareCap)) return
+    setManagerPurchaseAmount(managerAmount)
+
+    let shareRate = new Decimal(managerAmount.toNumber())
+      .dividedBy(travelCabinInfo.deposit_amount.toNumber())
+      .mul(100)
+      .toNumber()
+    if (shareRate + baseFee > 20) {
+      shareRate = 20 - baseFee
+    }
+    setManagerShareRate(shareRate)
   }
 
   const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,7 +256,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
       validatedReferrer = referralCode
     }
     onSubmit({
-      managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
+      managerPurchaseAmount: managerPurchaseAmount.isNeg() ? new BN(0) : managerPurchaseAmount,
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
@@ -244,18 +272,13 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     }
   }, [referralCode, referrer])
 
-  const requiredDeposit = useMemo(
-    () => new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))),
-    [travelCabinInfo, managerSeats]
-  )
-
   useEffect(() => {
-    if (balance.lt(requiredDeposit)) {
+    if (balance.lt(managerPurchaseAmount)) {
       setErrNoBalance(true)
     } else {
       setErrNoBalance(false)
     }
-  }, [balance, travelCabinInfo, managerSeats, requiredDeposit])
+  }, [balance, managerPurchaseAmount, chainDecimals])
 
   if (!chainDecimals) return null
 
@@ -312,12 +335,12 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
         </Section>
         <DpoBaseFeeHorizontal baseFee={baseFee} onChange={handleBaseFee} />
         <DpoManagerSeatsHorizontal
+          passengerShareCap={passengerShareCap}
+          passengerShareMinimum={passengerShareMinimum}
           dpoName={dpoName ? dpoName : ''}
-          costPerSeat={costPerSeat}
-          seatCap={passengerSeatCap}
-          managerSeats={managerSeats}
-          onChange={handleManagerSeats}
+          managerAmount={parseFloat(bnToUnit(managerPurchaseAmount, chainDecimals, 0, true))}
           token={token}
+          onChange={handleManagerPurchaseAmount}
           errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
         />
         <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
@@ -333,8 +356,8 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
                     backgroundColor={'#fff'}
                   />
                 </RowFixed>
-                <SText>{`${noNan(baseFee + managerSeats)}%`}</SText>
-                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)})`}</SText>
+                <SText>{`${noNan(baseFee + managerShareRate)}%`}</SText>
+                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerShareRate)} (${t(`Seats`)})`}</SText>
               </ColumnCenter>
               <ColumnCenter>
                 <RowFixed width="fit-content">
@@ -376,7 +399,11 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <HeavyText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</HeavyText>
+            <HeavyText width={'fit-content'}>{`${formatToUnit(
+              managerPurchaseAmount,
+              chainDecimals,
+              2
+            )} ${token}`}</HeavyText>
           </RowBetween>
         </Section>
       </SpacedSection>

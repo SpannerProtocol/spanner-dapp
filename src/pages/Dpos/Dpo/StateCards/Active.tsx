@@ -16,6 +16,7 @@ import { DpoInfo } from 'spanner-api/types'
 import isDpoStateCompleted, { isDpoStateSelectedState } from 'utils/dpoStateCompleted'
 import { formatToUnit } from 'utils/formatUnit'
 import DpoActions from '.'
+import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
 
 function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState: string }) {
   const { t } = useTranslation()
@@ -48,7 +49,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
               >
                 {target.name.toString()}
               </SLink>
-              {!target.empty_seats.isZero() ? (
+              {!getDpoRemainingPurchase(target).isZero() ? (
                 <SText width="fit-content">{t(`is available for purchase`)}</SText>
               ) : (
                 <SText width="fit-content">{`${t(`is not available for purchase`)}}. ${t(

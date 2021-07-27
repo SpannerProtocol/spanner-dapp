@@ -18,6 +18,7 @@ import { useProjectManager } from 'state/project/hooks'
 import { ThemeContext } from 'styled-components'
 import { firstBy } from 'thenby'
 import { Dispatcher } from 'types/dispatcher'
+import { getDpoMinimumPurchase } from '../../../utils/getDpoData'
 
 // SORTING FUNCTIONS
 
@@ -171,13 +172,14 @@ export default function DpoAllFilters({ unfilteredDpos, setFilteredDpos }: DpoAl
     let filteredDpos: DpoInfo[] = []
     if (filteredAffordable || filteredOwned) {
       primaryFilteredDpos.forEach((dpo) => {
+        const dpoMinimumPurchase = getDpoMinimumPurchase(dpo)
         if (filteredAffordable && filteredOwned) {
-          if (dpo.amount_per_seat.lte(balance) && userDpos.includes(dpo.index.toString())) {
+          if (dpoMinimumPurchase.lte(balance) && userDpos.includes(dpo.index.toString())) {
             filteredDpos.push(dpo)
           }
         } else {
           if (filteredAffordable) {
-            if (dpo.amount_per_seat.lte(balance)) {
+            if (dpoMinimumPurchase.lte(balance)) {
               filteredDpos.push(dpo)
             }
           }

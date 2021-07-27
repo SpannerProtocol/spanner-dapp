@@ -41,8 +41,10 @@ export function getTreasureHuntingGpLeft(
   lastBlock: BlockNumber,
   expectedBlockTime: Moment
 ) {
-  const gracePeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
-  return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  // todo TravelCabinBuyerInfo remove blk_of_last_withdraw filed
+  // const gracePeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
+  // return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  return '0'
 }
 
 /**

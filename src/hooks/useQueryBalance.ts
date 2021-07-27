@@ -148,8 +148,8 @@ export function useSubAllBalances(): Array<BalanceData> | undefined {
         token,
         type,
         free: accountData.free.toString(),
-        miscFrozen: accountData.miscFrozen.toString(),
-        feeFrozen: accountData.feeFrozen.toString(),
+        miscFrozen: accountData.miscFrozen ? accountData.miscFrozen.toString() : '0',
+        feeFrozen: accountData.feeFrozen ? accountData.miscFrozen.toString() : '0',
       }
     })
     const boltBalanceData = {

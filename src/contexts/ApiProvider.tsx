@@ -11,8 +11,6 @@ import { useApiToastContext } from './ApiToastProvider'
 import { RefreshCw } from 'react-feather'
 import { RowFixed } from 'components/Row'
 import { ThemeContext } from 'styled-components'
-import { createPortal } from 'react-dom'
-import MaintenanceModal from '../components/Modal/MaintenanceModal'
 
 interface ApiInternalState {
   api: ApiPromise
@@ -170,31 +168,5 @@ export function ApiProvider({ children }: any): JSX.Element {
 
   const value = useMemo<ApiState>(() => ({ ...apiState, connectToNetwork }), [apiState, connectToNetwork])
 
-  const [chainUpgradeModalOpen, setChainUpgradeModalOpen] = useState<boolean>(false)
-
-  const dismissChainUpgradeModal = () => {
-    setChainUpgradeModalOpen(false)
-  }
-
-  useEffect(() => {
-    const HAMMER_MAINTENANCE = process.env.REACT_APP_HAMMER_MAINTENANCE === 'true'
-    const SPANNER_MAINTENANCE = process.env.REACT_APP_SPANNER_MAINTENANCE === 'true'
-    setChainUpgradeModalOpen(false)
-    if (chain && chain.chain === 'Spanner' && SPANNER_MAINTENANCE) {
-      setChainUpgradeModalOpen(true)
-    }
-    if (chain && chain.chain === 'Hammer' && HAMMER_MAINTENANCE) {
-      setChainUpgradeModalOpen(true)
-    }
-  }, [chain])
-
-  return (
-    <ApiContext.Provider value={value}>
-      {children}
-      {createPortal(
-        <MaintenanceModal isOpen={chainUpgradeModalOpen} onDismiss={dismissChainUpgradeModal} chain={selectedChain} />,
-        document.body
-      )}
-    </ApiContext.Provider>
-  )
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>
 }

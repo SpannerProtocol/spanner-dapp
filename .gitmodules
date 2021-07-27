@@ -1,4 +1,4 @@
 [submodule "src/spanner-api"]
 	path = src/spanner-api
 	url = https://github.com/SpannerProtocol/spanner-api.git
-    branch = dapp
+    branch = def/dapp/hammer

@@ -39,7 +39,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                       <SText>{`${shortenAddr(manager.buyer.asPassenger.toString(), 8)}`}</SText>
                     </CopyHelper>
                   </RowFixed>
-                  <SText>{`${manager.number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                  <SText>{`${manager.share.toString()} ${t(`Seats`)}`}</SText>
                 </RowBetween>
               </Section>
             )}
@@ -63,7 +63,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                               <SText>{`${shortenAddr(entry[1].buyer.asPassenger.toString(), 8)}`}</SText>
                             </CopyHelper>
                           </RowFixed>
-                          <SText>{`${entry[1].number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                          <SText>{`${entry[1].share.toString()} ${t(`Seats`)}`}</SText>
                         </RowBetween>
                       )}
                     </>
@@ -83,7 +83,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                           <SText>{`DPO #${entry[1].buyer.asDpo.toString()}`}</SText>
                         </CopyHelper>
                       </RowFixed>
-                      <SText>{`${entry[1].number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                      <SText>{`${entry[1].share.toString()} ${t(`Seats`)}`}</SText>
                     </RowBetween>
                   )}
                 </div>

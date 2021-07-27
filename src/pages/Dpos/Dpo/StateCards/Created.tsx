@@ -12,7 +12,6 @@ import { Header2, Header4, HeavyText, SText, TokenText } from 'components/Text'
 import { CenterWrapper, SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
 import useConsts from 'hooks/useConsts'
-import useDpoFees from 'hooks/useDpoFees'
 import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
@@ -24,27 +23,39 @@ import Skeleton from 'react-loading-skeleton'
 import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import isDpoStateCompleted, { isDpoStateSelectedState } from 'utils/dpoStateCompleted'
 import { blocksToCountDown, formatBlocksCountdown } from 'utils/formatBlocks'
-import { formatToUnit } from 'utils/formatUnit'
+import { bnToUnit, formatToUnit, unitToBn } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
 import useTheme from 'utils/useTheme'
 import DpoActions from '.'
 import { DAPP_HOST } from '../../../../constants'
 import TargetedBy from '../TargetedBy'
+import {
+  getDpoFees,
+  getDpoMinimumPurchase,
+  getDpoProgress,
+  getDpoRemainingPurchase,
+} from '../../../../utils/getDpoData'
 
 function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => void }) {
-  const progress = 100 - dpoInfo.empty_seats.toNumber()
+  // const progress = 100 - dpoInfo.empty_seats.toNumber()
+  const progress = getDpoProgress(dpoInfo)
+  console.log('progress', progress)
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
   const { t } = useTranslation()
-  const fees = useDpoFees(dpoInfo.index.toString())
+  // const fees = useDpoFees(dpoInfo.index.toString())
+  const fees = getDpoFees(dpoInfo)
   const { expectedBlockTime, lastBlock } = useBlockManager()
   const theme = useTheme()
 
   const isConnected = useIsConnected()
-  const { passengerSeatCap } = useConsts()
+  const { passengerSharePercentCap } = useConsts()
   const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
   const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
   const wallet = useWallet()
+
+  const dpoTargetAmount = parseFloat(bnToUnit(dpoInfo.target_amount, chainDecimals, 0, true))
+  const passengerShareCap = passengerSharePercentCap ? dpoTargetAmount * passengerSharePercentCap : 0
 
   useEffect(() => {
     if (!wallet || !wallet.address || !dpoMembers || dpoMembers.length === 0) return
@@ -141,11 +152,11 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
         <CenterWrapper>
           <RowBlock>
             <SText width="100%" textAlign="center">
-              {t(`Cost per Seat`)}
+              {t(`Cost Minimum`)}
             </SText>
             <RowFixed width="100%" justifyContent="center" align="baseline">
               <HeavyText fontSize="24px" mobileFontSize="18px">
-                {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
+                {`${formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals)} `}
               </HeavyText>
               <TokenText padding="0 0 0 0.25rem">{token}</TokenText>
             </RowFixed>
@@ -173,7 +184,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
                 {dpoInfo.fee.toNumber() / 10}%
               </HeavyText>
               <SText width="100%" textAlign="center" fontSize="12px" mobileFontSize="10px">
-                {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
+                {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Shares`)}`}
               </SText>
             </RowBlock>
           </CenterWrapper>
@@ -196,7 +207,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
             </RowFixed>
           </RowBlock>
         </CenterWrapper>
-        {passengerSeatCap && (
+        {passengerSharePercentCap && (
           <CenterWrapper>
             <ButtonPrimary
               mobileMinWidth="120px"
@@ -207,7 +218,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
               disabled={
                 (dpoInfo.state.isCreated &&
                   userMemberInfo &&
-                  userMemberInfo.number_of_seats.toNumber() < passengerSeatCap) ||
+                  userMemberInfo.share.lt(unitToBn(passengerShareCap, chainDecimals))) ||
                 (dpoInfo.state.isCreated && !userMemberInfo)
                   ? false
                   : true || !isConnected
@@ -231,7 +242,11 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
                 maxHeight="31px"
                 width="100%"
                 margin="0 1rem"
-                disabled={dpoInfo.state.isCreated && dpoInfo.empty_seats.gt(new BN(0)) ? false : true || !isConnected}
+                disabled={
+                  dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0))
+                    ? false
+                    : true || !isConnected
+                }
               >
                 {t(`Invite`)}
               </ButtonSecondary>

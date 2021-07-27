@@ -17,6 +17,7 @@ import { DpoInfo, TravelCabinInfo } from 'spanner-api/types'
 import { formatToUnit } from 'utils/formatUnit'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
+import { getDpoMinimumPurchase, getDpoRemainingPurchase } from '../../../../utils/getDpoData'
 
 /**
  * When the default target is not available, there is a form to get the user to input a new target.
@@ -73,7 +74,7 @@ export default function DpoBuyTargetNotAvailable({
       const targetDpoInfo = entry[1].unwrapOrDefault()
       if (targetDpoInfo.state.isCreated) {
         // dpoInfo's deposit amount >= 1 of target's seats
-        dpoInfo.vault_deposit.gte(targetDpoInfo.amount_per_seat) && validDpos.push(targetDpoInfo)
+        dpoInfo.vault_deposit.gte(getDpoMinimumPurchase(targetDpoInfo)) && validDpos.push(targetDpoInfo)
       }
     })
     return validDpos
@@ -104,7 +105,7 @@ export default function DpoBuyTargetNotAvailable({
           setTargetDpoOptions(
             dpoOptions.map((option) => ({
               label: `${option.name.toString()} - ${formatToUnit(
-                option.amount_per_seat.toBn(),
+                getDpoMinimumPurchase(option),
                 chainDecimals,
                 0,
                 true
@@ -183,11 +184,11 @@ export default function DpoBuyTargetNotAvailable({
               <SpacedSection>
                 <RowBetween>
                   <SText>{t(`Cost per seat`)}</SText>
-                  <SText>{formatToUnit(targetDpo.amount_per_seat, chainDecimals, 0)}</SText>
+                  <SText>{formatToUnit(getDpoMinimumPurchase(targetDpo), chainDecimals, 0)}</SText>
                 </RowBetween>
                 <RowBetween>
-                  <SText>{t(`Available Seats`)}</SText>
-                  <SText>{targetDpo.empty_seats.toString()}</SText>
+                  <SText>{t(`Available Purchase`)}</SText>
+                  <SText>{getDpoRemainingPurchase(targetDpo).toString()}</SText>
                 </RowBetween>
               </SpacedSection>
               <RowFixed>
@@ -281,7 +282,8 @@ export default function DpoBuyTargetNotAvailable({
                   <RowBetween>
                     <SText>{t(`Total Deposit`)}</SText>
                     <SText>
-                      {formatToUnit(targetDpo.amount_per_seat.mul(new BN(seatsToBuy)), chainDecimals)}{' '}
+                      {/*todo  need to replace amount_per_seat, Temporarily set to 1.0001 for build*/}
+                      {formatToUnit(new BN(1.0001).mul(new BN(seatsToBuy)), chainDecimals)}{' '}
                       {targetDpo.token_id.asToken.toString()}
                     </SText>
                   </RowBetween>
