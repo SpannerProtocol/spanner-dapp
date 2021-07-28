@@ -5,7 +5,7 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubTravelCabin } from 'hooks/useQueryTravelCabins'
+import { useSubTravelCabin, useSubTravelCabinInventory } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import ActionRow from 'components/Actions/ActionRow'
 import React, { useEffect, useState } from 'react'
@@ -16,11 +16,13 @@ import { formatToUnit } from 'utils/formatUnit'
 import { getLifeSentenceGpLeft } from 'utils/getCabinData'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
+import { isTravelCabinAvailable } from 'utils/isTargetAvailable'
+import DpoBuyTargetNotAvailable from './DpoBuyTargetNotAvailable'
 
 /**
  * When the default target is available
  */
-export default function DpoBuyTravelCabinAvailable({
+function DpoBuyTravelCabinAvailable({
   dpoInfo,
   dpoAction,
   isLast,
@@ -109,4 +111,23 @@ export default function DpoBuyTravelCabinAvailable({
       isLast={isLast}
     />
   )
+}
+
+export default function DpoBuyTravelCabin(props: {
+  dpoInfo: DpoInfo
+  dpoAction: DpoAction
+  isLast: boolean
+  selectedState?: string
+}) {
+  const { dpoInfo } = props
+  const targetCabin = useSubTravelCabin(dpoInfo.target.isTravelCabin ? dpoInfo.target.asTravelCabin : undefined)
+  const targetCabinInventoryCount = useSubTravelCabinInventory(targetCabin ? targetCabin.index : undefined)
+
+  if (!targetCabinInventoryCount) return null
+
+  if (isTravelCabinAvailable(targetCabinInventoryCount)) {
+    return <DpoBuyTravelCabinAvailable {...props} />
+  } else {
+    return <DpoBuyTargetNotAvailable {...props} />
+  }
 }
