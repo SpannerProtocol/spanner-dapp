@@ -5,7 +5,7 @@ import { SText } from 'components/Text'
 import TxFee from 'components/TxFee'
 import { SpacedSection } from 'components/Wrapper'
 import { useBlockManager } from 'hooks/useBlocks'
-import { useSubDpo } from 'hooks/useQueryDpos'
+import { useDpoInTargetDpo, useSubDpo } from 'hooks/useQueryDpos'
 import { useSubstrate } from 'hooks/useSubstrate'
 import ActionRow from 'components/Actions/ActionRow'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -16,24 +16,28 @@ import { formatToUnit } from 'utils/formatUnit'
 import { getLifeSentenceGpLeft } from 'utils/getCabinData'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
+import { isDpoAvailable } from 'utils/isTargetAvailable'
+import DpoBuyTargetNotAvailable from './DpoBuyTargetNotAvailable'
 
 /**
  * When the default target is available
  */
-export default function DpoBuyDpoSeatsAvailable({
+function DpoBuyDpoSeatsAvailable({
   dpoInfo,
   dpoAction,
+  targetDpo,
   isLast,
   selectedState,
 }: {
   dpoInfo: DpoInfo
+  targetDpo: DpoInfo
   dpoAction: DpoAction
   isLast: boolean
   selectedState?: string
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
-  const targetDpo = useSubDpo(dpoInfo.target.asDpo.toString())
+  const inTarget = useDpoInTargetDpo(dpoInfo)
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
   const { chainDecimals } = useSubstrate()
@@ -112,7 +116,26 @@ export default function DpoBuyDpoSeatsAvailable({
       }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
-      disableButton={true}
+      disableButton={inTarget ? true : false}
     />
   )
+}
+
+export default function DpoBuyDpoSeats(props: {
+  dpoInfo: DpoInfo
+  dpoAction: DpoAction
+  isLast: boolean
+  selectedState?: string
+}) {
+  const { dpoInfo } = props
+  const targetDpo = useSubDpo(dpoInfo.target.asDpo[0].toString())
+  const inTarget = useDpoInTargetDpo(dpoInfo)
+
+  if (!targetDpo) return null
+
+  if (isDpoAvailable(dpoInfo, targetDpo) || inTarget) {
+    return <DpoBuyDpoSeatsAvailable {...props} targetDpo={targetDpo} />
+  } else {
+    return <DpoBuyTargetNotAvailable {...props} />
+  }
 }

@@ -210,6 +210,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
         {passengerSharePercentCap && (
           <CenterWrapper>
             <ButtonPrimary
+              minWidth="160px"
               mobileMinWidth="120px"
               maxHeight="31px"
               margin="0 1rem"
@@ -228,31 +229,40 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
             </ButtonPrimary>
           </CenterWrapper>
         )}
-        {wallet && wallet.address && (
-          <CenterWrapper>
+        <CenterWrapper>
+          {wallet && wallet.address ? (
             <CopyWrapper
               toCopy={`${DAPP_HOST}/#/dpos/dpo/${dpoInfo.index.toString()}/activity?ref=${
                 wallet.address
               }&project=${dpoInfo.token_id.asToken.toString()}`}
               childrenIsIcon={true}
-              width="100%"
             >
               <ButtonSecondary
+                minWidth="160px"
                 mobileMinWidth="120px"
                 maxHeight="31px"
-                width="100%"
                 margin="0 1rem"
                 disabled={
-                  dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0))
+                  dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0))&&isConnected
                     ? false
-                    : true || !isConnected
+                    : true
                 }
               >
                 {t(`Invite`)}
               </ButtonSecondary>
             </CopyWrapper>
-          </CenterWrapper>
-        )}
+          ) : (
+            <ButtonSecondary
+              minWidth="160px"
+              mobileMinWidth="120px"
+              maxHeight="31px"
+              margin="0 1rem"
+              disabled={dpoInfo.state.isCreated && dpoInfo.empty_seats.gt(new BN(0)) && isConnected ? false : true}
+            >
+              {t(`Invite`)}
+            </ButtonSecondary>
+          )}
+        </CenterWrapper>
       </EvenGrid>
     </>
   )

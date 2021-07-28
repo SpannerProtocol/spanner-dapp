@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/camelcase */
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { SText } from 'components/Text'
 import useIsWindowVisible from 'hooks/useIsWindowVisible'
@@ -65,7 +66,6 @@ export function ApiProvider({ children }: any): JSX.Element {
         const apiPromise = new ApiPromise(options({ provider }) as ApiOptions)
 
         apiPromise.on('disconnected', () => {
-          console.log()
           setApiState((prev) => ({ ...prev, connected: false, needReconnect: true, lastState: 'disconnected' }))
           toastDispatch({
             type: 'ADD',
