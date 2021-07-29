@@ -1,4 +1,3 @@
-import BN from 'bn.js'
 import Balance from 'components/Balance'
 import Divider from 'components/Divider'
 import Filter from 'components/Filter'
@@ -13,11 +12,30 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import ActionRow from 'components/Actions/ActionRow'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo, TravelCabinInfo } from 'spanner-api/types'
-import { formatToUnit } from 'utils/formatUnit'
+import { DpoInfo, Target, TravelCabinInfo } from 'spanner-api/types'
+import { formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
 import { getDpoMinimumPurchase, getDpoRemainingPurchase } from '../../../../utils/getDpoData'
+import useConsts from '../../../../hooks/useConsts'
+import BN from 'bn.js'
+import Decimal from 'decimal.js'
+
+function isValidNewTargetDpo(dpoInfo: DpoInfo, newTargetDpo: DpoInfo): boolean {
+  if (!newTargetDpo.state.isCreated) {
+    return false
+  }
+  if (dpoInfo.index.toString() == newTargetDpo.index.toString()) {
+    return false
+  }
+  if (dpoInfo.target.isDpo && dpoInfo.target.asDpo[0].toString() == newTargetDpo.index.toString()) {
+    return false
+  }
+  if (dpoInfo.vault_deposit.lt(getDpoMinimumPurchase(newTargetDpo))) {
+    return false
+  }
+  return true
+}
 
 /**
  * When the default target is not available, there is a form to get the user to input a new target.
@@ -72,9 +90,8 @@ export default function DpoBuyTargetNotAvailable({
     dpoEntries.forEach((entry) => {
       if (entry[1].isNone) return
       const targetDpoInfo = entry[1].unwrapOrDefault()
-      if (targetDpoInfo.state.isCreated) {
-        // dpoInfo's deposit amount >= 1 of target's seats
-        dpoInfo.vault_deposit.gte(getDpoMinimumPurchase(targetDpoInfo)) && validDpos.push(targetDpoInfo)
+      if (isValidNewTargetDpo(dpoInfo, targetDpoInfo)) {
+        validDpos.push(targetDpoInfo)
       }
     })
     return validDpos
@@ -126,12 +143,35 @@ export default function DpoBuyTargetNotAvailable({
     ? dpoInfo.target.asTravelCabin.toString
     : ''
 
+  let target: Target
+  if (targetType === 'TravelCabin' && targetCabin) {
+    target = api.createType('Target', { TravelCabin: targetCabin.index.toString() })
+  } else if (targetType === 'DPO' && targetDpo && seatsToBuy) {
+    target = api.createType('Target', {
+      Dpo: [targetDpo.index.toString(), unitToBnWithDecimal(parseFloat(seatsToBuy), chainDecimals)],
+    })
+  } else {
+    target = api.createType('Target', { TravelCabin: '0' })
+  }
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
+
+  const { dpoSharePercentCap, dpoSharePercentMinimum } = useConsts()
+
+  const dpoShareCap =
+    dpoSharePercentCap && targetDpo
+      ? new BN(new Decimal(targetDpo.target_amount.toString()).mul(dpoSharePercentCap).toString())
+      : new BN(0)
+  const dpoShareMinimum =
+    dpoSharePercentMinimum && targetDpo
+      ? new BN(new Decimal(targetDpo.target_amount.toString()).mul(dpoSharePercentMinimum).toString())
+      : new BN(0)
+
   return (
     <ActionRow
       dpoInfo={dpoInfo}
       selectedState={selectedState}
-      actionName={t('Buy Target')}
-      tip={`${t(`Use DPO's funds to purchase target.`)} ${dpoTargetStr}`}
+      actionName={t('Change Target')}
+      tip={`${t(`Your default target is no longer available.`)} ${dpoTargetStr}`}
       form={
         <>
           <SpacedSection>
@@ -179,31 +219,33 @@ export default function DpoBuyTargetNotAvailable({
           )}
           {targetType === 'DPO' && targetDpo && (
             <>
-              <HeavyText>{t(`Choose number of seats`)}</HeavyText>
+              <HeavyText>{t(`Choose number of shares`)}</HeavyText>
               <Divider />
               <SpacedSection>
                 <RowBetween>
-                  <SText>{t(`Cost per seat`)}</SText>
-                  <SText>{formatToUnit(getDpoMinimumPurchase(targetDpo), chainDecimals, 0)}</SText>
-                </RowBetween>
-                <RowBetween>
-                  <SText>{t(`Available Purchase`)}</SText>
-                  <SText>{getDpoRemainingPurchase(targetDpo).toString()}</SText>
+                  <SText>{t(`Remaining`)}</SText>
+                  <SText>
+                    {formatToUnit(getDpoRemainingPurchase(targetDpo), chainDecimals, 2)} {token}
+                  </SText>
                 </RowBetween>
               </SpacedSection>
               <RowFixed>
-                <SText>{t(`Seats to Buy`)}</SText>
+                <SText>{t(`Share to Buy`)}</SText>
                 <QuestionHelper
-                  text={t(`As a DPO, you can buy a maximum of 30 seats.`)}
+                  text={t(`As a DPO, you can buy a maximum of 50% Share.`)}
                   size={12}
                   backgroundColor={'#fff'}
-                ></QuestionHelper>
+                />
               </RowFixed>
               <BorderedInput
                 required
                 id="dpo-seats"
                 type="number"
-                placeholder="1 - 30"
+                placeholder={`${formatToUnit(dpoShareMinimum, chainDecimals, 2)} - ${formatToUnit(
+                  dpoShareCap,
+                  chainDecimals,
+                  2
+                )} ${token}`}
                 onChange={(e) => setSeatsToBuy(e.target.value)}
                 style={{ alignItems: 'flex-end', width: '100%', marginTop: '0' }}
               />
@@ -212,26 +254,16 @@ export default function DpoBuyTargetNotAvailable({
         </>
       }
       formTitle={t('Change DPO Target')}
-      buttonText={t('Buy')}
+      buttonText={t('Change')}
       icon={ACTION_ICONS[dpoAction.action]}
       transaction={
-        targetType === 'TravelCabin' && targetCabin
+        target
           ? {
               section: 'bulletTrain',
-              method: 'dpoBuyTravelCabin',
+              method: 'dpoChangeTarget',
               params: {
                 buyerDpoIdx: dpoInfo.index.toString(),
-                travelCabinIdx: targetCabin.index.toString(),
-              },
-            }
-          : targetType === 'DPO' && targetDpo
-          ? {
-              section: 'bulletTrain',
-              method: 'dpoBuyDpoSeats',
-              params: {
-                buyerDpoIdx: dpoInfo.index.toString(),
-                targetDpoIdx: targetDpo.index.toString(),
-                numberOfSeats: seatsToBuy,
+                newTarget: target,
               },
             }
           : // only way to conditional render this
@@ -274,17 +306,9 @@ export default function DpoBuyTargetNotAvailable({
               {seatsToBuy && (
                 <>
                   <RowBetween>
-                    <SText>{t(`Seats to Buy`)}</SText>
+                    <SText>{t(`Crowdfund Amount`)}</SText>
                     <SText>
-                      {seatsToBuy} {t(`Seats`)}
-                    </SText>
-                  </RowBetween>
-                  <RowBetween>
-                    <SText>{t(`Total Deposit`)}</SText>
-                    <SText>
-                      {/*todo  need to replace amount_per_seat, Temporarily set to 1.0001 for build*/}
-                      {formatToUnit(new BN(1.0001).mul(new BN(seatsToBuy)), chainDecimals)}{' '}
-                      {targetDpo.token_id.asToken.toString()}
+                      {seatsToBuy} {targetDpo.token_id.asToken.toString()}
                     </SText>
                   </RowBetween>
                 </>

@@ -1,9 +1,13 @@
 import { DpoInfo } from 'spanner-api/types'
 import BN from 'bn.js'
 
+export function getDpoRemainingPurchase(dpoInfo: DpoInfo): BN {
+  return dpoInfo.target_amount.sub(dpoInfo.total_fund)
+}
+
 export function getDpoMinimumPurchase(dpoInfo: DpoInfo): BN {
   const onePercent = dpoInfo.target_amount.divn(100)
-  const remaining = dpoInfo.target_amount.sub(dpoInfo.vault_deposit)
+  const remaining = getDpoRemainingPurchase(dpoInfo)
   if (remaining.lte(onePercent)) {
     return remaining
   } else {
@@ -11,13 +15,8 @@ export function getDpoMinimumPurchase(dpoInfo: DpoInfo): BN {
   }
 }
 
-export function getDpoRemainingPurchase(dpoInfo: DpoInfo): BN {
-  return dpoInfo.target_amount.sub(dpoInfo.vault_deposit)
-}
-
 export function getDpoProgress(dpoInfo: DpoInfo): number {
-  console.log('div', dpoInfo.vault_deposit.toNumber() / dpoInfo.target_amount.toNumber())
-  return (dpoInfo.vault_deposit.toNumber() / dpoInfo.target_amount.toNumber()) * 100
+  return (dpoInfo.total_fund.toNumber() / dpoInfo.target_amount.toNumber()) * 100
 }
 export function getDpoFees(dpoInfo: DpoInfo): { management: number; base: number } {
   const baseFee = dpoInfo.base_fee.toNumber() / 10

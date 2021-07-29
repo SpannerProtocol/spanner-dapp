@@ -18,6 +18,7 @@ import { DpoAction } from 'utils/getDpoActions'
 import { ACTION_ICONS } from '../../../../constants'
 import { isDpoAvailable } from 'utils/isTargetAvailable'
 import DpoBuyTargetNotAvailable from './DpoBuyTargetNotAvailable'
+import { getDpoMinimumPurchase } from '../../../../utils/getDpoData'
 
 /**
  * When the default target is available
@@ -37,10 +38,12 @@ function DpoBuyDpoSeatsAvailable({
 }) {
   const [estimatedFee, setEstimatedFee] = useState<string>()
   const { t } = useTranslation()
-  const inTarget = useDpoInTargetDpo(dpoInfo)
+  // const inTarget = useDpoInTargetDpo(dpoInfo)
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
   const { chainDecimals } = useSubstrate()
+  const minimumPurchase = getDpoMinimumPurchase(targetDpo)
+  const canBuy = dpoInfo.vault_deposit.gte(minimumPurchase)
 
   // Grace Period life sentence
   useEffect(() => {
@@ -76,11 +79,11 @@ function DpoBuyDpoSeatsAvailable({
       }
       transaction={{
         section: 'bulletTrain',
-        method: 'dpoBuyDpoSeats',
+        method: 'dpoBuyDpoShare',
         params: {
           buyerDpoIdx: dpoInfo.index.toString(),
           targetDpoIdx: dpoInfo.target.asDpo[0].toString(),
-          numberOfSeats: dpoInfo.target.asDpo[1].toString(),
+          amount: dpoInfo.vault_deposit.toString(),
         },
       }}
       txContent={
@@ -94,10 +97,6 @@ function DpoBuyDpoSeatsAvailable({
               <RowBetween>
                 <SText>{t(`DPO Name`)}</SText>
                 <SText>{targetDpo.name.toString()}</SText>
-              </RowBetween>
-              <RowBetween>
-                <SText>{t(`Seats`)}</SText>
-                <SText>{dpoInfo.target.asDpo[1].toString()}</SText>
               </RowBetween>
               <RowBetween>
                 <SText>{t(`Deposit`)}</SText>
@@ -116,7 +115,7 @@ function DpoBuyDpoSeatsAvailable({
       }
       setEstimatedFee={setEstimatedFee}
       isLast={isLast}
-      disableButton={inTarget ? true : false}
+      disableButton={!canBuy}
     />
   )
 }

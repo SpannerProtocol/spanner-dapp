@@ -54,6 +54,13 @@ function actionParser({
         })
       }
     }
+    // Buy DPO Seats
+    if (dpoInfo.target.isDpo) {
+      actions.push({
+        action: 'dpoBuyDpoSeats',
+        dpoIndex: dpoInfo.index,
+      })
+    }
   }
 
   if (dpoState === 'ACTIVE') {

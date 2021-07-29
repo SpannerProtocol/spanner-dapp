@@ -187,13 +187,6 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     ? new BN(cabinDepositAmountDecimal.mul(passengerSharePercentMinimum).toString())
     : new BN(0)
 
-  console.log(
-    'passengerSharePercentCap-passengerSharePercentMinimum',
-    passengerSharePercentCap,
-    passengerSharePercentMinimum
-  )
-  console.log('deposit_amount', travelCabinInfo.deposit_amount.toString())
-  console.log('passengerShareCap-passengerShareMinimum', passengerShareCap.toString(), passengerShareMinimum.toString())
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     if (value.length === 0) {

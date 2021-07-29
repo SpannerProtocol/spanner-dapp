@@ -123,7 +123,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                 </SText>
               </RowBetween>
               <RowBetween>
-                <SText>{t(`Cost Minimum Purchase`)}</SText>
+                <SText>{t(`Cost Minimum`)}</SText>
                 <SText>
                   {formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals)} {token}
                 </SText>
@@ -179,7 +179,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
             <Section>
               <RowBetween style={{ paddingBottom: '0.25rem' }}>
-                <SText>{t(`Seats Filled`)}</SText>
+                <SText>{t(`Shares Filled`)}</SText>
                 <SText>{`${getDpoProgress(dpoInfo)} / 100`}</SText>
               </RowBetween>
               <LinearProgressBar value={getDpoProgress(dpoInfo)} />
@@ -191,7 +191,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
               {fees && (
                 <RowBetween>
                   <SText>{t(`Management Fee`)}</SText>
-                  <SText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
+                  <SText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Shares`)}) = ${
                     dpoInfo.fee.toNumber() / 10
                   }%`}</SText>
                 </RowBetween>
@@ -203,7 +203,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                 </RowBetween>
               )}
               <RowBetween>
-                <SText>{t(`Cost Minimum Purchase`)}</SText>
+                <SText>{t(`Cost Minimum`)}</SText>
                 <SText>
                   {formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals, 2)} {token}
                 </SText>

@@ -7,6 +7,9 @@ import { getDpoRemainingPurchase } from './getDpoData'
  * @param targetDpo The Target DPO
  */
 export function isDpoAvailable(dpoInfo: DpoInfo, targetDpo: DpoInfo) {
+  if (!dpoInfo.state.isCreated) {
+    return false
+  }
   return getDpoRemainingPurchase(targetDpo).gte(dpoInfo.target.asDpo[1])
 }
 

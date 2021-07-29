@@ -23,7 +23,7 @@ import Skeleton from 'react-loading-skeleton'
 import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import isDpoStateCompleted, { isDpoStateSelectedState } from 'utils/dpoStateCompleted'
 import { blocksToCountDown, formatBlocksCountdown } from 'utils/formatBlocks'
-import { bnToUnit, formatToUnit, unitToBn } from 'utils/formatUnit'
+import { bnToUnit, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
 import useTheme from 'utils/useTheme'
 import DpoActions from '.'
@@ -219,7 +219,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
               disabled={
                 (dpoInfo.state.isCreated &&
                   userMemberInfo &&
-                  userMemberInfo.share.lt(unitToBn(passengerShareCap, chainDecimals))) ||
+                  userMemberInfo.share.lt(unitToBnWithDecimal(passengerShareCap, chainDecimals))) ||
                 (dpoInfo.state.isCreated && !userMemberInfo)
                   ? false
                   : true || !isConnected
@@ -242,11 +242,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
                 mobileMinWidth="120px"
                 maxHeight="31px"
                 margin="0 1rem"
-                disabled={
-                  dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0))&&isConnected
-                    ? false
-                    : true
-                }
+                disabled={!(dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0)) && isConnected)}
               >
                 {t(`Invite`)}
               </ButtonSecondary>
@@ -257,7 +253,7 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
               mobileMinWidth="120px"
               maxHeight="31px"
               margin="0 1rem"
-              disabled={dpoInfo.state.isCreated && dpoInfo.empty_seats.gt(new BN(0)) && isConnected ? false : true}
+              disabled={!(dpoInfo.state.isCreated && getDpoRemainingPurchase(dpoInfo).gt(new BN(0)) && isConnected)}
             >
               {t(`Invite`)}
             </ButtonSecondary>
