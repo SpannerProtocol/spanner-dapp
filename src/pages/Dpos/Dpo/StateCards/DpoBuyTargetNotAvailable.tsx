@@ -25,10 +25,10 @@ function isValidNewTargetDpo(dpoInfo: DpoInfo, newTargetDpo: DpoInfo): boolean {
   if (!newTargetDpo.state.isCreated) {
     return false
   }
-  if (dpoInfo.index.toString() == newTargetDpo.index.toString()) {
+  if (dpoInfo.index.toString() === newTargetDpo.index.toString()) {
     return false
   }
-  if (dpoInfo.target.isDpo && dpoInfo.target.asDpo[0].toString() == newTargetDpo.index.toString()) {
+  if (dpoInfo.target.isDpo && dpoInfo.target.asDpo[0].toString() === newTargetDpo.index.toString()) {
     return false
   }
   if (dpoInfo.vault_deposit.lt(getDpoMinimumPurchase(newTargetDpo))) {

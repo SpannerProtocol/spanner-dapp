@@ -13,6 +13,7 @@ import { ErrorMsg } from 'pages/Dex/components'
 import { ThemeContext } from 'styled-components'
 import { ColumnCenter } from '../../../Column'
 import BN from 'bn.js'
+import { PrimaryMUISlider } from '../../../Slider'
 
 export function DpoNameHorizontal({
   onChange,
@@ -164,6 +165,11 @@ export function DpoManagerSeatsHorizontal({
     }
   }, [balance, onChange, passengerShareCap, chainDecimals])
 
+  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      onChange(newValue)
+    }
+  }
   return (
     <>
       {passengerShareCap && passengerShareMinimum && (
@@ -175,7 +181,7 @@ export function DpoManagerSeatsHorizontal({
           {/*</Row>*/}
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`Manager Amount`)}: ${dpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t(`Manager Shares`)} (${token})`}</SText>
               <QuestionHelper
                 text={t(
                   `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
@@ -204,7 +210,7 @@ export function DpoManagerSeatsHorizontal({
                     onClick={handleMax}
                     padding="0.25rem"
                     mobilePadding="0.25rem"
-                    margin="0 1rem"
+                    margin="0 0rem"
                     minWidth="60px"
                     mobileMinWidth="60px"
                   >
@@ -213,6 +219,13 @@ export function DpoManagerSeatsHorizontal({
                 </RowFixed>
               </BorderedWrapper>
               {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
+              <PrimaryMUISlider
+                value={Number.isNaN(managerAmount) || !managerAmount ? 0 : managerAmount}
+                onChange={handleSliderChange}
+                aria-labelledby="continuous-slider"
+                min={parseFloat(formatToUnit(passengerShareMinimum, chainDecimals, 2))}
+                max={parseFloat(formatToUnit(passengerShareCap, chainDecimals, 2))}
+              />
             </ColumnCenter>
           </RowBetween>
         </Section>
@@ -307,6 +320,7 @@ export function DpoTargetDpoSeatsHorizontal({
   targetDpoName,
   emptyAmount,
   targetDPOTargetAmount,
+  token,
   onChange,
 }: {
   targetAmount: number
@@ -315,22 +329,29 @@ export function DpoTargetDpoSeatsHorizontal({
   dpoShareMinimum?: BN
   targetDpoName: string
   targetDPOTargetAmount?: BN
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  token: string
+  onChange: (e: number) => void
 }) {
   const { t } = useTranslation()
   const { chainDecimals } = useSubstrate()
+  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      onChange(newValue)
+    }
+  }
+
   return (
     <>
       {targetDPOTargetAmount && dpoShareCap && dpoShareMinimum && (
         <Section>
           <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
-              {t(`Remaining`)}: {formatToUnit(emptyAmount, chainDecimals, 2)}
+              {t(`Remaining`)}: {formatToUnit(emptyAmount, chainDecimals, 2)} {token}
             </SText>
           </Row>
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`# Amount in`)}: ${targetDpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t('Crowdfund Amount')} (${token})`}</SText>
               <QuestionHelper
                 text={t(
                   `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
@@ -349,9 +370,16 @@ export function DpoTargetDpoSeatsHorizontal({
                   chainDecimals,
                   2
                 )}`}
-                onChange={(e) => onChange(e)}
+                onChange={(e) => onChange(parseFloat(e.target.value))}
                 value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}
+              />
+              <PrimaryMUISlider
+                value={Number.isNaN(targetAmount) || !targetAmount ? 0 : targetAmount}
+                onChange={handleSliderChange}
+                aria-labelledby="continuous-slider"
+                min={parseFloat(formatToUnit(dpoShareMinimum, chainDecimals, 2))}
+                max={parseFloat(formatToUnit(dpoShareCap, chainDecimals, 2))}
               />
             </ColumnCenter>
           </RowBetween>

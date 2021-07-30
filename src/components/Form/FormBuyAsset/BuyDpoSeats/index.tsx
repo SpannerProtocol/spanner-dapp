@@ -22,6 +22,7 @@ import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
 import Decimal from 'decimal.js'
+import { PrimaryMUISlider } from '../../../Slider'
 
 interface BuyDpoSeatsFormProps {
   dpoInfo: DpoInfo
@@ -111,10 +112,10 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     ? new BN(new Decimal(dpoInfo.target_amount.toNumber()).mul(passengerSharePercentMinimum).toString())
     : new BN(0)
 
-  useEffect(() => {
-    if (!passengerSharePercentMinimum) return
-    setSeats(passengerShareMinimum)
-  }, [passengerSharePercentMinimum])
+  // useEffect(() => {
+  //   if (!passengerSharePercentMinimum) return
+  //   setSeats(passengerShareMinimum)
+  // }, [passengerSharePercentMinimum])
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,8 +128,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     }
   }
 
-  const handleSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+  const handleSeats = (value: number) => {
     const valueBN = Number.isNaN(value) ? new BN(0) : unitToBnWithDecimal(value, chainDecimals)
     if (!passengerSharePercentCap || !passengerSharePercentMinimum) return
     if (valueBN.gt(passengerShareCap)) return
@@ -151,6 +151,11 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     }
   }, [referralCode, referrer])
 
+  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      handleSeats(newValue)
+    }
+  }
   return (
     <>
       <Section>
@@ -210,9 +215,16 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
             chainDecimals,
             2
           )}`}
-          onChange={(e) => handleSeats(e)}
+          onChange={(e) => handleSeats(parseFloat(e.target.value))}
           value={parseFloat(bnToUnit(seats, chainDecimals, 0, true))}
           style={{ alignItems: 'flex-end', width: '100%' }}
+        />
+        <PrimaryMUISlider
+          value={parseFloat(bnToUnit(seats, chainDecimals, 0, true))}
+          onChange={handleSliderChange}
+          aria-labelledby="continuous-slider"
+          min={parseFloat(formatToUnit(passengerShareMinimum, chainDecimals, 2))}
+          max={parseFloat(formatToUnit(passengerShareCap, chainDecimals, 2))}
         />
       </Section>
       {(!referralCode || newReferrer) && (

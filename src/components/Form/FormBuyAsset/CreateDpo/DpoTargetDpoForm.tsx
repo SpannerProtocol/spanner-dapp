@@ -231,8 +231,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     }
   }
 
-  const handleTargetPurchaseAmount = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+  const handleTargetPurchaseAmount = (value: number) => {
     const valueBN = Number.isNaN(value) ? new BN(0) : new BN(unitToBnWithDecimal(value, chainDecimals))
     if (!dpoSharePercentCap || !dpoSharePercentMinimum) return
     if (valueBN.gt(dpoShareCap)) return
@@ -257,7 +256,9 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     if (managerAmount.gt(passengerShareCap)) return
     setManagerPurchaseAmount(managerAmount)
 
-    let shareRate = new Decimal(managerAmount.toNumber()).dividedBy(targetPurchaseAmount.toNumber()).mul(100).toNumber()
+    let shareRate = parseFloat(
+      new Decimal(managerAmount.toNumber()).dividedBy(targetPurchaseAmount.toNumber()).mul(100).toFixed(1)
+    )
     if (shareRate + baseFee > 20) {
       shareRate = 20 - baseFee
     }
@@ -336,23 +337,9 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           dpoShareMinimum={dpoShareMinimum}
           targetDpoName={dpoInfo.name.toString()}
           targetDPOTargetAmount={dpoInfo.target_amount}
+          token={token}
           onChange={handleTargetPurchaseAmount}
         />
-        <Section>
-          <RowBetween>
-            <RowFixed width="fit-content">
-              <SText>{t(`Crowdfund Amount`)}</SText>
-              <QuestionHelper
-                text={t(`The number of seats to buy from your Target DPO.`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
-            </RowFixed>
-            <SText>
-              {formatToUnit(targetPurchaseAmount, chainDecimals, 2)} {token}
-            </SText>
-          </RowBetween>
-        </Section>
       </SpacedSection>
       <SpacedSection>
         <Section>

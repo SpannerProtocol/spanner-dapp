@@ -57,8 +57,8 @@ function DpoBuyDpoSeatsAvailable({
     <ActionRow
       dpoInfo={dpoInfo}
       selectedState={selectedState}
-      actionName={t('Buy DPO Seats')}
-      tip={`${t(`Use crowdfund amount to buy seats from Target DPO`)}`}
+      actionName={t('Buy DPO Shares')}
+      tip={`${t(`Use crowdfund amount to buy shares from Target DPO`)}`}
       buttonText={t(`Buy`)}
       icon={ACTION_ICONS[dpoAction.action]}
       gracePeriod={

@@ -228,10 +228,9 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     if (managerAmount.gt(passengerShareCap)) return
     setManagerPurchaseAmount(managerAmount)
 
-    let shareRate = new Decimal(managerAmount.toNumber())
-      .dividedBy(travelCabinInfo.deposit_amount.toNumber())
-      .mul(100)
-      .toNumber()
+    let shareRate = parseFloat(
+      new Decimal(managerAmount.toNumber()).dividedBy(travelCabinInfo.deposit_amount.toNumber()).mul(100).toFixed(1)
+    )
     if (shareRate + baseFee > 20) {
       shareRate = 20 - baseFee
     }
