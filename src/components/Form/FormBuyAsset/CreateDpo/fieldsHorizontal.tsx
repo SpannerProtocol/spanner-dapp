@@ -225,6 +225,7 @@ export function DpoManagerSeatsHorizontal({
                 aria-labelledby="continuous-slider"
                 min={parseFloat(formatToUnit(passengerShareMinimum, chainDecimals, 2))}
                 max={parseFloat(formatToUnit(passengerShareCap, chainDecimals, 2))}
+                step={0.01}
               />
             </ColumnCenter>
           </RowBetween>
@@ -380,6 +381,7 @@ export function DpoTargetDpoSeatsHorizontal({
                 aria-labelledby="continuous-slider"
                 min={parseFloat(formatToUnit(dpoShareMinimum, chainDecimals, 2))}
                 max={parseFloat(formatToUnit(dpoShareCap, chainDecimals, 2))}
+                step={0.01}
               />
             </ColumnCenter>
           </RowBetween>

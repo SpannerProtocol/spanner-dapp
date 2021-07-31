@@ -92,7 +92,7 @@ function BuyDpoSeatsTxConfirmContent({
 }
 
 export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeatsFormProps) {
-  const [seats, setSeats] = useState<BN>(new BN(1))
+  const [seats, setSeats] = useState<BN>(new BN(0))
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
   const { t } = useTranslation()
@@ -156,6 +156,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
       handleSeats(newValue)
     }
   }
+  const buyShares = parseFloat(formatToUnit(seats, chainDecimals, 2))
   return (
     <>
       <Section>
@@ -216,7 +217,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
             2
           )}`}
           onChange={(e) => handleSeats(parseFloat(e.target.value))}
-          value={parseFloat(bnToUnit(seats, chainDecimals, 0, true))}
+          value={Number.isNaN(buyShares) ? '' : buyShares}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
         <PrimaryMUISlider
@@ -225,6 +226,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           aria-labelledby="continuous-slider"
           min={parseFloat(formatToUnit(passengerShareMinimum, chainDecimals, 2))}
           max={parseFloat(formatToUnit(passengerShareCap, chainDecimals, 2))}
+          step={0.01}
         />
       </Section>
       {(!referralCode || newReferrer) && (

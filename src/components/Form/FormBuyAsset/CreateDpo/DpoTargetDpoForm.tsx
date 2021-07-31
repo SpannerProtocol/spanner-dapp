@@ -88,7 +88,7 @@ function TxConfirm({
 
   let managerRate = 0
   if (managerPurchaseAmount && targetPurchaseAmount) {
-    managerRate = (managerPurchaseAmount.toNumber() / targetPurchaseAmount.toNumber()) * 100
+    managerRate = parseFloat(((managerPurchaseAmount.toNumber() / targetPurchaseAmount.toNumber()) * 100).toFixed(1))
   }
 
   return (
@@ -115,15 +115,6 @@ function TxConfirm({
           <RowBetween>
             <SText>{t(`Crowdfund Period`)}</SText>
             <SText>{`${endInDays} ${t(`days`)}`}</SText>
-          </RowBetween>
-        )}
-        {targetPurchaseAmount && (
-          <RowBetween>
-            <SText>{t(`Target DPO Amount`)}</SText>
-            <SText>
-              {`${formatToUnit(targetPurchaseAmount, chainDecimals, 2)} 
-              ${token}`}
-            </SText>
           </RowBetween>
         )}
         {managerRate && baseFee && (
@@ -281,8 +272,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     }
     onSubmit({
       dpoName,
-      targetPurchaseAmount: Number.isNaN(targetPurchaseAmount) ? new BN(0) : targetPurchaseAmount,
-      managerPurchaseAmount: Number.isNaN(managerPurchaseAmount) ? new BN(0) : managerPurchaseAmount,
+      targetPurchaseAmount: targetPurchaseAmount,
+      managerPurchaseAmount: managerPurchaseAmount,
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,

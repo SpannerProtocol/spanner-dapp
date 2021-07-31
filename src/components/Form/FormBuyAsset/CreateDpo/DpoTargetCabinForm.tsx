@@ -34,6 +34,7 @@ import {
 } from './fieldsHorizontal'
 import { DpoFormCoreProps } from './index'
 import { Decimal } from 'decimal.js'
+import { CreateDpoData } from '../index'
 
 interface DpoTargetCabinFormProps extends DpoFormCoreProps {
   travelCabinInfo: TravelCabinInfo
@@ -53,9 +54,9 @@ interface TxConfirmProps {
 
 interface TravelCabinCrowdfundTxConfirmProps {
   target?: string
-  targetAmount?: string
+  targetPurchaseAmount?: BN
   dpoName?: string
-  managerSeats?: string
+  managerPurchaseAmount?: BN
   baseFee?: string
   directReferralRate?: string
   end?: string
@@ -67,9 +68,9 @@ interface TravelCabinCrowdfundTxConfirmProps {
 
 export function TxConfirm({
   target,
-  targetAmount,
+  targetPurchaseAmount,
   dpoName,
-  managerSeats,
+  managerPurchaseAmount,
   baseFee,
   directReferralRate,
   end,
@@ -87,6 +88,16 @@ export function TxConfirm({
       ? Math.ceil(parseFloat(blockToDays(new BN(end).sub(lastBlock), expectedBlockTime, 4)))
       : undefined
 
+  let shareRate = 0
+  if (managerPurchaseAmount && targetPurchaseAmount && baseFee) {
+    shareRate = parseFloat(
+      new Decimal(managerPurchaseAmount.toNumber()).dividedBy(targetPurchaseAmount.toNumber()).mul(100).toFixed(1)
+    )
+    if (shareRate + parseFloat(baseFee) > 20) {
+      shareRate = 20 - parseFloat(baseFee)
+    }
+  }
+
   return (
     <>
       <Section>
@@ -101,11 +112,11 @@ export function TxConfirm({
           <SText>{t(`DPO Name`)}</SText>
           <SText>{dpoName}</SText>
         </RowBetween>
-        {targetAmount && (
+        {targetPurchaseAmount && (
           <RowBetween>
             <SText>{t(`Crowdfunding Amount`)}</SText>
             <SText>
-              {formatToUnit(targetAmount, chainDecimals, 2)} {token}
+              {formatToUnit(targetPurchaseAmount, chainDecimals, 2)} {token}
             </SText>
           </RowBetween>
         )}
@@ -115,12 +126,12 @@ export function TxConfirm({
             <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
           </RowBetween>
         )}
-        {managerSeats && baseFee && (
+        {shareRate && baseFee && (
           <RowBetween>
             <SText>{t(`Management Fee`)}</SText>
             <SText>
-              {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
-                parseFloat(managerSeats) + parseFloat(baseFee)
+              {`${baseFee} (${t(`Base`)}) + ${shareRate} (${t(`Shares`)}) = ${Math.round(
+                shareRate + parseFloat(baseFee)
               ).toString()}%`}
             </SText>
           </RowBetween>
@@ -136,11 +147,11 @@ export function TxConfirm({
           </RowBetween>
         )}
         <Divider />
-        {managerSeats && targetAmount && (
+        {managerPurchaseAmount && (
           <RowBetween>
             <HeavyText fontSize="14px">{t(`Required Deposit`)}</HeavyText>
             <HeavyText fontSize="14px">
-              {`${formatToUnit(new BN(managerSeats).mul(new BN(targetAmount).div(new BN(100))), chainDecimals, 2)} 
+              {`${formatToUnit(managerPurchaseAmount, chainDecimals, 2)} 
               ${token}`}
             </HeavyText>
           </RowBetween>
@@ -349,7 +360,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
                   />
                 </RowFixed>
                 <SText>{`${noNan(baseFee + managerShareRate)}%`}</SText>
-                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerShareRate)} (${t(`Seats`)})`}</SText>
+                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerShareRate)} (${t(`Shares`)})`}</SText>
               </ColumnCenter>
               <ColumnCenter>
                 <RowFixed width="fit-content">
@@ -412,17 +423,6 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
       </Section>
     </>
   )
-}
-
-interface CreateDpoData {
-  dpoName?: string
-  targetSeats?: string
-  managerSeats?: string
-  baseFee?: string
-  directReferralRate?: string
-  end?: string
-  referrer?: string | null
-  newReferrer?: boolean
 }
 
 /**
@@ -512,9 +512,10 @@ export function DpoTargetCabinTxConfirm({
         <TxConfirm
           {...createDpoData}
           target={travelCabinInfo.name.toString()}
-          targetAmount={travelCabinInfo.deposit_amount.toString()}
           token={token}
           estimatedFee={txInfo?.estimatedFee}
+          baseFee={createDpoData.baseFee}
+          targetPurchaseAmount={travelCabinInfo.deposit_amount}
         />
       </TxModal>
     </>
