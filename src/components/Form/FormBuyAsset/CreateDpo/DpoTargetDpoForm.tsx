@@ -20,7 +20,7 @@ import { DpoInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { blockToDays } from 'utils/formatBlocks'
 import { abs, noNan } from 'utils/formatNumbers'
-import { bnToUnit, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
+import { bnToUnit, bnToUnitNumber, formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { CreateDpoData } from '..'
@@ -79,7 +79,6 @@ function TxConfirm({
 }: DpoCreateDpoTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
-  const { chainDecimals } = useSubstrate()
 
   const endInDays =
     end && expectedBlockTime && lastBlock
@@ -87,8 +86,11 @@ function TxConfirm({
       : undefined
 
   let managerRate = 0
-  if (managerPurchaseAmount && targetPurchaseAmount) {
-    managerRate = parseFloat(((managerPurchaseAmount.toNumber() / targetPurchaseAmount.toNumber()) * 100).toFixed(1))
+  if (managerPurchaseAmount && targetPurchaseAmount && baseFee) {
+    managerRate = parseFloat(new Decimal(managerPurchaseAmount).dividedBy(targetPurchaseAmount).mul(100).toFixed(1))
+    if (managerRate + parseFloat(baseFee) > 20) {
+      managerRate = 20 - parseFloat(baseFee)
+    }
   }
 
   return (
@@ -108,7 +110,7 @@ function TxConfirm({
         <RowBetween>
           <SText>{t(`Crowdfund Amount`)}</SText>
           <SText>
-            {targetAmount} {token}
+            {targetPurchaseAmount?.toFixed(2)} {token}
           </SText>
         </RowBetween>
         {end && endInDays && (
@@ -142,7 +144,7 @@ function TxConfirm({
           <RowBetween>
             <HeavyText fontSize="14px">{t(`Required deposit`)}</HeavyText>
             <HeavyText fontSize="14px">
-              {`${formatToUnit(managerPurchaseAmount, chainDecimals, 2)} 
+              {`${managerPurchaseAmount.toFixed(2)} 
               ${token}`}
             </HeavyText>
           </RowBetween>
@@ -163,8 +165,8 @@ function TxConfirm({
 }
 
 export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTargetDpoFormProps) {
-  const [targetPurchaseAmount, setTargetPurchaseAmount] = useState<BN>(new BN(0))
-  const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<BN>(new BN(0))
+  const [targetPurchaseAmount, setTargetPurchaseAmount] = useState<number>(0)
+  const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<number>(0)
   const [managerShareRate, setManagerShareRate] = useState<number>(0)
   const [baseFee, setBaseFee] = useState<number>(0)
   const { dpoSharePercentCap, dpoSharePercentMinimum, passengerSharePercentCap, passengerSharePercentMinimum } =
@@ -189,18 +191,16 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     lastBlock &&
     blockToDays(dpoInfo.expiry_blk.sub(lastBlock).sub(new BN(500)), expectedBlockTime, 2)
 
-  const dpoShareCap = dpoSharePercentCap
-    ? new BN(new Decimal(dpoInfo.target_amount.toString()).mul(dpoSharePercentCap).toString())
-    : new BN(0)
-  const dpoShareMinimum = dpoSharePercentMinimum
-    ? new BN(new Decimal(dpoInfo.target_amount.toString()).mul(dpoSharePercentMinimum).toString())
-    : new BN(0)
+  const dpoInfoTargetAmountNumber = new Decimal(bnToUnit(dpoInfo.target_amount, chainDecimals, 0))
+  const dpoShareCap = dpoSharePercentCap ? dpoInfoTargetAmountNumber.mul(dpoSharePercentCap).toNumber() : 0
+  const dpoShareMinimum = dpoSharePercentMinimum ? dpoInfoTargetAmountNumber.mul(dpoSharePercentMinimum).toNumber() : 0
+
   const passengerShareCap = passengerSharePercentCap
-    ? new BN(new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentCap).toString())
-    : new BN(0)
+    ? new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentCap).toNumber()
+    : 0
   const passengerShareMinimum = passengerSharePercentMinimum
-    ? new BN(new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentMinimum).toString())
-    : new BN(0)
+    ? new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentMinimum).toNumber()
+    : 0
 
   const handleDpoName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value
@@ -223,10 +223,9 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   }
 
   const handleTargetPurchaseAmount = (value: number) => {
-    const valueBN = Number.isNaN(value) ? new BN(0) : new BN(unitToBnWithDecimal(value, chainDecimals))
     if (!dpoSharePercentCap || !dpoSharePercentMinimum) return
-    if (valueBN.gt(dpoShareCap)) return
-    setTargetPurchaseAmount(valueBN)
+    if (value > dpoShareCap) return
+    setTargetPurchaseAmount(value)
   }
 
   const handleDirectReferralRate = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -242,14 +241,11 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   }
 
   const handleManagerPurchaseAmount = (value: number) => {
-    const managerAmount = Number.isNaN(value) ? new BN(0) : unitToBnWithDecimal(value, chainDecimals)
     if (!passengerShareCap || !passengerShareMinimum) return
-    if (managerAmount.gt(passengerShareCap)) return
-    setManagerPurchaseAmount(managerAmount)
+    if (value > passengerShareCap) return
+    setManagerPurchaseAmount(value)
 
-    let shareRate = parseFloat(
-      new Decimal(managerAmount.toNumber()).dividedBy(targetPurchaseAmount.toNumber()).mul(100).toFixed(1)
-    )
+    let shareRate = parseFloat(new Decimal(value).dividedBy(targetPurchaseAmount).mul(100).toFixed(1))
     if (shareRate + baseFee > 20) {
       shareRate = 20 - baseFee
     }
@@ -290,7 +286,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   }, [referralCode, referrer])
 
   useEffect(() => {
-    if (balance.lt(managerPurchaseAmount)) {
+    const balanceUnit = bnToUnitNumber(balance, chainDecimals)
+    if (balanceUnit < managerPurchaseAmount) {
       setErrNoBalance(true)
     } else {
       setErrNoBalance(false)
@@ -322,12 +319,11 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           </RowBetween>
         </Section>
         <DpoTargetDpoSeatsHorizontal
-          targetAmount={parseFloat(bnToUnit(targetPurchaseAmount, chainDecimals, 0, true))}
-          emptyAmount={getDpoRemainingPurchase(dpoInfo)}
+          targetAmount={targetPurchaseAmount}
+          emptyAmount={bnToUnitNumber(getDpoRemainingPurchase(dpoInfo), chainDecimals)}
           dpoShareCap={dpoShareCap}
           dpoShareMinimum={dpoShareMinimum}
           targetDpoName={dpoInfo.name.toString()}
-          targetDPOTargetAmount={dpoInfo.target_amount}
           token={token}
           onChange={handleTargetPurchaseAmount}
         />
@@ -350,7 +346,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           passengerShareCap={passengerShareCap}
           passengerShareMinimum={passengerShareMinimum}
           dpoName={dpoName ? dpoName : ''}
-          managerAmount={parseFloat(bnToUnit(managerPurchaseAmount, chainDecimals, 0, true))}
+          managerAmount={managerPurchaseAmount}
           token={token}
           onChange={handleManagerPurchaseAmount}
           errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
@@ -411,11 +407,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <HeavyText width={'fit-content'}>{`${formatToUnit(
-              managerPurchaseAmount,
-              chainDecimals,
-              2
-            )} ${token}`}</HeavyText>
+            <HeavyText width={'fit-content'}>{`${managerPurchaseAmount.toFixed(2)} ${token}`}</HeavyText>
           </RowBetween>
         </Section>
       </SpacedSection>
@@ -446,7 +438,6 @@ export function DpoTargetDpoTxConfirm({
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const { chainDecimals } = useSubstrate()
 
   const dismissModal = () => {
     setIsOpen(false)
@@ -468,11 +459,7 @@ export function DpoTargetDpoTxConfirm({
         <TxConfirm
           {...createDpoData}
           target={dpoInfo.name.toString()}
-          targetAmount={formatToUnit(
-            createDpoData.targetPurchaseAmount ? createDpoData.targetPurchaseAmount : 0,
-            chainDecimals,
-            2
-          )}
+          targetAmount={createDpoData.targetPurchaseAmount ? createDpoData.targetPurchaseAmount.toFixed(2) : '0'}
           token={token}
           estimatedFee={txInfo.estimatedFee}
           dpoInfo={dpoInfo}

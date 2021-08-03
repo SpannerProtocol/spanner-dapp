@@ -5,14 +5,13 @@ import React, { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../Wrapper'
 import Row, { RowBetween, RowFixed } from '../../../Row'
 import { SText } from '../../../Text'
-import { bnToUnit, formatToUnit } from '../../../../utils/formatUnit'
+import { bnToUnitNumber } from '../../../../utils/formatUnit'
 import QuestionHelper from '../../../QuestionHelper'
 import { BorderedInput, SInput } from '../../../Input'
 import { PillButton } from '../../../Button'
 import { ErrorMsg } from 'pages/Dex/components'
 import { ThemeContext } from 'styled-components'
 import { ColumnCenter } from '../../../Column'
-import BN from 'bn.js'
 import { PrimaryMUISlider } from '../../../Slider'
 
 export function DpoNameHorizontal({
@@ -145,8 +144,8 @@ export function DpoManagerSeatsHorizontal({
   onChange,
 }: {
   managerAmount?: number
-  passengerShareCap?: BN
-  passengerShareMinimum?: BN
+  passengerShareCap?: number
+  passengerShareMinimum?: number
   dpoName: string
   token: string
   onChange: (managerAmount: number) => void
@@ -158,10 +157,11 @@ export function DpoManagerSeatsHorizontal({
 
   const handleMax = useCallback(() => {
     if (!passengerShareCap) return
-    if (balance.gt(passengerShareCap)) {
-      onChange(parseFloat(bnToUnit(passengerShareCap, chainDecimals, 0, true)))
+    const balanceUnit = bnToUnitNumber(balance, chainDecimals)
+    if (balanceUnit >= passengerShareCap) {
+      onChange(passengerShareCap)
     } else {
-      onChange(parseFloat(bnToUnit(balance, chainDecimals, 0, true)))
+      onChange(balanceUnit)
     }
   }, [balance, onChange, passengerShareCap, chainDecimals])
 
@@ -170,6 +170,7 @@ export function DpoManagerSeatsHorizontal({
       onChange(newValue)
     }
   }
+
   return (
     <>
       {passengerShareCap && passengerShareMinimum && (
@@ -197,11 +198,7 @@ export function DpoManagerSeatsHorizontal({
                     required
                     id="dpo-manager-seats"
                     type="number"
-                    placeholder={`${formatToUnit(passengerShareMinimum, chainDecimals, 2)} - ${formatToUnit(
-                      passengerShareCap,
-                      chainDecimals,
-                      2
-                    )}`}
+                    placeholder={`${passengerShareMinimum} - ${passengerShareCap}`}
                     onChange={(e) => onChange(parseFloat(e.target.value))}
                     value={Number.isNaN(managerAmount) || !managerAmount ? '' : managerAmount.toString()}
                     style={{ alignItems: 'flex-end', width: '100%' }}
@@ -223,8 +220,8 @@ export function DpoManagerSeatsHorizontal({
                 value={Number.isNaN(managerAmount) || !managerAmount ? 0 : managerAmount}
                 onChange={handleSliderChange}
                 aria-labelledby="continuous-slider"
-                min={parseFloat(formatToUnit(passengerShareMinimum, chainDecimals, 2))}
-                max={parseFloat(formatToUnit(passengerShareCap, chainDecimals, 2))}
+                min={passengerShareMinimum}
+                max={passengerShareCap}
                 step={0.01}
               />
             </ColumnCenter>
@@ -320,21 +317,18 @@ export function DpoTargetDpoSeatsHorizontal({
   dpoShareMinimum,
   targetDpoName,
   emptyAmount,
-  targetDPOTargetAmount,
   token,
   onChange,
 }: {
   targetAmount: number
-  emptyAmount: BN
-  dpoShareCap?: BN
-  dpoShareMinimum?: BN
+  emptyAmount: number
+  dpoShareCap?: number
+  dpoShareMinimum?: number
   targetDpoName: string
-  targetDPOTargetAmount?: BN
   token: string
   onChange: (e: number) => void
 }) {
   const { t } = useTranslation()
-  const { chainDecimals } = useSubstrate()
   const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       onChange(newValue)
@@ -343,11 +337,11 @@ export function DpoTargetDpoSeatsHorizontal({
 
   return (
     <>
-      {targetDPOTargetAmount && dpoShareCap && dpoShareMinimum && (
+      {dpoShareCap && dpoShareMinimum && (
         <Section>
           <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
-              {t(`Remaining`)}: {formatToUnit(emptyAmount, chainDecimals, 2)} {token}
+              {t(`Remaining`)}: {emptyAmount} {token}
             </SText>
           </Row>
           <RowBetween>
@@ -366,11 +360,7 @@ export function DpoTargetDpoSeatsHorizontal({
                 required
                 id="dpo-seats"
                 type="number"
-                placeholder={`${formatToUnit(dpoShareMinimum, chainDecimals, 2)} - ${formatToUnit(
-                  dpoShareCap,
-                  chainDecimals,
-                  2
-                )}`}
+                placeholder={`${dpoShareMinimum} - ${dpoShareCap}`}
                 onChange={(e) => onChange(parseFloat(e.target.value))}
                 value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}
@@ -379,8 +369,8 @@ export function DpoTargetDpoSeatsHorizontal({
                 value={Number.isNaN(targetAmount) || !targetAmount ? 0 : targetAmount}
                 onChange={handleSliderChange}
                 aria-labelledby="continuous-slider"
-                min={parseFloat(formatToUnit(dpoShareMinimum, chainDecimals, 2))}
-                max={parseFloat(formatToUnit(dpoShareCap, chainDecimals, 2))}
+                min={dpoShareMinimum}
+                max={dpoShareCap}
                 step={0.01}
               />
             </ColumnCenter>
