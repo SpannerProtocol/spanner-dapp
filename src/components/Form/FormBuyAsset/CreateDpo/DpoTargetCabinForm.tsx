@@ -181,11 +181,14 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   const { t } = useTranslation()
   const { passengerSharePercentCap, passengerSharePercentMinimum } = useConsts()
   const balance = useSubscribeBalance(token.toUpperCase())
-  const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [dpoManagerSeatsErrMsg, setDpoManagerSeatsErrMsg] = useState<string>('')
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
 
-  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
+  const hasError = useMemo(
+    () => dpoManagerSeatsErrMsg.length > 0 || errNameTooShort,
+    [dpoManagerSeatsErrMsg, errNameTooShort]
+  )
 
   const cabinDepositAmountDecimal = new Decimal(bnToUnitNumber(travelCabinInfo.deposit_amount, chainDecimals))
   const passengerShareCap = passengerSharePercentCap
@@ -276,9 +279,11 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   useEffect(() => {
     const balanceUnit = bnToUnitNumber(balance, chainDecimals)
     if (balanceUnit < managerPurchaseAmount) {
-      setErrNoBalance(true)
+      setDpoManagerSeatsErrMsg('Insufficient Balance')
+    } else if (managerPurchaseAmount < passengerShareMinimum && managerPurchaseAmount > 0) {
+      setDpoManagerSeatsErrMsg('Less than minimum')
     } else {
-      setErrNoBalance(false)
+      setDpoManagerSeatsErrMsg('')
     }
   }, [balance, managerPurchaseAmount, chainDecimals])
 
@@ -343,7 +348,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
           managerAmount={managerPurchaseAmount}
           token={token}
           onChange={handleManagerPurchaseAmount}
-          errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
+          errMsg={dpoManagerSeatsErrMsg.length > 0 ? t(dpoManagerSeatsErrMsg) : undefined}
         />
         <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
         <Section>
@@ -411,7 +416,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
           maxWidth="none"
           mobileMaxWidth="none"
           onClick={handleSubmit}
-          disabled={hasError || dpoName.length <= 0}
+          disabled={hasError || dpoName.length <= 0 || managerPurchaseAmount < passengerShareMinimum}
         >
           {t(`Create DPO`)}
         </ButtonPrimary>

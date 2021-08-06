@@ -23,6 +23,7 @@ import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
 import Decimal from 'decimal.js'
 import { PrimaryMUISlider } from '../../../Slider'
 import { BuyData } from '../index'
+import { ErrorMsg } from '../../../../pages/Dex/components'
 
 interface BuyDpoSeatsFormProps {
   dpoInfo: DpoInfo
@@ -93,6 +94,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
   const balance = useSubscribeBalance(token)
   const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
+  const [errMsg, setErrMsg] = useState<string>('')
 
   // const dpoTargetAmount = bnToUnitNumber(dpoInfo.target_amount, chainDecimals, 0, true).fixed())
   // const passengerShareCap = passengerSharePercentCap ? dpoTargetAmount * passengerSharePercentCap : 0
@@ -143,6 +145,14 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
       setReferralCode(referrer)
     }
   }, [referralCode, referrer])
+
+  useEffect(() => {
+    if (amount < passengerShareMinimum && amount > 0) {
+      setErrMsg('Less than minimum')
+    } else {
+      setErrMsg('')
+    }
+  }, [amount])
 
   const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
@@ -208,6 +218,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           value={Number.isNaN(amount) || !amount ? '' : amount.toString()}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
+        {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
         <PrimaryMUISlider
           value={amount}
           onChange={handleSliderChange}
@@ -240,7 +251,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
         </Section>
       )}
       <Section style={{ marginTop: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit} maxWidth="none" mobileMaxWidth="none">
+        <ButtonPrimary onClick={handleSubmit} maxWidth="none" mobileMaxWidth="none" disabled={errMsg.length > 0}>
           {t(`Buy`)}
         </ButtonPrimary>
       </Section>

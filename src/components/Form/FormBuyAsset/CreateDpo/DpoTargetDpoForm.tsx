@@ -180,10 +180,14 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   const { t } = useTranslation()
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const balance = useSubscribeBalance(token.toUpperCase())
-  const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [dpoManagerSeatsErrMsg, setDpoManagerSeatsErrMsg] = useState<string>('')
+  const [dpoTargetSeatsErrMsg, setDpoTargetSeatsErrMsg] = useState<string>('')
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
-  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
+  const hasError = useMemo(
+    () => dpoTargetSeatsErrMsg.length > 0 || dpoManagerSeatsErrMsg.length > 0 || errNameTooShort,
+    [dpoTargetSeatsErrMsg, dpoManagerSeatsErrMsg, errNameTooShort]
+  )
 
   // Subtracting 500 blocks to give buffer if the user idles on the form
   const maxEnd =
@@ -288,11 +292,19 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   useEffect(() => {
     const balanceUnit = bnToUnitNumber(balance, chainDecimals)
     if (balanceUnit < managerPurchaseAmount) {
-      setErrNoBalance(true)
+      setDpoManagerSeatsErrMsg('Insufficient Balance')
+    } else if (managerPurchaseAmount < passengerShareMinimum && managerPurchaseAmount > 0) {
+      setDpoManagerSeatsErrMsg('Less than minimum')
     } else {
-      setErrNoBalance(false)
+      setDpoManagerSeatsErrMsg('')
     }
-  }, [balance, dpoInfo, managerPurchaseAmount, chainDecimals])
+
+    if (targetPurchaseAmount < dpoShareMinimum && targetPurchaseAmount > 0) {
+      setDpoTargetSeatsErrMsg('Less than minimum')
+    } else {
+      setDpoTargetSeatsErrMsg('')
+    }
+  }, [balance, dpoInfo, targetPurchaseAmount, managerPurchaseAmount, chainDecimals])
 
   if (!chainDecimals) return null
 
@@ -325,6 +337,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           dpoShareMinimum={dpoShareMinimum}
           targetDpoName={dpoInfo.name.toString()}
           token={token}
+          errMsg={dpoTargetSeatsErrMsg.length > 0 ? t(dpoTargetSeatsErrMsg) : undefined}
           onChange={handleTargetPurchaseAmount}
         />
       </SpacedSection>
@@ -349,7 +362,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           managerAmount={managerPurchaseAmount}
           token={token}
           onChange={handleManagerPurchaseAmount}
-          errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
+          errMsg={dpoManagerSeatsErrMsg.length > 0 ? t(dpoManagerSeatsErrMsg) : undefined}
         />
         <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
         <Section>
@@ -416,7 +429,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           maxWidth="none"
           mobileMaxWidth="none"
           onClick={handleSubmit}
-          disabled={hasError || dpoName.length <= 0}
+          disabled={hasError || dpoName.length <= 0 || managerPurchaseAmount < 0 || targetPurchaseAmount < 0}
         >
           {t(`Create DPO`)}
         </ButtonPrimary>

@@ -173,7 +173,7 @@ export function DpoManagerSeatsHorizontal({
 
   return (
     <>
-      {passengerShareCap && passengerShareMinimum && (
+      {
         <Section>
           {/*<Row justifyContent="flex-end">*/}
           {/*  <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>*/}
@@ -227,7 +227,7 @@ export function DpoManagerSeatsHorizontal({
             </ColumnCenter>
           </RowBetween>
         </Section>
-      )}
+      }
     </>
   )
 }
@@ -318,6 +318,7 @@ export function DpoTargetDpoSeatsHorizontal({
   targetDpoName,
   emptyAmount,
   token,
+  errMsg,
   onChange,
 }: {
   targetAmount: number
@@ -326,6 +327,7 @@ export function DpoTargetDpoSeatsHorizontal({
   dpoShareMinimum?: number
   targetDpoName: string
   token: string
+  errMsg?: string
   onChange: (e: number) => void
 }) {
   const { t } = useTranslation()
@@ -365,6 +367,7 @@ export function DpoTargetDpoSeatsHorizontal({
                 value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}
               />
+              {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
               <PrimaryMUISlider
                 value={Number.isNaN(targetAmount) || !targetAmount ? 0 : targetAmount}
                 onChange={handleSliderChange}
