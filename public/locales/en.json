@@ -686,5 +686,6 @@
   "Yield Released": "Yield Released",
   "Bonus Released": "Bonus Released",
   "Created Dpo": "Created Dpo",
-  "Chain maintenance message": "{{chain}} is upgrading and will resume as soon as possible, stay tuned!"
+  "Chain maintenance message": "{{chain}} is upgrading and will resume as soon as possible, stay tuned!",
+  "The bridge is currently being upgraded and maintained. Please check back later.": "The bridge is currently being upgraded and maintained. Please check back later."
 }
