@@ -21,7 +21,7 @@ import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CurrencyId } from 'spanner-interfaces'
-import { useChainState } from 'state/connections/hooks'
+import { useChainState, useConnectionsState } from 'state/connections/hooks'
 import { useUpdateE2sTs } from 'state/user/hooks'
 import { shortenAddress } from 'utils'
 import { formatToUnit, numberToBn } from 'utils/formatUnit'
@@ -155,16 +155,14 @@ export default function Bridge(): JSX.Element {
   const [txInfo, setTxInfo] = useState<TxInfo>()
   const [feeData, setFeeData] = useState<FeeData>()
   const { chain } = useChainState()
-  // const connectionState = useConnectionsState()
+  const connectionState = useConnectionsState()
   const [e2sMsg, setE2sMsg] = useState<string>()
   const [e2sTs, setE2sTs] = useUpdateE2sTs()
   const [time, setTime] = useState(Date.now())
   const [e2sTsPlus5, setE2sTsPlus5] = useState<number>(0)
   const [invalidWithdrawAddress, setInvalidWithdrawAddress] = useState<boolean>(false)
 
-  // const bridge = connectionState && connectionState.bridgeServer
-
-  const bridge = false
+  const bridge = connectionState && connectionState.bridgeServerOn
 
   const canE2s = useCallback(() => (time > e2sTsPlus5 ? true : false), [time, e2sTsPlus5])
 
