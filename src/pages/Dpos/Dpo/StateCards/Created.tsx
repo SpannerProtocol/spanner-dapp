@@ -35,6 +35,7 @@ import {
   getDpoProgress,
   getDpoRemainingPurchase,
 } from '../../../../utils/getDpoData'
+import { ColumnCenter } from '../../../../components/Column'
 
 function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => void }) {
   // const progress = 100 - dpoInfo.empty_seats.toNumber()
@@ -94,10 +95,15 @@ function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => v
       <EvenGrid columns="2" mobileColumns="2">
         <CenterWrapper>
           <RowBlock width="fit-content" padding="0 1rem">
-            <SText>{t(`Seats Filled`)}</SText>
-            <div style={{ margin: '0.25rem auto', maxWidth: '200px' }}>
-              <CircleProgress value={progress} size={40} thickness={6} displayFilled={false} mobileFontSize="9px" />
-            </div>
+            <ColumnCenter>
+              <SText>{t(`Seats Filled`)}</SText>
+              <div style={{ margin: '0.25rem auto', maxWidth: '200px' }}>
+                <CircleProgress value={progress} size={40} thickness={6} displayFilled={false} mobileFontSize="9px" />
+              </div>
+              <SText>
+                {formatToUnit(dpoInfo.total_fund, chainDecimals, 2)} {token}
+              </SText>
+            </ColumnCenter>
           </RowBlock>
         </CenterWrapper>
         {expectedBlockTime && dpoInfo.state.isCreated && !expiry.isZero() ? (

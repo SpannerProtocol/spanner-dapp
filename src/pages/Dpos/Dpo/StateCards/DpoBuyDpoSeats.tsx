@@ -58,6 +58,11 @@ function DpoBuyDpoSeatsAvailable({
       dpoInfo={dpoInfo}
       selectedState={selectedState}
       actionName={t('Buy DPO Shares')}
+      actionDesc={
+        <SText fontSize="12px" mobileFontSize="12px">
+          {t(`Available for submit`)}: {formatToUnit(dpoInfo.vault_deposit, chainDecimals, 2)} {token}
+        </SText>
+      }
       tip={`${t(`Use crowdfund amount to buy shares from Target DPO`)}`}
       buttonText={t(`Buy`)}
       icon={ACTION_ICONS[dpoAction.action]}
@@ -101,7 +106,7 @@ function DpoBuyDpoSeatsAvailable({
               <RowBetween>
                 <SText>{t(`Deposit`)}</SText>
                 <SText>
-                  {formatToUnit(dpoInfo.vault_deposit.toBn(), chainDecimals)} {token}
+                  {formatToUnit(dpoInfo.vault_deposit.toBn(), chainDecimals, 2)} {token}
                 </SText>
               </RowBetween>
             </SpacedSection>
