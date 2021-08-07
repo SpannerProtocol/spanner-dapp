@@ -4,7 +4,7 @@ import { useApi } from 'hooks/useApi'
 import { useBlockManager } from 'hooks/useBlocks'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useMemo, useState } from 'react'
-import { Balance, DpoInfo, Target, TravelCabinInfo } from 'spanner-api/types'
+import { DpoInfo, Target, TravelCabinInfo } from 'spanner-api/types'
 import { useTranslation } from 'translate'
 import { Dispatcher } from 'types/dispatcher'
 import { daysToBlocks } from 'utils/formatBlocks'
@@ -13,7 +13,8 @@ import BuyDpoSeatsForm, { BuyDpoSeatsTxConfirm } from './BuyDpoSeats'
 import BuyTravelCabinForm from './BuyTravelCabin'
 import DpoTargetCabinForm, { DpoTargetCabinTxConfirm } from './CreateDpo/DpoTargetCabinForm'
 import DpoTargetDpoForm, { DpoTargetDpoTxConfirm } from './CreateDpo/DpoTargetDpoForm'
-import BN from 'bn.js'
+import { unitToBnWithDecimal } from '../../../utils/formatUnit'
+import { useSubstrate } from '../../../hooks/useSubstrate'
 
 export interface DpoFormCoreProps {
   setTargetType?: (data: string) => void
@@ -34,8 +35,8 @@ interface BuyAssetFormProps {
 
 export interface CreateDpoData {
   dpoName?: string
-  targetPurchaseAmount?: Balance
-  managerPurchaseAmount?: Balance
+  targetPurchaseAmount?: number
+  managerPurchaseAmount?: number
   baseFee?: string
   directReferralRate?: string
   end?: string
@@ -45,7 +46,7 @@ export interface CreateDpoData {
 
 export interface BuyData {
   dpoIndex?: string
-  amount?: BN
+  amount?: number
   referrer?: string | null
   newReferrer?: boolean
 }
@@ -78,6 +79,7 @@ export default function BuyAssetForm({
   const [txInfo, setTxInfo] = useState<TxInfo>({})
   const [filteredBuy, setFilteredBuy] = useState<boolean>(buyType === 'Buy')
   const theme = useTheme()
+  const { chainDecimals } = useSubstrate()
 
   const { createTx, submitTx } = useTxHelpers()
 
@@ -93,8 +95,8 @@ export default function BuyAssetForm({
       newReferrer,
     }: {
       dpoName: string
-      targetPurchaseAmount?: Balance
-      managerPurchaseAmount: Balance
+      targetPurchaseAmount?: number
+      managerPurchaseAmount: number
       baseFee: number
       directReferralRate: number
       end: number
@@ -112,7 +114,12 @@ export default function BuyAssetForm({
       if (targetType === 'TravelCabin' && travelCabinInfo) {
         target = api.createType('Target', { TravelCabin: travelCabinInfo.index.toString() })
       } else if (targetType === 'DPO' && dpoInfo) {
-        target = api.createType('Target', { Dpo: [dpoInfo.index.toString(), targetPurchaseAmount] })
+        target = api.createType('Target', {
+          Dpo: [
+            dpoInfo.index.toString(),
+            targetPurchaseAmount ? unitToBnWithDecimal(targetPurchaseAmount, chainDecimals) : '0',
+          ],
+        })
       } else {
         return
       }
@@ -133,7 +140,7 @@ export default function BuyAssetForm({
         params: {
           name: dpoName,
           target,
-          managerPurchaseAmount,
+          managerPurchaseAmount: unitToBnWithDecimal(managerPurchaseAmount, chainDecimals),
           baseFee: baseFee * 10,
           directReferralRate: directReferralRate * 10,
           end: endBlock.toString(),
@@ -145,11 +152,22 @@ export default function BuyAssetForm({
       setIsOpen(false)
       setTxConfirmOpen(true)
     },
-    [lastBlock, expectedBlockTime, connected, targetType, travelCabinInfo, dpoInfo, createTx, setIsOpen, api]
+    [
+      lastBlock,
+      expectedBlockTime,
+      connected,
+      targetType,
+      travelCabinInfo,
+      dpoInfo,
+      createTx,
+      setIsOpen,
+      api,
+      chainDecimals,
+    ]
   )
 
   const handleBuyDpoShare = useCallback(
-    ({ referrer, amount, newReferrer }: { referrer: string | null; amount?: Balance; newReferrer: boolean }) => {
+    ({ referrer, amount, newReferrer }: { referrer: string | null; amount?: number; newReferrer: boolean }) => {
       if (!dpoInfo) return
       setBuyData({
         dpoIndex: dpoInfo.index.toString(),
@@ -160,14 +178,18 @@ export default function BuyAssetForm({
       const txData = createTx({
         section: 'bulletTrain',
         method: 'passengerBuyDpoShare',
-        params: { targetDpoIdx: dpoInfo.index.toString(), amount: amount, referrerAccount: referrer },
+        params: {
+          targetDpoIdx: dpoInfo.index.toString(),
+          amount: amount ? unitToBnWithDecimal(amount, chainDecimals) : '0',
+          referrerAccount: referrer,
+        },
       })
       if (!txData) return
       txData.estimatedFee.then((fee) => setTxInfo((prev) => ({ ...prev, estimatedFee: fee })))
       setIsOpen(false)
       setTxConfirmOpen(true)
     },
-    [createTx, dpoInfo, setIsOpen]
+    [createTx, dpoInfo, setIsOpen, chainDecimals]
   )
 
   const handleBuyTravelCabin = useCallback(() => {

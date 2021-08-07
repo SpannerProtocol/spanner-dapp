@@ -686,5 +686,7 @@
   "Yield Released": "Yield Released",
   "Bonus Released": "Bonus Released",
   "Created Dpo": "Created Dpo",
-  "Chain maintenance message": "{{chain}} is upgrading and will resume as soon as possible, stay tuned!"
+  "Chain maintenance message": "{{chain}} is upgrading and will resume as soon as possible, stay tuned!",
+  "Less than minimum": "Less than minimum",
+  "Available for submit": "Available for submit"
 }

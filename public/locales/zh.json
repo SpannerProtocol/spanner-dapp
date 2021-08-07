@@ -686,5 +686,7 @@
   "Yield Released": "释放收益",
   "Bonus Released": "释放奖励",
   "Created Dpo": "创建Dpo",
-  "Chain maintenance message": "{{chain}} 正在升级，将尽快恢复，敬请期待"
+  "Chain maintenance message": "{{chain}} 正在升级，将尽快恢复，敬请期待",
+  "Less than minimum": "低于最小允许金额",
+  "Available for submit": "可提交金额"
 }
