@@ -39,7 +39,6 @@ import {
 function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => void }) {
   // const progress = 100 - dpoInfo.empty_seats.toNumber()
   const progress = getDpoProgress(dpoInfo)
-  console.log('progress', progress)
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
   const { t } = useTranslation()
