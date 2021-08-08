@@ -171,8 +171,5 @@
   "devDependencies": {
     "i18next-scanner": "^3.0.0",
     "@open-web3/orml-types": "^0.9.4-0"
-  },
-  "engines": {
-    "node": ">=14.8.0"
-}
+  }
 }
