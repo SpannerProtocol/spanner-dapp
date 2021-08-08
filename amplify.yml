@@ -7,6 +7,7 @@ frontend:
         - yarn build:types
     build:
       commands:
+        - nvm use $VERSION_NODE_14
         - yarn run build:amplify
   artifacts:
     baseDirectory: build
