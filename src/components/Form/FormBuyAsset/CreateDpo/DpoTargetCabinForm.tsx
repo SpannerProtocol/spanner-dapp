@@ -285,7 +285,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     } else {
       setDpoManagerSeatsErrMsg('')
     }
-  }, [balance, managerPurchaseAmount, chainDecimals])
+  }, [balance, managerPurchaseAmount, chainDecimals, passengerShareMinimum])
 
   if (!chainDecimals) return null
 

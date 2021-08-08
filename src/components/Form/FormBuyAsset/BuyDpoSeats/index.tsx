@@ -152,7 +152,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     } else {
       setErrMsg('')
     }
-  }, [amount])
+  }, [amount, passengerShareMinimum])
 
   const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
@@ -218,7 +218,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           value={Number.isNaN(amount) || !amount ? '' : amount.toString()}
           style={{ alignItems: 'flex-end', width: '100%' }}
         />
-        {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
+        {errMsg && <ErrorMsg>{t(errMsg)}</ErrorMsg>}
         <PrimaryMUISlider
           value={amount}
           onChange={handleSliderChange}

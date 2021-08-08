@@ -304,7 +304,15 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     } else {
       setDpoTargetSeatsErrMsg('')
     }
-  }, [balance, dpoInfo, targetPurchaseAmount, managerPurchaseAmount, chainDecimals])
+  }, [
+    balance,
+    dpoInfo,
+    targetPurchaseAmount,
+    managerPurchaseAmount,
+    chainDecimals,
+    dpoShareMinimum,
+    passengerShareMinimum,
+  ])
 
   if (!chainDecimals) return null
 
