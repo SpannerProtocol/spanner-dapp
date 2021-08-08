@@ -1,5 +1,5 @@
 import { useApi } from './useApi'
-import type { Moment, BlockNumber } from '@polkadot/types/interfaces'
+import type { Moment, BlockNumber } from 'spanner-api/types'
 import { useEffect, useState } from 'react'
 import { useQuery } from '@apollo/client'
 import blockTimestamp from '../queries/graphql/blockTimestamp'

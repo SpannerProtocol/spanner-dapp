@@ -1,4 +1,3 @@
-import BN from 'bn.js'
 import { useTranslation } from 'react-i18next'
 import { useSubstrate } from '../../../../hooks/useSubstrate'
 import useSubscribeBalance from '../../../../hooks/useQueryBalance'
@@ -6,13 +5,14 @@ import React, { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../Wrapper'
 import Row, { RowBetween, RowFixed } from '../../../Row'
 import { SText } from '../../../Text'
-import { formatToUnit } from '../../../../utils/formatUnit'
+import { bnToUnitNumber } from '../../../../utils/formatUnit'
 import QuestionHelper from '../../../QuestionHelper'
 import { BorderedInput, SInput } from '../../../Input'
 import { PillButton } from '../../../Button'
 import { ErrorMsg } from 'pages/Dex/components'
 import { ThemeContext } from 'styled-components'
 import { ColumnCenter } from '../../../Column'
+import { PrimaryMUISlider } from '../../../Slider'
 
 export function DpoNameHorizontal({
   onChange,
@@ -136,19 +136,19 @@ export function DpoBaseFeeHorizontal({
 
 export function DpoManagerSeatsHorizontal({
   dpoName,
-  managerSeats,
-  seatCap,
-  costPerSeat,
+  managerAmount,
+  passengerShareCap,
+  passengerShareMinimum,
   token,
   errMsg,
   onChange,
 }: {
-  seatCap?: number
-  managerSeats: number
+  managerAmount?: number
+  passengerShareCap?: number
+  passengerShareMinimum?: number
   dpoName: string
-  costPerSeat: BN
   token: string
-  onChange: (seats: string) => void
+  onChange: (managerAmount: number) => void
   errMsg?: string
 }) {
   const { t } = useTranslation()
@@ -156,29 +156,33 @@ export function DpoManagerSeatsHorizontal({
   const balance = useSubscribeBalance(token)
 
   const handleMax = useCallback(() => {
-    if (!seatCap) return
-    const seatCapBn = new BN(seatCap)
-    const affordableSeats = balance.div(costPerSeat)
-    if (affordableSeats.gt(seatCapBn)) {
-      onChange(seatCapBn.toString())
+    if (!passengerShareCap) return
+    const balanceUnit = bnToUnitNumber(balance, chainDecimals)
+    if (balanceUnit >= passengerShareCap) {
+      onChange(passengerShareCap)
     } else {
-      const seats = Math.floor(affordableSeats.toNumber()).toString()
-      onChange(seats)
+      onChange(balanceUnit)
     }
-  }, [balance, costPerSeat, onChange, seatCap])
+  }, [balance, onChange, passengerShareCap, chainDecimals])
+
+  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      onChange(newValue)
+    }
+  }
 
   return (
     <>
-      {seatCap && (
+      {
         <Section>
-          <Row justifyContent="flex-end">
-            <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>
-              {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}
-            </SText>
-          </Row>
+          {/*<Row justifyContent="flex-end">*/}
+          {/*  <SText mobileFontSize="10px" fontSize="10px" width={'fit-content'}>*/}
+          {/*    {t(`Seat Cost`)}: {formatToUnit(costPerSeat, chainDecimals)} {token}*/}
+          {/*  </SText>*/}
+          {/*</Row>*/}
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`Manager Seats in`)}: ${dpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t(`Manager Shares`)} (${token})`}</SText>
               <QuestionHelper
                 text={t(
                   `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
@@ -194,16 +198,16 @@ export function DpoManagerSeatsHorizontal({
                     required
                     id="dpo-manager-seats"
                     type="number"
-                    placeholder={`0 - ${seatCap}`}
-                    onChange={(e) => onChange(e.target.value)}
-                    value={Number.isNaN(managerSeats) ? '' : managerSeats}
+                    placeholder={`${passengerShareMinimum} - ${passengerShareCap}`}
+                    onChange={(e) => onChange(parseFloat(e.target.value))}
+                    value={Number.isNaN(managerAmount) || !managerAmount ? '' : managerAmount.toString()}
                     style={{ alignItems: 'flex-end', width: '100%' }}
                   />
                   <PillButton
                     onClick={handleMax}
                     padding="0.25rem"
                     mobilePadding="0.25rem"
-                    margin="0 1rem"
+                    margin="0 0rem"
                     minWidth="60px"
                     mobileMinWidth="60px"
                   >
@@ -212,10 +216,18 @@ export function DpoManagerSeatsHorizontal({
                 </RowFixed>
               </BorderedWrapper>
               {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
+              <PrimaryMUISlider
+                value={Number.isNaN(managerAmount) || !managerAmount ? 0 : managerAmount}
+                onChange={handleSliderChange}
+                aria-labelledby="continuous-slider"
+                min={passengerShareMinimum}
+                max={passengerShareCap}
+                step={0.01}
+              />
             </ColumnCenter>
           </RowBetween>
         </Section>
-      )}
+      }
     </>
   )
 }
@@ -300,32 +312,43 @@ export function DpoReferralCodeHorizontal({
 }
 
 export function DpoTargetDpoSeatsHorizontal({
-  seats,
-  seatCap,
+  targetAmount,
+  dpoShareCap,
+  dpoShareMinimum,
   targetDpoName,
-  emptySeats,
+  emptyAmount,
+  token,
+  errMsg,
   onChange,
 }: {
-  seats: number
-  emptySeats: string
-  seatCap?: number
+  targetAmount: number
+  emptyAmount: number
+  dpoShareCap?: number
+  dpoShareMinimum?: number
   targetDpoName: string
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
+  token: string
+  errMsg?: string
+  onChange: (e: number) => void
 }) {
   const { t } = useTranslation()
+  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      onChange(newValue)
+    }
+  }
 
   return (
     <>
-      {seatCap && (
+      {dpoShareCap && dpoShareMinimum && (
         <Section>
           <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
-              {t(`Remaining Seats`)}: {emptySeats}
+              {t(`Remaining`)}: {emptyAmount} {token}
             </SText>
           </Row>
           <RowBetween>
             <RowFixed>
-              <SText mobileFontSize="10px">{`${t(`# Seats in`)}: ${targetDpoName}`}</SText>
+              <SText mobileFontSize="10px">{`${t('Crowdfund Amount')} (${token})`}</SText>
               <QuestionHelper
                 text={t(
                   `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
@@ -339,10 +362,19 @@ export function DpoTargetDpoSeatsHorizontal({
                 required
                 id="dpo-seats"
                 type="number"
-                placeholder={`1 - ${seatCap}`}
-                onChange={(e) => onChange(e)}
-                value={Number.isNaN(seats) ? '' : seats}
+                placeholder={`${dpoShareMinimum} - ${dpoShareCap}`}
+                onChange={(e) => onChange(parseFloat(e.target.value))}
+                value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}
+              />
+              {errMsg && <ErrorMsg>{errMsg}</ErrorMsg>}
+              <PrimaryMUISlider
+                value={Number.isNaN(targetAmount) || !targetAmount ? 0 : targetAmount}
+                onChange={handleSliderChange}
+                aria-labelledby="continuous-slider"
+                min={dpoShareMinimum}
+                max={dpoShareCap}
+                step={0.01}
               />
             </ColumnCenter>
           </RowBetween>

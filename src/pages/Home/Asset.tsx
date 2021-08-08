@@ -47,7 +47,7 @@ export function BulletTrain() {
       <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
         {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
       </SText>
-      <SLink to={`/bullettrain`}>
+      <SLink to={`/assets/travelcabin`}>
         <CircleNextIconWrapper>
           <StyledCircleNextWhite />
         </CircleNextIconWrapper>

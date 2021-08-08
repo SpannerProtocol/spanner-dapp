@@ -5,7 +5,7 @@ import { ContentWrapper, SpacedSection } from 'components/Wrapper'
 import useDpoFees from 'hooks/useDpoFees'
 import React, { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { ThemeContext } from 'styled-components'
 
 function ManagementFee({ dpoInfo }: { dpoInfo: DpoInfo }) {

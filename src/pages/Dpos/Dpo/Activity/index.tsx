@@ -25,7 +25,7 @@ import React, { useEffect, useMemo, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import { EventsOrderBy } from 'types/globalTypes'
 import { tsToDateTime } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
@@ -183,7 +183,12 @@ function Activities({ eventIds, orderBy }: { eventIds: string[]; orderBy: Events
       const regex = /(?![^)(]*\([^)(]*?\)\)),(?![^\[]*\])/
       const argsArray = event.extrinsic.args.split(regex)
       const argsDecodedArray = argsArray.map((e) => (isPrefixedHex(e) ? hexToString(e) : e))
-      const argTuples = methodArgs[event.extrinsic.method].map((k, i) => {
+      console.log('event', event)
+      console.log('event.extrinsic.method', event.extrinsic.method)
+      console.log('methodArgs', methodArgs)
+      const dpoExtrinsic = methodArgs[event.extrinsic.method]
+      if (!dpoExtrinsic) return
+      const argTuples = dpoExtrinsic.map((k, i) => {
         return [k, argsDecodedArray[i]]
       })
       // console.log(parsedData)

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo, TravelCabinInventoryIndex } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 export function useTravelCabins(token?: string): [TravelCabinIndex, TravelCabinInfo][] {

@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client'
 import { Option } from '@polkadot/types'
-import type { BlockNumber } from '@polkadot/types/interfaces'
+import type { BlockNumber } from 'spanner-api/types'
 import IconFire from 'assets/images/icon-fire.png'
 import BN from 'bn.js'
 import Divider from 'components/Divider'
@@ -25,9 +25,10 @@ import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
+import { getDpoProgress } from '../../../../utils/getDpoData'
 
 const Row = styled.div`
   display: grid;
@@ -157,7 +158,7 @@ function TargeterRow({
           </div>
         </Cell>
         <Cell style={{ display: 'flex', alignItems: 'center' }}>
-          <CircleProgress value={100 - targeter.dpoInfo.empty_seats.toNumber()} size={40} mobileFontSize="10px" />
+          <CircleProgress value={getDpoProgress(targeter.dpoInfo)} size={40} mobileFontSize="10px" />
         </Cell>
       </Row>
     </SLink>
@@ -166,16 +167,18 @@ function TargeterRow({
 
 export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { api, connected } = useApi()
-  const { loading: createdLoading, error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(
-    createdDpoAllArgsOnly,
-    {
-      variables: {},
-    }
-  )
-  const { loading: purchasedLoading, error: purchasedError, data: purchasedData } = useQuery<
-    DposTargetPurchasedIncludes,
-    DposTargetPurchasedIncludesVariables
-  >(dposTargetPurchasedIncludes, {
+  const {
+    loading: createdLoading,
+    error: createdError,
+    data: createdData,
+  } = useQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
+    variables: {},
+  })
+  const {
+    loading: purchasedLoading,
+    error: purchasedError,
+    data: purchasedData,
+  } = useQuery<DposTargetPurchasedIncludes, DposTargetPurchasedIncludesVariables>(dposTargetPurchasedIncludes, {
     variables: {
       includes: 'dpo',
     },

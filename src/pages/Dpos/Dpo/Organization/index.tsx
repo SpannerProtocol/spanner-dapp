@@ -1,5 +1,5 @@
 import React from 'react'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import Collaboration from './Collaboration'
 import Members from './Members'
 

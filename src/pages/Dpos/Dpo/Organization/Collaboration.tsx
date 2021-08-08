@@ -15,7 +15,7 @@ import { EventsSMShort, EventsSMShortVariables } from 'queries/graphql/types/Eve
 import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import hexToString, { isPrefixedHex } from 'utils/hexToString'
 import useTheme from 'utils/useTheme'
 import { TRAVELCABIN_CLASSES } from '../../../../constants'

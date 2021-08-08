@@ -1,5 +1,5 @@
 import { Compact } from '@polkadot/types'
-import { BlockNumber } from '@polkadot/types/interfaces'
+import { BlockNumber } from 'spanner-api/types'
 import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'

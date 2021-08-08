@@ -1,5 +1,5 @@
 import BN from 'bn.js'
-import Balance from 'components/Balance'
+import BalanceComponent from 'components/Balance'
 import { ButtonPrimary } from 'components/Button'
 import Divider from 'components/Divider'
 import TxModal from 'components/Modal/TxModal'
@@ -16,11 +16,11 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { blockToDays } from 'utils/formatBlocks'
 import { abs, noNan } from 'utils/formatNumbers'
-import { formatToUnit } from 'utils/formatUnit'
+import { bnToUnit, bnToUnitNumber, formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { CreateDpoData } from '..'
@@ -35,6 +35,8 @@ import {
   DpoTargetDpoSeatsHorizontal,
 } from './fieldsHorizontal'
 import { DpoFormCoreProps } from './index'
+import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
+import Decimal from 'decimal.js'
 
 interface DpoTargetDpoFormProps extends DpoFormCoreProps {
   dpoInfo: DpoInfo
@@ -65,8 +67,8 @@ function TxConfirm({
   targetAmount,
   dpoName,
   token,
-  targetSeats,
-  managerSeats,
+  targetPurchaseAmount,
+  managerPurchaseAmount,
   baseFee,
   directReferralRate,
   end,
@@ -77,12 +79,19 @@ function TxConfirm({
 }: DpoCreateDpoTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
-  const { chainDecimals } = useSubstrate()
 
   const endInDays =
     end && expectedBlockTime && lastBlock
       ? Math.ceil(parseFloat(blockToDays(new BN(end).sub(lastBlock), expectedBlockTime, 4))).toString()
       : undefined
+
+  let managerRate = 0
+  if (managerPurchaseAmount && targetPurchaseAmount && baseFee) {
+    managerRate = parseFloat(new Decimal(managerPurchaseAmount).dividedBy(targetPurchaseAmount).mul(100).toFixed(1))
+    if (managerRate + parseFloat(baseFee) > 20) {
+      managerRate = 20 - parseFloat(baseFee)
+    }
+  }
 
   return (
     <>
@@ -101,7 +110,7 @@ function TxConfirm({
         <RowBetween>
           <SText>{t(`Crowdfund Amount`)}</SText>
           <SText>
-            {targetAmount} {token}
+            {targetPurchaseAmount?.toFixed(2)} {token}
           </SText>
         </RowBetween>
         {end && endInDays && (
@@ -110,16 +119,12 @@ function TxConfirm({
             <SText>{`${endInDays} ${t(`days`)}`}</SText>
           </RowBetween>
         )}
-        <RowBetween>
-          <SText>{t(`Target DPO Seats`)}</SText>
-          <SText>{targetSeats}</SText>
-        </RowBetween>
-        {managerSeats && baseFee && (
+        {managerRate && baseFee && (
           <RowBetween>
             <SText>{t(`Management Fee`)}</SText>
             <SText>
-              {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
-                parseFloat(managerSeats) + parseFloat(baseFee)
+              {`${baseFee} (${t(`Base`)}) + ${managerRate} (${t(`Purchased`)}) = ${Math.round(
+                managerRate + parseFloat(baseFee)
               ).toString()}%`}
             </SText>
           </RowBetween>
@@ -135,15 +140,11 @@ function TxConfirm({
           </>
         )}
         <Divider />
-        {managerSeats && targetSeats && (
+        {managerPurchaseAmount && (
           <RowBetween>
             <HeavyText fontSize="14px">{t(`Required deposit`)}</HeavyText>
             <HeavyText fontSize="14px">
-              {`${formatToUnit(
-                new BN(managerSeats).mul(new BN(targetSeats).mul(dpoInfo.amount_per_seat).div(new BN(100))),
-                chainDecimals,
-                2
-              )} 
+              {`${managerPurchaseAmount.toFixed(2)} 
               ${token}`}
             </HeavyText>
           </RowBetween>
@@ -157,17 +158,19 @@ function TxConfirm({
           </RowBetween>
         </BorderedWrapper>
       )}
-      <Balance token={token} />
+      <BalanceComponent token={token} />
       <TxFee fee={estimatedFee} />
     </>
   )
 }
 
 export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTargetDpoFormProps) {
-  const [seats, setSeats] = useState<number>(1)
-  const [managerSeats, setManagerSeats] = useState<number>(0)
+  const [targetPurchaseAmount, setTargetPurchaseAmount] = useState<number>(0)
+  const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<number>(0)
+  const [managerShareRate, setManagerShareRate] = useState<number>(0)
   const [baseFee, setBaseFee] = useState<number>(0)
-  const { passengerSeatCap, dpoSeatCap } = useConsts()
+  const { dpoSharePercentCap, dpoSharePercentMinimum, passengerSharePercentCap, passengerSharePercentMinimum } =
+    useConsts()
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
   const [dpoName, setDpoName] = useState<string>('')
   const [end, setEnd] = useState<number>(0)
@@ -177,11 +180,14 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   const { t } = useTranslation()
   const { lastBlock, expectedBlockTime } = useBlockManager()
   const balance = useSubscribeBalance(token.toUpperCase())
-  const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [dpoManagerSeatsErrMsg, setDpoManagerSeatsErrMsg] = useState<string>('')
+  const [dpoTargetSeatsErrMsg, setDpoTargetSeatsErrMsg] = useState<string>('')
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
-
-  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
+  const hasError = useMemo(
+    () => dpoTargetSeatsErrMsg.length > 0 || dpoManagerSeatsErrMsg.length > 0 || errNameTooShort,
+    [dpoTargetSeatsErrMsg, dpoManagerSeatsErrMsg, errNameTooShort]
+  )
 
   // Subtracting 500 blocks to give buffer if the user idles on the form
   const maxEnd =
@@ -189,7 +195,16 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     lastBlock &&
     blockToDays(dpoInfo.expiry_blk.sub(lastBlock).sub(new BN(500)), expectedBlockTime, 2)
 
-  const costPerSeat = useMemo(() => new BN(seats).mul(dpoInfo.amount_per_seat).div(new BN(100)), [dpoInfo, seats])
+  const dpoInfoTargetAmountNumber = new Decimal(bnToUnit(dpoInfo.target_amount, chainDecimals, 0))
+  const dpoShareCap = dpoSharePercentCap ? dpoInfoTargetAmountNumber.mul(dpoSharePercentCap).toNumber() : 0
+  const dpoShareMinimum = dpoSharePercentMinimum ? dpoInfoTargetAmountNumber.mul(dpoSharePercentMinimum).toNumber() : 0
+
+  const passengerShareCap = passengerSharePercentCap
+    ? new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentCap).toNumber()
+    : 0
+  const passengerShareMinimum = passengerSharePercentMinimum
+    ? new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentMinimum).toNumber()
+    : 0
 
   const handleDpoName = (event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value
@@ -211,11 +226,10 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     }
   }
 
-  const handleSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value)
-    if (!dpoSeatCap) return
-    if (value < 1 || value > dpoSeatCap) return
-    setSeats(abs(value))
+  const handleTargetPurchaseAmount = (value: number) => {
+    if (!dpoSharePercentCap || !dpoSharePercentMinimum) return
+    if (value > dpoShareCap) return
+    setTargetPurchaseAmount(value)
   }
 
   const handleDirectReferralRate = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -230,11 +244,16 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     setBaseFee(abs(value))
   }
 
-  const handleManagerSeats = (seats: string) => {
-    const value = parseFloat(seats)
-    if (!passengerSeatCap) return
-    if (value > passengerSeatCap) return
-    setManagerSeats(abs(value))
+  const handleManagerPurchaseAmount = (value: number) => {
+    if (!passengerShareCap || !passengerShareMinimum) return
+    if (value > passengerShareCap) return
+    setManagerPurchaseAmount(value)
+
+    let shareRate = parseFloat(new Decimal(value).dividedBy(targetPurchaseAmount).mul(100).toFixed(1))
+    if (shareRate + baseFee > 20) {
+      shareRate = 20 - baseFee
+    }
+    setManagerShareRate(shareRate)
   }
 
   const handleEnd = useCallback(
@@ -253,8 +272,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     }
     onSubmit({
       dpoName,
-      seats: Number.isNaN(seats) ? 1 : seats,
-      managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
+      targetPurchaseAmount: targetPurchaseAmount,
+      managerPurchaseAmount: managerPurchaseAmount,
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
@@ -270,18 +289,30 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     }
   }, [referralCode, referrer])
 
-  const requiredDeposit = useMemo(
-    () => new BN(managerSeats).mul(new BN(seats).mul(dpoInfo.amount_per_seat).div(new BN(100))),
-    [dpoInfo, managerSeats, seats]
-  )
-
   useEffect(() => {
-    if (balance.lt(requiredDeposit)) {
-      setErrNoBalance(true)
+    const balanceUnit = bnToUnitNumber(balance, chainDecimals)
+    if (balanceUnit < managerPurchaseAmount) {
+      setDpoManagerSeatsErrMsg('Insufficient Balance')
+    } else if (managerPurchaseAmount < passengerShareMinimum && managerPurchaseAmount > 0) {
+      setDpoManagerSeatsErrMsg('Less than minimum')
     } else {
-      setErrNoBalance(false)
+      setDpoManagerSeatsErrMsg('')
     }
-  }, [seats, balance, dpoInfo, managerSeats, requiredDeposit])
+
+    if (targetPurchaseAmount < dpoShareMinimum && targetPurchaseAmount > 0) {
+      setDpoTargetSeatsErrMsg('Less than minimum')
+    } else {
+      setDpoTargetSeatsErrMsg('')
+    }
+  }, [
+    balance,
+    dpoInfo,
+    targetPurchaseAmount,
+    managerPurchaseAmount,
+    chainDecimals,
+    dpoShareMinimum,
+    passengerShareMinimum,
+  ])
 
   if (!chainDecimals) return null
 
@@ -304,31 +335,19 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <SText>{`DPO:${dpoInfo.name.toString()}`}</SText>
+            <SText width="100%" textAlign="right">{`DPO:${dpoInfo.name.toString()}`}</SText>
           </RowBetween>
         </Section>
         <DpoTargetDpoSeatsHorizontal
-          seats={seats}
-          emptySeats={dpoInfo.empty_seats.toString()}
-          seatCap={dpoSeatCap}
+          targetAmount={targetPurchaseAmount}
+          emptyAmount={bnToUnitNumber(getDpoRemainingPurchase(dpoInfo), chainDecimals)}
+          dpoShareCap={dpoShareCap}
+          dpoShareMinimum={dpoShareMinimum}
           targetDpoName={dpoInfo.name.toString()}
-          onChange={handleSeats}
+          token={token}
+          errMsg={dpoTargetSeatsErrMsg.length > 0 ? t(dpoTargetSeatsErrMsg) : undefined}
+          onChange={handleTargetPurchaseAmount}
         />
-        <Section>
-          <RowBetween>
-            <RowFixed width="fit-content">
-              <SText>{t(`Crowdfund Amount`)}</SText>
-              <QuestionHelper
-                text={t(`The number of seats to buy from your Target DPO.`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
-            </RowFixed>
-            <SText>
-              {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
-            </SText>
-          </RowBetween>
-        </Section>
       </SpacedSection>
       <SpacedSection>
         <Section>
@@ -345,13 +364,13 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
         </Section>
         <DpoBaseFeeHorizontal baseFee={baseFee} onChange={handleBaseFee} />
         <DpoManagerSeatsHorizontal
-          seatCap={passengerSeatCap}
-          managerSeats={managerSeats}
+          passengerShareCap={passengerShareCap}
+          passengerShareMinimum={passengerShareMinimum}
           dpoName={dpoName ? dpoName : ''}
-          costPerSeat={costPerSeat}
+          managerAmount={managerPurchaseAmount}
           token={token}
-          onChange={handleManagerSeats}
-          errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
+          onChange={handleManagerPurchaseAmount}
+          errMsg={dpoManagerSeatsErrMsg.length > 0 ? t(dpoManagerSeatsErrMsg) : undefined}
         />
         <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
         <Section>
@@ -366,8 +385,8 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
                     backgroundColor={'#fff'}
                   />
                 </RowFixed>
-                <SText>{`${noNan(baseFee + managerSeats)}%`}</SText>
-                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)})`}</SText>
+                <SText>{`${noNan(baseFee + managerShareRate)}%`}</SText>
+                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerShareRate)} (${t(`Shares`)})`}</SText>
               </ColumnCenter>
               <ColumnCenter>
                 <RowFixed width="fit-content">
@@ -409,7 +428,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
                 backgroundColor={'#fff'}
               />
             </RowFixed>
-            <HeavyText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</HeavyText>
+            <HeavyText width={'fit-content'}>{`${managerPurchaseAmount.toFixed(2)} ${token}`}</HeavyText>
           </RowBetween>
         </Section>
       </SpacedSection>
@@ -418,7 +437,7 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
           maxWidth="none"
           mobileMaxWidth="none"
           onClick={handleSubmit}
-          disabled={hasError || dpoName.length <= 0}
+          disabled={hasError || dpoName.length <= 0 || managerPurchaseAmount < 0 || targetPurchaseAmount < 0}
         >
           {t(`Create DPO`)}
         </ButtonPrimary>
@@ -440,7 +459,6 @@ export function DpoTargetDpoTxConfirm({
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const { chainDecimals } = useSubstrate()
 
   const dismissModal = () => {
     setIsOpen(false)
@@ -462,11 +480,7 @@ export function DpoTargetDpoTxConfirm({
         <TxConfirm
           {...createDpoData}
           target={dpoInfo.name.toString()}
-          targetAmount={formatToUnit(
-            dpoInfo.amount_per_seat.toBn().mul(new BN(createDpoData.targetSeats ? createDpoData.targetSeats : 0)),
-            chainDecimals,
-            2
-          )}
+          targetAmount={createDpoData.targetPurchaseAmount ? createDpoData.targetPurchaseAmount.toFixed(2) : '0'}
           token={token}
           estimatedFee={txInfo.estimatedFee}
           dpoInfo={dpoInfo}

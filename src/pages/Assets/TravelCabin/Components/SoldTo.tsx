@@ -7,10 +7,10 @@ import { HeavyText, SText } from 'components/Text'
 import { blockToTs, tsToRelative } from 'utils/formatBlocks'
 import { shortenAddr } from 'utils/truncateString'
 import React, { useMemo } from 'react'
-import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'interfaces/bulletTrain'
+import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-api/types'
 import { useTravelCabinBuyers } from 'hooks/useQueryTravelCabins'
 import { getCabinClassByIndex } from 'utils/getCabinClass'
-import { Moment } from '@polkadot/types/interfaces'
+import { Moment } from 'spanner-api/types'
 import StandardModal from 'components/Modal/StandardModal'
 
 interface CabinSoldToProps {

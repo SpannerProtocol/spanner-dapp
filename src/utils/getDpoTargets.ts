@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api'
-import { DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces/types'
+import { DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-api/types'
 
 export interface TravelCabinData {
   index?: TravelCabinIndex

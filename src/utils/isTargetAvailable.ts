@@ -1,4 +1,5 @@
-import { DpoInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinInventoryIndex } from 'spanner-api/types'
+import { getDpoRemainingPurchase } from './getDpoData'
 
 /**
  * Check if Target DPO is available for purchase
@@ -6,7 +7,10 @@ import { DpoInfo, TravelCabinInventoryIndex } from 'spanner-interfaces'
  * @param targetDpo The Target DPO
  */
 export function isDpoAvailable(dpoInfo: DpoInfo, targetDpo: DpoInfo) {
-  return targetDpo.empty_seats.gte(dpoInfo.target.asDpo[1])
+  if (!dpoInfo.state.isCreated) {
+    return false
+  }
+  return getDpoRemainingPurchase(targetDpo).gte(dpoInfo.target.asDpo[1])
 }
 
 /**

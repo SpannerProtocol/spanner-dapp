@@ -20,7 +20,7 @@ import useWallet from 'hooks/useWallet'
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CurrencyId } from 'spanner-interfaces'
+import { CurrencyId } from 'spanner-api/types'
 import { useChainState, useConnectionsState } from 'state/connections/hooks'
 import { useUpdateE2sTs } from 'state/user/hooks'
 import { shortenAddress } from 'utils'
@@ -166,10 +166,10 @@ export default function Bridge(): JSX.Element {
 
   const canE2s = useCallback(() => (time > e2sTsPlus5 ? true : false), [time, e2sTsPlus5])
 
-  const wusdBalanceNum = useMemo(() => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(), [
-    chainDecimals,
-    wusdBalance,
-  ])
+  const wusdBalanceNum = useMemo(
+    () => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(),
+    [chainDecimals, wusdBalance]
+  )
 
   useEffect(() => {
     if (!e2sTs) {

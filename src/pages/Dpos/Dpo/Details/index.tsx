@@ -10,11 +10,12 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import { ThemeContext } from 'styled-components'
 import { blocksToCountDown, blockToDays } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
+import { getDpoMinimumPurchase, getDpoProgress } from '../../../../utils/getDpoData'
 
 export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
   const { chainDecimals } = useSubstrate()
@@ -122,9 +123,9 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                 </SText>
               </RowBetween>
               <RowBetween>
-                <SText>{t(`Cost per Seat`)}</SText>
+                <SText>{t(`Cost Minimum`)}</SText>
                 <SText>
-                  {formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} {token}
+                  {formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals)} {token}
                 </SText>
               </RowBetween>
               {expectedBlockTime && (
@@ -178,10 +179,10 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             </Section>
             <Section>
               <RowBetween style={{ paddingBottom: '0.25rem' }}>
-                <SText>{t(`Seats Filled`)}</SText>
-                <SText>{`${100 - dpoInfo.empty_seats.toNumber()} / 100`}</SText>
+                <SText>{t(`Shares Filled`)}</SText>
+                <SText>{`${getDpoProgress(dpoInfo)} / 100`}</SText>
               </RowBetween>
-              <LinearProgressBar value={100 - dpoInfo.empty_seats.toNumber()} />
+              <LinearProgressBar value={getDpoProgress(dpoInfo)} />
             </Section>
           </BorderedWrapper>
           <SmallText>{t(`Membership Requirements`)}</SmallText>
@@ -190,7 +191,7 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
               {fees && (
                 <RowBetween>
                   <SText>{t(`Management Fee`)}</SText>
-                  <SText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Seats`)}) = ${
+                  <SText>{`${fees.base} (${t(`Base`)}) + ${fees.management} (${t(`Shares`)}) = ${
                     dpoInfo.fee.toNumber() / 10
                   }%`}</SText>
                 </RowBetween>
@@ -202,9 +203,9 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                 </RowBetween>
               )}
               <RowBetween>
-                <SText>{t(`Cost per Seat`)}</SText>
+                <SText>{t(`Cost Minimum`)}</SText>
                 <SText>
-                  {formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals, 2)} {token}
+                  {formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals, 2)} {token}
                 </SText>
               </RowBetween>
               <RowBetween>

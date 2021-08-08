@@ -3,7 +3,7 @@ import { AccountData, AccountId, AccountInfo } from '@polkadot/types/interfaces'
 import { BN_ZERO } from '@polkadot/util'
 import BN from 'bn.js'
 import { useEffect, useState } from 'react'
-import { CurrencyId, TradingPair } from 'spanner-interfaces'
+import { CurrencyId, TradingPair } from 'spanner-api/types'
 import { useApi } from './useApi'
 import { useEnabledTradingPairs } from './useQueryTradingPairs'
 import useWallet from './useWallet'
@@ -148,8 +148,8 @@ export function useSubAllBalances(): Array<BalanceData> | undefined {
         token,
         type,
         free: accountData.free.toString(),
-        miscFrozen: accountData.miscFrozen.toString(),
-        feeFrozen: accountData.feeFrozen.toString(),
+        miscFrozen: accountData.miscFrozen ? accountData.miscFrozen.toString() : '0',
+        feeFrozen: accountData.feeFrozen ? accountData.miscFrozen.toString() : '0',
       }
     })
     const boltBalanceData = {

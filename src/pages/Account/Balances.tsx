@@ -108,10 +108,10 @@ function Balance({ icon, token, type, balance, isLast }: BalanceRowProps) {
 export default function Balances() {
   const { chainDecimals } = useSubstrate()
   const balances = useSubAllBalances()
-  const data = React.useMemo(() => structureBalanceData({ balances, decimals: chainDecimals }), [
-    balances,
-    chainDecimals,
-  ])
+  const data = React.useMemo(
+    () => structureBalanceData({ balances, decimals: chainDecimals }),
+    [balances, chainDecimals]
+  )
   const { t } = useTranslation()
 
   return (

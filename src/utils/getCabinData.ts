@@ -1,6 +1,6 @@
-import { DpoInfo, TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinBuyerInfo, TravelCabinInfo } from 'spanner-api/types'
 import BN from 'bn.js'
-import { BlockNumber, Moment } from '@polkadot/types/interfaces'
+import { BlockNumber, Moment } from 'spanner-api/types'
 import { bnToUnit } from './formatUnit'
 import { daysToBlocks } from './formatBlocks'
 
@@ -41,8 +41,10 @@ export function getTreasureHuntingGpLeft(
   lastBlock: BlockNumber,
   expectedBlockTime: Moment
 ) {
-  const gracePeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
-  return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  // todo TravelCabinBuyerInfo remove blk_of_last_withdraw filed
+  // const gracePeriodTimeLeft = buyerInfo.blk_of_last_withdraw.add(daysToBlocks(7, expectedBlockTime))
+  // return gracePeriodTimeLeft.sub(lastBlock).isNeg() ? '0' : gracePeriodTimeLeft.sub(lastBlock).toString()
+  return '0'
 }
 
 /**

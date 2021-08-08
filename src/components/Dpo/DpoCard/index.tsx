@@ -12,12 +12,13 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import React, { useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
 import { ACTION_ICONS, DPO_STATE_COLORS } from '../../../constants'
+import { getDpoMinimumPurchase, getDpoRemainingPurchase } from '../../../utils/getDpoData'
 
 const DpoCardGrid = styled.div`
   display: grid;
@@ -82,17 +83,15 @@ function DpoCardDetails({ dpoInfo, expiry }: { dpoInfo: DpoInfo; expiry?: BN }) 
         </RowBetween>
       )}
       <RowBetween>
-        <HeavyText>{t(`Cost per Seat`)}:</HeavyText>
+        <HeavyText>{t(`Minimum Purchase`)}:</HeavyText>
         <RowFixed width="fit-content">
-          <SText style={{ paddingLeft: '0.5rem' }}>{formatToUnit(dpoInfo.amount_per_seat, chainDecimals)}</SText>
+          <SText style={{ paddingLeft: '0.5rem' }}>{formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals)}</SText>
           <TokenText padding="0 0 0 0.25rem">{token}</TokenText>
         </RowFixed>
       </RowBetween>
       <RowBetween>
-        <HeavyText>{t(`Seats Available`)}:</HeavyText>
-        <SText style={{ paddingLeft: '0.5rem' }}>
-          {dpoInfo.empty_seats.toString()} {t(`Seats`)}
-        </SText>
+        <HeavyText>{t(`Remaining`)}:</HeavyText>
+        <SText style={{ paddingLeft: '0.5rem' }}>{formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals)}</SText>
       </RowBetween>
       <RowBetween>
         <HeavyText>{t(`Management Fee`)}:</HeavyText>
@@ -178,7 +177,7 @@ export default function DpoCard({ dpoInfo }: { dpoInfo: DpoInfo }) {
                         totalDeposit: dpoInfo.target_amount.toBn(),
                         chainDecimals: chainDecimals,
                         blockTime: expectedBlockTime,
-                        maturity: dpoInfo.target_maturity,
+                        maturity: dpoInfo.target_maturity.toString(),
                       }).toString()}%`}
                     </HeavyText>
                   </div>

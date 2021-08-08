@@ -1,16 +1,16 @@
+import { StyledExternalLink } from 'components/Link'
+import StandardModal from 'components/Modal/StandardModal'
+import { RowBetween, RowFixed } from 'components/Row'
 import { SText } from 'components/Text'
 import { BorderedWrapper, ContentWrapper } from 'components/Wrapper'
 import { useApi } from 'hooks/useApi'
 import React, { useMemo, useState } from 'react'
 import { Activity, ChevronDown, Circle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
-import { useChainState } from 'state/connections/hooks'
-import useTheme from 'utils/useTheme'
-import { SPANNER_SUPPORTED_CHAINS } from '../../constants'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
-import { RowBetween, RowFixed } from 'components/Row'
-import StandardModal from 'components/Modal/StandardModal'
+import useTheme from 'utils/useTheme'
+import { DAPP_CHAIN, HAMMER_DAPP_URL, SPANNER_DAPP_URL, SPANNER_SUPPORTED_CHAINS } from '../../constants'
 
 const SelectorWrapper = styled.div<{
   background?: string
@@ -48,6 +48,7 @@ const Option = styled(BorderedWrapper)`
 
 interface FilterOption {
   icon?: JSX.Element
+  href?: string
   label: string
   callback: Dispatcher<any>
 }
@@ -67,23 +68,47 @@ function Options({
   return (
     <>
       {options.map((option, index) => (
-        <Option
-          key={index}
-          onClick={() => {
-            option.callback(option.label)
-            dismissModal()
-          }}
-          color={activeOption === option.label ? theme.white : theme.text2}
-          background={activeOption === option.label ? theme.primary1 : 'transparent'}
-          borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
-        >
-          <RowFixed>
-            <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
-            <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
-              {t(option.label)}
-            </SText>
-          </RowFixed>
-        </Option>
+        <div key={index}>
+          {activeOption !== option.label ? (
+            <Option
+              key={index}
+              onClick={() => {
+                option.callback(option.label)
+                dismissModal()
+              }}
+              color={activeOption === option.label ? theme.white : theme.text2}
+              background={activeOption === option.label ? theme.primary1 : 'transparent'}
+              borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
+            >
+              <StyledExternalLink href={option.href ? option.href : ''}>
+                <RowFixed>
+                  <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
+                  <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+                    {t(option.label)}
+                  </SText>
+                </RowFixed>
+              </StyledExternalLink>
+            </Option>
+          ) : (
+            <Option
+              key={index}
+              onClick={() => {
+                option.callback(option.label)
+                dismissModal()
+              }}
+              color={activeOption === option.label ? theme.white : theme.text2}
+              background={activeOption === option.label ? theme.primary1 : 'transparent'}
+              borderColor={activeOption === option.label ? theme.primary1 : 'transparent'}
+            >
+              <RowFixed width="auto">
+                <Activity size={12} color={activeOption === option.label ? theme.white : theme.text2} />
+                <SText color={activeOption === option.label ? theme.white : theme.text2} padding="0 1rem">
+                  {t(option.label)}
+                </SText>
+              </RowFixed>
+            </Option>
+          )}
+        </div>
       ))}
     </>
   )
@@ -91,9 +116,9 @@ function Options({
 
 export default function NetworkSelector() {
   const chainOptions = SPANNER_SUPPORTED_CHAINS
-  const { connectToNetwork, lastState } = useApi()
-  const { chain } = useChainState()
-  const [active, setActive] = useState<string>(chain ? chain.chainName : 'Spanner Mainnet')
+  const { lastState } = useApi()
+  // const { chain } = useChainState()
+  // const [active, setActive] = useState<string>(chain ? chain.chainName : 'Spanner Mainnet')
   const theme = useTheme()
   const { t } = useTranslation()
   const [modalOpen, setModalOpen] = useState<boolean>(false)
@@ -101,13 +126,14 @@ export default function NetworkSelector() {
   const networkOptions = useMemo(() => {
     const options = chainOptions.map((chainOption) => ({
       label: chainOption.chain,
-      callback: () => {
-        setActive(chainOption.chain)
-        connectToNetwork(chainOption.chain)
-      },
+      href: chainOption.chain === 'Spanner Mainnet' ? SPANNER_DAPP_URL : HAMMER_DAPP_URL,
+      callback: () => undefined,
+      // callback: () => {
+      //   setActive(chainOption.chain)
+      // },
     }))
     return options
-  }, [chainOptions, connectToNetwork])
+  }, [chainOptions])
 
   const dismissModal = () => {
     setModalOpen(false)
@@ -124,14 +150,14 @@ export default function NetworkSelector() {
     color = theme.green1
   }
 
+  const active = DAPP_CHAIN === 'Spanner' ? 'Spanner Mainnet' : 'Hammer Testnet'
+
   return (
     <>
       <ContentWrapper>
-        {active && (
-          <StandardModal title={t(`Connect to Chain`)} isOpen={modalOpen} onDismiss={dismissModal} desktopScroll={true}>
-            <Options options={networkOptions} activeOption={active} dismissModal={dismissModal} />
-          </StandardModal>
-        )}
+        <StandardModal title={t(`Connect to Chain`)} isOpen={modalOpen} onDismiss={dismissModal} desktopScroll={true}>
+          <Options options={networkOptions} activeOption={active} dismissModal={dismissModal} />
+        </StandardModal>
         <SelectorWrapper onClick={() => setModalOpen(!modalOpen)} background={theme.white} borderColor={'transparent'}>
           <RowBetween margin="0">
             <RowFixed>
