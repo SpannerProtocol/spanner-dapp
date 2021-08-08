@@ -3,14 +3,12 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm use $VERSION_NODE_14
-        - nvm -v
+        - nvm install v14.8.0
         - yarn install
         - yarn build:types
     build:
       commands:
-        - nvm use $VERSION_NODE_14
-        - nvm -v
+        - nvm use v14.8.0
         - yarn run build:amplify
   artifacts:
     baseDirectory: build
