@@ -27,6 +27,7 @@ import { shortenAddress } from 'utils'
 import { formatToUnit, numberToBn } from 'utils/formatUnit'
 import { isValidEthAddress } from 'utils/validAddress'
 import { getBridgeFee, getBurnAddr, getEthDepositAddr, postE2sCheck } from '../../bridge'
+import { ColumnCenter } from '../../components/Column'
 
 interface FeeData {
   feeBps: number
@@ -317,11 +318,30 @@ export default function Bridge(): JSX.Element {
         {!bridge ? (
           <>
             <BgColorCard borderRadius="0" margin="0 0 1rem 0">
-              <Header1 width="fit-content" colorIsPrimary>
-                {t(`Bridge`)}
-              </Header1>
-              <SText color="#fff">{t(`Bridge is currently unavailable. Please check back later.`)}</SText>
+              <RowFixed>
+                <Header1 width="fit-content" colorIsPrimary>
+                  {t(`Bridge`)}
+                </Header1>
+                <QuestionHelper
+                  size={12}
+                  color="#fff"
+                  backgroundColor={'transparent'}
+                  text={t(
+                    `Bridges help transfer crypto between different blockchains. Spanner's Ethereum Bridge sends your custodial wallet WUSD for the USDT (Ethereum ERC20) you send to your deposit address.`
+                  )}
+                />
+              </RowFixed>
+              <Header2 color="#fff">{t(`Send Ethereum USDT to Deposit Address for Spanner WUSD`)}</Header2>
             </BgColorCard>
+            <ContentWrapper>
+              <ColumnCenter>
+                <Card margin=" 0 0 1rem 0">
+                  <SText color="#000">
+                    {t(`The bridge is currently being upgraded and maintained. Please check back later.`)}
+                  </SText>
+                </Card>
+              </ColumnCenter>
+            </ContentWrapper>
           </>
         ) : (
           <>
