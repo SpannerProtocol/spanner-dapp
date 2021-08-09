@@ -4,8 +4,6 @@ frontend:
     preBuild:
       commands:
         - nvm install v14.8.0
-        - cd src/spanner-api
-        - git config user.name "Spanner Deploy"
         - git submodule update --init --recursive
         - yarn install
     build:
