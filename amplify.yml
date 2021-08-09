@@ -4,8 +4,8 @@ frontend:
     preBuild:
       commands:
         - nvm install v14.8.0
+        - git submodule update --init --recursive
         - yarn install
-        - yarn build:types
     build:
       commands:
         - nvm use v14.8.0
