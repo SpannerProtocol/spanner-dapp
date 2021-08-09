@@ -23,6 +23,8 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
   const isTargetMember = useDpoInTargetDpo(dpoInfo)
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
+  const { chainDecimals } = useSubstrate()
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
 
   if (!target) return null
   return (
@@ -62,7 +64,9 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
       )}
       {isTargetMember && (
         <RowFixed>
-          <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
+          <SText>{`${t(`Purchased`)} ${formatToUnit(dpoInfo.target.asDpo[1], chainDecimals, 2)} ${token} ${t(
+            `Shares`
+          )} ${t(`from`)} `}</SText>
           <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue padding="0 0.25rem">
             {target.name.toString()}
           </SLink>
