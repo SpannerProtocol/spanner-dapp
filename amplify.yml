@@ -7,6 +7,9 @@ frontend:
         - eval $(ssh-agent -s)
         - ssh-add <(echo "$DEPLOY_KEY" | base64 --decode)
         - git submodule update --init --recursive
+        - cd src/spanner-api
+        - yarn install
+        - cd ../..
         - yarn install
     build:
       commands:
