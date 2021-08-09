@@ -4,6 +4,8 @@ frontend:
     preBuild:
       commands:
         - nvm install v14.8.0
+        - eval $(ssh-agent -s)
+        - ssh-add <(echo "$DEPLOY_KEY" | base64 --decode)
         - git submodule update --init --recursive
         - yarn install
     build:
