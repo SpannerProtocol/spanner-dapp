@@ -6,11 +6,12 @@ frontend:
         - nvm install v14.8.0
         - eval $(ssh-agent -s)
         - ssh-add <(echo "$DEPLOY_KEY" | base64 --decode)
+        - rm -rf node_modules && rm -f yarn.lock
+        - yarn install
         - git submodule update --init --recursive
         - cd src/spanner-api
         - yarn install
         - cd ../..
-        - yarn install
     build:
       commands:
         - nvm use v14.8.0
