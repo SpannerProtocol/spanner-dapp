@@ -168,9 +168,5 @@
     "use-count-up": "^2.2.5",
     "wcag-contrast": "^3.0.0",
     "webpack-cli": "^4.3.0"
-  },
-  "devDependencies": {
-    "@open-web3/orml-types": "^0.9.4-0",
-    "i18next-scanner": "^3.0.0"
   }
 }
