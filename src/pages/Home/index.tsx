@@ -1,5 +1,4 @@
 import { PageWrapper, SpacedSection } from 'components/Wrapper'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { ReactComponent as CircleNext } from '../../assets/svg/circle-next.svg'

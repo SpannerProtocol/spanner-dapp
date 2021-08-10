@@ -2,7 +2,6 @@ import QuestionHelper from 'components/QuestionHelper'
 import { RowBetween } from 'components/Row'
 import { ItalicText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface TxFeeProps {

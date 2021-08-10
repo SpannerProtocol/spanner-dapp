@@ -8,7 +8,7 @@ import { usePathProject } from 'hooks/usePath'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
 import useStats from 'hooks/useStats'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
@@ -34,7 +34,7 @@ export default function Project(): JSX.Element {
   const { chainDecimals } = useSubstrate()
   const projectRegistry = getProjectRegistry(path.token)[0]
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
+  const TokenImage = require(`assets/tokens/${projectRegistry.icon}`).default
   const { t } = useTranslation()
   // const dexPools = usePoolsWithToken(path.token.toUpperCase())
   const [filteredAsset, setFilteredAsset] = useState<string>(path.asset ? path.asset : 'TravelCabin')

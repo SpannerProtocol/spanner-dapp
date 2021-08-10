@@ -12,7 +12,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
@@ -154,7 +154,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     }
   }, [amount, passengerShareMinimum])
 
-  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+  const handleSliderChange = (event: React.ChangeEvent<Record<string, unknown>>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       handleSeats(newValue)
     }

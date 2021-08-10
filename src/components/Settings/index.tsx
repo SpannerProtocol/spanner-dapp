@@ -1,6 +1,6 @@
 import LanguageSettings from 'components/LanguageSettings'
 import ProjectSettings from 'components/ProjectSettings'
-import React, { useContext, useRef } from 'react'
+import { useContext, useRef } from 'react'
 import { Settings } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { Text } from 'rebass'

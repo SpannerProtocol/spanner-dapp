@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ApolloError, useLazyQuery } from '@apollo/client'
 import { StyledExternalLink } from 'components/Link'
 import Pagination from 'components/Pagination'
@@ -13,7 +12,7 @@ import {
   ExtrinsicsByAddressVariables,
   ExtrinsicsByAddress_extrinsics_nodes,
 } from 'queries/graphql/types/ExtrinsicsByAddress'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'

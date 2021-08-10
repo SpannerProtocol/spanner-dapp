@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import TabBar, { TabMetaData } from '../../components/TabBar'
 import { PageWrapper, ContentWrapper } from '../../components/Wrapper'
 import MainConsole from './MainConsole'

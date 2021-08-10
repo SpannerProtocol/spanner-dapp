@@ -1,4 +1,3 @@
-import React from 'react'
 import SwapConsole from './SwapConsole'
 import LpAddConsole from './LpAddConsole'
 import LpRemoveConsole from './LpRemoveConsole'

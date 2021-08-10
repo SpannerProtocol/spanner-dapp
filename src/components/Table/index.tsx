@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction } from 'react'
 import styled from 'styled-components'
 import { useTable, useGlobalFilter, useSortBy, usePagination } from 'react-table'
 import SearchBar from 'components/SearchBar'

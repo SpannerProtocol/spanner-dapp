@@ -4,7 +4,6 @@ import LinearProgress, { LinearProgressProps } from '@material-ui/core/LinearPro
 import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import { SText } from 'components/Text'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import './progress.css'
 

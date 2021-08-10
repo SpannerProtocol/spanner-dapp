@@ -85,7 +85,7 @@ export function useUserKvHasProject() {
       },
     }
     kvReadUser(client, wallet.address).then((result) => {
-      if (result) {
+      if (result && result.Item) {
         if (Object.keys(result.Item).includes('Project')) {
           console.info(`INIT: already has project.`)
           setHasProject(true)
