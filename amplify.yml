@@ -3,7 +3,6 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install v14.8.0
         - eval $(ssh-agent -s)
         - ssh-add <(echo "$DEPLOY_KEY" | base64 --decode)
         - rm -rf node_modules && rm -f yarn.lock
@@ -14,7 +13,6 @@ frontend:
         - cd ../..
     build:
       commands:
-        - nvm use v14.8.0
         - yarn run build:amplify
   artifacts:
     baseDirectory: build
