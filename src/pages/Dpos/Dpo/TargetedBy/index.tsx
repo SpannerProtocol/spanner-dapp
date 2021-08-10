@@ -21,7 +21,7 @@ import {
   DposTargetPurchasedIncludes,
   DposTargetPurchasedIncludesVariables,
 } from 'queries/graphql/types/DposTargetPurchasedIncludes'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { CheckCircle, ChevronRight, Crosshair, PlusCircle, Shuffle } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
@@ -29,6 +29,7 @@ import { DpoInfo } from 'spanner-api/types'
 import styled, { ThemeContext } from 'styled-components'
 import { blocksToCountDown } from 'utils/formatBlocks'
 import { getDpoProgress } from '../../../../utils/getDpoData'
+import React from 'react'
 
 const Row = styled.div`
   display: grid;

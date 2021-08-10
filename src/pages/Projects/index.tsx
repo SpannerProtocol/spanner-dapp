@@ -6,7 +6,6 @@ import { SLink } from 'components/Link'
 import { Header1, Header2, Header3, SText } from 'components/Text'
 import { PageWrapper, SpacedSection } from 'components/Wrapper'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
-import React from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'translate'
 import getProjectRegistry from 'utils/getProjectRegistry'
@@ -56,7 +55,7 @@ function ProjectsByProjects({ projects }: { projects: ProjectInfo[] }) {
         const projectRegistry = getProjectRegistry(project.token.toLowerCase())[0]
         if (projectRegistry.description === '') return <div key={index}></div>
         // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const TokenImage = require(`assets/tokens/${projectRegistry.icon}`)
+        const TokenImage = require(`assets/tokens/${projectRegistry.icon}`).default
         const numAssets = projectRegistry.assets.length
         return (
           <ProjectCard key={index}>

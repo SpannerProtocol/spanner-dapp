@@ -1,7 +1,7 @@
 import { DynamoDB, AWSError } from 'aws-sdk'
 
 export interface ReadUserResponse {
-  Item: {
+  Item?: {
     Project: {
       [index: string]: {
         Referrer: string | null
@@ -12,8 +12,9 @@ export interface ReadUserResponse {
 }
 
 /** Typeguard for response */
-function responseIsReadUser(response: ReadUserResponse | object): response is ReadUserResponse {
-  return Object.keys(response).length > 0
+function responseIsReadUser(response: ReadUserResponse | undefined): response is ReadUserResponse {
+  if (!response || !response.Item) return false
+  return Object.keys(response.Item).length > 0
 }
 
 /** Get the full item for a User */
@@ -31,7 +32,7 @@ export async function kvReadUser(client: DynamoDB.DocumentClient, address: strin
     .then((result) => {
       if (result.$response.error) {
       } else {
-        if (responseIsReadUser(result)) {
+        if (responseIsReadUser(result.Item)) {
           return result as ReadUserResponse
         }
       }

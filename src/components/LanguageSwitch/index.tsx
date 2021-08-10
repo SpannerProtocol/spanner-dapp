@@ -1,6 +1,6 @@
 import LanguageIcon from 'assets/svg/icon-language.svg'
 import { Icon } from 'components/Image'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import styled from 'styled-components'
 import i18n from '../../i18n'
 import { ApplicationModal } from '../../state/application/actions'

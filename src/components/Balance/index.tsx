@@ -4,7 +4,6 @@ import { ItalicText } from 'components/Text'
 import { SpacedSection } from 'components/Wrapper'
 import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatToUnit } from 'utils/formatUnit'
 

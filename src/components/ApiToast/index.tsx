@@ -4,7 +4,7 @@ import { HeavyText, SText } from 'components/Text'
 import { Section } from 'components/Wrapper'
 import { ToastState, useApiToastContext } from 'contexts/ApiToastProvider'
 import { darken } from 'polished'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Circle } from 'react-feather'
 import styled, { keyframes, ThemeContext } from 'styled-components'
 

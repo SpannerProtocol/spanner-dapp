@@ -1,5 +1,4 @@
 import { Header2, SText } from 'components/Text'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-api/types'
 import { StateOverlay } from 'components/Overlay'

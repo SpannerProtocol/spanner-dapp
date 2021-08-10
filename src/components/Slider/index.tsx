@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import styled from 'styled-components'
 import { withStyles } from '@material-ui/core/styles'
 import { Slider as MuiSlider } from '@material-ui/core'

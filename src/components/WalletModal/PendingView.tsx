@@ -1,5 +1,4 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
-import React from 'react'
 import styled from 'styled-components'
 import Option from './Option'
 import { SUPPORTED_WALLETS } from '../../constants'
@@ -119,7 +118,7 @@ export default function PendingView({
               color={option.color}
               header={option.name}
               subheader={option.description}
-              icon={require('../../assets/images/' + option.iconName)}
+              icon={require(`assets/images/${option.iconName}`).default}
             />
           )
         }

@@ -11,7 +11,6 @@ import Divider from 'components/Divider'
 import { shortenAddr } from 'utils/truncateString'
 import Balance from 'components/Balance'
 import TxFee from 'components/TxFee'
-import React from 'react'
 
 interface TravelCabinCrowdfundTxConfirmProps {
   target?: string

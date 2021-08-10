@@ -28,8 +28,9 @@ function structureBalanceData(data: BalanceDataProps) {
   if (!balances) return
   const balanceRows = balances.map((balance) => {
     const projectRegistry = getProjectRegistry(balance.token.toLowerCase())[0]
+    console.log(projectRegistry)
     return {
-      icon: require(`assets/tokens/${projectRegistry.icon}`),
+      icon: require(`assets/tokens/${projectRegistry.icon}`).default,
       token: balance.token,
       type: balance.type,
       balance: formatToUnit(balance.free, decimals, 8),

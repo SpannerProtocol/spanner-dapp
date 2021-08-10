@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import { useCallback, useState } from 'react'
 import styled from 'styled-components'
 import Tooltip from '../Tooltip'
 
@@ -39,7 +39,7 @@ export default function CopyToClipboard({ text }: { text: string }) {
     <span style={{ marginLeft: 4 }}>
       <Tooltip text={text} show={show}>
         <IconWrapper onClick={open} onMouseEnter={open} onMouseLeave={close}>
-          <Icon src={require('../../assets/svg/icon-action-copy.svg')} />
+          <Icon src={require('assets/svg/icon-action-copy.svg').default} />
         </IconWrapper>
       </Tooltip>
     </span>

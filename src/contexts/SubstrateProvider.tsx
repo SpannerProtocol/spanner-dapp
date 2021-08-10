@@ -1,5 +1,5 @@
 import { useApi } from 'hooks/useApi'
-import React, { createContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useEffect, useMemo, useState } from 'react'
 
 const DEFAULT_STATE = {
   chain: '-',

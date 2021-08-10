@@ -1,6 +1,6 @@
 import { isWeb3Injected, web3AccountsSubscribe, web3Enable, web3FromSource } from '@polkadot/extension-dapp'
 import type { InjectedAccountWithMeta, InjectedExtension } from '@polkadot/extension-inject/types'
-import React, { createContext, useCallback, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useEffect, useMemo, useState } from 'react'
 import { useToastContext } from './ToastContext'
 
 export interface WalletState {

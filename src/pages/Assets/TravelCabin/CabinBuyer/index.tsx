@@ -1,6 +1,6 @@
 import { PageWrapper, Section, Wrapper } from 'components/Wrapper'
 import { HeavyText, SText } from 'components/Text'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import Row, { RowBetween } from 'components/Row'
 import { getCabinClassByIndex, getCabinClassImage } from 'utils/getCabinClass'
@@ -36,9 +36,8 @@ export default function TravelCabinBuyer() {
   const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
-  const [selectedBuyer, setSelectedBuyer] = useState<
-    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
-  >()
+  const [selectedBuyer, setSelectedBuyer] =
+    useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const { lastBlock, expectedBlockTime } = useBlockManager()
