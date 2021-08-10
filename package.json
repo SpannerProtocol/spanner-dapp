@@ -56,6 +56,7 @@
     "@material-ui/core": "^4.11.1",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.58",
+    "@open-web3/orml-types": "^0.9.4-0",
     "@polkadot/api": "5.2.1",
     "@polkadot/extension-dapp": "^0.39.2",
     "@polkadot/keyring": "^7.1.1",
@@ -167,9 +168,5 @@
     "use-count-up": "^2.2.5",
     "wcag-contrast": "^3.0.0",
     "webpack-cli": "^4.3.0"
-  },
-  "devDependencies": {
-    "@open-web3/orml-types": "^0.9.4-0",
-    "i18next-scanner": "^3.0.0"
   }
 }
