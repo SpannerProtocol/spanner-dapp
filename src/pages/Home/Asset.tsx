@@ -1,5 +1,5 @@
 import { SLink } from 'components/Link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import 'swiper/components/pagination/pagination.min.css'
 import SwiperCore, { Pagination } from 'swiper/core'

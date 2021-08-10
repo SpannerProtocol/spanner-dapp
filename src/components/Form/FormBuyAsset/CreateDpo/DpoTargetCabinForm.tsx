@@ -14,7 +14,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { TravelCabinInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
@@ -235,12 +235,9 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   const handleManagerPurchaseAmount = (value: number) => {
     // const managerAmount = Number.isNaN(value) ? new BN(0) : unitToBnWithDecimal(value, chainDecimals)
 
-    console.log('handleManagerPurchaseAmount value', value)
     if (!passengerShareCap || !passengerShareMinimum) return
     if (value > passengerShareCap) return
     setManagerPurchaseAmount(value)
-
-    console.log('handleManagerPurchaseAmount managerPurchaseAmount', managerPurchaseAmount)
 
     let shareRate = parseFloat(new Decimal(value).dividedBy(cabinDepositAmountDecimal).mul(100).toFixed(1))
     if (shareRate + baseFee > 20) {

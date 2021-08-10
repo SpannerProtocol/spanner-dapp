@@ -1,4 +1,3 @@
-import React from 'react'
 import Circle from 'assets/svg/yellow-loader.svg'
 import { CustomLightSpinner } from 'theme/components'
 

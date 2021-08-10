@@ -89,9 +89,10 @@ export function useSubAllTokenBalances(): Array<[StorageKey, AccountData]> | und
     ;(async () => {
       const currencyIds: [string, CurrencyId][] = []
       storageKey.forEach((key) => {
+        if (!wallet.address) return
         const keyCodecs = key.args.map((k) => k)
         const currencyId = (keyCodecs as [AccountId, CurrencyId])[1]
-        currencyIds.push([wallet.address!!, currencyId])
+        currencyIds.push([wallet.address, currencyId])
       })
       unsub = await api.query.tokens.accounts.multi(currencyIds, (result) => {
         const accountDatas: [StorageKey, AccountData][] = []

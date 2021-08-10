@@ -1,7 +1,7 @@
 import Card from 'components/Card'
 import Divider from 'components/Divider'
 import { ContentWrapper, ClickableSection, CenterWrapper } from 'components/Wrapper'
-import React, { useState, useContext } from 'react'
+import { useState, useContext } from 'react'
 import { ChevronDown } from 'react-feather'
 import { ThemeContext } from 'styled-components'
 

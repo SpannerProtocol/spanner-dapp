@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { SText } from 'components/Text'
 import useIsWindowVisible from 'hooks/useIsWindowVisible'
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'

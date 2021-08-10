@@ -1,6 +1,6 @@
 import Selector from 'components/Selector'
 import useTokens from 'hooks/useTokens'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 
 const TokenSelectorWrapper = styled.div<{ background?: string }>`

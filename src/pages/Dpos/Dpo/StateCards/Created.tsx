@@ -17,7 +17,7 @@ import { useSubDpo } from 'hooks/useQueryDpos'
 import { useDpoTravelCabinInventoryIndex, useSubTravelCabin } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
 import useWallet, { useIsConnected } from 'hooks/useWallet'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
 import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
@@ -40,7 +40,6 @@ import { ColumnCenter } from '../../../../components/Column'
 function CreateHighlights({ dpoInfo, onBuy }: { dpoInfo: DpoInfo; onBuy: () => void }) {
   // const progress = 100 - dpoInfo.empty_seats.toNumber()
   const progress = getDpoProgress(dpoInfo)
-  console.log('progress', progress)
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
   const { t } = useTranslation()

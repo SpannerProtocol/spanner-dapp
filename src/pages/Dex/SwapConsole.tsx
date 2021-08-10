@@ -12,7 +12,7 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import useSubscribePool from 'hooks/useQueryDexPool'
 import { useEnabledPair } from 'hooks/useQueryTradingPairs'
 import useTxHelpers, { TxInfo } from 'hooks/useTxHelpers'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ButtonPrimary, ButtonTrans } from '../../components/Button'
 import Card, { BannerCard } from '../../components/Card'
@@ -200,11 +200,12 @@ export default function SwapConsole(): JSX.Element {
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
 
-  const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
-    tokenA,
-    tokenB,
-    800
-  )
+  const {
+    pool: subscribedPool,
+    price: subscribedPrice,
+    dexFee: subscribedFee,
+    error: poolError,
+  } = useSubscribePool(tokenA, tokenB, 800)
 
   const handleAmountA = (value: number) => {
     if (!isOnA) return

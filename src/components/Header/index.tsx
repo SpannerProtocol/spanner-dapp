@@ -602,19 +602,9 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
         <HeaderElement style={{ paddingRight: '0.5rem' }}>
           <Link to="/account/balances" style={{ textDecoration: 'none' }}>
             <BalanceWrapper>
-              <Badge
-                anchorOrigin={{
-                  vertical: 'bottom',
-                  horizontal: 'right',
-                }}
-                color="secondary"
-                badgeContent={0}
-                showZero
-              >
-                <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
-                  <User />
-                </BOLTAmount>
-              </Badge>
+              <BOLTAmount active={!!account} style={{ pointerEvents: 'auto' }}>
+                <User />
+              </BOLTAmount>
             </BalanceWrapper>
           </Link>
           <Web3Status />

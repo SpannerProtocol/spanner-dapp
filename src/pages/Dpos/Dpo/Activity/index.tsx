@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { useLazyQuery, useQuery } from '@apollo/client'
 import BN from 'bn.js'
 import Card from 'components/Card'
@@ -21,7 +20,7 @@ import {
   EventsByIdsVariables,
   EventsByIds_events_nodes_extrinsic_events,
 } from 'queries/graphql/types/EventsByIds'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'
@@ -183,10 +182,11 @@ function Activities({ eventIds, orderBy }: { eventIds: string[]; orderBy: Events
       const regex = /(?![^)(]*\([^)(]*?\)\)),(?![^\[]*\])/
       const argsArray = event.extrinsic.args.split(regex)
       const argsDecodedArray = argsArray.map((e) => (isPrefixedHex(e) ? hexToString(e) : e))
-      const argTuples = methodArgs[event.extrinsic.method].map((k, i) => {
+      const dpoExtrinsic = methodArgs[event.extrinsic.method]
+      if (!dpoExtrinsic) return
+      const argTuples = dpoExtrinsic.map((k, i) => {
         return [k, argsDecodedArray[i]]
       })
-      // console.log(parsedData)
       timelineActivities.push({
         leftLabel: tsToDateTime(parseInt(event.extrinsic.timestamp)),
         rightLabel: methodReadable,

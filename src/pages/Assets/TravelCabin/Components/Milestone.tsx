@@ -1,5 +1,5 @@
 import { makeStyles } from '@material-ui/core/styles'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { ThemeContext } from 'styled-components'
 import { useSelectedProject } from 'hooks/useProject'
 import { useTranslation } from 'react-i18next'

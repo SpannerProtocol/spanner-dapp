@@ -1,6 +1,5 @@
 import StandardModal from './StandardModal'
 import { SText } from '../Text'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 
 interface MaintenanceModalProps {

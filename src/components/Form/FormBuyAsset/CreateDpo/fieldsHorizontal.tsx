@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useSubstrate } from '../../../../hooks/useSubstrate'
 import useSubscribeBalance from '../../../../hooks/useQueryBalance'
-import React, { useCallback, useContext } from 'react'
+import { useCallback, useContext } from 'react'
 import { BorderedWrapper, Section } from '../../../Wrapper'
 import Row, { RowBetween, RowFixed } from '../../../Row'
 import { SText } from '../../../Text'
@@ -165,7 +165,7 @@ export function DpoManagerSeatsHorizontal({
     }
   }, [balance, onChange, passengerShareCap, chainDecimals])
 
-  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+  const handleSliderChange = (event: React.ChangeEvent<Record<string, unknown>>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       onChange(newValue)
     }
@@ -333,7 +333,7 @@ export function DpoTargetDpoSeatsHorizontal({
   onChange: (e: number) => void
 }) {
   const { t } = useTranslation()
-  const handleSliderChange = (event: React.ChangeEvent<{}>, newValue: number | number[]) => {
+  const handleSliderChange = (event: React.ChangeEvent<Record<string, unknown>>, newValue: number | number[]) => {
     if (typeof newValue === 'number') {
       onChange(newValue)
     }

@@ -1,6 +1,6 @@
 import { SText } from 'components/Text'
 import { Section, SpacedSection } from 'components/Wrapper'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
 import useTheme from 'utils/useTheme'

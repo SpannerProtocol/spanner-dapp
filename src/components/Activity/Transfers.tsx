@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ApolloError, useLazyQuery } from '@apollo/client'
 import Filter from 'components/Filter'
 import { StyledExternalLink } from 'components/Link'
@@ -12,7 +11,7 @@ import transferIn from 'queries/graphql/transferIn'
 import transferOut from 'queries/graphql/transferOut'
 import { TransferIn, TransferInVariables } from 'queries/graphql/types/TransferIn'
 import { TransferOut, TransferOutVariables } from 'queries/graphql/types/TransferOut'
-import React, { useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'

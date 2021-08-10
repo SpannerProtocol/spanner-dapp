@@ -10,7 +10,7 @@ import { useDpoTravelCabinInventoryIndex, useSubTravelCabin, useSubTravelCabinBu
 import { useSubstrate } from 'hooks/useSubstrate'
 import { useUserIsDpoMember, useUserIsDpoManager } from 'hooks/useUser'
 import useWallet from 'hooks/useWallet'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { DpoInfo } from 'spanner-api/types'
 import { ThemeContext } from 'styled-components'

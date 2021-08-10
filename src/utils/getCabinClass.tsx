@@ -1,4 +1,3 @@
-import React from 'react'
 import { TRAVELCABIN_CLASSES } from '../constants'
 
 /**
