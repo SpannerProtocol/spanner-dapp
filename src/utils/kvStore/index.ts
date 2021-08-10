@@ -32,6 +32,7 @@ export async function kvReadUser(client: DynamoDB.DocumentClient, address: strin
     .then((result) => {
       if (result.$response.error) {
       } else {
+        console.log('result', result)
         if (responseIsReadUser(result.Item)) {
           return result as ReadUserResponse
         }
