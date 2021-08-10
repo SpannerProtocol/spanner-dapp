@@ -9,9 +9,6 @@ frontend:
         - rm -rf node_modules && rm -f yarn.lock
         - yarn install
         - git submodule update --init --recursive
-        - cd src/spanner-api
-        - yarn install
-        - cd ../..
     build:
       commands:
         - nvm use v14.8.0
