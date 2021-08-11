@@ -14,9 +14,9 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-api/types'
+import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
-import { bnToUnitNumber, formatToUnit } from 'utils/formatUnit'
+import { bnToUnitNumber, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
@@ -24,6 +24,8 @@ import Decimal from 'decimal.js'
 import { PrimaryMUISlider } from '../../../Slider'
 import { BuyData } from '../index'
 import { ErrorMsg } from '../../../../pages/Dex/components'
+import { useQueryDpoMembers } from '../../../../hooks/useQueryDpoMembers'
+import useWallet from '../../../../hooks/useWallet'
 
 interface BuyDpoSeatsFormProps {
   dpoInfo: DpoInfo
@@ -114,10 +116,25 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     passengerShareCap = remaining
   }
 
-  // useEffect(() => {
-  //   if (!passengerSharePercentMinimum) return
-  //   setSeats(passengerShareMinimum)
-  // }, [passengerSharePercentMinimum])
+  const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
+  const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
+  const wallet = useWallet()
+
+  useEffect(() => {
+    if (!wallet || !wallet.address || !dpoMembers || dpoMembers.length === 0) return
+    const memberInfo = dpoMembers.find(
+      (entry) => entry[1].buyer.isPassenger && entry[1].buyer.asPassenger.eq(wallet.address)
+    )
+    setUserMemberInfo(memberInfo ? memberInfo[1] : undefined)
+  }, [dpoMembers, wallet])
+
+  if (userMemberInfo) {
+    const userPurchasedShares = bnToUnitNumber(userMemberInfo.share, chainDecimals)
+    passengerShareCap = new Decimal(passengerShareCap).sub(userPurchasedShares).toNumber()
+    if (passengerShareCap < passengerShareMinimum) {
+      passengerShareMinimum = passengerShareCap
+    }
+  }
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
