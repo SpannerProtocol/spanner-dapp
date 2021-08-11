@@ -196,8 +196,13 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
     blockToDays(dpoInfo.expiry_blk.sub(lastBlock).sub(new BN(500)), expectedBlockTime, 2)
 
   const dpoInfoTargetAmountNumber = new Decimal(bnToUnit(dpoInfo.target_amount, chainDecimals, 0))
-  const dpoShareCap = dpoSharePercentCap ? dpoInfoTargetAmountNumber.mul(dpoSharePercentCap).toNumber() : 0
+  let dpoShareCap = dpoSharePercentCap ? dpoInfoTargetAmountNumber.mul(dpoSharePercentCap).toNumber() : 0
   const dpoShareMinimum = dpoSharePercentMinimum ? dpoInfoTargetAmountNumber.mul(dpoSharePercentMinimum).toNumber() : 0
+
+  const targetDpoRemaining = bnToUnitNumber(getDpoRemainingPurchase(dpoInfo), chainDecimals)
+  if (targetDpoRemaining < dpoShareCap) {
+    dpoShareCap = targetDpoRemaining
+  }
 
   const passengerShareCap = passengerSharePercentCap
     ? new Decimal(targetPurchaseAmount.toString()).mul(passengerSharePercentCap).toNumber()
