@@ -198,7 +198,9 @@ export function DpoManagerSeatsHorizontal({
                     required
                     id="dpo-manager-seats"
                     type="number"
-                    placeholder={`${passengerShareMinimum} - ${passengerShareCap}`}
+                    placeholder={`${passengerShareMinimum ? passengerShareMinimum.toFixed(2) : '0'} - ${
+                      passengerShareCap ? passengerShareCap.toFixed(2) : '0'
+                    }`}
                     onChange={(e) => onChange(parseFloat(e.target.value))}
                     value={Number.isNaN(managerAmount) || !managerAmount ? '' : managerAmount.toString()}
                     style={{ alignItems: 'flex-end', width: '100%' }}
@@ -343,7 +345,7 @@ export function DpoTargetDpoSeatsHorizontal({
         <Section>
           <Row justifyContent="flex-end">
             <SText mobileFontSize="10px">
-              {t(`Remaining`)}: {emptyAmount} {token}
+              {t(`Remaining`)}: {emptyAmount.toFixed(2)} {token}
             </SText>
           </Row>
           <RowBetween>
@@ -362,7 +364,7 @@ export function DpoTargetDpoSeatsHorizontal({
                 required
                 id="dpo-seats"
                 type="number"
-                placeholder={`${dpoShareMinimum} - ${dpoShareCap}`}
+                placeholder={`${dpoShareMinimum.toFixed(2)} - ${dpoShareCap.toFixed(2)}`}
                 onChange={(e) => onChange(parseFloat(e.target.value))}
                 value={Number.isNaN(targetAmount) || !targetAmount ? '' : targetAmount.toString()}
                 style={{ alignItems: 'flex-end', width: '100%' }}

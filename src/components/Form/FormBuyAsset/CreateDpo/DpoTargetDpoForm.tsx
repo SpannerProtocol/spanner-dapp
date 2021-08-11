@@ -123,7 +123,7 @@ function TxConfirm({
           <RowBetween>
             <SText>{t(`Management Fee`)}</SText>
             <SText>
-              {`${baseFee} (${t(`Base`)}) + ${managerRate} (${t(`Purchased`)}) = ${Math.round(
+              {`${baseFee} (${t(`Base`)}) + ${managerRate} (${t(`Shares`)}) = ${Math.round(
                 managerRate + parseFloat(baseFee)
               ).toString()}%`}
             </SText>

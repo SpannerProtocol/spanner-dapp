@@ -101,12 +101,18 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
   // const passengerShareMinimum = passengerSharePercentMinimum ? dpoTargetAmount * passengerSharePercentMinimum : 0
 
   const dpoTargetAmountDecimal = new Decimal(bnToUnitNumber(dpoInfo.target_amount, chainDecimals))
-  const passengerShareCap = passengerSharePercentCap
-    ? dpoTargetAmountDecimal.mul(passengerSharePercentCap).toNumber()
-    : 0
-  const passengerShareMinimum = passengerSharePercentMinimum
+  let passengerShareCap = passengerSharePercentCap ? dpoTargetAmountDecimal.mul(passengerSharePercentCap).toNumber() : 0
+  let passengerShareMinimum = passengerSharePercentMinimum
     ? dpoTargetAmountDecimal.mul(passengerSharePercentMinimum).toNumber()
     : 0
+
+  const remaining = bnToUnitNumber(getDpoRemainingPurchase(dpoInfo), chainDecimals)
+  if (remaining < passengerShareMinimum) {
+    passengerShareMinimum = remaining
+  }
+  if (remaining < passengerShareCap) {
+    passengerShareCap = remaining
+  }
 
   // useEffect(() => {
   //   if (!passengerSharePercentMinimum) return
@@ -213,7 +219,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           required
           id="dpo-seats"
           type="number"
-          placeholder={`${passengerShareMinimum} - ${passengerShareCap}`}
+          placeholder={`${passengerShareMinimum.toFixed(2)} - ${passengerShareCap.toFixed(2)}`}
           onChange={(e) => handleSeats(parseFloat(e.target.value))}
           value={Number.isNaN(amount) || !amount ? '' : amount.toString()}
           style={{ alignItems: 'flex-end', width: '100%' }}
