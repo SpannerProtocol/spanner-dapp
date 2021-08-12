@@ -252,7 +252,7 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
             <SText width="fit-content" fontSize="9px" style={{ margin: 'auto' }}>
-              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
+              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Shares`)}`}
             </SText>
             <SText width="fit-content" style={{ margin: 'auto' }}>
               {t(`Management Fee`)}

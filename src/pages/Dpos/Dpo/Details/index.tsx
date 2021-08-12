@@ -15,13 +15,13 @@ import { ThemeContext } from 'styled-components'
 import { blocksToCountDown, blockToDays } from 'utils/formatBlocks'
 import { formatToUnit } from 'utils/formatUnit'
 import getApy from 'utils/getApy'
-import { getDpoMinimumPurchase, getDpoProgress } from '../../../../utils/getDpoData'
+import { getDpoFees, getDpoMinimumPurchase, getDpoProgress } from '../../../../utils/getDpoData'
 
 export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
   const { chainDecimals } = useSubstrate()
   const { expectedBlockTime, lastBlock } = useBlockManager()
   const theme = useContext(ThemeContext)
-  const fees = useDpoFees(dpoInfo.index.toString())
+  const fees = getDpoFees(dpoInfo)
   const { t } = useTranslation()
 
   const token = useMemo(
@@ -180,7 +180,11 @@ export default function Details({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
             <Section>
               <RowBetween style={{ paddingBottom: '0.25rem' }}>
                 <SText>{t(`Shares Filled`)}</SText>
-                <SText>{`${getDpoProgress(dpoInfo)} / 100`}</SText>
+                <SText>{`${formatToUnit(dpoInfo.total_fund, chainDecimals, 2)} / ${formatToUnit(
+                  dpoInfo.target_amount,
+                  chainDecimals,
+                  2
+                )} ${token}`}</SText>
               </RowBetween>
               <LinearProgressBar value={getDpoProgress(dpoInfo)} />
             </Section>

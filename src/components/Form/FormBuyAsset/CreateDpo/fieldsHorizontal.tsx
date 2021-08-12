@@ -113,7 +113,7 @@ export function DpoBaseFeeHorizontal({
         <RowFixed>
           <SText mobileFontSize="10px">{t(`Base Fee`)} (%)</SText>
           <QuestionHelper
-            text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Seats.`)}
+            text={t(`The base fee of your management fee (in %). Manager Fee = Base Fee + Manager Shares.`)}
             size={10}
             backgroundColor={'#fff'}
           />
@@ -185,7 +185,7 @@ export function DpoManagerSeatsHorizontal({
               <SText mobileFontSize="10px">{`${t(`Manager Shares`)} (${token})`}</SText>
               <QuestionHelper
                 text={t(
-                  `# of Seats to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
+                  `# of Shares to buy as Manager from your new DPO. This is your Management Fee (%) on Member's yields.`
                 )}
                 size={10}
                 backgroundColor={'#fff'}
@@ -353,7 +353,7 @@ export function DpoTargetDpoSeatsHorizontal({
               <SText mobileFontSize="10px">{`${t('Crowdfund Amount')} (${token})`}</SText>
               <QuestionHelper
                 text={t(
-                  `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
+                  `The # of Shares you wish to buy from THIS DPO will determine the crowdfunding target of YOUR new DPO.`
                 )}
                 size={10}
                 backgroundColor={'#fff'}

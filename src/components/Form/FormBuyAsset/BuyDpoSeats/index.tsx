@@ -185,7 +185,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
   return (
     <>
       <Section>
-        <SText>{t(`Buy this DPO's Seats to contribute to their Crowdfunding Amount`)}</SText>
+        <SText>{t(`Buy this DPO's Shares to contribute to their Crowdfunding Amount`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
@@ -197,25 +197,23 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
         <RowBetween>
           <RowFixed width="fit-content">
             <SText>{t(`Remaining Purchase`)}</SText>
-            <QuestionHelper
-              text={t(`Amount of Seats left in DPO. There are 100 seats per DPO.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            />
+            <QuestionHelper text={t(`Amount of Shares left in DPO.`)} size={12} backgroundColor={'#fff'} />
           </RowFixed>
-          <SText>{formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals, 2)}</SText>
+          <SText>
+            {formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals, 2)} {token}
+          </SText>
         </RowBetween>
         <RowBetween>
           <RowFixed width="fit-content">
             <SText>{t(`Total Purchased Price`)}</SText>
             <QuestionHelper
-              text={t(`The total cost of Seats to buy from this DPO.`)}
+              text={t(`The total cost of Shares to buy from this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             />
           </RowFixed>
           <SText>
-            {formatToUnit(dpoInfo.vault_deposit, chainDecimals, 2)} {token}
+            {formatToUnit(dpoInfo.total_fund, chainDecimals, 2)} {token}
           </SText>
         </RowBetween>
       </BorderedWrapper>
@@ -224,13 +222,6 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           <SText>
             {t(`Shares to Buy`)} ({token})
           </SText>
-          <QuestionHelper
-            text={t(
-              `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
-            )}
-            size={12}
-            backgroundColor={'#fff'}
-          />
         </RowFixed>
         <BorderedInput
           required
