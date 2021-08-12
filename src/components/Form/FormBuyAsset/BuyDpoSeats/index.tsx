@@ -14,9 +14,9 @@ import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-api/types'
+import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
-import { bnToUnitNumber, formatToUnit } from 'utils/formatUnit'
+import { bnToUnitNumber, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
@@ -24,6 +24,8 @@ import Decimal from 'decimal.js'
 import { PrimaryMUISlider } from '../../../Slider'
 import { BuyData } from '../index'
 import { ErrorMsg } from '../../../../pages/Dex/components'
+import { useQueryDpoMembers } from '../../../../hooks/useQueryDpoMembers'
+import useWallet from '../../../../hooks/useWallet'
 
 interface BuyDpoSeatsFormProps {
   dpoInfo: DpoInfo
@@ -114,10 +116,25 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     passengerShareCap = remaining
   }
 
-  // useEffect(() => {
-  //   if (!passengerSharePercentMinimum) return
-  //   setSeats(passengerShareMinimum)
-  // }, [passengerSharePercentMinimum])
+  const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
+  const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
+  const wallet = useWallet()
+
+  useEffect(() => {
+    if (!wallet || !wallet.address || !dpoMembers || dpoMembers.length === 0) return
+    const memberInfo = dpoMembers.find(
+      (entry) => entry[1].buyer.isPassenger && entry[1].buyer.asPassenger.eq(wallet.address)
+    )
+    setUserMemberInfo(memberInfo ? memberInfo[1] : undefined)
+  }, [dpoMembers, wallet])
+
+  if (userMemberInfo) {
+    const userPurchasedShares = bnToUnitNumber(userMemberInfo.share, chainDecimals)
+    passengerShareCap = new Decimal(passengerShareCap).sub(userPurchasedShares).toNumber()
+    if (passengerShareCap < passengerShareMinimum) {
+      passengerShareMinimum = passengerShareCap
+    }
+  }
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,7 +185,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
   return (
     <>
       <Section>
-        <SText>{t(`Buy this DPO's Seats to contribute to their Crowdfunding Amount`)}</SText>
+        <SText>{t(`Buy this DPO's Shares to contribute to their Crowdfunding Amount`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
@@ -180,25 +197,23 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
         <RowBetween>
           <RowFixed width="fit-content">
             <SText>{t(`Remaining Purchase`)}</SText>
-            <QuestionHelper
-              text={t(`Amount of Seats left in DPO. There are 100 seats per DPO.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            />
+            <QuestionHelper text={t(`Amount of Shares left in DPO.`)} size={12} backgroundColor={'#fff'} />
           </RowFixed>
-          <SText>{formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals, 2)}</SText>
+          <SText>
+            {formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals, 2)} {token}
+          </SText>
         </RowBetween>
         <RowBetween>
           <RowFixed width="fit-content">
             <SText>{t(`Total Purchased Price`)}</SText>
             <QuestionHelper
-              text={t(`The total cost of Seats to buy from this DPO.`)}
+              text={t(`The total cost of Shares to buy from this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             />
           </RowFixed>
           <SText>
-            {formatToUnit(dpoInfo.vault_deposit, chainDecimals, 2)} {token}
+            {formatToUnit(dpoInfo.total_fund, chainDecimals, 2)} {token}
           </SText>
         </RowBetween>
       </BorderedWrapper>
@@ -207,13 +222,6 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
           <SText>
             {t(`Shares to Buy`)} ({token})
           </SText>
-          <QuestionHelper
-            text={t(
-              `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
-            )}
-            size={12}
-            backgroundColor={'#fff'}
-          />
         </RowFixed>
         <BorderedInput
           required

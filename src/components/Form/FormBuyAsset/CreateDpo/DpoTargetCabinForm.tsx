@@ -313,7 +313,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
             <RowFixed width="fit-content">
               <SText>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
-                text={t(`The number of seats to buy from your Target DPO.`)}
+                text={t(`The number of shares to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
               />
@@ -397,11 +397,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
           <RowBetween>
             <RowFixed width="fit-content">
               <HeavyText>{t(`Your Deposit`)}</HeavyText>
-              <QuestionHelper
-                text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
+              <QuestionHelper text={t(`Your required deposit`)} size={10} backgroundColor={'#fff'} />
             </RowFixed>
             <HeavyText width={'fit-content'}>{`${managerPurchaseAmount.toFixed(2)} ${token}`}</HeavyText>
           </RowBetween>
