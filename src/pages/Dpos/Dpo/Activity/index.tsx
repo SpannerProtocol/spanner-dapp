@@ -56,9 +56,25 @@ function CabinName({ cabinIndex }: { cabinIndex: string | number }) {
   return <SText>{`TravelCabin: ${targetCabin?.name}`}</SText>
 }
 
-function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
+function CreatedDpo({
+  argTuples,
+  txEvents,
+}: {
+  argTuples: string[][]
+  txEvents: EventsByIds_events_nodes_extrinsic_events
+}) {
   const { t } = useTranslation()
   const args: JSX.Element[] = []
+  const { chainDecimals } = useSubstrate()
+
+  let token = ''
+  txEvents.nodes.forEach((node) => {
+    if (!node) return
+    if (!(node.section === 'currencies' && node.method === 'Transferred')) return
+    const data = JSON.parse(node.data)
+    token = data[0]['token']
+  })
+
   argTuples.forEach((pair, index) => {
     if (pair[0] === 'target') {
       const target = JSON.parse(pair[1])
@@ -77,13 +93,16 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
               <DpoName dpoIndex={target['dpo'][0]} />
             </RowBetween>
             <RowBetween>
-              <HeavyText>{t(`Seats to Purchase`)}</HeavyText>
-              <SText>{target['dpo'][1]}</SText>
+              <HeavyText>{t(`Shares to Purchase`)}</HeavyText>
+              <SText>
+                {formatToUnit(target['dpo'][1], chainDecimals, 2)} {token}
+              </SText>
             </RowBetween>
           </div>
         )
       }
     }
+
     if (['directReferralRate', 'baseFee'].includes(pair[0])) {
       args.push(
         <RowBetween key={index}>
@@ -100,15 +119,33 @@ function CreatedDpo({ argTuples }: { argTuples: string[][] }) {
         </RowBetween>
       )
     }
+    if (['managerPurchaseAmount'].includes(pair[0])) {
+      args.push(
+        <RowBetween key={index}>
+          <HeavyText>{t(`Manager Shares`)}</HeavyText>
+          <SText>
+            {formatToUnit(pair[1], chainDecimals, 2)} {token}
+          </SText>
+        </RowBetween>
+      )
+    }
   })
   return <>{args}</>
 }
 
-function SeatsPurchased({ data }: { data: any[] }) {
+function SeatsPurchased({ data, txEvents }: { data: any[]; txEvents: EventsByIds_events_nodes_extrinsic_events }) {
   const { t } = useTranslation()
   // [signer, buyer, target, seats]
 
   const isDpo = Object.keys(data[1]).includes('dpo')
+  const { chainDecimals } = useSubstrate()
+  let token = ''
+  txEvents.nodes.forEach((node) => {
+    if (!node) return
+    if (!(node.section === 'currencies' && node.method === 'Transferred')) return
+    const data = JSON.parse(node.data)
+    token = data[0]['token']
+  })
 
   return (
     <>
@@ -117,8 +154,10 @@ function SeatsPurchased({ data }: { data: any[] }) {
         {isDpo ? <DpoName dpoIndex={data[1]['dpo']} /> : <SText>{shortenAddr(data[1]['passenger'])}</SText>}
       </RowBetween>
       <RowBetween>
-        <HeavyText>{t(`Seats`)}</HeavyText>
-        <SText>{data[3]}</SText>
+        <HeavyText>{t(`Shares`)}</HeavyText>
+        <SText>
+          {formatToUnit(data[3], chainDecimals, 2)} {token}
+        </SText>
       </RowBetween>
     </>
   )
@@ -187,13 +226,18 @@ function Activities({ eventIds, orderBy }: { eventIds: string[]; orderBy: Events
       const argTuples = dpoExtrinsic.map((k, i) => {
         return [k, argsDecodedArray[i]]
       })
+
+      console.log(event.method, JSON.stringify(event.extrinsic.events, null, 2))
+
       timelineActivities.push({
         leftLabel: tsToDateTime(parseInt(event.extrinsic.timestamp)),
         rightLabel: methodReadable,
         mouseOver: (
           <>
-            {event.method === 'CreatedDpo' && <CreatedDpo argTuples={argTuples} />}
-            {event.method === 'DpoTargetPurchased' && <SeatsPurchased data={parsedData} />}
+            {event.method === 'CreatedDpo' && <CreatedDpo argTuples={argTuples} txEvents={event.extrinsic.events} />}
+            {event.method === 'DpoTargetPurchased' && (
+              <SeatsPurchased data={parsedData} txEvents={event.extrinsic.events} />
+            )}
             {event.method === 'YieldReleased' && <Released txEvents={event.extrinsic.events} />}
             {event.method === 'BonusReleased' && <Released txEvents={event.extrinsic.events} />}
             {event.method === 'WithdrewFareFromDpo' && <Released txEvents={event.extrinsic.events} />}
