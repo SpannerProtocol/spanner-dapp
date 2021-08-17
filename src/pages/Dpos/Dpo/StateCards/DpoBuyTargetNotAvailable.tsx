@@ -122,11 +122,11 @@ export default function DpoBuyTargetNotAvailable({
           setTargetDpoOptions(
             dpoOptions.map((option) => ({
               label: `${option.name.toString()} - ${formatToUnit(
-                getDpoMinimumPurchase(option),
+                option.target_amount.toBn(),
                 chainDecimals,
                 0,
                 true
-              )} ${option.token_id.asToken.toString()} ${t(`Cost Minimum`)}`,
+              )} ${option.token_id.asToken.toString()}`,
               callback: () => setTargetDpo(option),
             }))
           )
