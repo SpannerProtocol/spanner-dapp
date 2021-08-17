@@ -126,7 +126,7 @@ export default function DpoBuyTargetNotAvailable({
                 chainDecimals,
                 0,
                 true
-              )} ${option.token_id.asToken.toString()} ${t(`per seat`)}`,
+              )} ${option.token_id.asToken.toString()} ${t(`Cost Minimum`)}`,
               callback: () => setTargetDpo(option),
             }))
           )
