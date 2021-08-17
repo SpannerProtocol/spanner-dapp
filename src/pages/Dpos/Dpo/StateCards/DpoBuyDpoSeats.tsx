@@ -43,7 +43,7 @@ function DpoBuyDpoSeatsAvailable({
   const [lifeSentenceGp, setLifeSentenceGp] = useState<string>()
   const { chainDecimals } = useSubstrate()
   const minimumPurchase = getDpoMinimumPurchase(targetDpo)
-  const canBuy = dpoInfo.vault_deposit.gte(minimumPurchase) && !dpoInfo.vault_deposit.isZero
+  const canBuy = dpoInfo.vault_deposit.gte(minimumPurchase) && !dpoInfo.vault_deposit.isZero()
 
   // Grace Period life sentence
   useEffect(() => {
