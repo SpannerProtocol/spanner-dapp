@@ -1,6 +1,6 @@
 import { u32 } from '@polkadot/types'
-import { Balance } from '@polkadot/types/interfaces'
-import { TradingPair } from 'interfaces/dex'
+import { Balance } from 'spanner-api/types'
+import { TradingPair } from 'spanner-api/types'
 import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
 import { useQueryDexFee } from './useQueryDexFee'

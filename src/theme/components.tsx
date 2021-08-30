@@ -1,5 +1,5 @@
 import { darken } from 'polished'
-import React, { HTMLProps } from 'react'
+import { HTMLProps } from 'react'
 import { ArrowLeft, X } from 'react-feather'
 import { Link } from 'react-router-dom'
 import styled, { keyframes } from 'styled-components'

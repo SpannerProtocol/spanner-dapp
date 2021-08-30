@@ -9,16 +9,17 @@ import { useBlockManager } from 'hooks/useBlocks'
 import { useSubDpo } from 'hooks/useQueryDpos'
 import { useSubTravelCabin, useSubTravelCabinBuyer } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { useMedia } from 'react-use'
-import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { DpoIndex, DpoInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-api/types'
 import styled, { ThemeContext } from 'styled-components'
 import { formatToUnit } from 'utils/formatUnit'
 import { getCabinYield } from 'utils/getCabinData'
 import { getDpoTargetCabinBuyer } from 'utils/getTravelCabinBuyer'
 import WaitingIcon from '../../../../assets/svg/icon-waiting.svg'
+import { getDpoMinimumPurchase, getDpoProgress } from '../../../../utils/getDpoData'
 
 const Icon = styled.img`
   max-height: 100%;
@@ -232,7 +233,7 @@ function ActiveHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
 }
 
 function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
-  const progress = 100 - dpoInfo.empty_seats.toNumber()
+  const progress = getDpoProgress(dpoInfo)
   const below420 = useMedia('(max-width: 420px)')
   const { chainDecimals } = useSubstrate()
   const token = dpoInfo.token_id.asToken.toString()
@@ -251,7 +252,7 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
               {dpoInfo.fee.toNumber() / 10}%
             </HeavyText>
             <SText width="fit-content" fontSize="9px" style={{ margin: 'auto' }}>
-              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Seats`)}`}
+              {`${fees.base} ${t(`Base`)} + ${fees.management} ${t(`Shares`)}`}
             </SText>
             <SText width="fit-content" style={{ margin: 'auto' }}>
               {t(`Management Fee`)}
@@ -260,11 +261,11 @@ function CreateHighlights({ dpoInfo }: { dpoInfo: DpoInfo }) {
         )}
         <PaddedSection>
           <HeavyText width="fit-content" fontSize="24px" mobileFontSize="18px" style={{ margin: 'auto' }}>
-            {`${formatToUnit(dpoInfo.amount_per_seat.toString(), chainDecimals)} `}
+            {`${formatToUnit(getDpoMinimumPurchase(dpoInfo), chainDecimals)} `}
             <TokenText>{token}</TokenText>
           </HeavyText>
           <SText width="fit-content" style={{ margin: 'auto' }}>
-            {t(`Cost per Seat`)}
+            {t(`Cost Minimum`)}
           </SText>
         </PaddedSection>
       </RowBetween>
@@ -286,7 +287,7 @@ export default function Highlights({ dpoInfo }: HighlightsProps) {
     if (dpoInfo.state.isCreated) {
       return <CreateHighlights dpoInfo={dpoInfo} />
     }
-    if (targetDpo && dpoInfo.state.isActive && dpoInfo.target.isDpo && !targetDpo.empty_seats.isZero()) {
+    if (targetDpo && dpoInfo.state.isActive && dpoInfo.target.isDpo && !getDpoMinimumPurchase(dpoInfo).isZero()) {
       return <ActiveHighlights dpoInfo={dpoInfo} />
     }
     if (dpoInfo.state.isRunning) {

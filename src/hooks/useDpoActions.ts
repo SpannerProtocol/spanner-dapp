@@ -1,4 +1,4 @@
-import type { BlockNumber } from '@polkadot/types/interfaces'
+import type { BlockNumber } from 'spanner-api/types'
 import { useEffect, useMemo, useState } from 'react'
 import {
   DpoInfo,
@@ -6,7 +6,7 @@ import {
   TravelCabinIndex,
   TravelCabinInfo,
   TravelCabinInventoryIndex,
-} from 'spanner-interfaces'
+} from 'spanner-api/types'
 import getDpoActions, { DpoAction } from 'utils/getDpoActions'
 import { getTargetTravelCabin } from 'utils/getDpoTargets'
 import { getDpoTargetCabinBuyer } from 'utils/getTravelCabinBuyer'

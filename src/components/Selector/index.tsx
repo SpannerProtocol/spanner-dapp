@@ -1,7 +1,7 @@
 import StandardModal from 'components/Modal/StandardModal'
 import { SText } from 'components/Text'
 import { BorderedWrapper } from 'components/Wrapper'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 const SelectorWrapper = styled.div<{ background?: string; padding?: string }>`
@@ -133,7 +133,7 @@ export default function Selector(props: SelectorProps) {
                 selectedIconMaxWidthMobile={selectedIconMaxWidthMobile}
               >
                 <img
-                  src={require(`assets/tokens/${activeOption.icon}`)}
+                  src={require(`assets/tokens/${activeOption.icon}`).default}
                   style={{ display: 'block', width: '100%' }}
                   alt={'token icon'}
                 />

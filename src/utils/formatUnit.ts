@@ -112,3 +112,13 @@ export function unitToBn(num: number | BN | string, cd: number): BN {
   }
   return num.mul(new BN(10).pow(new BN(cd)))
 }
+
+export function unitToBnWithDecimal(num: number, chainDecimals: number): BN {
+  const cd = new BN(chainDecimals)
+  const [integer, decimal] = num.toString().split('.')
+  return new BN(parseFloat('0.' + decimal) * 10 ** chainDecimals).add(new BN(integer).mul(new BN(10).pow(cd)))
+}
+
+export function bnToUnitNumber(num: BN, cd: number) {
+  return parseFloat(bnToUnit(num, cd, 0))
+}

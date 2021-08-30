@@ -1,6 +1,6 @@
 import { RowFixed } from 'components/Row'
 import { SText } from 'components/Text'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import styled from 'styled-components'

@@ -1,5 +1,5 @@
-import { BlockNumber } from '@polkadot/types/interfaces'
-import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo } from 'spanner-interfaces'
+import { BlockNumber } from 'spanner-api/types'
+import { TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInfo } from 'spanner-api/types'
 import { WalletInfo } from './getWalletInfo'
 
 export interface UserAction {

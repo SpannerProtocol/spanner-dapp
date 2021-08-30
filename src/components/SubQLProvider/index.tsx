@@ -2,7 +2,7 @@ import { HAMMER_SUBQL } from '../../constants'
 import { SPANNER_SUBQL } from '../../constants'
 import { ApolloClient, InMemoryCache, NormalizedCacheObject } from '@apollo/client'
 import { ApolloProvider } from '@apollo/client/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useChainState } from 'state/connections/hooks'
 
 interface SubQLProviderProps {

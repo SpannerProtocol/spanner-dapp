@@ -9,13 +9,17 @@ import { ContentWrapper, Section, SpacedSection } from 'components/Wrapper'
 import { useDpoManager, useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import { shortenAddr } from 'utils/truncateString'
+import { formatToUnit } from '../../../../utils/formatUnit'
+import { useSubstrate } from '../../../../hooks/useSubstrate'
 
 export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element {
   const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
   const manager = useDpoManager(dpoInfo.index.toString(), dpoInfo)
   const { t } = useTranslation()
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
+  const { chainDecimals } = useSubstrate()
 
   return (
     <>
@@ -39,7 +43,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                       <SText>{`${shortenAddr(manager.buyer.asPassenger.toString(), 8)}`}</SText>
                     </CopyHelper>
                   </RowFixed>
-                  <SText>{`${manager.number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                  <SText>{`${formatToUnit(manager.share, chainDecimals, 2)} ${token}`}</SText>
                 </RowBetween>
               </Section>
             )}
@@ -63,7 +67,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                               <SText>{`${shortenAddr(entry[1].buyer.asPassenger.toString(), 8)}`}</SText>
                             </CopyHelper>
                           </RowFixed>
-                          <SText>{`${entry[1].number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                          <SText>{`${formatToUnit(entry[1].share, chainDecimals, 2)} ${token}`}</SText>
                         </RowBetween>
                       )}
                     </>
@@ -83,7 +87,7 @@ export default function Members({ dpoInfo }: { dpoInfo: DpoInfo }): JSX.Element 
                           <SText>{`DPO #${entry[1].buyer.asDpo.toString()}`}</SText>
                         </CopyHelper>
                       </RowFixed>
-                      <SText>{`${entry[1].number_of_seats.toString()} ${t(`Seats`)}`}</SText>
+                      <SText>{`${formatToUnit(entry[1].share, chainDecimals, 2)} ${token}`}</SText>
                     </RowBetween>
                   )}
                 </div>

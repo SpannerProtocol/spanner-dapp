@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
-import { Balance } from '@polkadot/types/interfaces'
+import { Balance } from 'spanner-api/types'
 
 export interface ProjectInfo {
   project: string

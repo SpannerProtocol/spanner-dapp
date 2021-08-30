@@ -1,10 +1,10 @@
 import { Compact } from '@polkadot/types'
-import { BlockNumber } from '@polkadot/types/interfaces'
+import { BlockNumber } from 'spanner-api/types'
 import { useConnectionsInit } from 'hooks/useBridge'
 import { useCreateTableUser } from 'hooks/useKvStore'
 import useStoreAndVerifyReferrer from 'hooks/useStoreReferrer'
 import { useWindowSize } from 'hooks/useWindowSize'
-import React, { createContext } from 'react'
+import { createContext } from 'react'
 import { Route, Switch } from 'react-router-dom'
 import styled from 'styled-components'
 import Header, { Controls } from '../components/Header'
@@ -13,7 +13,6 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Account from './Account'
 import AppBody from './AppBody'
-import Bridge from './Bridge'
 import TravelCabin from './Assets/TravelCabin'
 import TravelCabinBuyer from './Assets/TravelCabin/CabinBuyer'
 import Dex from './Dex'
@@ -97,7 +96,7 @@ export default function App() {
               <Route exact strict path="/assets/travelcabin" component={TravelCabin} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/account/:section" component={Account} />
-              <Route exact strict path="/bridge" component={Bridge} />
+              {/*<Route exact strict path="/bridge" component={Bridge} />*/}
               <Route exact strict path="/dpos" component={Dpos} />
               <Route exact strict path="/dpos/dpo/:index/:section" component={Dpo} />
               <Route exact strict path="/faucet" component={Faucet} />

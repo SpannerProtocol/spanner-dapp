@@ -1,6 +1,6 @@
 import QuestionHelper from 'components/QuestionHelper'
 import useWallet from 'hooks/useWallet'
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useConnectionsState } from 'state/connections/hooks'
 import styled from 'styled-components'

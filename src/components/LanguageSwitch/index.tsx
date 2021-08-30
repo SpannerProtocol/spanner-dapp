@@ -1,6 +1,6 @@
 import LanguageIcon from 'assets/svg/icon-language.svg'
 import { Icon } from 'components/Image'
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import styled from 'styled-components'
 import i18n from '../../i18n'
 import { ApplicationModal } from '../../state/application/actions'
@@ -18,7 +18,7 @@ const MenuFlyout = styled.span`
   flex-direction: column;
   font-size: 1rem;
   position: absolute;
-  bottom: 9.75rem;
+  bottom: 5.75rem;
   right: 9.25rem;
   z-index: 100;
 

@@ -4,7 +4,6 @@ import { SText } from 'components/Text'
 import { RowBetween } from 'components/Row'
 import Balance from 'components/Balance'
 import TxFee from 'components/TxFee'
-import React from 'react'
 
 interface TravelCabinJoinTxConfirmProps {
   deposit: string

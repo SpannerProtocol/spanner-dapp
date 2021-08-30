@@ -49,11 +49,15 @@ export const SPANNER_SUPPORTED_CHAINS = [
     providerSocket: HAMMER_PROVIDER_SOCKET,
   },
 ]
-// Spanner Block Explorers
+
+// Spanner Environment Variables
 export const SPANNER_EXPLORER = process.env.REACT_APP_SPANNER_EXPLORER_URL
 export const HAMMER_EXPLORER = process.env.REACT_APP_HAMMER_EXPLORER_URL
 export const HAMMER_SUBQL = process.env.REACT_APP_HAMMER_SUBQL
 export const SPANNER_SUBQL = process.env.REACT_APP_SPANNER_SUBQL
+export const SPANNER_DAPP_URL = process.env.REACT_APP_SPANNER_DAPP_URL
+export const HAMMER_DAPP_URL = process.env.REACT_APP_HAMMER_DAPP_URL
+export const DAPP_CHAIN = process.env.REACT_APP_CHAIN
 
 // BulletTrain
 export const TRAVELCABIN_CLASSES: { [index: string]: any } = {

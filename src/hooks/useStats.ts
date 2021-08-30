@@ -1,7 +1,7 @@
 import { StorageKey } from '@polkadot/types'
 import BN from 'bn.js'
 import { useEffect, useMemo, useState } from 'react'
-import { DpoIndex, TravelCabinIndex } from 'spanner-interfaces'
+import { DpoIndex, TravelCabinIndex } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 export function useCabinKeys(token: string) {
