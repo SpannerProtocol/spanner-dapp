@@ -1,5 +1,6 @@
 import { DpoInfo } from 'spanner-api/types'
 import BN from 'bn.js'
+import { Decimal } from 'decimal.js'
 
 export function getDpoRemainingPurchase(dpoInfo: DpoInfo): BN {
   return dpoInfo.target_amount.sub(dpoInfo.total_fund)
@@ -16,7 +17,9 @@ export function getDpoMinimumPurchase(dpoInfo: DpoInfo): BN {
 }
 
 export function getDpoProgress(dpoInfo: DpoInfo): number {
-  return (dpoInfo.total_fund.toNumber() / dpoInfo.target_amount.toNumber()) * 100
+  return parseFloat(
+    new Decimal(dpoInfo.total_fund.toString()).dividedBy(dpoInfo.target_amount.toString()).mul(100).toFixed(2)
+  )
 }
 export function getDpoFees(dpoInfo: DpoInfo): { management: number; base: number } {
   const baseFee = dpoInfo.base_fee.toNumber() / 10
