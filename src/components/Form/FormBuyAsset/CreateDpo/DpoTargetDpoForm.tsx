@@ -169,8 +169,12 @@ export default function DpoTargetDpoForm({ dpoInfo, token, onSubmit }: DpoTarget
   const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<number>(0)
   const [managerShareRate, setManagerShareRate] = useState<number>(0)
   const [baseFee, setBaseFee] = useState<number>(0)
-  const { dpoSharePercentCap, dpoSharePercentMinimum, passengerSharePercentCap, passengerSharePercentMinimum } =
-    useConsts()
+  const {
+    dpoSharePercentCap,
+    dpoSharePercentMinimum,
+    passengerSharePercentCap,
+    passengerSharePercentMinimum,
+  } = useConsts()
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
   const [dpoName, setDpoName] = useState<string>('')
   const [end, setEnd] = useState<number>(0)

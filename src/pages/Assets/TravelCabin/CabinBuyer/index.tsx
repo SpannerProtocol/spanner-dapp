@@ -36,8 +36,9 @@ export default function TravelCabinBuyer() {
   const { travelCabinIndex, travelCabinInventoryIndex } = useItemCabinBuyer()
   const travelCabinInfo = useSubTravelCabin(travelCabinIndex)
   const buyers = useTravelCabinBuyers(travelCabinIndex)
-  const [selectedBuyer, setSelectedBuyer] =
-    useState<[[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]>()
+  const [selectedBuyer, setSelectedBuyer] = useState<
+    [[TravelCabinIndex, TravelCabinInventoryIndex], TravelCabinBuyerInfo]
+  >()
   const { chainDecimals } = useSubstrate()
   const { t } = useTranslation()
   const { lastBlock, expectedBlockTime } = useBlockManager()
