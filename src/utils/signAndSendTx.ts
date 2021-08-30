@@ -224,8 +224,8 @@ function signAndSendCustodial({
     try {
       // setPendingMsg('Waiting for confirmation on your mobile wallet.')
       ethSig = await custodialProvider.send('personal_sign', [msgHex, address])
-    } catch (err) {
-      if (err.code === 4001) {
+    } catch ({ code }) {
+      if (code === 4001) {
         const filteredToast = toasts.find((toastState) => toastState.content === t(`Waiting for signature`))
         if (filteredToast && filteredToast.id) {
           queueToast({
