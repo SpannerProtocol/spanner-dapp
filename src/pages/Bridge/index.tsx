@@ -166,10 +166,10 @@ export default function Bridge(): JSX.Element {
 
   const canE2s = useCallback(() => (time > e2sTsPlus5 ? true : false), [time, e2sTsPlus5])
 
-  const wusdBalanceNum = useMemo(() => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(), [
-    chainDecimals,
-    wusdBalance,
-  ])
+  const wusdBalanceNum = useMemo(
+    () => wusdBalance.div(new BN(10).pow(new BN(chainDecimals))).toNumber(),
+    [chainDecimals, wusdBalance]
+  )
 
   useEffect(() => {
     if (!e2sTs) {

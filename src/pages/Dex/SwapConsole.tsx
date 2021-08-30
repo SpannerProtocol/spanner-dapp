@@ -200,11 +200,12 @@ export default function SwapConsole(): JSX.Element {
   const balanceA = useSubscribeBalance(tokenA)
   const balanceB = useSubscribeBalance(tokenB)
 
-  const { pool: subscribedPool, price: subscribedPrice, dexFee: subscribedFee, error: poolError } = useSubscribePool(
-    tokenA,
-    tokenB,
-    800
-  )
+  const {
+    pool: subscribedPool,
+    price: subscribedPrice,
+    dexFee: subscribedFee,
+    error: poolError,
+  } = useSubscribePool(tokenA, tokenB, 800)
 
   const handleAmountA = (value: number) => {
     if (!isOnA) return

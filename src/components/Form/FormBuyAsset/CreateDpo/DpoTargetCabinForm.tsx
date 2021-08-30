@@ -185,10 +185,10 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
 
-  const hasError = useMemo(() => dpoManagerSeatsErrMsg.length > 0 || errNameTooShort, [
-    dpoManagerSeatsErrMsg,
-    errNameTooShort,
-  ])
+  const hasError = useMemo(
+    () => dpoManagerSeatsErrMsg.length > 0 || errNameTooShort,
+    [dpoManagerSeatsErrMsg, errNameTooShort]
+  )
 
   const cabinDepositAmountDecimal = new Decimal(bnToUnitNumber(travelCabinInfo.deposit_amount, chainDecimals))
   const passengerShareCap = passengerSharePercentCap

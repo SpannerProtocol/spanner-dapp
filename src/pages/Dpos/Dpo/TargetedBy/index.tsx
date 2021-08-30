@@ -168,16 +168,18 @@ function TargeterRow({
 
 export default function TargetedBy({ dpoInfo }: { dpoInfo: DpoInfo }) {
   const { api, connected } = useApi()
-  const { loading: createdLoading, error: createdError, data: createdData } = useQuery<CreatedDpoAllArgsOnly>(
-    createdDpoAllArgsOnly,
-    {
-      variables: {},
-    }
-  )
-  const { loading: purchasedLoading, error: purchasedError, data: purchasedData } = useQuery<
-    DposTargetPurchasedIncludes,
-    DposTargetPurchasedIncludesVariables
-  >(dposTargetPurchasedIncludes, {
+  const {
+    loading: createdLoading,
+    error: createdError,
+    data: createdData,
+  } = useQuery<CreatedDpoAllArgsOnly>(createdDpoAllArgsOnly, {
+    variables: {},
+  })
+  const {
+    loading: purchasedLoading,
+    error: purchasedError,
+    data: purchasedData,
+  } = useQuery<DposTargetPurchasedIncludes, DposTargetPurchasedIncludesVariables>(dposTargetPurchasedIncludes, {
     variables: {
       includes: 'dpo',
     },
