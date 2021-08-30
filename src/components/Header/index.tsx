@@ -10,7 +10,6 @@ import ExpandLess from '@material-ui/icons/ExpandLess'
 import ExpandMore from '@material-ui/icons/ExpandMore'
 import { ClassNameMap } from '@material-ui/styles'
 import clsx from 'clsx'
-import NetworkSelector from 'components/Network'
 import Transfer from 'components/Transfer'
 import { darken } from 'polished'
 import React, { useEffect, useState } from 'react'
@@ -292,12 +291,12 @@ export default function Header(props: HeaderProps) {
         },
       ],
     },
-    {
-      text: 'Bridge',
-      link: '/bridge',
-      iconLink: BridgeIcon,
-      internal: true,
-    },
+    // {
+    //   text: 'Bridge',
+    //   link: '/bridge',
+    //   iconLink: BridgeIcon,
+    //   internal: true,
+    // },
     {
       text: 'Faucet',
       link: '/faucet',
@@ -426,9 +425,9 @@ export function DesktopNav(props: DesktopNavProp) {
             <Transfer />
             <LanguageSwitch />
           </HeaderElementWrap>
-          <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-            <NetworkSelector />
-          </div>
+          {/*<div style={{ padding: '1rem 0rem 1rem 0rem' }}>*/}
+          {/*  <NetworkSelector />*/}
+          {/*</div>*/}
         </MenuBottom>
       </DesktopHeaderWrpper>
     </HeaderLinks>
@@ -652,9 +651,9 @@ export function MobileNav({ navItems }: { navItems: NavItemDefs[] }) {
               <Transfer />
               <LanguageSwitch />
             </HeaderElementWrap>
-            <div style={{ padding: '1rem 0rem 1rem 0rem' }}>
-              <NetworkSelector />
-            </div>
+            {/*<div style={{ padding: '1rem 0rem 1rem 0rem' }}>*/}
+            {/*  <NetworkSelector />*/}
+            {/*</div>*/}
           </MenuBottom>
         </Drawer>
         {/* </MobileWrapper> */}

@@ -13,7 +13,6 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
 import Account from './Account'
 import AppBody from './AppBody'
-import Bridge from './Bridge'
 import TravelCabin from './Assets/TravelCabin'
 import TravelCabinBuyer from './Assets/TravelCabin/CabinBuyer'
 import Dex from './Dex'
@@ -97,7 +96,7 @@ export default function App() {
               <Route exact strict path="/assets/travelcabin" component={TravelCabin} />
               <Route exact strict path="/account" component={Account} />
               <Route exact strict path="/account/:section" component={Account} />
-              <Route exact strict path="/bridge" component={Bridge} />
+              {/*<Route exact strict path="/bridge" component={Bridge} />*/}
               <Route exact strict path="/dpos" component={Dpos} />
               <Route exact strict path="/dpos/dpo/:index/:section" component={Dpo} />
               <Route exact strict path="/faucet" component={Faucet} />
