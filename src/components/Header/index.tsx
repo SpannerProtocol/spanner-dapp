@@ -292,12 +292,12 @@ export default function Header(props: HeaderProps) {
         },
       ],
     },
-    {
-      text: 'Bridge',
-      link: '/bridge',
-      iconLink: BridgeIcon,
-      internal: true,
-    },
+    // {
+    //   text: 'Bridge',
+    //   link: '/bridge',
+    //   iconLink: BridgeIcon,
+    //   internal: true,
+    // },
     {
       text: 'Faucet',
       link: '/faucet',
