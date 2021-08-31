@@ -1,6 +1,6 @@
 import StandardModal from 'components/Modal/StandardModal'
 import { BorderedWrapper } from 'components/Wrapper'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import { Dispatcher } from 'types/dispatcher'
 import { ChevronDown } from 'react-feather'

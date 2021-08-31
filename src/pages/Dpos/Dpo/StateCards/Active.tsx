@@ -10,18 +10,21 @@ import {
   useSubTravelCabinInventory,
 } from 'hooks/useQueryTravelCabins'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces/types'
+import { DpoInfo } from 'spanner-api/types'
 import isDpoStateCompleted, { isDpoStateSelectedState } from 'utils/dpoStateCompleted'
 import { formatToUnit } from 'utils/formatUnit'
 import DpoActions from '.'
+import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
 
 function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState: string }) {
   const { t } = useTranslation()
   const target = useSubDpo(dpoInfo.target.asDpo[0].toString())
   const isTargetMember = useDpoInTargetDpo(dpoInfo)
   const stateCompleted = isDpoStateCompleted(dpoInfo, selectedState)
+  const { chainDecimals } = useSubstrate()
+  const token = dpoInfo && dpoInfo.token_id.isToken && dpoInfo.token_id.asToken.toString()
 
   if (!target) return null
   return (
@@ -48,7 +51,7 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
               >
                 {target.name.toString()}
               </SLink>
-              {!target.empty_seats.isZero() ? (
+              {!getDpoRemainingPurchase(target).isZero() ? (
                 <SText width="fit-content">{t(`is available for purchase`)}</SText>
               ) : (
                 <SText width="fit-content">{`${t(`is not available for purchase`)}}. ${t(
@@ -61,7 +64,9 @@ function TargetDpo({ dpoInfo, selectedState }: { dpoInfo: DpoInfo; selectedState
       )}
       {isTargetMember && (
         <RowFixed>
-          <SText>{`${t(`Purchased`)} ${dpoInfo.target.asDpo[1].toString()} ${t(`Seats`)} ${t(`from`)} `}</SText>
+          <SText>{`${t(`Purchased`)} ${formatToUnit(dpoInfo.target.asDpo[1], chainDecimals, 2)} ${token} ${t(
+            `Shares`
+          )} ${t(`from`)} `}</SText>
           <SLink to={`/dpos/dpo/${dpoInfo.target.asDpo[0].toString()}/activity`} colorIsBlue padding="0 0.25rem">
             {target.name.toString()}
           </SLink>

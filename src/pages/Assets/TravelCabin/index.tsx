@@ -4,7 +4,7 @@ import { SLink } from 'components/Link'
 import { Header1, Header2, SText } from 'components/Text'
 import { PageWrapper } from 'components/Wrapper'
 import useProjectInfos, { ProjectInfo } from 'hooks/useProjectInfo'
-import React, { useMemo } from 'react'
+import { useMemo } from 'react'
 import styled from 'styled-components'
 import { useTranslation } from 'translate'
 import getProjectRegistry, { ProjectRegistry } from 'utils/getProjectRegistry'
@@ -71,7 +71,7 @@ function ProjectsByBulletTrain({ projects }: { projects: ProjectInfo[] }) {
           <ProjectCard>
             <ProjectGrid>
               <ProjectIconWrapper>
-                <img src={require(`assets/tokens/${projectRegistry.icon}`)} width="100%" alt="token icon" />
+                <img src={require(`assets/tokens/${projectRegistry.icon}`).default} width="100%" alt="token icon" />
               </ProjectIconWrapper>
               <div>
                 <Header2>{projectRegistry.name}</Header2>

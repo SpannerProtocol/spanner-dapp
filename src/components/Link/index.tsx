@@ -1,5 +1,5 @@
 import { darken } from 'polished'
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Link, LinkProps } from 'react-router-dom'
 import { HashLink, HashLinkProps } from 'react-router-hash-link'
 import styled, { ThemeContext } from 'styled-components'

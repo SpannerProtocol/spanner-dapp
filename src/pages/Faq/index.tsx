@@ -1,6 +1,5 @@
 import Card from 'components/Card'
 import { PageWrapper, TextSection } from 'components/Wrapper'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { Header1, Header3, SText } from '../../components/Text'
 

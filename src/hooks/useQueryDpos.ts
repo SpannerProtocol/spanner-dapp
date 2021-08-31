@@ -1,6 +1,6 @@
 import { Option } from '@polkadot/types'
 import { useEffect, useState } from 'react'
-import { DpoIndex, DpoInfo } from 'spanner-interfaces'
+import { DpoIndex, DpoInfo } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 /**

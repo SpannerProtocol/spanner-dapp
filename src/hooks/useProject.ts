@@ -1,4 +1,4 @@
-import { Balance } from '@polkadot/types/interfaces'
+import { Balance } from 'spanner-api/types'
 import { useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useProjectManager } from 'state/project/hooks'

@@ -1,6 +1,6 @@
 import { CreateTxParams } from 'hooks/useTxHelpers'
 import { Dispatcher } from 'types/dispatcher'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 
 export * from './ActionRow'
 export * from './ActionPlate'
