@@ -1,4 +1,4 @@
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 
 /**
  * Compares the selected state with the current state in DpoInfo

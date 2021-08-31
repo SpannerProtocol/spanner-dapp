@@ -1,4 +1,3 @@
-import BN from 'bn.js'
 import Balance from 'components/Balance'
 import { ButtonPrimary } from 'components/Button'
 import { BorderedInput } from 'components/Input'
@@ -13,25 +12,25 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
-import { formatToUnit } from 'utils/formatUnit'
+import { bnToUnitNumber, formatToUnit, unitToBnWithDecimal } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
+import { getDpoRemainingPurchase } from '../../../../utils/getDpoData'
+import Decimal from 'decimal.js'
+import { PrimaryMUISlider } from '../../../Slider'
+import { BuyData } from '../index'
+import { ErrorMsg } from '../../../../pages/Dex/components'
+import { useQueryDpoMembers } from '../../../../hooks/useQueryDpoMembers'
+import useWallet from '../../../../hooks/useWallet'
 
 interface BuyDpoSeatsFormProps {
   dpoInfo: DpoInfo
   token: string
   onSubmit: (data: any) => void
-}
-
-interface BuyData {
-  dpoIndex?: string
-  targetSeats?: string
-  referrer?: string | null
-  newReferrer?: boolean
 }
 
 interface BuyDpoSeatsTxConfirmProps extends BuyData {
@@ -51,7 +50,7 @@ interface TxConfirmProps {
 }
 
 function BuyDpoSeatsTxConfirmContent({
-  targetSeats,
+  amount,
   deposit,
   estimatedFee,
   token,
@@ -65,10 +64,10 @@ function BuyDpoSeatsTxConfirmContent({
         <SText>{t(`Confirm the details below.`)}</SText>
       </Section>
       <BorderedWrapper>
-        <RowBetween>
-          <SText>{t(`Seats`)}</SText>
-          <SText>{targetSeats}</SText>
-        </RowBetween>
+        {/*<RowBetween>*/}
+        {/*  <SText>{t(`Shares`)}</SText>*/}
+        {/*  <SText>{targetSeats}</SText>*/}
+        {/*</RowBetween>*/}
         <RowBetween>
           <SText>{t(`Deposit`)}</SText>
           <SText>
@@ -89,14 +88,53 @@ function BuyDpoSeatsTxConfirmContent({
 }
 
 export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeatsFormProps) {
-  const [seats, setSeats] = useState<number>(1)
+  const [amount, setAmount] = useState<number>(0)
   const [referralCode, setReferralCode] = useState<string | null>('')
   const referrer = useReferrer()
   const { t } = useTranslation()
-  const { passengerSeatCap } = useConsts()
+  const { passengerSharePercentCap, passengerSharePercentMinimum } = useConsts()
   const balance = useSubscribeBalance(token)
   const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
+  const [errMsg, setErrMsg] = useState<string>('')
+
+  // const dpoTargetAmount = bnToUnitNumber(dpoInfo.target_amount, chainDecimals, 0, true).fixed())
+  // const passengerShareCap = passengerSharePercentCap ? dpoTargetAmount * passengerSharePercentCap : 0
+  // const passengerShareMinimum = passengerSharePercentMinimum ? dpoTargetAmount * passengerSharePercentMinimum : 0
+
+  const dpoTargetAmountDecimal = new Decimal(bnToUnitNumber(dpoInfo.target_amount, chainDecimals))
+  let passengerShareCap = passengerSharePercentCap ? dpoTargetAmountDecimal.mul(passengerSharePercentCap).toNumber() : 0
+  let passengerShareMinimum = passengerSharePercentMinimum
+    ? dpoTargetAmountDecimal.mul(passengerSharePercentMinimum).toNumber()
+    : 0
+
+  const remaining = bnToUnitNumber(getDpoRemainingPurchase(dpoInfo), chainDecimals)
+  if (remaining < passengerShareMinimum) {
+    passengerShareMinimum = remaining
+  }
+  if (remaining < passengerShareCap) {
+    passengerShareCap = remaining
+  }
+
+  const dpoMembers = useQueryDpoMembers(dpoInfo.index.toString())
+  const [userMemberInfo, setUserMemberInfo] = useState<DpoMemberInfo>()
+  const wallet = useWallet()
+
+  useEffect(() => {
+    if (!wallet || !wallet.address || !dpoMembers || dpoMembers.length === 0) return
+    const memberInfo = dpoMembers.find(
+      (entry) => entry[1].buyer.isPassenger && entry[1].buyer.asPassenger.eq(wallet.address)
+    )
+    setUserMemberInfo(memberInfo ? memberInfo[1] : undefined)
+  }, [dpoMembers, wallet])
+
+  if (userMemberInfo) {
+    const userPurchasedShares = bnToUnitNumber(userMemberInfo.share, chainDecimals)
+    passengerShareCap = new Decimal(passengerShareCap).sub(userPurchasedShares).toNumber()
+    if (passengerShareCap < passengerShareMinimum) {
+      passengerShareMinimum = passengerShareCap
+    }
+  }
 
   // This is only onChange
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -109,11 +147,10 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     }
   }
 
-  const handleSeats = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseInt(event.target.value)
-    if (!passengerSeatCap) return
-    if (value < 1 || value > passengerSeatCap) return
-    setSeats(value)
+  const handleSeats = (value: number) => {
+    if (!passengerSharePercentCap || !passengerSharePercentMinimum) return
+    if (value > passengerShareCap) return
+    setAmount(value)
   }
 
   const handleSubmit = () => {
@@ -121,7 +158,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     if (typeof referralCode === 'string' && isValidSpannerAddress(referralCode)) {
       validatedReferrer = referralCode
     }
-    onSubmit({ seats, referrer: validatedReferrer, newReferrer })
+    onSubmit({ amount: amount, referrer: validatedReferrer, newReferrer })
   }
 
   // if the user had a stored referrer, set it
@@ -132,10 +169,23 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
     }
   }, [referralCode, referrer])
 
+  useEffect(() => {
+    if (amount < passengerShareMinimum && amount > 0) {
+      setErrMsg('Less than minimum')
+    } else {
+      setErrMsg('')
+    }
+  }, [amount, passengerShareMinimum])
+
+  const handleSliderChange = (event: React.ChangeEvent<Record<string, unknown>>, newValue: number | number[]) => {
+    if (typeof newValue === 'number') {
+      handleSeats(newValue)
+    }
+  }
   return (
     <>
       <Section>
-        <SText>{t(`Buy this DPO's Seats to contribute to their Crowdfunding Amount`)}</SText>
+        <SText>{t(`Buy this DPO's Shares to contribute to their Crowdfunding Amount`)}</SText>
       </Section>
       <BorderedWrapper>
         <RowBetween>
@@ -146,48 +196,50 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
         </RowBetween>
         <RowBetween>
           <RowFixed width="fit-content">
-            <SText>{t(`Remaining Seats`)}</SText>
-            <QuestionHelper
-              text={t(`Amount of Seats left in DPO. There are 100 seats per DPO.`)}
-              size={12}
-              backgroundColor={'#fff'}
-            />
+            <SText>{t(`Remaining Purchase`)}</SText>
+            <QuestionHelper text={t(`Amount of Shares left in DPO.`)} size={12} backgroundColor={'#fff'} />
           </RowFixed>
-          <SText>{dpoInfo.empty_seats.toString()}</SText>
+          <SText>
+            {formatToUnit(getDpoRemainingPurchase(dpoInfo), chainDecimals, 2)} {token}
+          </SText>
         </RowBetween>
         <RowBetween>
           <RowFixed width="fit-content">
-            <SText>{t(`Total Seat Price`)}</SText>
+            <SText>{t(`Total Purchased Price`)}</SText>
             <QuestionHelper
-              text={t(`The total cost of Seats to buy from this DPO.`)}
+              text={t(`The total cost of Shares to buy from this DPO.`)}
               size={12}
               backgroundColor={'#fff'}
             />
           </RowFixed>
           <SText>
-            {formatToUnit(new BN(seats).mul(dpoInfo.amount_per_seat), chainDecimals, 2)} {token}
+            {formatToUnit(dpoInfo.total_fund, chainDecimals, 2)} {token}
           </SText>
         </RowBetween>
       </BorderedWrapper>
       <Section>
         <RowFixed width="fit-content">
-          <SText>{t(`Seats to Buy`)}</SText>
-          <QuestionHelper
-            text={t(
-              `The # of Seats you wish to buy from this DPO will determine the crowdfunding target of your new DPO. The crowdfunding target will be split equally to 100 seats in your DPO.`
-            )}
-            size={12}
-            backgroundColor={'#fff'}
-          />
+          <SText>
+            {t(`Shares to Buy`)} ({token})
+          </SText>
         </RowFixed>
         <BorderedInput
           required
           id="dpo-seats"
           type="number"
-          placeholder={`1 - ${passengerSeatCap}`}
-          onChange={(e) => handleSeats(e)}
-          value={Number.isNaN(seats) ? '' : seats}
+          placeholder={`${passengerShareMinimum.toFixed(2)} - ${passengerShareCap.toFixed(2)}`}
+          onChange={(e) => handleSeats(parseFloat(e.target.value))}
+          value={Number.isNaN(amount) || !amount ? '' : amount.toString()}
           style={{ alignItems: 'flex-end', width: '100%' }}
+        />
+        {errMsg && <ErrorMsg>{t(errMsg)}</ErrorMsg>}
+        <PrimaryMUISlider
+          value={amount}
+          onChange={handleSliderChange}
+          aria-labelledby="continuous-slider"
+          min={passengerShareMinimum}
+          max={passengerShareCap}
+          step={0.01}
         />
       </Section>
       {(!referralCode || newReferrer) && (
@@ -213,7 +265,7 @@ export default function BuyDpoSeatsForm({ dpoInfo, token, onSubmit }: BuyDpoSeat
         </Section>
       )}
       <Section style={{ marginTop: '1rem' }}>
-        <ButtonPrimary onClick={handleSubmit} maxWidth="none" mobileMaxWidth="none">
+        <ButtonPrimary onClick={handleSubmit} maxWidth="none" mobileMaxWidth="none" disabled={errMsg.length > 0}>
           {t(`Buy`)}
         </ButtonPrimary>
       </Section>
@@ -230,7 +282,6 @@ export function BuyDpoSeatsTxConfirm({ dpoInfo, token, isOpen, setIsOpen, buyDat
   const [txHash, setTxHash] = useState<string | undefined>()
   const [txPendingMsg, setTxPendingMsg] = useState<string | undefined>()
   const [txErrorMsg, setTxErrorMsg] = useState<string | undefined>()
-  const { chainDecimals } = useSubstrate()
 
   const dismissModal = () => {
     setIsOpen(false)
@@ -243,7 +294,7 @@ export function BuyDpoSeatsTxConfirm({ dpoInfo, token, isOpen, setIsOpen, buyDat
         isOpen={isOpen}
         onDismiss={dismissModal}
         onConfirm={() => submitTx({ setTxErrorMsg, setTxHash, setTxPendingMsg, dismissModal })}
-        title={t(`Buy DPO Seats`)}
+        title={t(`Buy DPO Shares`)}
         buttonText={t(`Confirm`)}
         txError={txErrorMsg}
         txHash={txHash}
@@ -251,11 +302,7 @@ export function BuyDpoSeatsTxConfirm({ dpoInfo, token, isOpen, setIsOpen, buyDat
       >
         <BuyDpoSeatsTxConfirmContent
           {...buyData}
-          deposit={formatToUnit(
-            dpoInfo.amount_per_seat.toBn().mul(new BN(buyData.targetSeats ? buyData.targetSeats : 0)),
-            chainDecimals,
-            2
-          )}
+          deposit={buyData.amount ? buyData.amount.toFixed(2) : '0'}
           token={token}
           estimatedFee={txInfo.estimatedFee}
         />

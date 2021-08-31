@@ -1,5 +1,5 @@
 import { ApiPromise } from '@polkadot/api'
-import { DpoInfo, TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { DpoInfo, TravelCabinBuyerInfo, TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-api/types'
 
 export function getTravelCabinBuyer(api: ApiPromise) {
   return api.query.bulletTrain.travelCabinBuyer.entries()

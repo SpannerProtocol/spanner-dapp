@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "paths": {
-      "interfaces/*": ["./spanner-interfaces/*"],
-      "@polkadot/api/augment": ["./spanner-interfaces/augment-api.ts"],
-      "@polkadot/types/augment": ["./spanner-interfaces/augment-types.ts"]
+      "@polkadot/api/augment": ["./spanner-api/packages/types/src/interfaces/augment-api.ts"],
+      "@polkadot/types/augment": ["./spanner-api/packages/types/src/interfaces/augment-types.ts"],
+      "spanner-api/types": ["./spanner-api/packages/types/src/interfaces"],
+      "spanner-api/api": ["./spanner-api/packages/api/src"],
+      "packages/*": ["./spanner-api/packages/*"]
     }
   }
 }

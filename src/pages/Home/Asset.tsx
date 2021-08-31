@@ -1,5 +1,5 @@
 import { SLink } from 'components/Link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import 'swiper/components/pagination/pagination.min.css'
 import SwiperCore, { Pagination } from 'swiper/core'
@@ -47,7 +47,7 @@ export function BulletTrain() {
       <SText fontSize={'18px'} mobileFontSize={'18px'} color={'white'}>
         {t(`Earn token rewards by buying TravelCabins or crowdfund for them with DPOs`)}
       </SText>
-      <SLink to={`/bullettrain`}>
+      <SLink to={`/assets/travelcabin`}>
         <CircleNextIconWrapper>
           <StyledCircleNextWhite />
         </CircleNextIconWrapper>

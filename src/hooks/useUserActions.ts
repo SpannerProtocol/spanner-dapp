@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-interfaces'
+import { TravelCabinIndex, TravelCabinInventoryIndex } from 'spanner-api/types'
 import getUserActions, { UserAction } from 'utils/getUserActions'
 import { useBlockManager } from './useBlocks'
 import { useSubTravelCabin, useSubTravelCabinBuyer } from './useQueryTravelCabins'

@@ -2,7 +2,6 @@ import { RowFixed } from 'components/Row'
 import { HeavyText, SText, TokenText } from 'components/Text'
 import useStats from 'hooks/useStats'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { formatToUnit } from 'utils/formatUnit'
 

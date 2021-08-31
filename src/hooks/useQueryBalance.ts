@@ -3,7 +3,7 @@ import { AccountData, AccountId, AccountInfo } from '@polkadot/types/interfaces'
 import { BN_ZERO } from '@polkadot/util'
 import BN from 'bn.js'
 import { useEffect, useState } from 'react'
-import { CurrencyId, TradingPair } from 'spanner-interfaces'
+import { CurrencyId, TradingPair } from 'spanner-api/types'
 import { useApi } from './useApi'
 import { useEnabledTradingPairs } from './useQueryTradingPairs'
 import useWallet from './useWallet'
@@ -89,9 +89,10 @@ export function useSubAllTokenBalances(): Array<[StorageKey, AccountData]> | und
     ;(async () => {
       const currencyIds: [string, CurrencyId][] = []
       storageKey.forEach((key) => {
+        if (!wallet.address) return
         const keyCodecs = key.args.map((k) => k)
         const currencyId = (keyCodecs as [AccountId, CurrencyId])[1]
-        currencyIds.push([wallet.address!!, currencyId])
+        currencyIds.push([wallet.address, currencyId])
       })
       unsub = await api.query.tokens.accounts.multi(currencyIds, (result) => {
         const accountDatas: [StorageKey, AccountData][] = []
@@ -148,8 +149,8 @@ export function useSubAllBalances(): Array<BalanceData> | undefined {
         token,
         type,
         free: accountData.free.toString(),
-        miscFrozen: accountData.miscFrozen.toString(),
-        feeFrozen: accountData.feeFrozen.toString(),
+        miscFrozen: accountData.miscFrozen ? accountData.miscFrozen.toString() : '0',
+        feeFrozen: accountData.feeFrozen ? accountData.miscFrozen.toString() : '0',
       }
     })
     const boltBalanceData = {

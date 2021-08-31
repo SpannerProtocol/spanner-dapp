@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { useLazyQuery } from '@apollo/client'
 import BN from 'bn.js'
 import Card from 'components/Card'
@@ -9,7 +8,7 @@ import { UserTransferIn, UserTransferInVariables } from 'queries/graphql/types/U
 import { UserTransferOut, UserTransferOutVariables } from 'queries/graphql/types/UserTransferOut'
 import userTransferIn from 'queries/graphql/userTransferIn'
 import userTransferOut from 'queries/graphql/userTransferOut'
-import React, { useCallback, useContext, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { RefreshCw } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import Skeleton from 'react-loading-skeleton'

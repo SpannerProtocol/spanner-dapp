@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoIndex } from 'spanner-interfaces/bulletTrain'
+import { DpoIndex } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 export function useUserIsDpoMember(

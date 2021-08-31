@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 import { CloseIcon } from '../../../theme/components'
 import { CustomLightSpinner } from '../../../theme/components'
@@ -136,7 +136,7 @@ export function TxModal({
           <Section style={{ marginTop: '1rem', marginBottom: '1rem' }}>
             <CenteredRow>
               <ImageWrapper>
-                <Image src={require('../../../assets/images/complete-checkmark.png')} />
+                <Image src={require('assets/images/complete-checkmark.png').default} />
               </ImageWrapper>
             </CenteredRow>
           </Section>

@@ -1,5 +1,7 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import styled from 'styled-components'
+import { withStyles } from '@material-ui/core/styles'
+import { Slider as MuiSlider } from '@material-ui/core'
 
 const StyledRangeInput = styled.input<{ size: number }>`
   -webkit-appearance: none; /* Hides the slider so that custom slider can be made */
@@ -118,3 +120,10 @@ export default function Slider({ value, onChange, min = 0, step = 1, max = 100, 
     />
   )
 }
+
+export const PrimaryMUISlider = withStyles({
+  root: {
+    color: '#FFA521',
+  },
+  thumb: { backgroundColor: '#FFA521' },
+})(MuiSlider)

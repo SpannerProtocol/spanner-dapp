@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { BlockNumber } from '@polkadot/types/interfaces'
+import type { BlockNumber } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 export function useSubscribeBlocks() {

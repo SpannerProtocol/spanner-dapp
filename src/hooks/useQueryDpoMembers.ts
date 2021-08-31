@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { DpoIndex, DpoInfo, DpoMemberInfo } from 'spanner-interfaces'
+import { DpoIndex, DpoInfo, DpoMemberInfo } from 'spanner-api/types'
 import { useApi } from './useApi'
 
 export function useQueryDpoMembers(dpoIndex: DpoIndex | number | string): Array<[DpoIndex, DpoMemberInfo]> {

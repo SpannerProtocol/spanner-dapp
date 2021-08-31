@@ -1,8 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import Card from 'components/Card'
 import TabBar, { TabMetaData } from 'components/TabBar'
 import { SectionContainer } from 'components/Wrapper'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import styled from 'styled-components'
 import Transactions from './Transactions'
 import Transfers from './Transfers'

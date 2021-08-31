@@ -1,4 +1,4 @@
-import { BlockNumber } from '@polkadot/types/interfaces'
+import { BlockNumber } from 'spanner-api/types'
 import {
   DpoIndex,
   DpoInfo,
@@ -6,7 +6,7 @@ import {
   TravelCabinIndex,
   TravelCabinInfo,
   TravelCabinInventoryIndex,
-} from 'spanner-interfaces'
+} from 'spanner-api/types'
 
 export interface DpoAction {
   action: string
@@ -53,6 +53,13 @@ function actionParser({
           dpoIndex: dpoInfo.index,
         })
       }
+    }
+    // Buy DPO Seats
+    if (dpoInfo.target.isDpo) {
+      actions.push({
+        action: 'dpoBuyDpoSeats',
+        dpoIndex: dpoInfo.index,
+      })
     }
   }
 

@@ -1,4 +1,4 @@
-import { MilestoneRewardInfo } from 'spanner-interfaces'
+import { MilestoneRewardInfo } from 'spanner-api/types'
 import { useEffect, useState } from 'react'
 import { useApi } from './useApi'
 

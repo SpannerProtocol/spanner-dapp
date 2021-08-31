@@ -1,19 +1,16 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ApiPromise, WsProvider } from '@polkadot/api'
 import { SText } from 'components/Text'
 import useIsWindowVisible from 'hooks/useIsWindowVisible'
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useChainState } from 'state/connections/hooks'
 import { SPANNER_SUPPORTED_CHAINS } from '../constants'
-import * as rpcDefinitions from '../spanner-interfaces/bulletTrain/rpc'
-import * as definitions from '../spanner-interfaces/definitions'
+import { options } from '../spanner-api/packages/api/src'
+import { ApiOptions } from '@polkadot/api/types'
 import { useApiToastContext } from './ApiToastProvider'
 import { RefreshCw } from 'react-feather'
 import { RowFixed } from 'components/Row'
 import { ThemeContext } from 'styled-components'
-import { createPortal } from 'react-dom'
-import MaintenanceModal from '../components/Modal/MaintenanceModal'
 
 interface ApiInternalState {
   api: ApiPromise
@@ -60,21 +57,12 @@ export function ApiProvider({ children }: any): JSX.Element {
 
   const createApi = useCallback(
     (chainToConnect: string) => {
-      const types = Object.values(definitions).reduce(
-        (res, { types }): Record<string, unknown> => ({ ...res, ...types }),
-        {}
-      )
       try {
-        const rpc = rpcDefinitions.default.rpc
         let chainInfo = SPANNER_SUPPORTED_CHAINS.find((supportedChain) => supportedChain.chain === chainToConnect)
         chainInfo = chainInfo ? chainInfo : SPANNER_SUPPORTED_CHAINS[0]
         chainInfo.chain === 'Spanner Mainnet' ? addChain('Spanner') : addChain('Hammer')
         const provider = new WsProvider(chainInfo.providerSocket)
-        const apiPromise = new ApiPromise({
-          provider,
-          types,
-          rpc,
-        })
+        const apiPromise = new ApiPromise(options({ provider }) as ApiOptions)
 
         apiPromise.on('disconnected', () => {
           setApiState((prev) => ({ ...prev, connected: false, needReconnect: true, lastState: 'disconnected' }))
@@ -179,31 +167,5 @@ export function ApiProvider({ children }: any): JSX.Element {
 
   const value = useMemo<ApiState>(() => ({ ...apiState, connectToNetwork }), [apiState, connectToNetwork])
 
-  const [chainUpgradeModalOpen, setChainUpgradeModalOpen] = useState<boolean>(false)
-
-  const dismissChainUpgradeModal = () => {
-    setChainUpgradeModalOpen(false)
-  }
-
-  useEffect(() => {
-    const HAMMER_MAINTENANCE = process.env.REACT_APP_HAMMER_MAINTENANCE === 'true'
-    const SPANNER_MAINTENANCE = process.env.REACT_APP_SPANNER_MAINTENANCE === 'true'
-    setChainUpgradeModalOpen(false)
-    if (chain && chain.chain === 'Spanner' && SPANNER_MAINTENANCE) {
-      setChainUpgradeModalOpen(true)
-    }
-    if (chain && chain.chain === 'Hammer' && HAMMER_MAINTENANCE) {
-      setChainUpgradeModalOpen(true)
-    }
-  }, [chain])
-
-  return (
-    <ApiContext.Provider value={value}>
-      {children}
-      {createPortal(
-        <MaintenanceModal isOpen={chainUpgradeModalOpen} onDismiss={dismissChainUpgradeModal} chain={selectedChain} />,
-        document.body
-      )}
-    </ApiContext.Provider>
-  )
+  return <ApiContext.Provider value={value}>{children}</ApiContext.Provider>
 }

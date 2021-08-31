@@ -7,12 +7,11 @@ import { RowBetween, RowFixed } from 'components/Row'
 import { Header1, Header3, Header4, HeavyText, TokenText } from 'components/Text'
 import { CenterWrapper, ContentWrapper, PageWrapper, SpacedSection } from 'components/Wrapper'
 import { useTotalCrowdfundedAmount } from 'hooks/useDpoStats'
-import { useQueryDpoMembers } from 'hooks/useQueryDpoMembers'
 import { useDpoCount, useDpos } from 'hooks/useQueryDpos'
 import { useSubstrate } from 'hooks/useSubstrate'
-import React, { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { DpoInfo } from 'spanner-interfaces'
+import { DpoInfo } from 'spanner-api/types'
 import { useProjectManager } from 'state/project/hooks'
 import { formatToUnit } from 'utils/formatUnit'
 
@@ -67,12 +66,9 @@ function DpoOverviewCard({ token }: { token: string }) {
 // A list of DPOs with search functionality
 export default function Dpos() {
   const { projectState: project } = useProjectManager()
-  const members = useQueryDpoMembers(0)
   const token = useMemo(() => (project.selectedProject ? project.selectedProject.token : 'BOLT'), [project])
   const unfilteredDpos = useDpos(token)
   const [filteredDpos, setFilteredDpos] = useState<DpoInfo[]>([])
-  console.log(filteredDpos)
-  console.log('members for dpo 0', members)
 
   return (
     <>

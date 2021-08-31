@@ -28,8 +28,9 @@ function structureBalanceData(data: BalanceDataProps) {
   if (!balances) return
   const balanceRows = balances.map((balance) => {
     const projectRegistry = getProjectRegistry(balance.token.toLowerCase())[0]
+    console.log(projectRegistry)
     return {
-      icon: require(`assets/tokens/${projectRegistry.icon}`),
+      icon: require(`assets/tokens/${projectRegistry.icon}`).default,
       token: balance.token,
       type: balance.type,
       balance: formatToUnit(balance.free, decimals, 8),
@@ -108,10 +109,10 @@ function Balance({ icon, token, type, balance, isLast }: BalanceRowProps) {
 export default function Balances() {
   const { chainDecimals } = useSubstrate()
   const balances = useSubAllBalances()
-  const data = React.useMemo(() => structureBalanceData({ balances, decimals: chainDecimals }), [
-    balances,
-    chainDecimals,
-  ])
+  const data = React.useMemo(
+    () => structureBalanceData({ balances, decimals: chainDecimals }),
+    [balances, chainDecimals]
+  )
   const { t } = useTranslation()
 
   return (

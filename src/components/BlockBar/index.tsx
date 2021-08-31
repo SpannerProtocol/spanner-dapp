@@ -1,5 +1,4 @@
 import { useBlockManager } from 'hooks/useBlocks'
-import React from 'react'
 import { useTranslation } from 'react-i18next'
 import styled from 'styled-components'
 

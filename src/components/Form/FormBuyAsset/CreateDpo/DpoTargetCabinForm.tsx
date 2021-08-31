@@ -14,13 +14,13 @@ import useSubscribeBalance from 'hooks/useQueryBalance'
 import { useReferrer } from 'hooks/useReferrer'
 import { useSubstrate } from 'hooks/useSubstrate'
 import { SubmitTxParams, TxInfo } from 'hooks/useTxHelpers'
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { TravelCabinInfo } from 'spanner-interfaces'
+import { TravelCabinInfo } from 'spanner-api/types'
 import { Dispatcher } from 'types/dispatcher'
 import { blockToDays } from 'utils/formatBlocks'
 import { noNan } from 'utils/formatNumbers'
-import { formatToUnit } from 'utils/formatUnit'
+import { bnToUnitNumber, formatToUnit } from 'utils/formatUnit'
 import { shortenAddr } from 'utils/truncateString'
 import { isValidSpannerAddress } from 'utils/validAddress'
 import { ColumnCenter } from '../../../Column'
@@ -33,6 +33,8 @@ import {
   DpoReferralCodeHorizontal,
 } from './fieldsHorizontal'
 import { DpoFormCoreProps } from './index'
+import { Decimal } from 'decimal.js'
+import { CreateDpoData } from '../index'
 
 interface DpoTargetCabinFormProps extends DpoFormCoreProps {
   travelCabinInfo: TravelCabinInfo
@@ -52,9 +54,9 @@ interface TxConfirmProps {
 
 interface TravelCabinCrowdfundTxConfirmProps {
   target?: string
-  targetAmount?: string
+  targetPurchaseAmount?: number
   dpoName?: string
-  managerSeats?: string
+  managerPurchaseAmount?: number
   baseFee?: string
   directReferralRate?: string
   end?: string
@@ -66,9 +68,9 @@ interface TravelCabinCrowdfundTxConfirmProps {
 
 export function TxConfirm({
   target,
-  targetAmount,
+  targetPurchaseAmount,
   dpoName,
-  managerSeats,
+  managerPurchaseAmount,
   baseFee,
   directReferralRate,
   end,
@@ -79,12 +81,19 @@ export function TxConfirm({
 }: TravelCabinCrowdfundTxConfirmProps) {
   const { t } = useTranslation()
   const { expectedBlockTime, lastBlock } = useBlockManager()
-  const { chainDecimals } = useSubstrate()
 
   const endInDays =
     end && expectedBlockTime && lastBlock
       ? Math.ceil(parseFloat(blockToDays(new BN(end).sub(lastBlock), expectedBlockTime, 4)))
       : undefined
+
+  let shareRate = 0
+  if (managerPurchaseAmount && targetPurchaseAmount && baseFee) {
+    shareRate = parseFloat(new Decimal(managerPurchaseAmount).dividedBy(targetPurchaseAmount).mul(100).toFixed(1))
+    if (shareRate + parseFloat(baseFee) > 20) {
+      shareRate = 20 - parseFloat(baseFee)
+    }
+  }
 
   return (
     <>
@@ -100,11 +109,11 @@ export function TxConfirm({
           <SText>{t(`DPO Name`)}</SText>
           <SText>{dpoName}</SText>
         </RowBetween>
-        {targetAmount && (
+        {targetPurchaseAmount && (
           <RowBetween>
             <SText>{t(`Crowdfunding Amount`)}</SText>
             <SText>
-              {formatToUnit(targetAmount, chainDecimals, 2)} {token}
+              {targetPurchaseAmount.toFixed(2)} {token}
             </SText>
           </RowBetween>
         )}
@@ -114,12 +123,12 @@ export function TxConfirm({
             <SText fontSize="12px">{`~${t(`Block`)} #${end} (${endInDays} ${t(`days`)})`}</SText>
           </RowBetween>
         )}
-        {managerSeats && baseFee && (
+        {shareRate && baseFee && (
           <RowBetween>
             <SText>{t(`Management Fee`)}</SText>
             <SText>
-              {`${baseFee} (${t(`Base`)}) + ${managerSeats} (${t(`Seats`)}) = ${Math.round(
-                parseFloat(managerSeats) + parseFloat(baseFee)
+              {`${baseFee} (${t(`Base`)}) + ${shareRate} (${t(`Shares`)}) = ${Math.round(
+                shareRate + parseFloat(baseFee)
               ).toString()}%`}
             </SText>
           </RowBetween>
@@ -135,11 +144,11 @@ export function TxConfirm({
           </RowBetween>
         )}
         <Divider />
-        {managerSeats && targetAmount && (
+        {managerPurchaseAmount && (
           <RowBetween>
             <HeavyText fontSize="14px">{t(`Required Deposit`)}</HeavyText>
             <HeavyText fontSize="14px">
-              {`${formatToUnit(new BN(managerSeats).mul(new BN(targetAmount).div(new BN(100))), chainDecimals, 2)} 
+              {`${managerPurchaseAmount.toFixed(2)} 
               ${token}`}
             </HeavyText>
           </RowBetween>
@@ -160,7 +169,8 @@ export function TxConfirm({
 }
 
 export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }: DpoTargetCabinFormProps) {
-  const [managerSeats, setManagerSeats] = useState<number>(0)
+  const [managerPurchaseAmount, setManagerPurchaseAmount] = useState<number>(0)
+  const [managerShareRate, setManagerShareRate] = useState<number>(0)
   const [dpoName, setDpoName] = useState<string>('')
   const [baseFee, setBaseFee] = useState<number>(0)
   const [directReferralRate, setDirectReferralRate] = useState<number>(70)
@@ -169,16 +179,24 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   const referrer = useReferrer()
   const [newReferrer, setNewReferrer] = useState<boolean>(false)
   const { t } = useTranslation()
-  const { passengerSeatCap } = useConsts()
+  const { passengerSharePercentCap, passengerSharePercentMinimum } = useConsts()
   const balance = useSubscribeBalance(token.toUpperCase())
-  const [errNoBalance, setErrNoBalance] = useState<boolean>(false)
+  const [dpoManagerSeatsErrMsg, setDpoManagerSeatsErrMsg] = useState<string>('')
   const [errNameTooShort, setErrNameTooShort] = useState<boolean>(false)
   const { chainDecimals } = useSubstrate()
 
-  const hasError = useMemo(() => errNoBalance || errNameTooShort, [errNoBalance, errNameTooShort])
+  const hasError = useMemo(
+    () => dpoManagerSeatsErrMsg.length > 0 || errNameTooShort,
+    [dpoManagerSeatsErrMsg, errNameTooShort]
+  )
 
-  const costPerSeat = useMemo(() => travelCabinInfo.deposit_amount.div(new BN(100)), [travelCabinInfo])
-
+  const cabinDepositAmountDecimal = new Decimal(bnToUnitNumber(travelCabinInfo.deposit_amount, chainDecimals))
+  const passengerShareCap = passengerSharePercentCap
+    ? cabinDepositAmountDecimal.mul(passengerSharePercentCap).toNumber()
+    : 0
+  const passengerShareMinimum = passengerSharePercentMinimum
+    ? cabinDepositAmountDecimal.mul(passengerSharePercentMinimum).toNumber()
+    : 0
   const handleReferralCode = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
     if (value.length === 0) {
@@ -206,15 +224,26 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
   }
 
   const handleBaseFee = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const value = parseFloat(event.target.value)
+    let value = parseFloat(event.target.value)
     if (value > 5) return
+    if (value + managerShareRate > 20) {
+      value = 20 - managerShareRate
+    }
     setBaseFee(value)
   }
 
-  const handleManagerSeats = (seats: string) => {
-    const value = parseFloat(seats)
-    if (value > 15) return
-    setManagerSeats(value)
+  const handleManagerPurchaseAmount = (value: number) => {
+    // const managerAmount = Number.isNaN(value) ? new BN(0) : unitToBnWithDecimal(value, chainDecimals)
+
+    if (!passengerShareCap || !passengerShareMinimum) return
+    if (value > passengerShareCap) return
+    setManagerPurchaseAmount(value)
+
+    let shareRate = parseFloat(new Decimal(value).dividedBy(cabinDepositAmountDecimal).mul(100).toFixed(1))
+    if (shareRate + baseFee > 20) {
+      shareRate = 20 - baseFee
+    }
+    setManagerShareRate(shareRate)
   }
 
   const handleEnd = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -228,7 +257,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
       validatedReferrer = referralCode
     }
     onSubmit({
-      managerSeats: Number.isNaN(managerSeats) ? 0 : managerSeats,
+      managerPurchaseAmount: managerPurchaseAmount,
       baseFee: Number.isNaN(baseFee) ? 0 : baseFee,
       directReferralRate: Number.isNaN(directReferralRate) ? 0 : directReferralRate,
       end: Number.isNaN(end) ? 1 : end,
@@ -244,18 +273,16 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
     }
   }, [referralCode, referrer])
 
-  const requiredDeposit = useMemo(() => new BN(managerSeats).mul(travelCabinInfo.deposit_amount.div(new BN(100))), [
-    travelCabinInfo,
-    managerSeats,
-  ])
-
   useEffect(() => {
-    if (balance.lt(requiredDeposit)) {
-      setErrNoBalance(true)
+    const balanceUnit = bnToUnitNumber(balance, chainDecimals)
+    if (balanceUnit < managerPurchaseAmount) {
+      setDpoManagerSeatsErrMsg('Insufficient Balance')
+    } else if (managerPurchaseAmount < passengerShareMinimum && managerPurchaseAmount > 0) {
+      setDpoManagerSeatsErrMsg('Less than minimum')
     } else {
-      setErrNoBalance(false)
+      setDpoManagerSeatsErrMsg('')
     }
-  }, [balance, travelCabinInfo, managerSeats, requiredDeposit])
+  }, [balance, managerPurchaseAmount, chainDecimals, passengerShareMinimum])
 
   if (!chainDecimals) return null
 
@@ -286,7 +313,7 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
             <RowFixed width="fit-content">
               <SText>{t(`Crowdfund Amount`)}</SText>
               <QuestionHelper
-                text={t(`The number of seats to buy from your Target DPO.`)}
+                text={t(`The number of shares to buy from your Target DPO.`)}
                 size={10}
                 backgroundColor={'#fff'}
               />
@@ -312,13 +339,13 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
         </Section>
         <DpoBaseFeeHorizontal baseFee={baseFee} onChange={handleBaseFee} />
         <DpoManagerSeatsHorizontal
+          passengerShareCap={passengerShareCap}
+          passengerShareMinimum={passengerShareMinimum}
           dpoName={dpoName ? dpoName : ''}
-          costPerSeat={costPerSeat}
-          seatCap={passengerSeatCap}
-          managerSeats={managerSeats}
-          onChange={handleManagerSeats}
+          managerAmount={managerPurchaseAmount}
           token={token}
-          errMsg={errNoBalance ? t(`Insufficient Balance`) : undefined}
+          onChange={handleManagerPurchaseAmount}
+          errMsg={dpoManagerSeatsErrMsg.length > 0 ? t(dpoManagerSeatsErrMsg) : undefined}
         />
         <DpoDirectReferralRateHorizontal directReferralRate={directReferralRate} onChange={handleDirectReferralRate} />
         <Section>
@@ -333,8 +360,8 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
                     backgroundColor={'#fff'}
                   />
                 </RowFixed>
-                <SText>{`${noNan(baseFee + managerSeats)}%`}</SText>
-                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerSeats)} (${t(`Seats`)})`}</SText>
+                <SText>{`${noNan(baseFee + managerShareRate)}%`}</SText>
+                <SText>{`${noNan(baseFee)} (${t(`Base`)}) + ${noNan(managerShareRate)} (${t(`Shares`)})`}</SText>
               </ColumnCenter>
               <ColumnCenter>
                 <RowFixed width="fit-content">
@@ -370,13 +397,9 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
           <RowBetween>
             <RowFixed width="fit-content">
               <HeavyText>{t(`Your Deposit`)}</HeavyText>
-              <QuestionHelper
-                text={t(`Your required deposit. Calculated by Crowdfund Amount / 100 * Manager Seats`)}
-                size={10}
-                backgroundColor={'#fff'}
-              />
+              <QuestionHelper text={t(`Your required deposit`)} size={10} backgroundColor={'#fff'} />
             </RowFixed>
-            <HeavyText width={'fit-content'}>{`${formatToUnit(requiredDeposit, chainDecimals, 2)} ${token}`}</HeavyText>
+            <HeavyText width={'fit-content'}>{`${managerPurchaseAmount.toFixed(2)} ${token}`}</HeavyText>
           </RowBetween>
         </Section>
       </SpacedSection>
@@ -386,24 +409,13 @@ export default function DpoTargetCabinForm({ travelCabinInfo, token, onSubmit }:
           maxWidth="none"
           mobileMaxWidth="none"
           onClick={handleSubmit}
-          disabled={hasError || dpoName.length <= 0}
+          disabled={hasError || dpoName.length <= 0 || managerPurchaseAmount < passengerShareMinimum}
         >
           {t(`Create DPO`)}
         </ButtonPrimary>
       </Section>
     </>
   )
-}
-
-interface CreateDpoData {
-  dpoName?: string
-  targetSeats?: string
-  managerSeats?: string
-  baseFee?: string
-  directReferralRate?: string
-  end?: string
-  referrer?: string | null
-  newReferrer?: boolean
 }
 
 /**
@@ -428,6 +440,7 @@ export function DpoTargetCabinTxConfirm({
     setIsOpen(false)
     ;[setTxPendingMsg, setTxHash, setTxErrorMsg].forEach((fn) => fn(undefined))
   }
+  const { chainDecimals } = useSubstrate()
 
   // const handleCreateDpo = ({
   //   dpoName,
@@ -493,9 +506,10 @@ export function DpoTargetCabinTxConfirm({
         <TxConfirm
           {...createDpoData}
           target={travelCabinInfo.name.toString()}
-          targetAmount={travelCabinInfo.deposit_amount.toString()}
           token={token}
           estimatedFee={txInfo?.estimatedFee}
+          baseFee={createDpoData.baseFee}
+          targetPurchaseAmount={bnToUnitNumber(travelCabinInfo.deposit_amount, chainDecimals)}
         />
       </TxModal>
     </>

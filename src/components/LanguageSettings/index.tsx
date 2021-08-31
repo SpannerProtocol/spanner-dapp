@@ -1,6 +1,6 @@
 import Selector from 'components/Selector'
 import { BorderedWrapper } from 'components/Wrapper'
-import React, { useCallback, useContext, useMemo } from 'react'
+import { useCallback, useContext, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { ThemeContext } from 'styled-components'
 import i18n from '../../i18n'

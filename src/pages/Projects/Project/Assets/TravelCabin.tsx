@@ -7,7 +7,6 @@ import { ProjectInfo } from 'hooks/useProjectInfo'
 import BulletTrainStats from 'pages/Assets/TravelCabin/Components/Stats'
 import { CabinsSection } from 'pages/Assets/TravelCabin/Components/Cabins'
 import { GlobalMilestoneReward } from 'pages/Assets/TravelCabin/Components/Milestone'
-import React from 'react'
 import { useTranslation } from 'translate'
 
 export default function AssetTravelCabin({ projectInfo }: { projectInfo: ProjectInfo }) {
