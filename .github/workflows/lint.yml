@@ -43,6 +43,6 @@ jobs:
         uses: wearerequired/lint-action@77d70b9a07ecb93bc98dc46dc27d96c4f004d035
         with:
           github_token: ${{ secrets.github_token }}
-          eslint: true
+          eslint: false
           eslint_extensions: js,jsx,ts,tsx,json
-          auto_fix: true
+          auto_fix: false
